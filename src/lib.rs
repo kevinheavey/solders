@@ -31,21 +31,29 @@ impl Vector3 {
 }
 
 #[pyclass]
-pub struct PublicKey {
-    pub obj: Pubkey,
-}
+pub struct PublicKey(Pubkey);
 
 #[pymethods]
 impl PublicKey {
     #[new]
     pub fn new(pubkey_vec: &[u8]) -> Self {
-        PublicKey {
-            obj: Pubkey::new(pubkey_vec),
-        }
+        PublicKey(Pubkey::new(pubkey_vec))
     }
 
     pub fn is_on_curve(&self) -> bool {
-        self.obj.is_on_curve()
+        self.0.is_on_curve()
+    }
+
+    fn __str__(&self) -> String {
+        format!("{}", self.0)
+    }
+
+    fn __repr__(&self) -> String {
+        self.__str__()
+    }
+
+    fn __bytes__(&self) -> &[u8] {
+        self.0.as_ref()
     }
 }
 

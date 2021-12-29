@@ -21,8 +21,8 @@ on_curve_data = [
 
 
 @mark.parametrize("test_input,expected", on_curve_data)
-def test_is_on_curve(benchmark, test_input, expected):
-    result = benchmark(is_on_curve, test_input)
+def test_is_on_curve(test_input, expected):
+    result = is_on_curve(test_input)
     assert result is expected
 
 
@@ -37,3 +37,12 @@ def test_is_on_curve_wrong_length():
     data = b"\xc1M"
     with raises(BaseException):
         is_on_curve(data)
+
+
+def test_bytes_representation():
+    data = (
+        b"6\x8d-\x96\xcf\xe7\x93G~\xe0\x17r\\\x9c%\x9a\xab\xa6"
+        b"\xa9\xede\x02\xbf\x83=\x10,P\xfbh\x8ev"
+    )
+    pubkey = PublicKey(data)
+    assert bytes(pubkey) == data
