@@ -1,5 +1,5 @@
 from pytest import raises
-from sol_rust_py import is_on_curve
+from solder import is_on_curve
 
 
 def test_is_on_curve(benchmark):

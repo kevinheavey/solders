@@ -1096,14 +1096,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1ecab6c735a6bb4139c0caafd0cc3635748bbb3acf4550e8138122099251f309"
 
 [[package]]
-name = "sol_rust_py"
-version = "0.1.0"
-dependencies = [
- "pyo3",
- "solana-sdk",
-]
-
-[[package]]
 name = "solana-frozen-abi"
 version = "1.9.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1250,6 +1242,14 @@ dependencies = [
  "quote",
  "rustversion",
  "syn",
+]
+
+[[package]]
+name = "solder"
+version = "0.1.0"
+dependencies = [
+ "pyo3",
+ "solana-sdk",
 ]
 
 [[package]]

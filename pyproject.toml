@@ -1,6 +1,6 @@
 [tool.poetry]
-name = "sol-rust-py"
-version = "0.1.0"
+name = "solder"
+version = "0.0.1"
 description = "Python bindings for Solana Rust tools"
 authors = ["kevinheavey <kevinheavey123@gmail.com>"]
 license = "Apache"
@@ -15,6 +15,8 @@ wemake-python-styleguide = "^0.16.0"
 mypy = "^0.930"
 pytest = "^6.2.5"
 pytest-benchmark = "^3.4.1"
+mkdocs-material = "^8.1.3"
+mkdocstrings = "^0.17.0"
 
 [build-system]
 requires = ["maturin>=0.12,<0.13"]
@@ -22,7 +24,7 @@ build-backend = "maturin"
 
 
 [project]
-name = "sol_rust_py"
+name = "solder"
 requires-python = ">=3.7"
 classifiers = [
     "Programming Language :: Rust",
