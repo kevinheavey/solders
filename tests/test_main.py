@@ -1,5 +1,5 @@
 from pytest import raises, mark
-from solder import is_on_curve
+from solder import is_on_curve, PublicKey
 
 on_curve_data = [
     (
@@ -23,6 +23,13 @@ on_curve_data = [
 @mark.parametrize("test_input,expected", on_curve_data)
 def test_is_on_curve(benchmark, test_input, expected):
     result = benchmark(is_on_curve, test_input)
+    assert result is expected
+
+
+@mark.parametrize("test_input,expected", on_curve_data)
+def test_is_on_curve_method(test_input, expected):
+    pubkey = PublicKey(test_input)
+    result = pubkey.is_on_curve()
     assert result is expected
 
 
