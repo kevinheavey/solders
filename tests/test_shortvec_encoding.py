@@ -1,5 +1,26 @@
 from typing import List
-from solder import encode_length
+from pytest import raises
+from solder import encode_length, decode_length
+
+
+def assert_decoded_array(raw_bytes: bytes, expected_length, expected_value: int):
+    """Helper to check length and value of a decoded array."""
+    value, length = decode_length(raw_bytes)
+    assert value == expected_value
+    assert length == expected_length
+
+
+def test_decode_length():
+    """Test decode length."""
+    assert_decoded_array(bytes([]), 0, 0)
+    assert_decoded_array(bytes([5]), 1, 5)
+    assert_decoded_array(bytes([0x7F]), 1, 0x7F)
+    assert_decoded_array(bytes([0x80, 0x1]), 2, 0x80)
+    assert_decoded_array(bytes([0xFF, 0x1]), 2, 0xFF)
+    assert_decoded_array(bytes([0x80, 0x2]), 2, 0x100)
+    assert_decoded_array(bytes([0xFF, 0xFF, 0x1]), 3, 0x7FFF)
+    with raises(BaseException):
+        assert_decoded_array(bytes([0x80, 0x80, 0x80, 0x1]), 4, 0x200000)
 
 
 def assert_encoded_array(

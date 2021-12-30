@@ -2,7 +2,7 @@ use bincode::serialize;
 use pyo3::{basic::CompareOp, prelude::*};
 use solana_sdk::{
     pubkey::{bytes_are_curve_point, Pubkey},
-    short_vec::ShortU16,
+    short_vec::{decode_shortu16_len, ShortU16},
     signer::keypair::Keypair,
 };
 use std::str::FromStr;
@@ -16,7 +16,17 @@ fn is_on_curve(_bytes: &[u8]) -> bool {
 /// Return the serialized length.
 #[pyfunction]
 fn encode_length(len: u16) -> Vec<u8> {
+    println!("PRINTING 🚗");
     serialize(&ShortU16(len)).unwrap()
+}
+
+/// Return the decoded value and how many bytes it consumed.
+#[pyfunction]
+fn decode_length(raw_bytes: &[u8]) -> (usize, usize) {
+    if raw_bytes == b"" {
+        return (0, 0);
+    }
+    decode_shortu16_len(raw_bytes).unwrap()
 }
 #[pyclass]
 #[derive(PartialEq, PartialOrd, Debug, Default)]
@@ -109,6 +119,7 @@ fn solder(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(is_on_curve, m)?)?;
     m.add_class::<PublicKey>()?;
     m.add_function(wrap_pyfunction!(encode_length, m)?)?;
+    m.add_function(wrap_pyfunction!(decode_length, m)?)?;
     Ok(())
 }
 
@@ -120,6 +131,25 @@ mod tests {
     fn test_equality() {
         let left = PublicKey::default();
         let right = PublicKey::default();
+        assert_eq!(left, right);
+    }
+
+    #[test]
+    fn test_decode_length() {
+        let bytes = &[0x0];
+        let len: u16 = 0x0;
+        let left = decode_length(bytes);
+        let right = (usize::from(len), bytes.len());
+        assert_eq!(left, right);
+    }
+
+    #[test]
+    fn test_decode_length_empty_bytes() {
+        let bytes = b"";
+        println!("bytes: {:?}", bytes);
+        let len: u16 = 0x0;
+        let left = decode_length(bytes);
+        let right = (usize::from(len), bytes.len());
         assert_eq!(left, right);
     }
 }
