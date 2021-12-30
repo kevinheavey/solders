@@ -15,7 +15,8 @@ pub struct PublicKey(Pubkey);
 #[pymethods]
 impl PublicKey {
     #[classattr]
-    fn LENGTH() -> u8 {
+    #[pyo3(name = "LENGTH")]
+    fn length() -> u8 {
         32
     }
 
@@ -30,11 +31,13 @@ impl PublicKey {
     }
 
     #[staticmethod]
+    #[pyo3(name = "from_str")]
     pub fn new_from_str(s: &str) -> Self {
         PublicKey(Pubkey::from_str(s).expect("Failed to parse pubkey."))
     }
 
     #[staticmethod]
+    #[pyo3(name = "default")]
     pub fn new_default() -> Self {
         PublicKey::default()
     }
