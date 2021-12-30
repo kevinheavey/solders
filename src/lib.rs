@@ -3,7 +3,7 @@ use pyo3::{basic::CompareOp, exceptions::PyValueError, prelude::*};
 use solana_sdk::{
     pubkey::{bytes_are_curve_point, Pubkey},
     short_vec::{decode_shortu16_len, ShortU16},
-    signer::keypair::Keypair,
+    signer::keypair,
 };
 use std::str::FromStr;
 
@@ -113,6 +113,18 @@ impl PublicKey {
             CompareOp::Le => self <= other,
             CompareOp::Ge => self >= other,
         }
+    }
+}
+
+#[pyclass]
+#[derive(PartialEq, Debug)]
+pub struct Keypair(keypair::Keypair);
+
+#[pymethods]
+impl Keypair {
+    #[new]
+    pub fn new() -> Self {
+        Keypair(keypair::Keypair::new())
     }
 }
 
