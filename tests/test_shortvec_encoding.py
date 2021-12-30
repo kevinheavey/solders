@@ -19,8 +19,8 @@ def test_decode_length():
     assert_decoded_array(bytes([0xFF, 0x1]), 2, 0xFF)
     assert_decoded_array(bytes([0x80, 0x2]), 2, 0x100)
     assert_decoded_array(bytes([0xFF, 0xFF, 0x1]), 3, 0x7FFF)
-    with raises(BaseException):
-        assert_decoded_array(bytes([0x80, 0x80, 0x80, 0x1]), 4, 0x200000)
+    with raises(ValueError):
+        decode_length(bytes([0x80, 0x80, 0x80, 0x1]))
 
 
 def assert_encoded_array(
@@ -68,3 +68,5 @@ def test_encode_length():
     prev_length += len(expected)
 
     assert prev_length == len(buffer) == 12
+    with raises(OverflowError):
+        encode_length(0x200000)

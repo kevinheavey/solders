@@ -1,5 +1,5 @@
 use bincode::serialize;
-use pyo3::{basic::CompareOp, prelude::*};
+use pyo3::{basic::CompareOp, exceptions::PyValueError, prelude::*};
 use solana_sdk::{
     pubkey::{bytes_are_curve_point, Pubkey},
     short_vec::{decode_shortu16_len, ShortU16},
@@ -15,17 +15,21 @@ fn is_on_curve(_bytes: &[u8]) -> bool {
 
 /// Return the serialized length.
 #[pyfunction]
-fn encode_length(len: u16) -> Vec<u8> {
-    serialize(&ShortU16(len)).unwrap()
+fn encode_length(value: u16) -> Vec<u8> {
+    serialize(&ShortU16(value)).unwrap()
 }
 
 /// Return the decoded value and how many bytes it consumed.
 #[pyfunction]
-fn decode_length(raw_bytes: &[u8]) -> (usize, usize) {
+fn decode_length(raw_bytes: &[u8]) -> PyResult<(usize, usize)> {
     if raw_bytes == b"" {
-        return (0, 0);
+        return Ok((0, 0));
     }
-    decode_shortu16_len(raw_bytes).unwrap()
+    let res = decode_shortu16_len(raw_bytes);
+    match res {
+        Ok(val) => Ok(val),
+        Err(_) => Err(PyValueError::new_err("Could not decode value.")),
+    }
 }
 #[pyclass]
 #[derive(PartialEq, PartialOrd, Debug, Default)]
@@ -137,7 +141,16 @@ mod tests {
     fn test_decode_length() {
         let bytes = &[0x0];
         let len: u16 = 0x0;
-        let left = decode_length(bytes);
+        let left = decode_length(bytes).unwrap();
+        let right = (usize::from(len), bytes.len());
+        assert_eq!(left, right);
+    }
+
+    #[test]
+    fn test_decode_length_max_u16() {
+        let bytes = &[0xff, 0xff, 0x03];
+        let len: u16 = 0xffff;
+        let left = decode_length(bytes).unwrap();
         let right = (usize::from(len), bytes.len());
         assert_eq!(left, right);
     }
@@ -147,7 +160,7 @@ mod tests {
         let bytes = b"";
         println!("bytes: {:?}", bytes);
         let len: u16 = 0x0;
-        let left = decode_length(bytes);
+        let left = decode_length(bytes).unwrap();
         let right = (usize::from(len), bytes.len());
         assert_eq!(left, right);
     }
