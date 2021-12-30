@@ -46,3 +46,78 @@ def test_bytes_representation():
     )
     pubkey = PublicKey(data)
     assert bytes(pubkey) == data
+
+
+def test_equality():
+    assert PublicKey.new_default() == PublicKey.new_default()
+
+
+def test_create_with_seed():
+    """Test create with seed"""
+    default_public_key = PublicKey.new_from_str("11111111111111111111111111111111")
+    derived_key = PublicKey.create_with_seed(
+        default_public_key, "limber chicken: 4/45", default_public_key
+    )
+    expected = PublicKey.new_from_str("9h1HyLCW5dZnBVap8C5egQ9Z6pHyjsh5MNy83iPqqRuq")
+    assert derived_key == expected
+
+
+def test_create_program_address():
+    """Test create program address."""
+    program_id = PublicKey.new_from_str("BPFLoader1111111111111111111111111111111111")
+    program_address = PublicKey.create_program_address([b"", bytes([1])], program_id)
+    assert program_address == PublicKey.new_from_str(
+        "3gF2KMe9KiC6FNVBmfg9i267aMPvK37FewCip4eGBFcT"
+    )
+
+    program_address = PublicKey.create_program_address(
+        [bytes("☉", "utf-8")], program_id
+    )
+    assert program_address == PublicKey.new_from_str(
+        "7ytmC1nT1xY4RfxCV2ZgyA7UakC93do5ZdyhdF3EtPj7"
+    )
+
+    seeds = [bytes("Talking", "utf8"), bytes("Squirrels", "utf8")]
+    program_address = PublicKey.create_program_address(seeds, program_id)
+    assert program_address == PublicKey.new_from_str(
+        "HwRVBufQ4haG5XSgpspwKtNd3PC9GM9m1196uJW36vds"
+    )
+
+    program_address = PublicKey.create_program_address(
+        [bytes(PublicKey.new_from_str("SeedPubey1111111111111111111111111111111111"))],
+        program_id,
+    )
+    assert program_address == PublicKey.new_from_str(
+        "GUs5qLUfsEHkcMB9T38vjr18ypEhRuNWiePW2LoK4E3K"
+    )
+
+    program_address_2 = PublicKey.create_program_address(
+        [bytes("Talking", "utf8")], program_id
+    )
+    assert program_address_2 != program_address
+
+    # https://github.com/solana-labs/solana/issues/11950
+    seeds = [
+        bytes(PublicKey.new_from_str("H4snTKK9adiU15gP22ErfZYtro3aqR9BTMXiH3AwiUTQ")),
+        bytes.fromhex("0200000000000000"),
+    ]
+    program_address = PublicKey.create_program_address(
+        seeds, PublicKey.new_from_str("4ckmDgGdxQoPDLUkDT3vHgSAkzA3QRdNq5ywwY4sUSJn")
+    )
+    assert program_address == PublicKey.new_from_str(
+        "12rqwuEgBYiGhBrDJStCiqEtzQpTTiZbh7teNVLuYcFA"
+    )
+
+
+def to_uint8_bytes(val: int) -> bytes:
+    """Convert an integer to uint8."""
+    return val.to_bytes(1, byteorder="little")
+
+
+def test_find_program_address():
+    """Test create associated_token_address."""
+    program_id = PublicKey.new_from_str("BPFLoader1111111111111111111111111111111111")
+    program_address, nonce = PublicKey.find_program_address([b""], program_id)
+    assert program_address == PublicKey.create_program_address(
+        [b"", to_uint8_bytes(nonce)], program_id
+    )

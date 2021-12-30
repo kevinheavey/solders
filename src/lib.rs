@@ -1,11 +1,6 @@
-use pyo3::prelude::*;
+use pyo3::{basic::CompareOp, prelude::*};
 use solana_sdk::pubkey::{bytes_are_curve_point, Pubkey};
-
-/// Formats the sum of two numbers as string.
-#[pyfunction]
-fn sum_as_string(a: usize, b: usize) -> PyResult<String> {
-    Ok((a + b).to_string())
-}
+use std::str::FromStr;
 
 /// Check if _bytes s is a valid point on curve or not.
 #[pyfunction]
@@ -14,30 +9,52 @@ fn is_on_curve(_bytes: &[u8]) -> bool {
 }
 
 #[pyclass]
-pub struct Vector3 {
-    #[pyo3(get, set)]
-    pub x: i32,
-    #[pyo3(get, set)]
-    pub y: i32,
-    #[pyo3(get, set)]
-    pub z: i32,
-}
-#[pymethods]
-impl Vector3 {
-    #[new]
-    pub fn new(x: i32, y: i32, z: i32) -> Vector3 {
-        Vector3 { x, y, z }
-    }
-}
-
-#[pyclass]
+#[derive(PartialEq, PartialOrd, Debug, Default)]
 pub struct PublicKey(Pubkey);
 
 #[pymethods]
 impl PublicKey {
     #[new]
-    pub fn new(pubkey_vec: &[u8]) -> Self {
-        PublicKey(Pubkey::new(pubkey_vec))
+    pub fn new(pubkey_bytes: &[u8]) -> Self {
+        PublicKey(Pubkey::new(pubkey_bytes))
+    }
+
+    #[staticmethod]
+    pub fn new_unique() -> Self {
+        PublicKey(Pubkey::new_unique())
+    }
+
+    #[staticmethod]
+    pub fn new_from_str(s: &str) -> Self {
+        PublicKey(Pubkey::from_str(s).expect("Failed to parse pubkey."))
+    }
+
+    #[staticmethod]
+    pub fn new_default() -> Self {
+        PublicKey::default()
+    }
+
+    #[staticmethod]
+    pub fn create_with_seed(
+        from_public_key: &PublicKey,
+        seed: &str,
+        program_id: &PublicKey,
+    ) -> PublicKey {
+        PublicKey(Pubkey::create_with_seed(&from_public_key.0, seed, &program_id.0).unwrap())
+    }
+
+    #[staticmethod]
+    pub fn create_program_address(seeds: Vec<&[u8]>, program_id: &PublicKey) -> PublicKey {
+        PublicKey(
+            Pubkey::create_program_address(&seeds[..], &program_id.0)
+                .expect("Failed to create program address."),
+        )
+    }
+
+    #[staticmethod]
+    pub fn find_program_address(seeds: Vec<&[u8]>, program_id: &PublicKey) -> (PublicKey, u8) {
+        let (pubkey, nonce) = Pubkey::find_program_address(&seeds[..], &program_id.0);
+        (PublicKey(pubkey), nonce)
     }
 
     pub fn is_on_curve(&self) -> bool {
@@ -55,14 +72,35 @@ impl PublicKey {
     fn __bytes__(&self) -> &[u8] {
         self.0.as_ref()
     }
+
+    fn __richcmp__(&self, other: &PublicKey, op: CompareOp) -> bool {
+        match op {
+            CompareOp::Eq => self == other,
+            CompareOp::Ne => self != other,
+            CompareOp::Lt => self < other,
+            CompareOp::Gt => self > other,
+            CompareOp::Le => self <= other,
+            CompareOp::Ge => self >= other,
+        }
+    }
 }
 
 /// A Python module implemented in Rust.
 #[pymodule]
 fn solder(_py: Python, m: &PyModule) -> PyResult<()> {
-    m.add_function(wrap_pyfunction!(sum_as_string, m)?)?;
     m.add_function(wrap_pyfunction!(is_on_curve, m)?)?;
-    m.add_class::<Vector3>()?;
     m.add_class::<PublicKey>()?;
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_equality() {
+        let left = PublicKey::default();
+        let right = PublicKey::default();
+        assert_eq!(left, right);
+    }
 }

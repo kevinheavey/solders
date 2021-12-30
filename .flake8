@@ -4,3 +4,4 @@ exclude = .git,__pycache__,docs/source/conf.py,old,build,dist,.venv
 max-line-length = 88
 per-file-ignores = 
     tests/*: D,WPS226,WPS342,WPS421,E800,S603,S607,WPS420,WPS411,WPS440,WPS204,WPS229,E501
+    solder.pyi: E301,E302,WPS602,WPS605
