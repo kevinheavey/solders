@@ -16,7 +16,6 @@ fn is_on_curve(_bytes: &[u8]) -> bool {
 /// Return the serialized length.
 #[pyfunction]
 fn encode_length(len: u16) -> Vec<u8> {
-    println!("PRINTING 🚗");
     serialize(&ShortU16(len)).unwrap()
 }
 
