@@ -39,6 +39,10 @@ def test_is_on_curve_wrong_length():
         is_on_curve(data)
 
 
+def test_length_classattr():
+    assert PublicKey.LENGTH == 32
+
+
 def test_bytes_representation():
     data = (
         b"6\x8d-\x96\xcf\xe7\x93G~\xe0\x17r\\\x9c%\x9a\xab\xa6"

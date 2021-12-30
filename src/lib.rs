@@ -14,6 +14,11 @@ pub struct PublicKey(Pubkey);
 
 #[pymethods]
 impl PublicKey {
+    #[classattr]
+    fn LENGTH() -> u8 {
+        32
+    }
+
     #[new]
     pub fn new(pubkey_bytes: &[u8]) -> Self {
         PublicKey(Pubkey::new(pubkey_bytes))
