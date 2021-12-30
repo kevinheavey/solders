@@ -1,5 +1,10 @@
+use bincode::serialize;
 use pyo3::{basic::CompareOp, prelude::*};
-use solana_sdk::pubkey::{bytes_are_curve_point, Pubkey};
+use solana_sdk::{
+    pubkey::{bytes_are_curve_point, Pubkey},
+    short_vec::ShortU16,
+    signer::keypair::Keypair,
+};
 use std::str::FromStr;
 
 /// Check if _bytes s is a valid point on curve or not.
@@ -8,6 +13,11 @@ fn is_on_curve(_bytes: &[u8]) -> bool {
     bytes_are_curve_point(_bytes)
 }
 
+/// Return the serialized length.
+#[pyfunction]
+fn encode_length(len: u16) -> Vec<u8> {
+    serialize(&ShortU16(len)).unwrap()
+}
 #[pyclass]
 #[derive(PartialEq, PartialOrd, Debug, Default)]
 pub struct PublicKey(Pubkey);
@@ -98,6 +108,7 @@ impl PublicKey {
 fn solder(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(is_on_curve, m)?)?;
     m.add_class::<PublicKey>()?;
+    m.add_function(wrap_pyfunction!(encode_length, m)?)?;
     Ok(())
 }
 
