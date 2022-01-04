@@ -1249,6 +1249,7 @@ name = "solder"
 version = "0.1.0"
 dependencies = [
  "bincode",
+ "ed25519-dalek",
  "pyo3",
  "solana-sdk",
 ]

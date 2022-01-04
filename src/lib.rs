@@ -1,11 +1,21 @@
 use bincode::serialize;
+use ed25519_dalek::SignatureError as OldSignatureError;
 use pyo3::{basic::CompareOp, exceptions::PyValueError, prelude::*};
 use solana_sdk::{
     pubkey::{bytes_are_curve_point, Pubkey},
     short_vec::{decode_shortu16_len, ShortU16},
-    signer::keypair,
+    signer::keypair::Keypair as OldKeypair,
 };
 use std::str::FromStr;
+
+#[derive(Debug)]
+pub struct SignatureError(OldSignatureError);
+
+impl std::convert::From<SignatureError> for PyErr {
+    fn from(err: SignatureError) -> PyErr {
+        PyValueError::new_err(err.0.to_string())
+    }
+}
 
 /// Check if _bytes s is a valid point on curve or not.
 #[pyfunction]
@@ -118,13 +128,30 @@ impl PublicKey {
 
 #[pyclass]
 #[derive(PartialEq, Debug)]
-pub struct Keypair(keypair::Keypair);
+pub struct Keypair(OldKeypair);
 
 #[pymethods]
 impl Keypair {
+    /// Constructs a new, random `Keypair` using `OsRng`
     #[new]
     pub fn new() -> Self {
-        Keypair(keypair::Keypair::new())
+        Keypair(OldKeypair::new())
+    }
+
+    /// Recovers a `Keypair` from a byte array
+    #[staticmethod]
+    pub fn from_bytes(raw_bytes: &[u8]) -> Result<Self, SignatureError> {
+        let res = OldKeypair::from_bytes(raw_bytes);
+        match res {
+            Ok(val) => Ok(Keypair(val)),
+            Err(val) => Err(SignatureError(val)),
+        }
+    }
+}
+
+impl Default for Keypair {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -141,6 +168,12 @@ fn solder(_py: Python, m: &PyModule) -> PyResult<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    // #[test]
+    // fn test_is_on_curve() {
+    //     let res = is_on_curve(b"\xc1M\xce\x1e\xa4\x86<\xf1\xbc\xfc\x12\xf4\xf2\xe2Y\xf4\x8d\xe4V\xb7\xf9\xd4\\!{\x04\x89j\x1f\xfeA\xdc");
+    //     assert!(res);
+    // }
 
     #[test]
     fn test_equality() {
