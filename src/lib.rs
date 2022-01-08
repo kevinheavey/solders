@@ -1,6 +1,6 @@
 use bincode::serialize;
 use ed25519_dalek::SignatureError as OldSignatureError;
-use pyo3::{basic::CompareOp, exceptions::PyValueError, prelude::*};
+use pyo3::{basic::CompareOp, exceptions::PyValueError, prelude::*, types::PyBytes};
 use solana_sdk::{
     pubkey::{bytes_are_curve_point, Pubkey},
     short_vec::{decode_shortu16_len, ShortU16},
@@ -60,19 +60,19 @@ impl PublicKey {
 
     #[staticmethod]
     pub fn new_unique() -> Self {
-        PublicKey(Pubkey::new_unique())
+        Self(Pubkey::new_unique())
     }
 
     #[staticmethod]
     #[pyo3(name = "from_str")]
     pub fn new_from_str(s: &str) -> Self {
-        PublicKey(Pubkey::from_str(s).expect("Failed to parse pubkey."))
+        Self(Pubkey::from_str(s).expect("Failed to parse pubkey."))
     }
 
     #[staticmethod]
     #[pyo3(name = "default")]
     pub fn new_default() -> Self {
-        PublicKey::default()
+        Self::default()
     }
 
     #[staticmethod]
@@ -80,15 +80,15 @@ impl PublicKey {
         from_public_key: &PublicKey,
         seed: &str,
         program_id: &PublicKey,
-    ) -> PublicKey {
-        PublicKey(Pubkey::create_with_seed(&from_public_key.0, seed, &program_id.0).unwrap())
+    ) -> Self {
+        Self(Pubkey::create_with_seed(&from_public_key.0, seed, &program_id.0).unwrap())
     }
 
     #[staticmethod]
-    pub fn create_program_address(seeds: Vec<&[u8]>, program_id: &PublicKey) -> PublicKey {
-        PublicKey(
+    pub fn create_program_address(seeds: Vec<&[u8]>, program_id: &PublicKey) -> Self {
+        Self(
             Pubkey::create_program_address(&seeds[..], &program_id.0)
-                .expect("Failed to create program address."),
+                .expect("Failed to create program address. This is extremely unlikely."),
         )
     }
 
@@ -103,7 +103,7 @@ impl PublicKey {
     }
 
     fn __str__(&self) -> String {
-        format!("{}", self.0)
+        self.0.to_string()
     }
 
     fn __repr__(&self) -> String {
@@ -147,6 +147,15 @@ impl Keypair {
             Err(val) => Err(SignatureError(val)),
         }
     }
+
+    /// Returns this `Keypair` as a byte array
+    pub fn to_bytes_array(&self) -> [u8; 64] {
+        self.0.to_bytes()
+    }
+
+    pub fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+        PyBytes::new(py, self.to_bytes_array().as_slice())
+    }
 }
 
 impl Default for Keypair {
@@ -160,6 +169,7 @@ impl Default for Keypair {
 fn solder(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(is_on_curve, m)?)?;
     m.add_class::<PublicKey>()?;
+    m.add_class::<Keypair>()?;
     m.add_function(wrap_pyfunction!(encode_length, m)?)?;
     m.add_function(wrap_pyfunction!(decode_length, m)?)?;
     Ok(())
