@@ -4,9 +4,9 @@ use pyo3::{basic::CompareOp, exceptions::PyValueError, prelude::*, types::PyByte
 use solana_sdk::{
     pubkey::{bytes_are_curve_point, Pubkey},
     short_vec::{decode_shortu16_len, ShortU16},
-    signer::keypair::Keypair as OldKeypair,
+    signer::keypair::{keypair_from_seed, Keypair as OldKeypair},
 };
-use std::str::FromStr;
+use std::{error, str::FromStr};
 
 #[derive(Debug)]
 pub struct SignatureError(OldSignatureError);
@@ -135,7 +135,7 @@ impl Keypair {
     /// Constructs a new, random `Keypair` using `OsRng`
     #[new]
     pub fn new() -> Self {
-        Keypair(OldKeypair::new())
+        Self(OldKeypair::new())
     }
 
     /// Recovers a `Keypair` from a byte array
@@ -155,6 +155,21 @@ impl Keypair {
 
     pub fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
         PyBytes::new(py, self.to_bytes_array().as_slice())
+    }
+
+    /// Recovers a `Keypair` from a base58-encoded string
+    #[staticmethod]
+    pub fn from_base58_string(s: &str) -> Self {
+        Self(OldKeypair::from_base58_string(s))
+    }
+
+    pub fn __str__(&self) -> String {
+        self.0.to_base58_string()
+    }
+
+    #[staticmethod]
+    pub fn from_seed(seed: &[u8]) -> Self {
+        Keypair(keypair_from_seed(seed).unwrap())
     }
 }
 
