@@ -2,11 +2,14 @@ use bincode::serialize;
 use ed25519_dalek::SignatureError as OldSignatureError;
 use pyo3::{basic::CompareOp, exceptions::PyValueError, prelude::*, types::PyBytes};
 use solana_sdk::{
-    pubkey::{bytes_are_curve_point, Pubkey},
+    pubkey::{bytes_are_curve_point, Pubkey as OldPubkey},
     short_vec::{decode_shortu16_len, ShortU16},
-    signer::keypair::{keypair_from_seed, Keypair as OldKeypair},
+    signature::{Signature as OldSignature, Signer},
+    signer::keypair::{
+        keypair_from_seed, keypair_from_seed_phrase_and_passphrase, Keypair as OldKeypair,
+    },
 };
-use std::{error, str::FromStr};
+use std::str::FromStr;
 
 #[derive(Debug)]
 pub struct SignatureError(OldSignatureError);
@@ -43,10 +46,10 @@ fn decode_length(raw_bytes: &[u8]) -> PyResult<(usize, usize)> {
 }
 #[pyclass]
 #[derive(PartialEq, PartialOrd, Debug, Default)]
-pub struct PublicKey(Pubkey);
+pub struct Pubkey(OldPubkey);
 
 #[pymethods]
-impl PublicKey {
+impl Pubkey {
     #[classattr]
     #[pyo3(name = "LENGTH")]
     fn length() -> u8 {
@@ -55,18 +58,18 @@ impl PublicKey {
 
     #[new]
     pub fn new(pubkey_bytes: &[u8]) -> Self {
-        PublicKey(Pubkey::new(pubkey_bytes))
+        Self(OldPubkey::new(pubkey_bytes))
     }
 
     #[staticmethod]
     pub fn new_unique() -> Self {
-        Self(Pubkey::new_unique())
+        Self(OldPubkey::new_unique())
     }
 
     #[staticmethod]
     #[pyo3(name = "from_str")]
     pub fn new_from_str(s: &str) -> Self {
-        Self(Pubkey::from_str(s).expect("Failed to parse pubkey."))
+        Self(OldPubkey::from_str(s).expect("Failed to parse pubkey."))
     }
 
     #[staticmethod]
@@ -76,26 +79,22 @@ impl PublicKey {
     }
 
     #[staticmethod]
-    pub fn create_with_seed(
-        from_public_key: &PublicKey,
-        seed: &str,
-        program_id: &PublicKey,
-    ) -> Self {
-        Self(Pubkey::create_with_seed(&from_public_key.0, seed, &program_id.0).unwrap())
+    pub fn create_with_seed(from_public_key: &Self, seed: &str, program_id: &Self) -> Self {
+        Self(OldPubkey::create_with_seed(&from_public_key.0, seed, &program_id.0).unwrap())
     }
 
     #[staticmethod]
-    pub fn create_program_address(seeds: Vec<&[u8]>, program_id: &PublicKey) -> Self {
+    pub fn create_program_address(seeds: Vec<&[u8]>, program_id: &Self) -> Self {
         Self(
-            Pubkey::create_program_address(&seeds[..], &program_id.0)
+            OldPubkey::create_program_address(&seeds[..], &program_id.0)
                 .expect("Failed to create program address. This is extremely unlikely."),
         )
     }
 
     #[staticmethod]
-    pub fn find_program_address(seeds: Vec<&[u8]>, program_id: &PublicKey) -> (PublicKey, u8) {
-        let (pubkey, nonce) = Pubkey::find_program_address(&seeds[..], &program_id.0);
-        (PublicKey(pubkey), nonce)
+    pub fn find_program_address(seeds: Vec<&[u8]>, program_id: &Self) -> (Self, u8) {
+        let (pubkey, nonce) = OldPubkey::find_program_address(&seeds[..], &program_id.0);
+        (Self(pubkey), nonce)
     }
 
     pub fn is_on_curve(&self) -> bool {
@@ -114,7 +113,7 @@ impl PublicKey {
         self.0.as_ref()
     }
 
-    fn __richcmp__(&self, other: &PublicKey, op: CompareOp) -> bool {
+    fn __richcmp__(&self, other: &Self, op: CompareOp) -> bool {
         match op {
             CompareOp::Eq => self == other,
             CompareOp::Ne => self != other,
@@ -126,6 +125,16 @@ impl PublicKey {
     }
 }
 
+#[pyclass]
+pub struct Signature(OldSignature);
+
+#[pymethods]
+impl Signature {
+    #[new]
+    pub fn new(signature_slice: &[u8]) -> Self {
+        Self(OldSignature::new(signature_slice))
+    }
+}
 #[pyclass]
 #[derive(PartialEq, Debug)]
 pub struct Keypair(OldKeypair);
@@ -163,13 +172,37 @@ impl Keypair {
         Self(OldKeypair::from_base58_string(s))
     }
 
+    // pub fn secret(&self) ->
+
     pub fn __str__(&self) -> String {
         self.0.to_base58_string()
+    }
+
+    pub fn pubkey(&self) -> Pubkey {
+        Pubkey(self.0.pubkey())
+    }
+
+    pub fn sign_message(&self, message: &[u8]) -> Signature {
+        Signature(self.0.sign_message(message))
     }
 
     #[staticmethod]
     pub fn from_seed(seed: &[u8]) -> Self {
         Keypair(keypair_from_seed(seed).unwrap())
+    }
+
+    pub fn __eq__(&self, other: &Self) -> bool {
+        self == other
+    }
+
+    pub fn __hash__(&self) -> PyResult<isize> {
+        // call `hash((class_name, bytes(obj)))`
+        Python::with_gil(|py| {
+            let builtins = PyModule::import(py, "builtins")?;
+            let arg1 = "Keypair";
+            let arg2 = self.__bytes__(py);
+            builtins.getattr("hash")?.call1(((arg1, arg2),))?.extract()
+        })
     }
 }
 
@@ -183,7 +216,7 @@ impl Default for Keypair {
 #[pymodule]
 fn solder(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(is_on_curve, m)?)?;
-    m.add_class::<PublicKey>()?;
+    m.add_class::<Pubkey>()?;
     m.add_class::<Keypair>()?;
     m.add_function(wrap_pyfunction!(encode_length, m)?)?;
     m.add_function(wrap_pyfunction!(decode_length, m)?)?;
@@ -202,8 +235,8 @@ mod tests {
 
     #[test]
     fn test_equality() {
-        let left = PublicKey::default();
-        let right = PublicKey::default();
+        let left = Pubkey::default();
+        let right = Pubkey::default();
         assert_eq!(left, right);
     }
 

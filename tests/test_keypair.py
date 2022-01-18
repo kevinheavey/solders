@@ -1,9 +1,10 @@
 from pytest import raises, mark
-from solder import Keypair
+from solder import Keypair, Pubkey
 
 
 def test_new():
-    Keypair()
+    keypair = Keypair()
+    assert len(bytes(keypair.pubkey())) == Pubkey.LENGTH
 
 
 def test_from_bytes():
@@ -23,9 +24,12 @@ def test_from_bytes_wrong_size(test_input: bytes):
     )
 
 
-def test_to_bytes():
-    print(Keypair().to_bytes())
-
-
-def test_bytes():
-    print(bytes(Keypair()))
+def test_set_operations() -> None:
+    """Tests that a keypair is now hashable with the appropriate set operations."""
+    keypair_primary = Keypair()
+    keypair_secondary = Keypair()
+    keypair_duplicate = keypair_secondary
+    keypair_set = {keypair_primary, keypair_secondary, keypair_duplicate}
+    assert hash(keypair_primary) != hash(keypair_secondary)
+    assert hash(keypair_secondary) == hash(keypair_duplicate)
+    assert len(keypair_set) == 2
