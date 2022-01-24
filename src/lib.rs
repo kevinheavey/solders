@@ -1,5 +1,5 @@
 use bincode::serialize;
-use ed25519_dalek::SignatureError as OldSignatureError;
+use ed25519_dalek::SECRET_KEY_LENGTH;
 use pyo3::{basic::CompareOp, exceptions::PyValueError, prelude::*, types::PyBytes};
 use solana_sdk::{
     pubkey::{bytes_are_curve_point, Pubkey as OldPubkey},
@@ -11,14 +11,14 @@ use solana_sdk::{
 };
 use std::str::FromStr;
 
-#[derive(Debug)]
-pub struct SignatureError(OldSignatureError);
+// #[derive(Debug)]
+// pub struct SignatureError(OldSignatureError);
 
-impl std::convert::From<SignatureError> for PyErr {
-    fn from(err: SignatureError) -> PyErr {
-        PyValueError::new_err(err.0.to_string())
-    }
-}
+// impl std::convert::From<SignatureError> for PyErr {
+//     fn from(err: SignatureError) -> PyErr {
+//         PyValueError::new_err(err.0.to_string())
+//     }
+// }
 
 /// Check if _bytes s is a valid point on curve or not.
 #[pyfunction]
@@ -68,8 +68,11 @@ impl Pubkey {
 
     #[staticmethod]
     #[pyo3(name = "from_str")]
-    pub fn new_from_str(s: &str) -> Self {
-        Self(OldPubkey::from_str(s).expect("Failed to parse pubkey."))
+    pub fn new_from_str(s: &str) -> PyResult<Self> {
+        match OldPubkey::from_str(s) {
+            Ok(val) => Ok(Self(val)),
+            Err(val) => Err(PyValueError::new_err(val.to_string())),
+        }
     }
 
     #[staticmethod]
@@ -135,6 +138,7 @@ impl Signature {
         Self(OldSignature::new(signature_slice))
     }
 }
+
 #[pyclass]
 #[derive(PartialEq, Debug)]
 pub struct Keypair(OldKeypair);
@@ -149,11 +153,11 @@ impl Keypair {
 
     /// Recovers a `Keypair` from a byte array
     #[staticmethod]
-    pub fn from_bytes(raw_bytes: &[u8]) -> Result<Self, SignatureError> {
+    pub fn from_bytes(raw_bytes: &[u8]) -> PyResult<Self> {
         let res = OldKeypair::from_bytes(raw_bytes);
         match res {
             Ok(val) => Ok(Keypair(val)),
-            Err(val) => Err(SignatureError(val)),
+            Err(val) => Err(PyValueError::new_err(val.to_string())),
         }
     }
 
@@ -171,8 +175,10 @@ impl Keypair {
     pub fn from_base58_string(s: &str) -> Self {
         Self(OldKeypair::from_base58_string(s))
     }
-
-    // pub fn secret(&self) ->
+    /// Gets this `Keypair`'s secret key
+    pub fn secret(&self) -> [u8; SECRET_KEY_LENGTH] {
+        self.0.secret().to_bytes()
+    }
 
     pub fn __str__(&self) -> String {
         self.0.to_base58_string()
@@ -187,8 +193,19 @@ impl Keypair {
     }
 
     #[staticmethod]
-    pub fn from_seed(seed: &[u8]) -> Self {
-        Keypair(keypair_from_seed(seed).unwrap())
+    pub fn from_seed(seed: &[u8]) -> PyResult<Self> {
+        match keypair_from_seed(seed) {
+            Ok(val) => Ok(Keypair(val)),
+            Err(val) => Err(PyValueError::new_err(val.to_string())),
+        }
+    }
+
+    #[staticmethod]
+    pub fn from_seed_phrase_and_passphrase(seed_phrase: &str, passphrase: &str) -> PyResult<Self> {
+        match keypair_from_seed_phrase_and_passphrase(seed_phrase, passphrase) {
+            Ok(val) => Ok(Keypair(val)),
+            Err(val) => Err(PyValueError::new_err(val.to_string())),
+        }
     }
 
     pub fn __eq__(&self, other: &Self) -> bool {
