@@ -1245,7 +1245,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "solder"
+name = "solders"
 version = "0.1.0"
 dependencies = [
  "bincode",

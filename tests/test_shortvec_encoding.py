@@ -1,6 +1,6 @@
 from typing import List
 from pytest import raises
-from solder import encode_length, decode_length
+from solders import encode_length, decode_length
 
 
 def assert_decoded_array(raw_bytes: bytes, expected_length, expected_value: int):

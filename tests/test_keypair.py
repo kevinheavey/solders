@@ -1,6 +1,6 @@
 from pytest import raises, mark
 from mnemonic import Mnemonic
-from solder import Keypair, Pubkey
+from solders import Keypair, Pubkey
 
 
 def test_new():

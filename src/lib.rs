@@ -231,7 +231,7 @@ impl Default for Keypair {
 
 /// A Python module implemented in Rust.
 #[pymodule]
-fn solder(_py: Python, m: &PyModule) -> PyResult<()> {
+fn solders(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(is_on_curve, m)?)?;
     m.add_class::<Pubkey>()?;
     m.add_class::<Keypair>()?;

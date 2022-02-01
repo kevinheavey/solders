@@ -1,4 +1,4 @@
-site_name: Solder
+site_name: solders
 theme:
   name: material
   icon:
@@ -21,9 +21,9 @@ markdown_extensions:
   - meta
   - pymdownx.tabbed:
       alternate_style: true
-repo_url: https://github.com/kevinheavey/solder
-repo_name: kevinheavey/solder
-site_url: https://kevinheavey.github.io/solder/
+repo_url: https://github.com/kevinheavey/solders
+repo_name: kevinheavey/solders
+site_url: https://kevinheavey.github.io/solders/
 plugins:
   - mkdocstrings:
       handlers:

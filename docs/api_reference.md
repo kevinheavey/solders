@@ -1,3 +1,3 @@
 # API Reference
 
-:::solder.is_on_curve
+:::solders.is_on_curve
