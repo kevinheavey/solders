@@ -2,7 +2,7 @@
 name = "solders"
 version = "0.0.1"
 edition = "2018"
-include = ["src/lib.rs", "LICENSE"]
+include = ["src/lib.rs", "./LICENSE"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [lib]
