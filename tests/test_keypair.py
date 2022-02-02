@@ -1,5 +1,6 @@
 from pytest import raises, mark
-from mnemonic import Mnemonic
+
+# from mnemonic import Mnemonic
 from solders import Keypair, Pubkey
 
 
@@ -47,5 +48,5 @@ def test_from_seed() -> None:
     assert bytes(keypair.secret()) == bytes([0] * 32)
 
 
-def test_from_seed_phrase_and_passphrase() -> None:
-    mnemo = Mnemonic("english")
+# def test_from_seed_phrase_and_passphrase() -> None:
+#     mnemo = Mnemonic("english")
