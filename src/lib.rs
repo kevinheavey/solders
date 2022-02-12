@@ -1,6 +1,6 @@
 use bincode::serialize;
 use ed25519_dalek::SECRET_KEY_LENGTH;
-use pyo3::{basic::CompareOp, exceptions::PyValueError, prelude::*, types::PyBytes, wrap_pymodule};
+use pyo3::{basic::CompareOp, exceptions::PyValueError, prelude::*, types::PyBytes};
 use solana_sdk::{
     pubkey::{bytes_are_curve_point, Pubkey as OldPubkey},
     short_vec::{decode_shortu16_len, ShortU16},
@@ -232,13 +232,8 @@ impl Default for Keypair {
 /// A Python module implemented in Rust.
 #[pymodule]
 fn solders(py: Python, m: &PyModule) -> PyResult<()> {
-    let shortvec_module = PyModule::new(py, "shortvec")?;
-    shortvec_module.add_function(wrap_pyfunction!(encode_length, m)?)?;
-    shortvec_module.add_function(wrap_pyfunction!(decode_length, m)?)?;
-    py.import("sys")?
-        .getattr("modules")?
-        .set_item("solders.shortvec", shortvec_module)?;
-    m.add_submodule(shortvec_module)?;
+    m.add_function(wrap_pyfunction!(encode_length, m)?)?;
+    m.add_function(wrap_pyfunction!(decode_length, m)?)?;
     m.add_function(wrap_pyfunction!(is_on_curve, m)?)?;
     m.add_class::<Pubkey>()?;
     m.add_class::<Keypair>()?;

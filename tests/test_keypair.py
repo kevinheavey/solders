@@ -4,11 +4,6 @@ from pytest import raises, mark
 from solders import Keypair, Pubkey
 
 
-def test_new():
-    keypair = Keypair()
-    assert len(bytes(keypair.pubkey())) == Pubkey.LENGTH
-
-
 def test_from_bytes():
     raw_bytes = (
         b"\x99\xda\x95Y\xe1^\x91>\xe9\xab.S\xe3\xdf\xadW]\xa3;I\xbe\x11%\xbb\x92.3IOI"
@@ -45,7 +40,7 @@ def test_set_operations() -> None:
 
 def test_from_seed() -> None:
     keypair = Keypair.from_seed(bytes([0] * 32))
-    assert bytes(keypair.secret()) == bytes([0] * 32)
+    assert keypair.secret() == [0] * 32
 
 
 # def test_from_seed_phrase_and_passphrase() -> None:
