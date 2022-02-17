@@ -1,6 +1,11 @@
 use bincode::serialize;
 use ed25519_dalek::SECRET_KEY_LENGTH;
-use pyo3::{basic::CompareOp, exceptions::PyValueError, prelude::*, types::PyBytes};
+use pyo3::{
+    basic::CompareOp,
+    exceptions::{PyTypeError, PyValueError},
+    prelude::*,
+    types::PyBytes,
+};
 use solana_sdk::{
     pubkey::{bytes_are_curve_point, Pubkey as OldPubkey},
     short_vec::{decode_shortu16_len, ShortU16},
@@ -51,10 +56,7 @@ pub struct Pubkey(OldPubkey);
 #[pymethods]
 impl Pubkey {
     #[classattr]
-    #[pyo3(name = "LENGTH")]
-    fn length() -> u8 {
-        32
-    }
+    const LENGTH: u8 = 32;
 
     #[new]
     pub fn new(pubkey_bytes: &[u8]) -> Self {
@@ -137,6 +139,14 @@ impl Signature {
     pub fn new(signature_slice: &[u8]) -> Self {
         Self(OldSignature::new(signature_slice))
     }
+
+    pub fn to_bytes(&self) -> &[u8] {
+        self.0.as_ref()
+    }
+
+    pub fn __bytes__(&self) -> &[u8] {
+        self.to_bytes()
+    }
 }
 
 #[pyclass]
@@ -176,8 +186,8 @@ impl Keypair {
         Self(OldKeypair::from_base58_string(s))
     }
     /// Gets this `Keypair`'s secret key
-    pub fn secret(&self) -> [u8; SECRET_KEY_LENGTH] {
-        self.0.secret().to_bytes()
+    pub fn secret(&self) -> &[u8] {
+        self.0.secret().as_ref()
     }
 
     pub fn __str__(&self) -> String {
@@ -208,8 +218,15 @@ impl Keypair {
         }
     }
 
-    pub fn __eq__(&self, other: &Self) -> bool {
-        self == other
+    pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
+        match op {
+            CompareOp::Eq => Ok(self == other),
+            CompareOp::Ne => Ok(self != other),
+            CompareOp::Lt => Err(richcmp_type_error("<")),
+            CompareOp::Gt => Err(richcmp_type_error(">")),
+            CompareOp::Le => Err(richcmp_type_error("<=")),
+            CompareOp::Ge => Err(richcmp_type_error(">=")),
+        }
     }
 
     pub fn __hash__(&self) -> PyResult<isize> {
@@ -221,6 +238,11 @@ impl Keypair {
             builtins.getattr("hash")?.call1(((arg1, arg2),))?.extract()
         })
     }
+}
+
+fn richcmp_type_error(op: &str) -> PyErr {
+    let msg = format!("{} not supported by Keypair", op);
+    PyTypeError::new_err(msg)
 }
 
 impl Default for Keypair {
@@ -237,7 +259,6 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(is_on_curve, m)?)?;
     m.add_class::<Pubkey>()?;
     m.add_class::<Keypair>()?;
-
     Ok(())
 }
 

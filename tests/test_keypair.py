@@ -1,6 +1,8 @@
+from operator import ge, gt, le, lt
+from typing import Callable
 from pytest import raises, mark
 
-# from mnemonic import Mnemonic
+from pybip39 import Mnemonic, Seed
 from solders import Keypair, Pubkey
 
 
@@ -43,5 +45,36 @@ def test_from_seed() -> None:
     assert keypair.secret() == [0] * 32
 
 
-# def test_from_seed_phrase_and_passphrase() -> None:
-#     mnemo = Mnemonic("english")
+def test_equal() -> None:
+    assert Keypair.from_seed(bytes([0] * 32)) == Keypair.from_seed(bytes([0] * 32))
+
+
+def test_not_equal() -> None:
+    assert Keypair.from_seed(bytes([0] * 32)) != Keypair.from_seed(bytes([1] * 32))
+
+
+@mark.parametrize("op", [ge, gt, le, lt])
+def test_ordering_raises(op: Callable) -> None:
+    kp1 = Keypair()
+    kp2 = Keypair()
+    with raises(TypeError):
+        op(kp1, kp2)
+
+
+def test_from_seed() -> None:
+    good_seed = bytes([0] * 32)
+    kp = Keypair.from_seed(good_seed)
+    assert kp.secret() == list(good_seed)
+    too_short_seed = bytes([0] * 31)
+    with raises(ValueError) as excinfo:
+        Keypair.from_seed(too_short_seed)
+    assert excinfo.value.args[0] == "Seed is too short"
+
+
+def test_from_seed_phrase_and_passphrase() -> None:
+    mnemonic = Mnemonic()
+    passphrase = "42"
+    seed = Seed(mnemonic, passphrase)
+    expected_keypair = Keypair.from_seed(bytes(seed))
+    keypair = Keypair.from_seed_phrase_and_passphrase(mnemonic.phrase, passphrase)
+    assert keypair.pubkey() == expected_keypair.pubkey()
