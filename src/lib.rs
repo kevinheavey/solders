@@ -106,8 +106,12 @@ impl Pubkey {
         self.0.is_on_curve()
     }
 
-    fn __str__(&self) -> String {
+    pub fn to_string(&self) -> String {
         self.0.to_string()
+    }
+
+    fn __str__(&self) -> String {
+        self.to_string()
     }
 
     fn __repr__(&self) -> String {
@@ -190,8 +194,12 @@ impl Keypair {
         self.0.secret().as_ref()
     }
 
-    pub fn __str__(&self) -> String {
+    pub fn to_base58_string(&self) -> String {
         self.0.to_base58_string()
+    }
+
+    pub fn __str__(&self) -> String {
+        self.to_base58_string()
     }
 
     pub fn pubkey(&self) -> Pubkey {
@@ -216,6 +224,15 @@ impl Keypair {
             Ok(val) => Ok(Keypair(val)),
             Err(val) => Err(PyValueError::new_err(val.to_string())),
         }
+    }
+
+    #[staticmethod]
+    pub fn create_vanity_key(start: &str) -> Self {
+        let mut kp = Keypair::new();
+        while !kp.pubkey().to_string().starts_with(start) {
+            kp = Keypair::new();
+        }
+        kp
     }
 
     pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {

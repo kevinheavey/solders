@@ -64,7 +64,7 @@ def test_ordering_raises(op: Callable) -> None:
 def test_from_seed() -> None:
     good_seed = bytes([0] * 32)
     kp = Keypair.from_seed(good_seed)
-    assert kp.secret() == list(good_seed)
+    assert kp.secret() == good_seed
     too_short_seed = bytes([0] * 31)
     with raises(ValueError) as excinfo:
         Keypair.from_seed(too_short_seed)
@@ -78,3 +78,9 @@ def test_from_seed_phrase_and_passphrase() -> None:
     expected_keypair = Keypair.from_seed(bytes(seed))
     keypair = Keypair.from_seed_phrase_and_passphrase(mnemonic.phrase, passphrase)
     assert keypair.pubkey() == expected_keypair.pubkey()
+
+
+def test_create_vanity_key() -> None:
+    prefix = "k"
+    kp = Keypair.create_vanity_key(prefix)
+    assert str(kp.pubkey()).startswith(prefix)
