@@ -40,11 +40,6 @@ def test_set_operations() -> None:
     assert len(keypair_set) == 2
 
 
-def test_from_seed() -> None:
-    keypair = Keypair.from_seed(bytes([0] * 32))
-    assert keypair.secret() == [0] * 32
-
-
 def test_equal() -> None:
     assert Keypair.from_seed(bytes([0] * 32)) == Keypair.from_seed(bytes([0] * 32))
 
@@ -78,9 +73,3 @@ def test_from_seed_phrase_and_passphrase() -> None:
     expected_keypair = Keypair.from_seed(bytes(seed))
     keypair = Keypair.from_seed_phrase_and_passphrase(mnemonic.phrase, passphrase)
     assert keypair.pubkey() == expected_keypair.pubkey()
-
-
-def test_create_vanity_key() -> None:
-    prefix = "k"
-    kp = Keypair.create_vanity_key(prefix)
-    assert str(kp.pubkey()).startswith(prefix)

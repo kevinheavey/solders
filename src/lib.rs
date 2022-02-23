@@ -14,7 +14,12 @@ use solana_sdk::{
         keypair_from_seed, keypair_from_seed_phrase_and_passphrase, Keypair as OldKeypair,
     },
 };
+use std::error::Error;
 use std::str::FromStr;
+
+fn to_py_value_err<T: Error>(err: T) -> PyErr {
+    PyValueError::new_err(err.to_string())
+}
 
 // #[derive(Debug)]
 // pub struct SignatureError(OldSignatureError);
@@ -50,7 +55,7 @@ fn decode_length(raw_bytes: &[u8]) -> PyResult<(usize, usize)> {
     }
 }
 #[pyclass]
-#[derive(PartialEq, PartialOrd, Debug, Default)]
+#[derive(PartialEq, PartialOrd, Debug, Default, Display)]
 pub struct Pubkey(OldPubkey);
 
 #[pymethods]
@@ -106,12 +111,16 @@ impl Pubkey {
         self.0.is_on_curve()
     }
 
-    pub fn to_string(&self) -> String {
+    pub fn string(&self) -> String {
         self.0.to_string()
     }
 
+    pub fn to_bytes(&self) -> &[u8] {
+        self.0.as_ref()
+    }
+
     fn __str__(&self) -> String {
-        self.to_string()
+        self.string()
     }
 
     fn __repr__(&self) -> String {
@@ -119,7 +128,7 @@ impl Pubkey {
     }
 
     fn __bytes__(&self) -> &[u8] {
-        self.0.as_ref()
+        self.to_bytes()
     }
 
     fn __richcmp__(&self, other: &Self, op: CompareOp) -> bool {
@@ -132,6 +141,16 @@ impl Pubkey {
             CompareOp::Ge => self >= other,
         }
     }
+
+    pub fn __hash__(&self) -> PyResult<isize> {
+        // call `hash((class_name, bytes(obj)))`
+        Python::with_gil(|py| {
+            let builtins = PyModule::import(py, "builtins")?;
+            let arg1 = "Pubkey";
+            let arg2 = self.to_bytes();
+            builtins.getattr("hash")?.call1(((arg1, arg2),))?.extract()
+        })
+    }
 }
 
 #[pyclass]
@@ -142,6 +161,24 @@ impl Signature {
     #[new]
     pub fn new(signature_slice: &[u8]) -> Self {
         Self(OldSignature::new(signature_slice))
+    }
+
+    #[staticmethod]
+    pub fn new_unique() -> Self {
+        Self(OldSignature::new_unique())
+    }
+
+    #[staticmethod]
+    #[pyo3(name = "from_str")]
+    pub fn new_from_str(s: &str) -> PyResult<Self> {
+        match OldSignature::from_str(s) {
+            Ok(val) => Ok(Self(val)),
+            Err(val) => Err(PyValueError::new_err(val.to_string())),
+        }
+    }
+
+    pub fn verify(&self, pubkey_bytes: &[u8], message_bytes: &[u8]) -> bool {
+        self.0.verify(pubkey_bytes, message_bytes)
     }
 
     pub fn to_bytes(&self) -> &[u8] {
@@ -226,15 +263,6 @@ impl Keypair {
         }
     }
 
-    #[staticmethod]
-    pub fn create_vanity_key(start: &str) -> Self {
-        let mut kp = Keypair::new();
-        while !kp.pubkey().to_string().starts_with(start) {
-            kp = Keypair::new();
-        }
-        kp
-    }
-
     pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
         match op {
             CompareOp::Eq => Ok(self == other),
@@ -276,51 +304,6 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(is_on_curve, m)?)?;
     m.add_class::<Pubkey>()?;
     m.add_class::<Keypair>()?;
+    m.add_class::<Signature>()?;
     Ok(())
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    // #[test]
-    // fn test_is_on_curve() {
-    //     let res = is_on_curve(b"\xc1M\xce\x1e\xa4\x86<\xf1\xbc\xfc\x12\xf4\xf2\xe2Y\xf4\x8d\xe4V\xb7\xf9\xd4\\!{\x04\x89j\x1f\xfeA\xdc");
-    //     assert!(res);
-    // }
-
-    #[test]
-    fn test_equality() {
-        let left = Pubkey::default();
-        let right = Pubkey::default();
-        assert_eq!(left, right);
-    }
-
-    #[test]
-    fn test_decode_length() {
-        let bytes = &[0x0];
-        let len: u16 = 0x0;
-        let left = decode_length(bytes).unwrap();
-        let right = (usize::from(len), bytes.len());
-        assert_eq!(left, right);
-    }
-
-    #[test]
-    fn test_decode_length_max_u16() {
-        let bytes = &[0xff, 0xff, 0x03];
-        let len: u16 = 0xffff;
-        let left = decode_length(bytes).unwrap();
-        let right = (usize::from(len), bytes.len());
-        assert_eq!(left, right);
-    }
-
-    #[test]
-    fn test_decode_length_empty_bytes() {
-        let bytes = b"";
-        println!("bytes: {:?}", bytes);
-        let len: u16 = 0x0;
-        let left = decode_length(bytes).unwrap();
-        let right = (usize::from(len), bytes.len());
-        assert_eq!(left, right);
-    }
 }
