@@ -58,38 +58,38 @@ def test_equality():
 
 def test_create_with_seed():
     """Test create with seed"""
-    default_public_key = Pubkey.from_str("11111111111111111111111111111111")
+    default_public_key = Pubkey.from_string("11111111111111111111111111111111")
     derived_key = Pubkey.create_with_seed(
         default_public_key, "limber chicken: 4/45", default_public_key
     )
-    expected = Pubkey.from_str("9h1HyLCW5dZnBVap8C5egQ9Z6pHyjsh5MNy83iPqqRuq")
+    expected = Pubkey.from_string("9h1HyLCW5dZnBVap8C5egQ9Z6pHyjsh5MNy83iPqqRuq")
     assert derived_key == expected
 
 
 def test_create_program_address():
     """Test create program address."""
-    program_id = Pubkey.from_str("BPFLoader1111111111111111111111111111111111")
+    program_id = Pubkey.from_string("BPFLoader1111111111111111111111111111111111")
     program_address = Pubkey.create_program_address([b"", bytes([1])], program_id)
-    assert program_address == Pubkey.from_str(
+    assert program_address == Pubkey.from_string(
         "3gF2KMe9KiC6FNVBmfg9i267aMPvK37FewCip4eGBFcT"
     )
 
     program_address = Pubkey.create_program_address([bytes("☉", "utf-8")], program_id)
-    assert program_address == Pubkey.from_str(
+    assert program_address == Pubkey.from_string(
         "7ytmC1nT1xY4RfxCV2ZgyA7UakC93do5ZdyhdF3EtPj7"
     )
 
     seeds = [bytes("Talking", "utf8"), bytes("Squirrels", "utf8")]
     program_address = Pubkey.create_program_address(seeds, program_id)
-    assert program_address == Pubkey.from_str(
+    assert program_address == Pubkey.from_string(
         "HwRVBufQ4haG5XSgpspwKtNd3PC9GM9m1196uJW36vds"
     )
 
     program_address = Pubkey.create_program_address(
-        [bytes(Pubkey.from_str("SeedPubey1111111111111111111111111111111111"))],
+        [bytes(Pubkey.from_string("SeedPubey1111111111111111111111111111111111"))],
         program_id,
     )
-    assert program_address == Pubkey.from_str(
+    assert program_address == Pubkey.from_string(
         "GUs5qLUfsEHkcMB9T38vjr18ypEhRuNWiePW2LoK4E3K"
     )
 
@@ -100,13 +100,13 @@ def test_create_program_address():
 
     # https://github.com/solana-labs/solana/issues/11950
     seeds = [
-        bytes(Pubkey.from_str("H4snTKK9adiU15gP22ErfZYtro3aqR9BTMXiH3AwiUTQ")),
+        bytes(Pubkey.from_string("H4snTKK9adiU15gP22ErfZYtro3aqR9BTMXiH3AwiUTQ")),
         bytes.fromhex("0200000000000000"),
     ]
     program_address = Pubkey.create_program_address(
-        seeds, Pubkey.from_str("4ckmDgGdxQoPDLUkDT3vHgSAkzA3QRdNq5ywwY4sUSJn")
+        seeds, Pubkey.from_string("4ckmDgGdxQoPDLUkDT3vHgSAkzA3QRdNq5ywwY4sUSJn")
     )
-    assert program_address == Pubkey.from_str(
+    assert program_address == Pubkey.from_string(
         "12rqwuEgBYiGhBrDJStCiqEtzQpTTiZbh7teNVLuYcFA"
     )
 
@@ -118,7 +118,7 @@ def to_uint8_bytes(val: int) -> bytes:
 
 def test_find_program_address():
     """Test create associated_token_address."""
-    program_id = Pubkey.from_str("BPFLoader1111111111111111111111111111111111")
+    program_id = Pubkey.from_string("BPFLoader1111111111111111111111111111111111")
     program_address, nonce = Pubkey.find_program_address([b""], program_id)
     assert program_address == Pubkey.create_program_address(
         [b"", to_uint8_bytes(nonce)], program_id

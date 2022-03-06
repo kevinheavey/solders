@@ -55,7 +55,7 @@ fn decode_length(raw_bytes: &[u8]) -> PyResult<(usize, usize)> {
     }
 }
 #[pyclass]
-#[derive(PartialEq, PartialOrd, Debug, Default, Display)]
+#[derive(PartialEq, PartialOrd, Debug, Default)]
 pub struct Pubkey(OldPubkey);
 
 #[pymethods]
@@ -74,7 +74,7 @@ impl Pubkey {
     }
 
     #[staticmethod]
-    #[pyo3(name = "from_str")]
+    #[pyo3(name = "from_string")]
     pub fn new_from_str(s: &str) -> PyResult<Self> {
         match OldPubkey::from_str(s) {
             Ok(val) => Ok(Self(val)),
@@ -111,6 +111,7 @@ impl Pubkey {
         self.0.is_on_curve()
     }
 
+    #[pyo3(name = "to_string")]
     pub fn string(&self) -> String {
         self.0.to_string()
     }
@@ -154,6 +155,7 @@ impl Pubkey {
 }
 
 #[pyclass]
+#[derive(PartialEq, Debug, Default)]
 pub struct Signature(OldSignature);
 
 #[pymethods]
@@ -169,7 +171,13 @@ impl Signature {
     }
 
     #[staticmethod]
-    #[pyo3(name = "from_str")]
+    #[pyo3(name = "default")]
+    pub fn new_default() -> Self {
+        Self::default()
+    }
+
+    #[staticmethod]
+    #[pyo3(name = "from_string")]
     pub fn new_from_str(s: &str) -> PyResult<Self> {
         match OldSignature::from_str(s) {
             Ok(val) => Ok(Self(val)),
@@ -187,6 +195,26 @@ impl Signature {
 
     pub fn __bytes__(&self) -> &[u8] {
         self.to_bytes()
+    }
+
+    #[pyo3(name = "to_string")]
+    pub fn string(&self) -> String {
+        self.0.to_string()
+    }
+
+    pub fn __str__(&self) -> String {
+        self.string()
+    }
+
+    pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
+        match op {
+            CompareOp::Eq => Ok(self == other),
+            CompareOp::Ne => Ok(self != other),
+            CompareOp::Lt => Err(richcmp_type_error("<")),
+            CompareOp::Gt => Err(richcmp_type_error(">")),
+            CompareOp::Le => Err(richcmp_type_error("<=")),
+            CompareOp::Ge => Err(richcmp_type_error(">=")),
+        }
     }
 }
 
@@ -298,7 +326,7 @@ impl Default for Keypair {
 
 /// A Python module implemented in Rust.
 #[pymodule]
-fn solders(py: Python, m: &PyModule) -> PyResult<()> {
+fn solders(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(encode_length, m)?)?;
     m.add_function(wrap_pyfunction!(decode_length, m)?)?;
     m.add_function(wrap_pyfunction!(is_on_curve, m)?)?;
