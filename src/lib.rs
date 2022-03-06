@@ -1,5 +1,4 @@
 use bincode::serialize;
-use ed25519_dalek::SECRET_KEY_LENGTH;
 use pyo3::{
     basic::CompareOp,
     exceptions::{PyTypeError, PyValueError},
