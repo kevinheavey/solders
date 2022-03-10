@@ -125,7 +125,7 @@ impl Pubkey {
     }
 
     fn __repr__(&self) -> String {
-        self.__str__()
+        format!("{:#?}", self)
     }
 
     fn __bytes__(&self) -> &[u8] {
