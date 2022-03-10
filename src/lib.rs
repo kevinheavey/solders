@@ -6,11 +6,12 @@ use pyo3::{
     types::PyBytes,
 };
 use solana_sdk::{
-    pubkey::{bytes_are_curve_point, Pubkey as OldPubkey},
+    instruction::AccountMeta as AccountMetaOriginal,
+    pubkey::{bytes_are_curve_point, Pubkey as PubkeyOriginal},
     short_vec::{decode_shortu16_len, ShortU16},
-    signature::{Signature as OldSignature, Signer},
+    signature::{Signature as SignatureOriginal, Signer},
     signer::keypair::{
-        keypair_from_seed, keypair_from_seed_phrase_and_passphrase, Keypair as OldKeypair,
+        keypair_from_seed, keypair_from_seed_phrase_and_passphrase, Keypair as KeypairOriginal,
     },
 };
 use std::error::Error;
@@ -21,7 +22,7 @@ fn to_py_value_err<T: Error>(err: T) -> PyErr {
 }
 
 // #[derive(Debug)]
-// pub struct SignatureError(OldSignatureError);
+// pub struct SignatureError(SignatureOriginalError);
 
 // impl std::convert::From<SignatureError> for PyErr {
 //     fn from(err: SignatureError) -> PyErr {
@@ -55,7 +56,7 @@ fn decode_length(raw_bytes: &[u8]) -> PyResult<(usize, usize)> {
 }
 #[pyclass]
 #[derive(PartialEq, PartialOrd, Debug, Default)]
-pub struct Pubkey(OldPubkey);
+pub struct Pubkey(pub PubkeyOriginal);
 
 #[pymethods]
 impl Pubkey {
@@ -64,18 +65,18 @@ impl Pubkey {
 
     #[new]
     pub fn new(pubkey_bytes: &[u8]) -> Self {
-        Self(OldPubkey::new(pubkey_bytes))
+        Self(PubkeyOriginal::new(pubkey_bytes))
     }
 
     #[staticmethod]
     pub fn new_unique() -> Self {
-        Self(OldPubkey::new_unique())
+        Self(PubkeyOriginal::new_unique())
     }
 
     #[staticmethod]
     #[pyo3(name = "from_string")]
     pub fn new_from_str(s: &str) -> PyResult<Self> {
-        match OldPubkey::from_str(s) {
+        match PubkeyOriginal::from_str(s) {
             Ok(val) => Ok(Self(val)),
             Err(val) => Err(PyValueError::new_err(val.to_string())),
         }
@@ -89,20 +90,20 @@ impl Pubkey {
 
     #[staticmethod]
     pub fn create_with_seed(from_public_key: &Self, seed: &str, program_id: &Self) -> Self {
-        Self(OldPubkey::create_with_seed(&from_public_key.0, seed, &program_id.0).unwrap())
+        Self(PubkeyOriginal::create_with_seed(&from_public_key.0, seed, &program_id.0).unwrap())
     }
 
     #[staticmethod]
     pub fn create_program_address(seeds: Vec<&[u8]>, program_id: &Self) -> Self {
         Self(
-            OldPubkey::create_program_address(&seeds[..], &program_id.0)
+            PubkeyOriginal::create_program_address(&seeds[..], &program_id.0)
                 .expect("Failed to create program address. This is extremely unlikely."),
         )
     }
 
     #[staticmethod]
     pub fn find_program_address(seeds: Vec<&[u8]>, program_id: &Self) -> (Self, u8) {
-        let (pubkey, nonce) = OldPubkey::find_program_address(&seeds[..], &program_id.0);
+        let (pubkey, nonce) = PubkeyOriginal::find_program_address(&seeds[..], &program_id.0);
         (Self(pubkey), nonce)
     }
 
@@ -155,18 +156,18 @@ impl Pubkey {
 
 #[pyclass]
 #[derive(PartialEq, Debug, Default)]
-pub struct Signature(OldSignature);
+pub struct Signature(SignatureOriginal);
 
 #[pymethods]
 impl Signature {
     #[new]
     pub fn new(signature_slice: &[u8]) -> Self {
-        Self(OldSignature::new(signature_slice))
+        Self(SignatureOriginal::new(signature_slice))
     }
 
     #[staticmethod]
     pub fn new_unique() -> Self {
-        Self(OldSignature::new_unique())
+        Self(SignatureOriginal::new_unique())
     }
 
     #[staticmethod]
@@ -178,7 +179,7 @@ impl Signature {
     #[staticmethod]
     #[pyo3(name = "from_string")]
     pub fn new_from_str(s: &str) -> PyResult<Self> {
-        match OldSignature::from_str(s) {
+        match SignatureOriginal::from_str(s) {
             Ok(val) => Ok(Self(val)),
             Err(val) => Err(PyValueError::new_err(val.to_string())),
         }
@@ -219,20 +220,20 @@ impl Signature {
 
 #[pyclass]
 #[derive(PartialEq, Debug)]
-pub struct Keypair(OldKeypair);
+pub struct Keypair(KeypairOriginal);
 
 #[pymethods]
 impl Keypair {
     /// Constructs a new, random `Keypair` using `OsRng`
     #[new]
     pub fn new() -> Self {
-        Self(OldKeypair::new())
+        Self(KeypairOriginal::new())
     }
 
     /// Recovers a `Keypair` from a byte array
     #[staticmethod]
     pub fn from_bytes(raw_bytes: &[u8]) -> PyResult<Self> {
-        let res = OldKeypair::from_bytes(raw_bytes);
+        let res = KeypairOriginal::from_bytes(raw_bytes);
         match res {
             Ok(val) => Ok(Keypair(val)),
             Err(val) => Err(PyValueError::new_err(val.to_string())),
@@ -251,7 +252,7 @@ impl Keypair {
     /// Recovers a `Keypair` from a base58-encoded string
     #[staticmethod]
     pub fn from_base58_string(s: &str) -> Self {
-        Self(OldKeypair::from_base58_string(s))
+        Self(KeypairOriginal::from_base58_string(s))
     }
     /// Gets this `Keypair`'s secret key
     pub fn secret(&self) -> &[u8] {
@@ -323,6 +324,60 @@ impl Default for Keypair {
     }
 }
 
+#[pyclass]
+#[derive(PartialEq, Debug)]
+pub struct AccountMeta(AccountMetaOriginal);
+#[pymethods]
+impl AccountMeta {
+    /// Construct metadata for an account.
+    #[new]
+    pub fn new(pubkey: &Pubkey, is_signer: bool, is_writable: bool) -> Self {
+        let underlying_pubkey = pubkey.0;
+        if is_writable {
+            Self(AccountMetaOriginal::new(underlying_pubkey, is_signer))
+        } else {
+            Self(AccountMetaOriginal::new_readonly(
+                underlying_pubkey,
+                is_signer,
+            ))
+        }
+    }
+
+    #[getter]
+    pub fn pubkey(&self) -> Pubkey {
+        Pubkey(self.0.pubkey)
+    }
+
+    #[getter]
+    pub fn is_signer(&self) -> bool {
+        self.0.is_signer
+    }
+
+    #[getter]
+    pub fn is_writable(&self) -> bool {
+        self.0.is_writable
+    }
+
+    pub fn __repr__(&self) -> String {
+        format!("{:#?}", self)
+    }
+
+    pub fn __str__(&self) -> String {
+        format!("{:?}", self)
+    }
+
+    pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
+        match op {
+            CompareOp::Eq => Ok(self == other),
+            CompareOp::Ne => Ok(self != other),
+            CompareOp::Lt => Err(richcmp_type_error("<")),
+            CompareOp::Gt => Err(richcmp_type_error(">")),
+            CompareOp::Le => Err(richcmp_type_error("<=")),
+            CompareOp::Ge => Err(richcmp_type_error(">=")),
+        }
+    }
+}
+
 /// A Python module implemented in Rust.
 #[pymodule]
 fn solders(_py: Python, m: &PyModule) -> PyResult<()> {
@@ -332,5 +387,6 @@ fn solders(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_class::<Pubkey>()?;
     m.add_class::<Keypair>()?;
     m.add_class::<Signature>()?;
+    m.add_class::<AccountMeta>()?;
     Ok(())
 }
