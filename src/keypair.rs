@@ -6,7 +6,7 @@ use solana_sdk::signer::{
     Signer,
 };
 
-use crate::{pubkey::Pubkey, richcmp_type_error, signature::Signature};
+use crate::{pubkey::Pubkey, richcmp_type_error, signature::Signature, to_py_value_err};
 
 #[pyclass]
 #[derive(PartialEq, Debug)]
@@ -23,11 +23,8 @@ impl Keypair {
     /// Recovers a `Keypair` from a byte array
     #[staticmethod]
     pub fn from_bytes(raw_bytes: &[u8]) -> PyResult<Self> {
-        let res = KeypairOriginal::from_bytes(raw_bytes);
-        match res {
-            Ok(val) => Ok(Keypair(val)),
-            Err(val) => Err(PyValueError::new_err(val.to_string())),
-        }
+        KeypairOriginal::from_bytes(raw_bytes)
+            .map_or_else(|e| Err(to_py_value_err(e)), |v| Ok(Keypair(v)))
     }
 
     /// Returns this `Keypair` as a byte array
