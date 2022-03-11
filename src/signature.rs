@@ -74,7 +74,7 @@ impl Signature {
         }
     }
 
-    pub fn __hash__(&self) -> u6 {
+    pub fn __hash__(&self) -> u64 {
         calculate_hash(self)
     }
 }
