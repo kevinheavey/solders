@@ -3,9 +3,8 @@ use std::{hash::Hash, str::FromStr};
 use crate::{calculate_hash, to_py_value_err};
 use pyo3::{basic::CompareOp, exceptions::PyValueError, prelude::*};
 use solana_sdk::pubkey::Pubkey as PubkeyOriginal;
-
 #[pyclass]
-#[derive(PartialEq, PartialOrd, Debug, Default, Hash)]
+#[derive(Eq, PartialEq, Ord, PartialOrd, Debug, Default, Hash)]
 pub struct Pubkey(pub PubkeyOriginal);
 
 #[pymethods]
