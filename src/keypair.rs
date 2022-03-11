@@ -99,3 +99,9 @@ impl Keypair {
         })
     }
 }
+
+impl Default for Keypair {
+    fn default() -> Self {
+        Self::new()
+    }
+}

@@ -60,7 +60,7 @@ fn decode_length(raw_bytes: &[u8]) -> PyResult<(usize, usize)> {
 }
 
 fn richcmp_type_error(op: &str) -> PyErr {
-    let msg = format!("{} not supported by Keypair", op);
+    let msg = format!("{} not supported.", op);
     PyTypeError::new_err(msg)
 }
 
@@ -68,12 +68,6 @@ fn calculate_hash<T: Hash>(t: &T) -> u64 {
     let mut s = DefaultHasher::new();
     t.hash(&mut s);
     s.finish()
-}
-
-impl Default for Keypair {
-    fn default() -> Self {
-        Self::new()
-    }
 }
 
 /// A Python module implemented in Rust.
