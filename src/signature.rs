@@ -3,10 +3,10 @@ use std::str::FromStr;
 use pyo3::{basic::CompareOp, exceptions::PyValueError, prelude::*};
 use solana_sdk::signature::Signature as SignatureOriginal;
 
-use crate::richcmp_type_error;
+use crate::calculate_hash;
 
 #[pyclass]
-#[derive(PartialEq, Debug, Default)]
+#[derive(Clone, Copy, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub struct Signature(pub SignatureOriginal);
 
 #[pymethods]
@@ -40,6 +40,12 @@ impl Signature {
         self.0.verify(pubkey_bytes, message_bytes)
     }
 
+    #[allow(clippy::wrong_self_convention)]
+    pub fn to_bytes_array(&self) -> [u8; 64] {
+        self.0.into()
+    }
+
+    #[allow(clippy::wrong_self_convention)]
     pub fn to_bytes(&self) -> &[u8] {
         self.0.as_ref()
     }
@@ -61,10 +67,14 @@ impl Signature {
         match op {
             CompareOp::Eq => Ok(self == other),
             CompareOp::Ne => Ok(self != other),
-            CompareOp::Lt => Err(richcmp_type_error("<")),
-            CompareOp::Gt => Err(richcmp_type_error(">")),
-            CompareOp::Le => Err(richcmp_type_error("<=")),
-            CompareOp::Ge => Err(richcmp_type_error(">=")),
+            CompareOp::Lt => Ok(self < other),
+            CompareOp::Gt => Ok(self > other),
+            CompareOp::Le => Ok(self <= other),
+            CompareOp::Ge => Ok(self >= other),
         }
+    }
+
+    pub fn __hash__(&self) -> u6 {
+        calculate_hash(self)
     }
 }

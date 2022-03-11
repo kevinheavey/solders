@@ -43,3 +43,7 @@ def test_off_curve_pubkey_verify_fails():
     pubkey = Pubkey(off_curve_bytes)
     signature = Signature.default()
     assert not signature.verify(bytes(pubkey), bytes([0]))
+
+
+def test_to_bytes_array(signature: Signature):
+    assert bytes(signature.to_bytes_array()) == bytes(signature)

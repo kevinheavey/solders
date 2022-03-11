@@ -1,4 +1,4 @@
-use std::{hash::Hash, panic, str::FromStr};
+use std::{hash::Hash, str::FromStr};
 
 use crate::{calculate_hash, to_py_value_err};
 use pyo3::{basic::CompareOp, exceptions::PyValueError, prelude::*};
