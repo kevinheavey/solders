@@ -1,7 +1,7 @@
 use std::{hash::Hash, str::FromStr};
 
 use crate::{calculate_hash, to_py_value_err};
-use pyo3::{basic::CompareOp, exceptions::PyValueError, prelude::*};
+use pyo3::{basic::CompareOp, prelude::*};
 use solana_sdk::pubkey::{Pubkey as PubkeyOriginal, PUBKEY_BYTES};
 #[pyclass]
 #[derive(Eq, PartialEq, Ord, PartialOrd, Debug, Default, Hash)]
