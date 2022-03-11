@@ -47,3 +47,15 @@ def test_off_curve_pubkey_verify_fails():
 
 def test_to_bytes_array(signature: Signature):
     assert bytes(signature.to_bytes_array()) == bytes(signature)
+
+
+def test_hash():
+    msg = bytes([0])
+    keypair = Keypair()
+    sig = keypair.sign_message(msg)
+    dupe = keypair.sign_message(msg)
+    different = keypair.sign_message(bytes([1]))
+    assert sig == dupe
+    assert hash(sig) == hash(dupe)
+    assert sig != different
+    assert hash(sig) != hash(different)
