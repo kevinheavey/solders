@@ -1,10 +1,11 @@
-use std::str::FromStr;
+use std::{hash::Hash, str::FromStr};
 
+use crate::calculate_hash;
 use pyo3::{basic::CompareOp, exceptions::PyValueError, prelude::*};
 use solana_sdk::pubkey::Pubkey as PubkeyOriginal;
 
 #[pyclass]
-#[derive(PartialEq, PartialOrd, Debug, Default)]
+#[derive(PartialEq, PartialOrd, Debug, Default, Hash)]
 pub struct Pubkey(pub PubkeyOriginal);
 
 #[pymethods]
@@ -92,13 +93,7 @@ impl Pubkey {
         }
     }
 
-    pub fn __hash__(&self) -> PyResult<isize> {
-        // call `hash((class_name, bytes(obj)))`
-        Python::with_gil(|py| {
-            let builtins = PyModule::import(py, "builtins")?;
-            let arg1 = "Pubkey";
-            let arg2 = self.to_bytes();
-            builtins.getattr("hash")?.call1(((arg1, arg2),))?.extract()
-        })
+    pub fn __hash__(&self) -> u64 {
+        calculate_hash(self)
     }
 }

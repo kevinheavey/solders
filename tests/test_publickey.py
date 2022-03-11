@@ -123,3 +123,14 @@ def test_find_program_address():
     assert program_address == Pubkey.create_program_address(
         [b"", to_uint8_bytes(nonce)], program_id
     )
+
+
+def test_set_operations() -> None:
+    """Tests that a publickey is now hashable with the appropriate set operations."""
+    public_key_primary = Pubkey(bytes([0] * 32))
+    public_key_secondary = Pubkey(bytes([1] * 32))
+    public_key_duplicate = Pubkey(bytes(public_key_secondary))
+    public_key_set = {public_key_primary, public_key_secondary, public_key_duplicate}
+    assert hash(public_key_primary) != hash(public_key_secondary)
+    assert hash(public_key_secondary) == hash(public_key_duplicate)
+    assert len(public_key_set) == 2

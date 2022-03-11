@@ -7,7 +7,11 @@ use solana_sdk::{
     pubkey::bytes_are_curve_point,
     short_vec::{decode_shortu16_len, ShortU16},
 };
-use std::error::Error;
+use std::{
+    collections::hash_map::DefaultHasher,
+    error::Error,
+    hash::{Hash, Hasher},
+};
 mod pubkey;
 use pubkey::Pubkey;
 mod signature;
@@ -58,6 +62,12 @@ fn decode_length(raw_bytes: &[u8]) -> PyResult<(usize, usize)> {
 fn richcmp_type_error(op: &str) -> PyErr {
     let msg = format!("{} not supported by Keypair", op);
     PyTypeError::new_err(msg)
+}
+
+fn calculate_hash<T: Hash>(t: &T) -> u64 {
+    let mut s = DefaultHasher::new();
+    t.hash(&mut s);
+    s.finish()
 }
 
 impl Default for Keypair {
