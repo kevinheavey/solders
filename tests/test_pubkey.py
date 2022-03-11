@@ -20,6 +20,16 @@ on_curve_data = [
 ]
 
 
+def test_wrong_size():
+    with raises(ValueError) as excinfo:
+        Pubkey(bytes([0] * 33))
+    msg = (
+        "Pubkey must be 32 bytes long. Received 33 bytes: "
+        "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]"
+    )
+    assert excinfo.value.args[0] == msg
+
+
 @mark.parametrize("test_input,expected", on_curve_data)
 def test_is_on_curve(test_input, expected):
     result = is_on_curve(test_input)

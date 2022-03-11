@@ -1,6 +1,6 @@
-use std::{hash::Hash, str::FromStr};
+use std::{hash::Hash, panic, str::FromStr};
 
-use crate::calculate_hash;
+use crate::{calculate_hash, to_py_value_err};
 use pyo3::{basic::CompareOp, exceptions::PyValueError, prelude::*};
 use solana_sdk::pubkey::Pubkey as PubkeyOriginal;
 
@@ -14,8 +14,16 @@ impl Pubkey {
     const LENGTH: u8 = 32;
 
     #[new]
-    pub fn new(pubkey_bytes: &[u8]) -> Self {
-        Self(PubkeyOriginal::new(pubkey_bytes))
+    pub fn new(pubkey_bytes: &[u8]) -> PyResult<Self> {
+        let length = pubkey_bytes.len();
+        if length == 32 {
+            Ok(Self(PubkeyOriginal::new(pubkey_bytes)))
+        } else {
+            Err(PyValueError::new_err(format!(
+                "Pubkey must be 32 bytes long. Received {} bytes: {:?}",
+                length, pubkey_bytes
+            )))
+        }
     }
 
     #[staticmethod]
@@ -26,10 +34,7 @@ impl Pubkey {
     #[staticmethod]
     #[pyo3(name = "from_string")]
     pub fn new_from_str(s: &str) -> PyResult<Self> {
-        match PubkeyOriginal::from_str(s) {
-            Ok(val) => Ok(Self(val)),
-            Err(val) => Err(PyValueError::new_err(val.to_string())),
-        }
+        PubkeyOriginal::from_str(s).map_or_else(|e| Err(to_py_value_err(e)), |v| Ok(Self(v)))
     }
 
     #[staticmethod]
