@@ -10,8 +10,8 @@ name = "solders"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = { version = "0.15.1", features = ["extension-module"] }
-solana-sdk = "1.9.2"
+pyo3 = { version = "0.16.1", features = ["extension-module"] }
+solana-sdk = "1.10.0"
 bincode = "1.3.3"
 ed25519-dalek = "1.0.1"
 serde = "1.0.136"
