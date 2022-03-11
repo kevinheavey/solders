@@ -1,5 +1,7 @@
 use pyo3::{basic::CompareOp, prelude::*};
-use solana_sdk::instruction::AccountMeta as AccountMetaOriginal;
+use solana_sdk::instruction::{
+    AccountMeta as AccountMetaOriginal, Instruction as InstructionOriginal,
+};
 
 use crate::{pubkey::Pubkey, richcmp_type_error};
 
@@ -15,8 +17,8 @@ use crate::{pubkey::Pubkey, richcmp_type_error};
 /// execution around which accounts are writable, care should be taken that only
 /// accounts which actually may be mutated are specified as writable.
 #[pyclass]
-#[derive(PartialEq, Debug)]
-pub struct AccountMeta(AccountMetaOriginal);
+#[derive(PartialEq, Debug, Clone)]
+pub struct AccountMeta(pub AccountMetaOriginal);
 #[pymethods]
 impl AccountMeta {
     /// Construct metadata for an account.
@@ -46,6 +48,64 @@ impl AccountMeta {
     #[getter]
     pub fn is_writable(&self) -> bool {
         self.0.is_writable
+    }
+
+    pub fn __repr__(&self) -> String {
+        format!("{:#?}", self)
+    }
+
+    pub fn __str__(&self) -> String {
+        format!("{:?}", self)
+    }
+
+    pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
+        match op {
+            CompareOp::Eq => Ok(self == other),
+            CompareOp::Ne => Ok(self != other),
+            CompareOp::Lt => Err(richcmp_type_error("<")),
+            CompareOp::Gt => Err(richcmp_type_error(">")),
+            CompareOp::Le => Err(richcmp_type_error("<=")),
+            CompareOp::Ge => Err(richcmp_type_error(">=")),
+        }
+    }
+}
+
+#[pyclass]
+#[derive(PartialEq, Debug)]
+pub struct Instruction(InstructionOriginal);
+
+#[pymethods]
+impl Instruction {
+    #[new]
+    pub fn new(program_id: &Pubkey, data: &[u8], accounts: Vec<AccountMeta>) -> Self {
+        let underlying_accounts: Vec<AccountMetaOriginal> =
+            accounts.into_iter().map(|x| x.0).collect();
+        let underlying =
+            InstructionOriginal::new_with_bytes(program_id.0, data, underlying_accounts);
+        Self(underlying)
+    }
+
+    /// Pubkey of the program that executes this instruction.
+    #[getter]
+    pub fn program_id(&self) -> Pubkey {
+        Pubkey(self.0.program_id)
+    }
+
+    /// Opaque data passed to the program for its own interpretation.
+    #[getter]
+    pub fn data(&self) -> Vec<u8> {
+        self.0.clone().data
+    }
+
+    /// Metadata describing accounts that should be passed to the program.
+    #[getter]
+    pub fn accounts(&self) -> Vec<AccountMeta> {
+        self.0
+            .accounts
+            .clone()
+            .into_iter()
+            .map(AccountMeta)
+            .collect()
     }
 
     pub fn __repr__(&self) -> String {
