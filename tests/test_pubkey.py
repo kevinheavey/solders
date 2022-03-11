@@ -23,10 +23,7 @@ on_curve_data = [
 def test_wrong_size():
     with raises(ValueError) as excinfo:
         Pubkey(bytes([0] * 33))
-    msg = (
-        "Pubkey must be 32 bytes long. Received 33 bytes: "
-        "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]"
-    )
+    msg = "expected a sequence of length 32 (got 33)"
     assert excinfo.value.args[0] == msg
 
 

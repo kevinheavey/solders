@@ -20,6 +20,8 @@ mod keypair;
 use keypair::Keypair;
 mod instruction;
 use instruction::{AccountMeta, Instruction};
+mod hash;
+use hash::Hash as SolderHash;
 
 fn to_py_value_err<T: Error>(err: T) -> PyErr {
     PyValueError::new_err(err.to_string())
@@ -81,5 +83,6 @@ fn solders(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_class::<Signature>()?;
     m.add_class::<AccountMeta>()?;
     m.add_class::<Instruction>()?;
+    m.add_class::<SolderHash>()?;
     Ok(())
 }

@@ -2,7 +2,7 @@ use std::{hash::Hash, str::FromStr};
 
 use crate::{calculate_hash, to_py_value_err};
 use pyo3::{basic::CompareOp, exceptions::PyValueError, prelude::*};
-use solana_sdk::pubkey::Pubkey as PubkeyOriginal;
+use solana_sdk::pubkey::{Pubkey as PubkeyOriginal, PUBKEY_BYTES};
 #[pyclass]
 #[derive(Eq, PartialEq, Ord, PartialOrd, Debug, Default, Hash)]
 pub struct Pubkey(pub PubkeyOriginal);
@@ -10,19 +10,11 @@ pub struct Pubkey(pub PubkeyOriginal);
 #[pymethods]
 impl Pubkey {
     #[classattr]
-    const LENGTH: u8 = 32;
+    const LENGTH: usize = PUBKEY_BYTES;
 
     #[new]
-    pub fn new(pubkey_bytes: &[u8]) -> PyResult<Self> {
-        let length = pubkey_bytes.len();
-        if length == 32 {
-            Ok(Self(PubkeyOriginal::new(pubkey_bytes)))
-        } else {
-            Err(PyValueError::new_err(format!(
-                "Pubkey must be 32 bytes long. Received {} bytes: {:?}",
-                length, pubkey_bytes
-            )))
-        }
+    pub fn new(pubkey_bytes: [u8; PUBKEY_BYTES]) -> Self {
+        Self(PubkeyOriginal::new_from_array(pubkey_bytes))
     }
 
     #[staticmethod]
@@ -43,8 +35,13 @@ impl Pubkey {
     }
 
     #[staticmethod]
-    pub fn create_with_seed(from_public_key: &Self, seed: &str, program_id: &Self) -> Self {
-        Self(PubkeyOriginal::create_with_seed(&from_public_key.0, seed, &program_id.0).unwrap())
+    pub fn create_with_seed(
+        from_public_key: &Self,
+        seed: &str,
+        program_id: &Self,
+    ) -> PyResult<Self> {
+        PubkeyOriginal::create_with_seed(&from_public_key.0, seed, &program_id.0)
+            .map_or_else(|e| Err(to_py_value_err(e)), |v| Ok(Self(v)))
     }
 
     #[staticmethod]
