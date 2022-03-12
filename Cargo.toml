@@ -7,7 +7,7 @@ include = ["src/*.rs", "./LICENSE", "pyproject.toml"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [lib]
 name = "solders"
-crate-type = ["cdylib"]
+# crate-type = ["cdylib"]
 
 [dependencies]
 pyo3 = { version = "0.16.1", features = ["extension-module"] }
