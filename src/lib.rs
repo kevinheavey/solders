@@ -13,15 +13,15 @@ use std::{
     hash::{Hash, Hasher},
 };
 mod pubkey;
-use pubkey::Pubkey;
+pub use pubkey::Pubkey;
 mod signature;
-use signature::Signature;
+pub use signature::Signature;
 mod keypair;
-use keypair::Keypair;
+pub use keypair::Keypair;
 mod instruction;
-use instruction::{AccountMeta, Instruction};
+pub use instruction::{AccountMeta, Instruction};
 mod hash;
-use hash::Hash as SolderHash;
+pub use hash::Hash as SolderHash;
 
 fn to_py_value_err<T: Error>(err: T) -> PyErr {
     PyValueError::new_err(err.to_string())
