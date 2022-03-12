@@ -4,7 +4,7 @@ use crate::{calculate_hash, to_py_value_err};
 use pyo3::{basic::CompareOp, prelude::*};
 use solana_sdk::pubkey::{Pubkey as PubkeyOriginal, PUBKEY_BYTES};
 #[pyclass]
-#[derive(Eq, PartialEq, Ord, PartialOrd, Debug, Default, Hash)]
+#[derive(Eq, PartialEq, Ord, PartialOrd, Debug, Default, Hash, Clone)]
 pub struct Pubkey(pub PubkeyOriginal);
 
 #[pymethods]
@@ -96,5 +96,11 @@ impl Pubkey {
 
     pub fn __hash__(&self) -> u64 {
         calculate_hash(self)
+    }
+}
+
+impl From<PubkeyOriginal> for Pubkey {
+    fn from(pubkey: PubkeyOriginal) -> Self {
+        Self(pubkey)
     }
 }
