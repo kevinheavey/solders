@@ -141,6 +141,11 @@ impl From<InstructionOriginal> for Instruction {
     }
 }
 
+/// A compact encoding of an instruction.
+///
+/// A `CompiledInstruction` is a component of a multi-instruction [`Message`],
+/// which is the core of a Solana transaction. It is created during the
+/// construction of `Message`. Most users will not interact with it directly.
 #[pyclass]
 #[derive(PartialEq, Eq, Debug)]
 pub struct CompiledInstruction(CompiledInstructionOriginal);
@@ -161,6 +166,43 @@ impl CompiledInstruction {
         let underlying_pubkeys: Vec<PubkeyOriginal> = program_ids.iter().map(|x| x.0).collect();
         let underlying = *self.0.program_id(&underlying_pubkeys[..]);
         underlying.into()
+    }
+
+    /// Index into the transaction keys array indicating the program account that executes this instruction.
+    #[getter]
+    pub fn program_id_index(&self) -> u8 {
+        self.0.program_id_index
+    }
+
+    /// Ordered indices into the transaction keys array indicating which accounts to pass to the program.
+    #[getter]
+    pub fn accounts(&self) -> Vec<u8> {
+        self.0.accounts.clone()
+    }
+
+    /// The program input data.
+    #[getter]
+    pub fn data(&self) -> Vec<u8> {
+        self.0.data.clone()
+    }
+
+    pub fn __repr__(&self) -> String {
+        format!("{:#?}", self)
+    }
+
+    pub fn __str__(&self) -> String {
+        format!("{:?}", self)
+    }
+
+    pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
+        match op {
+            CompareOp::Eq => Ok(self == other),
+            CompareOp::Ne => Ok(self != other),
+            CompareOp::Lt => Err(richcmp_type_error("<")),
+            CompareOp::Gt => Err(richcmp_type_error(">")),
+            CompareOp::Le => Err(richcmp_type_error("<=")),
+            CompareOp::Ge => Err(richcmp_type_error(">=")),
+        }
     }
 }
 

@@ -1,4 +1,5 @@
 use bincode::serialize;
+use instruction::CompiledInstruction;
 use pyo3::{
     exceptions::{PyTypeError, PyValueError},
     prelude::*,
@@ -83,6 +84,7 @@ fn solders(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_class::<Signature>()?;
     m.add_class::<AccountMeta>()?;
     m.add_class::<Instruction>()?;
+    m.add_class::<CompiledInstruction>()?;
     m.add_class::<SolderHash>()?;
     Ok(())
 }
