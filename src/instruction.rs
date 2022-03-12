@@ -1,6 +1,10 @@
 use pyo3::{basic::CompareOp, prelude::*};
-use solana_sdk::instruction::{
-    AccountMeta as AccountMetaOriginal, Instruction as InstructionOriginal,
+use solana_sdk::{
+    instruction::{
+        AccountMeta as AccountMetaOriginal, CompiledInstruction as CompiledInstructionOriginal,
+        Instruction as InstructionOriginal,
+    },
+    pubkey::Pubkey as PubkeyOriginal,
 };
 
 use crate::{pubkey::Pubkey, richcmp_type_error};
@@ -25,19 +29,17 @@ impl AccountMeta {
     #[new]
     pub fn new(pubkey: &Pubkey, is_signer: bool, is_writable: bool) -> Self {
         let underlying_pubkey = pubkey.0;
-        if is_writable {
-            Self(AccountMetaOriginal::new(underlying_pubkey, is_signer))
+        let underlying = if is_writable {
+            AccountMetaOriginal::new(underlying_pubkey, is_signer)
         } else {
-            Self(AccountMetaOriginal::new_readonly(
-                underlying_pubkey,
-                is_signer,
-            ))
-        }
+            AccountMetaOriginal::new_readonly(underlying_pubkey, is_signer)
+        };
+        underlying.into()
     }
 
     #[getter]
     pub fn pubkey(&self) -> Pubkey {
-        Pubkey(self.0.pubkey)
+        self.0.pubkey.into()
     }
 
     #[getter]
@@ -69,6 +71,11 @@ impl AccountMeta {
         }
     }
 }
+impl From<AccountMetaOriginal> for AccountMeta {
+    fn from(am: AccountMetaOriginal) -> Self {
+        Self(am)
+    }
+}
 
 #[pyclass]
 #[derive(PartialEq, Debug)]
@@ -82,13 +89,13 @@ impl Instruction {
             accounts.into_iter().map(|x| x.0).collect();
         let underlying =
             InstructionOriginal::new_with_bytes(program_id.0, data, underlying_accounts);
-        Self(underlying)
+        underlying.into()
     }
 
     /// Pubkey of the program that executes this instruction.
     #[getter]
     pub fn program_id(&self) -> Pubkey {
-        Pubkey(self.0.program_id)
+        self.0.program_id.into()
     }
 
     /// Opaque data passed to the program for its own interpretation.
@@ -125,5 +132,40 @@ impl Instruction {
             CompareOp::Le => Err(richcmp_type_error("<=")),
             CompareOp::Ge => Err(richcmp_type_error(">=")),
         }
+    }
+}
+
+impl From<InstructionOriginal> for Instruction {
+    fn from(ix: InstructionOriginal) -> Self {
+        Self(ix)
+    }
+}
+
+#[pyclass]
+#[derive(PartialEq, Eq, Debug)]
+pub struct CompiledInstruction(CompiledInstructionOriginal);
+
+#[pymethods]
+impl CompiledInstruction {
+    #[new]
+    pub fn new(program_id_index: u8, data: &[u8], accounts: &[u8]) -> Self {
+        CompiledInstructionOriginal::new_from_raw_parts(
+            program_id_index,
+            data.to_vec(),
+            accounts.to_vec(),
+        )
+        .into()
+    }
+
+    pub fn program_id(&self, program_ids: Vec<Pubkey>) -> Pubkey {
+        let underlying_pubkeys: Vec<PubkeyOriginal> = program_ids.iter().map(|x| x.0).collect();
+        let underlying = *self.0.program_id(&underlying_pubkeys[..]);
+        underlying.into()
+    }
+}
+
+impl From<CompiledInstructionOriginal> for CompiledInstruction {
+    fn from(ix: CompiledInstructionOriginal) -> Self {
+        Self(ix)
     }
 }
