@@ -13,12 +13,12 @@ pub struct Signature(pub SignatureOriginal);
 impl Signature {
     #[new]
     pub fn new(signature_slice: &[u8]) -> Self {
-        Self(SignatureOriginal::new(signature_slice))
+        SignatureOriginal::new(signature_slice).into()
     }
 
     #[staticmethod]
     pub fn new_unique() -> Self {
-        Self(SignatureOriginal::new_unique())
+        SignatureOriginal::new_unique().into()
     }
 
     #[staticmethod]
@@ -31,7 +31,7 @@ impl Signature {
     #[pyo3(name = "from_string")]
     pub fn new_from_str(s: &str) -> PyResult<Self> {
         match SignatureOriginal::from_str(s) {
-            Ok(val) => Ok(Self(val)),
+            Ok(val) => Ok(val.into()),
             Err(val) => Err(PyValueError::new_err(val.to_string())),
         }
     }
@@ -76,5 +76,11 @@ impl Signature {
 
     pub fn __hash__(&self) -> u64 {
         calculate_hash(self)
+    }
+}
+
+impl From<SignatureOriginal> for Signature {
+    fn from(sig: SignatureOriginal) -> Self {
+        Self(sig)
     }
 }

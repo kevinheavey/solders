@@ -14,18 +14,18 @@ impl Pubkey {
 
     #[new]
     pub fn new(pubkey_bytes: [u8; PUBKEY_BYTES]) -> Self {
-        Self(PubkeyOriginal::new_from_array(pubkey_bytes))
+        PubkeyOriginal::new_from_array(pubkey_bytes).into()
     }
 
     #[staticmethod]
     pub fn new_unique() -> Self {
-        Self(PubkeyOriginal::new_unique())
+        PubkeyOriginal::new_unique().into()
     }
 
     #[staticmethod]
     #[pyo3(name = "from_string")]
     pub fn new_from_str(s: &str) -> PyResult<Self> {
-        PubkeyOriginal::from_str(s).map_or_else(|e| Err(to_py_value_err(e)), |v| Ok(Self(v)))
+        PubkeyOriginal::from_str(s).map_or_else(|e| Err(to_py_value_err(e)), |v| Ok(v.into()))
     }
 
     #[staticmethod]
@@ -41,21 +41,20 @@ impl Pubkey {
         program_id: &Self,
     ) -> PyResult<Self> {
         PubkeyOriginal::create_with_seed(&from_public_key.0, seed, &program_id.0)
-            .map_or_else(|e| Err(to_py_value_err(e)), |v| Ok(Self(v)))
+            .map_or_else(|e| Err(to_py_value_err(e)), |v| Ok(v.into()))
     }
 
     #[staticmethod]
     pub fn create_program_address(seeds: Vec<&[u8]>, program_id: &Self) -> Self {
-        Self(
-            PubkeyOriginal::create_program_address(&seeds[..], &program_id.0)
-                .expect("Failed to create program address. This is extremely unlikely."),
-        )
+        PubkeyOriginal::create_program_address(&seeds[..], &program_id.0)
+            .expect("Failed to create program address. This is extremely unlikely.")
+            .into()
     }
 
     #[staticmethod]
     pub fn find_program_address(seeds: Vec<&[u8]>, program_id: &Self) -> (Self, u8) {
         let (pubkey, nonce) = PubkeyOriginal::find_program_address(&seeds[..], &program_id.0);
-        (Self(pubkey), nonce)
+        (pubkey.into(), nonce)
     }
 
     pub fn is_on_curve(&self) -> bool {

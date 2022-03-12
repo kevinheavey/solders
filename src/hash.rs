@@ -13,7 +13,7 @@ pub struct Hash(HashOriginal);
 impl Hash {
     #[new]
     pub fn new(hash_bytes: [u8; HASH_BYTES]) -> Self {
-        Self(HashOriginal::new_from_array(hash_bytes))
+        HashOriginal::new_from_array(hash_bytes).into()
     }
 
     #[pyo3(name = "to_string")]
@@ -32,12 +32,12 @@ impl Hash {
     #[staticmethod]
     #[pyo3(name = "from_string")]
     pub fn new_from_string(s: &str) -> PyResult<Self> {
-        HashOriginal::from_str(s).map_or_else(|e| Err(to_py_value_err(e)), |v| Ok(Self(v)))
+        HashOriginal::from_str(s).map_or_else(|e| Err(to_py_value_err(e)), |v| Ok(v.into()))
     }
 
     #[staticmethod]
     pub fn new_unique() -> Self {
-        Self(HashOriginal::new_unique())
+        HashOriginal::new_unique().into()
     }
 
     #[allow(clippy::wrong_self_convention)]
@@ -63,10 +63,16 @@ impl Hash {
     #[staticmethod]
     #[allow(clippy::self_named_constructors)]
     pub fn hash(val: &[u8]) -> Self {
-        Self(hash(val))
+        hash(val).into()
     }
 
     pub fn __hash__(&self) -> u64 {
         calculate_hash(self)
+    }
+}
+
+impl From<HashOriginal> for Hash {
+    fn from(h: HashOriginal) -> Self {
+        Self(h)
     }
 }

@@ -17,14 +17,14 @@ impl Keypair {
     /// Constructs a new, random `Keypair` using `OsRng`
     #[new]
     pub fn new() -> Self {
-        Self(KeypairOriginal::new())
+        KeypairOriginal::new().into()
     }
 
     /// Recovers a `Keypair` from a byte array
     #[staticmethod]
     pub fn from_bytes(raw_bytes: &[u8]) -> PyResult<Self> {
         KeypairOriginal::from_bytes(raw_bytes)
-            .map_or_else(|e| Err(to_py_value_err(e)), |v| Ok(Keypair(v)))
+            .map_or_else(|e| Err(to_py_value_err(e)), |v| Ok(v.into()))
     }
 
     /// Returns this `Keypair` as a byte array
@@ -39,7 +39,7 @@ impl Keypair {
     /// Recovers a `Keypair` from a base58-encoded string
     #[staticmethod]
     pub fn from_base58_string(s: &str) -> Self {
-        Self(KeypairOriginal::from_base58_string(s))
+        KeypairOriginal::from_base58_string(s).into()
     }
     /// Gets this `Keypair`'s secret key
     pub fn secret(&self) -> &[u8] {
@@ -65,7 +65,7 @@ impl Keypair {
     #[staticmethod]
     pub fn from_seed(seed: &[u8]) -> PyResult<Self> {
         match keypair_from_seed(seed) {
-            Ok(val) => Ok(Keypair(val)),
+            Ok(val) => Ok(val.into()),
             Err(val) => Err(PyValueError::new_err(val.to_string())),
         }
     }
@@ -73,7 +73,7 @@ impl Keypair {
     #[staticmethod]
     pub fn from_seed_phrase_and_passphrase(seed_phrase: &str, passphrase: &str) -> PyResult<Self> {
         match keypair_from_seed_phrase_and_passphrase(seed_phrase, passphrase) {
-            Ok(val) => Ok(Keypair(val)),
+            Ok(val) => Ok(val.into()),
             Err(val) => Err(PyValueError::new_err(val.to_string())),
         }
     }
@@ -103,5 +103,11 @@ impl Keypair {
 impl Default for Keypair {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+impl From<KeypairOriginal> for Keypair {
+    fn from(keypair: KeypairOriginal) -> Self {
+        Self(keypair)
     }
 }
