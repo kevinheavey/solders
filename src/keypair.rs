@@ -55,11 +55,11 @@ impl Keypair {
     }
 
     pub fn pubkey(&self) -> Pubkey {
-        Pubkey(self.0.pubkey())
+        self.0.pubkey().into()
     }
 
     pub fn sign_message(&self, message: &[u8]) -> Signature {
-        Signature(self.0.sign_message(message))
+        self.0.sign_message(message).into()
     }
 
     #[staticmethod]
