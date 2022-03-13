@@ -42,7 +42,7 @@ impl Hash {
 
     #[allow(clippy::wrong_self_convention)]
     pub fn to_bytes(&self) -> &[u8] {
-        self.0.as_ref()
+        self.as_ref()
     }
 
     pub fn __bytes__(&self) -> &[u8] {
@@ -69,6 +69,12 @@ impl RichcmpFull for Hash {}
 impl From<HashOriginal> for Hash {
     fn from(h: HashOriginal) -> Self {
         Self(h)
+    }
+}
+
+impl AsRef<[u8]> for Hash {
+    fn as_ref(&self) -> &[u8] {
+        self.0.as_ref()
     }
 }
 

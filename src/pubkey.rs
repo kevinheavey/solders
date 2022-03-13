@@ -67,7 +67,7 @@ impl Pubkey {
     }
 
     pub fn to_bytes(&self) -> &[u8] {
-        self.0.as_ref()
+        self.as_ref()
     }
 
     fn __str__(&self) -> String {
@@ -102,5 +102,11 @@ impl From<PubkeyOriginal> for Pubkey {
 impl fmt::Display for Pubkey {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.0)
+    }
+}
+
+impl AsRef<[u8]> for Pubkey {
+    fn as_ref(&self) -> &[u8] {
+        self.0.as_ref()
     }
 }
