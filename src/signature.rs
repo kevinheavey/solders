@@ -1,4 +1,4 @@
-use std::str::FromStr;
+use std::{fmt, str::FromStr};
 
 use pyo3::{basic::CompareOp, exceptions::PyValueError, prelude::*};
 use solana_sdk::signature::Signature as SignatureOriginal;
@@ -56,7 +56,7 @@ impl Signature {
 
     #[pyo3(name = "to_string")]
     pub fn string(&self) -> String {
-        self.0.to_string()
+        self.to_string()
     }
 
     pub fn __str__(&self) -> String {
@@ -77,5 +77,11 @@ impl RichcmpFull for Signature {}
 impl From<SignatureOriginal> for Signature {
     fn from(sig: SignatureOriginal) -> Self {
         Self(sig)
+    }
+}
+
+impl fmt::Display for Signature {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.0)
     }
 }

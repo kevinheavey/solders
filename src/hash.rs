@@ -1,4 +1,4 @@
-use std::str::FromStr;
+use std::{fmt, str::FromStr};
 
 use pyo3::{basic::CompareOp, prelude::*};
 use solana_sdk::hash::{hash, Hash as HashOriginal, HASH_BYTES};
@@ -18,7 +18,7 @@ impl Hash {
 
     #[pyo3(name = "to_string")]
     pub fn string(&self) -> String {
-        self.0.to_string()
+        self.to_string()
     }
 
     pub fn __str__(&self) -> String {
@@ -69,5 +69,11 @@ impl RichcmpFull for Hash {}
 impl From<HashOriginal> for Hash {
     fn from(h: HashOriginal) -> Self {
         Self(h)
+    }
+}
+
+impl fmt::Display for Hash {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.0)
     }
 }

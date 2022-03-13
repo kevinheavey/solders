@@ -1,4 +1,4 @@
-use std::{hash::Hash, str::FromStr};
+use std::{fmt, hash::Hash, str::FromStr};
 
 use crate::{calculate_hash, to_py_value_err, RichcmpFull};
 use pyo3::{basic::CompareOp, prelude::*};
@@ -63,7 +63,7 @@ impl Pubkey {
 
     #[pyo3(name = "to_string")]
     pub fn string(&self) -> String {
-        self.0.to_string()
+        self.to_string()
     }
 
     pub fn to_bytes(&self) -> &[u8] {
@@ -96,5 +96,11 @@ impl RichcmpFull for Pubkey {}
 impl From<PubkeyOriginal> for Pubkey {
     fn from(pubkey: PubkeyOriginal) -> Self {
         Self(pubkey)
+    }
+}
+
+impl fmt::Display for Pubkey {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.0)
     }
 }
