@@ -3,7 +3,7 @@ use std::str::FromStr;
 use pyo3::{basic::CompareOp, prelude::*};
 use solana_sdk::hash::{hash, Hash as HashOriginal, HASH_BYTES};
 
-use crate::{calculate_hash, richcmp_type_error, to_py_value_err};
+use crate::{calculate_hash, to_py_value_err, RichcmpFull};
 
 #[pyclass]
 #[derive(Clone, Copy, Default, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
@@ -49,15 +49,8 @@ impl Hash {
         self.to_bytes()
     }
 
-    pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
-        match op {
-            CompareOp::Eq => Ok(self == other),
-            CompareOp::Ne => Ok(self != other),
-            CompareOp::Lt => Err(richcmp_type_error("<")),
-            CompareOp::Gt => Err(richcmp_type_error(">")),
-            CompareOp::Le => Err(richcmp_type_error("<=")),
-            CompareOp::Ge => Err(richcmp_type_error(">=")),
-        }
+    pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> bool {
+        self.richcmp(other, op)
     }
 
     #[staticmethod]
@@ -70,6 +63,8 @@ impl Hash {
         calculate_hash(self)
     }
 }
+
+impl RichcmpFull for Hash {}
 
 impl From<HashOriginal> for Hash {
     fn from(h: HashOriginal) -> Self {

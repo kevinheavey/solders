@@ -1,6 +1,6 @@
 use std::{hash::Hash, str::FromStr};
 
-use crate::{calculate_hash, to_py_value_err};
+use crate::{calculate_hash, to_py_value_err, RichcmpFull};
 use pyo3::{basic::CompareOp, prelude::*};
 use solana_sdk::pubkey::{Pubkey as PubkeyOriginal, PUBKEY_BYTES};
 #[pyclass]
@@ -83,20 +83,15 @@ impl Pubkey {
     }
 
     fn __richcmp__(&self, other: &Self, op: CompareOp) -> bool {
-        match op {
-            CompareOp::Eq => self == other,
-            CompareOp::Ne => self != other,
-            CompareOp::Lt => self < other,
-            CompareOp::Gt => self > other,
-            CompareOp::Le => self <= other,
-            CompareOp::Ge => self >= other,
-        }
+        self.richcmp(other, op)
     }
 
     pub fn __hash__(&self) -> u64 {
         calculate_hash(self)
     }
 }
+
+impl RichcmpFull for Pubkey {}
 
 impl From<PubkeyOriginal> for Pubkey {
     fn from(pubkey: PubkeyOriginal) -> Self {

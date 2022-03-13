@@ -3,7 +3,7 @@ use std::str::FromStr;
 use pyo3::{basic::CompareOp, exceptions::PyValueError, prelude::*};
 use solana_sdk::signature::Signature as SignatureOriginal;
 
-use crate::calculate_hash;
+use crate::{calculate_hash, RichcmpFull};
 
 #[pyclass]
 #[derive(Clone, Copy, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
@@ -63,21 +63,16 @@ impl Signature {
         self.string()
     }
 
-    pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
-        match op {
-            CompareOp::Eq => Ok(self == other),
-            CompareOp::Ne => Ok(self != other),
-            CompareOp::Lt => Ok(self < other),
-            CompareOp::Gt => Ok(self > other),
-            CompareOp::Le => Ok(self <= other),
-            CompareOp::Ge => Ok(self >= other),
-        }
+    pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> bool {
+        self.richcmp(other, op)
     }
 
     pub fn __hash__(&self) -> u64 {
         calculate_hash(self)
     }
 }
+
+impl RichcmpFull for Signature {}
 
 impl From<SignatureOriginal> for Signature {
     fn from(sig: SignatureOriginal) -> Self {

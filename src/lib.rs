@@ -3,6 +3,7 @@ use instruction::CompiledInstruction;
 use pyo3::{
     exceptions::{PyTypeError, PyValueError},
     prelude::*,
+    pyclass::CompareOp,
 };
 use solana_sdk::{
     pubkey::bytes_are_curve_point,
@@ -71,6 +72,32 @@ fn calculate_hash<T: Hash>(t: &T) -> u64 {
     let mut s = DefaultHasher::new();
     t.hash(&mut s);
     s.finish()
+}
+
+pub trait RichcmpEqualityOnly: PartialEq {
+    fn richcmp(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
+        match op {
+            CompareOp::Eq => Ok(self == other),
+            CompareOp::Ne => Ok(self != other),
+            CompareOp::Lt => Err(richcmp_type_error("<")),
+            CompareOp::Gt => Err(richcmp_type_error(">")),
+            CompareOp::Le => Err(richcmp_type_error("<=")),
+            CompareOp::Ge => Err(richcmp_type_error(">=")),
+        }
+    }
+}
+
+pub trait RichcmpFull: PartialEq + PartialOrd {
+    fn richcmp(&self, other: &Self, op: CompareOp) -> bool {
+        match op {
+            CompareOp::Eq => self == other,
+            CompareOp::Ne => self != other,
+            CompareOp::Lt => self < other,
+            CompareOp::Gt => self > other,
+            CompareOp::Le => self <= other,
+            CompareOp::Ge => self >= other,
+        }
+    }
 }
 
 /// A Python module implemented in Rust.

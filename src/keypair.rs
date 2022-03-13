@@ -1,4 +1,4 @@
-use pyo3::{basic::CompareOp, exceptions::PyValueError, prelude::*, types::PyBytes};
+use pyo3::{exceptions::PyValueError, prelude::*, pyclass::CompareOp, types::PyBytes};
 use solana_sdk::signer::{
     keypair::{
         keypair_from_seed, keypair_from_seed_phrase_and_passphrase, Keypair as KeypairOriginal,
@@ -6,7 +6,7 @@ use solana_sdk::signer::{
     Signer,
 };
 
-use crate::{pubkey::Pubkey, richcmp_type_error, signature::Signature, to_py_value_err};
+use crate::{pubkey::Pubkey, signature::Signature, to_py_value_err, RichcmpEqualityOnly};
 
 #[pyclass]
 #[derive(PartialEq, Debug)]
@@ -78,17 +78,6 @@ impl Keypair {
         }
     }
 
-    pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
-        match op {
-            CompareOp::Eq => Ok(self == other),
-            CompareOp::Ne => Ok(self != other),
-            CompareOp::Lt => Err(richcmp_type_error("<")),
-            CompareOp::Gt => Err(richcmp_type_error(">")),
-            CompareOp::Le => Err(richcmp_type_error("<=")),
-            CompareOp::Ge => Err(richcmp_type_error(">=")),
-        }
-    }
-
     pub fn __hash__(&self) -> PyResult<isize> {
         // call `hash((class_name, bytes(obj)))`
         Python::with_gil(|py| {
@@ -98,7 +87,13 @@ impl Keypair {
             builtins.getattr("hash")?.call1(((arg1, arg2),))?.extract()
         })
     }
+
+    pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
+        self.richcmp(other, op)
+    }
 }
+
+impl RichcmpEqualityOnly for Keypair {}
 
 impl Default for Keypair {
     fn default() -> Self {

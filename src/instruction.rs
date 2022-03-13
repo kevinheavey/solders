@@ -7,7 +7,7 @@ use solana_sdk::{
     pubkey::Pubkey as PubkeyOriginal,
 };
 
-use crate::{pubkey::Pubkey, richcmp_type_error};
+use crate::{pubkey::Pubkey, RichcmpEqualityOnly};
 
 /// Describes a single account read or written by a program during instruction
 /// execution.
@@ -61,16 +61,12 @@ impl AccountMeta {
     }
 
     pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
-        match op {
-            CompareOp::Eq => Ok(self == other),
-            CompareOp::Ne => Ok(self != other),
-            CompareOp::Lt => Err(richcmp_type_error("<")),
-            CompareOp::Gt => Err(richcmp_type_error(">")),
-            CompareOp::Le => Err(richcmp_type_error("<=")),
-            CompareOp::Ge => Err(richcmp_type_error(">=")),
-        }
+        self.richcmp(other, op)
     }
 }
+
+impl RichcmpEqualityOnly for AccountMeta {}
+
 impl From<AccountMetaOriginal> for AccountMeta {
     fn from(am: AccountMetaOriginal) -> Self {
         Self(am)
@@ -124,16 +120,11 @@ impl Instruction {
     }
 
     pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
-        match op {
-            CompareOp::Eq => Ok(self == other),
-            CompareOp::Ne => Ok(self != other),
-            CompareOp::Lt => Err(richcmp_type_error("<")),
-            CompareOp::Gt => Err(richcmp_type_error(">")),
-            CompareOp::Le => Err(richcmp_type_error("<=")),
-            CompareOp::Ge => Err(richcmp_type_error(">=")),
-        }
+        self.richcmp(other, op)
     }
 }
+
+impl RichcmpEqualityOnly for Instruction {}
 
 impl From<InstructionOriginal> for Instruction {
     fn from(ix: InstructionOriginal) -> Self {
@@ -195,16 +186,11 @@ impl CompiledInstruction {
     }
 
     pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
-        match op {
-            CompareOp::Eq => Ok(self == other),
-            CompareOp::Ne => Ok(self != other),
-            CompareOp::Lt => Err(richcmp_type_error("<")),
-            CompareOp::Gt => Err(richcmp_type_error(">")),
-            CompareOp::Le => Err(richcmp_type_error("<=")),
-            CompareOp::Ge => Err(richcmp_type_error(">=")),
-        }
+        self.richcmp(other, op)
     }
 }
+
+impl RichcmpEqualityOnly for CompiledInstruction {}
 
 impl From<CompiledInstructionOriginal> for CompiledInstruction {
     fn from(ix: CompiledInstructionOriginal) -> Self {
