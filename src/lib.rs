@@ -68,7 +68,7 @@ fn richcmp_type_error(op: &str) -> PyErr {
     PyTypeError::new_err(msg)
 }
 
-fn calculate_hash<T: Hash>(t: &T) -> u64 {
+fn calculate_hash(t: &impl Hash) -> u64 {
     let mut s = DefaultHasher::new();
     t.hash(&mut s);
     s.finish()
