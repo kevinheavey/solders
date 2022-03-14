@@ -1184,7 +1184,6 @@ version = "0.0.1"
 dependencies = [
  "bincode",
  "borsh",
- "ed25519-dalek",
  "pyo3",
  "serde",
  "serde_json",
