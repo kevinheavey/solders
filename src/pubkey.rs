@@ -3,6 +3,19 @@ use std::{fmt, hash::Hash, str::FromStr};
 use crate::{calculate_hash, to_py_value_err, RichcmpFull};
 use pyo3::{basic::CompareOp, prelude::*};
 use solana_sdk::pubkey::{Pubkey as PubkeyOriginal, PUBKEY_BYTES};
+/// A public key.
+///
+/// Args:
+///      pubkey_bytes (bytes): The pubkey in bytes.
+///
+/// Example:
+///     >>> from solders import Pubkey
+///     >>> pubkey = Pubkey(bytes([1] * 32))
+///     >>> str(pubkey)
+///     '4vJ9JU1bJJE96FWSJKvHsmmFADCg4gpZQff4P3bkLKi'
+///     >>> bytes(pubkey).hex()
+///     '0101010101010101010101010101010101010101010101010101010101010101'
+///
 #[pyclass]
 #[derive(Eq, PartialEq, Ord, PartialOrd, Debug, Default, Hash, Clone)]
 pub struct Pubkey(pub PubkeyOriginal);
