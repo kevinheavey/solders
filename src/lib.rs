@@ -11,7 +11,6 @@ use solana_sdk::{
 };
 use std::{
     collections::hash_map::DefaultHasher,
-    error::Error,
     hash::{Hash, Hasher},
 };
 mod pubkey;
@@ -27,6 +26,10 @@ pub use hash::Hash as SolderHash;
 
 fn to_py_value_err(err: &impl ToString) -> PyErr {
     PyValueError::new_err(err.to_string())
+}
+
+fn handle_py_value_err<T: Into<P>, E: ToString, P>(res: Result<T, E>) -> PyResult<P> {
+    res.map_or_else(|e| Err(to_py_value_err(&e)), |v| Ok(v.into()))
 }
 
 // #[derive(Debug)]

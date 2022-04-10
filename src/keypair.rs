@@ -1,4 +1,4 @@
-use pyo3::{exceptions::PyValueError, prelude::*, pyclass::CompareOp, types::PyBytes};
+use pyo3::{prelude::*, pyclass::CompareOp, types::PyBytes};
 use solana_sdk::signer::{
     keypair::{
         keypair_from_seed, keypair_from_seed_phrase_and_passphrase, Keypair as KeypairOriginal,
@@ -6,7 +6,7 @@ use solana_sdk::signer::{
     Signer,
 };
 
-use crate::{pubkey::Pubkey, signature::Signature, to_py_value_err, RichcmpEqualityOnly};
+use crate::{handle_py_value_err, pubkey::Pubkey, signature::Signature, RichcmpEqualityOnly};
 
 #[pyclass]
 #[derive(PartialEq, Debug)]
@@ -23,8 +23,7 @@ impl Keypair {
     /// Recovers a `Keypair` from a byte array
     #[staticmethod]
     pub fn from_bytes(raw_bytes: &[u8]) -> PyResult<Self> {
-        KeypairOriginal::from_bytes(raw_bytes)
-            .map_or_else(|e| Err(to_py_value_err(&e)), |v| Ok(v.into()))
+        handle_py_value_err(KeypairOriginal::from_bytes(raw_bytes))
     }
 
     /// Returns this `Keypair` as a byte array
@@ -64,13 +63,15 @@ impl Keypair {
 
     #[staticmethod]
     pub fn from_seed(seed: &[u8]) -> PyResult<Self> {
-        keypair_from_seed(seed).map_or_else(|e| Err(to_py_value_err(&e)), |v| Ok(v.into()))
+        handle_py_value_err(keypair_from_seed(seed))
     }
 
     #[staticmethod]
     pub fn from_seed_phrase_and_passphrase(seed_phrase: &str, passphrase: &str) -> PyResult<Self> {
-        keypair_from_seed_phrase_and_passphrase(seed_phrase, passphrase)
-            .map_or_else(|e| Err(to_py_value_err(&e)), |v| Ok(v.into()))
+        handle_py_value_err(keypair_from_seed_phrase_and_passphrase(
+            seed_phrase,
+            passphrase,
+        ))
     }
 
     pub fn __hash__(&self) -> PyResult<isize> {

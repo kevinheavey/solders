@@ -1,6 +1,6 @@
 use std::{fmt, hash::Hash, str::FromStr};
 
-use crate::{calculate_hash, to_py_value_err, RichcmpFull};
+use crate::{calculate_hash, handle_py_value_err, RichcmpFull};
 use pyo3::{basic::CompareOp, prelude::*};
 use solana_sdk::pubkey::{Pubkey as PubkeyOriginal, PUBKEY_BYTES};
 /// A public key.
@@ -38,7 +38,7 @@ impl Pubkey {
     #[staticmethod]
     #[pyo3(name = "from_string")]
     pub fn new_from_str(s: &str) -> PyResult<Self> {
-        PubkeyOriginal::from_str(s).map_or_else(|e| Err(to_py_value_err(&e)), |v| Ok(v.into()))
+        handle_py_value_err(PubkeyOriginal::from_str(s))
     }
 
     #[staticmethod]
@@ -53,8 +53,11 @@ impl Pubkey {
         seed: &str,
         program_id: &Self,
     ) -> PyResult<Self> {
-        PubkeyOriginal::create_with_seed(&from_public_key.0, seed, &program_id.0)
-            .map_or_else(|e| Err(to_py_value_err(&e)), |v| Ok(v.into()))
+        handle_py_value_err(PubkeyOriginal::create_with_seed(
+            &from_public_key.0,
+            seed,
+            &program_id.0,
+        ))
     }
 
     #[staticmethod]

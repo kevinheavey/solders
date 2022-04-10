@@ -1,9 +1,9 @@
 use std::{fmt, str::FromStr};
 
-use pyo3::{basic::CompareOp, exceptions::PyValueError, prelude::*};
+use pyo3::{basic::CompareOp, prelude::*};
 use solana_sdk::signature::Signature as SignatureOriginal;
 
-use crate::{calculate_hash, to_py_value_err, RichcmpFull};
+use crate::{calculate_hash, handle_py_value_err, RichcmpFull};
 
 #[pyclass]
 #[derive(Clone, Copy, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
@@ -30,7 +30,7 @@ impl Signature {
     #[staticmethod]
     #[pyo3(name = "from_string")]
     pub fn new_from_str(s: &str) -> PyResult<Self> {
-        SignatureOriginal::from_str(s).map_or_else(|e| Err(to_py_value_err(&e)), |v| Ok(v.into()))
+        handle_py_value_err(SignatureOriginal::from_str(s))
     }
 
     pub fn verify(&self, pubkey_bytes: &[u8], message_bytes: &[u8]) -> bool {
