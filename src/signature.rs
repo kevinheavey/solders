@@ -47,7 +47,7 @@ impl Signature {
 
     #[allow(clippy::wrong_self_convention)]
     pub fn to_bytes(&self) -> &[u8] {
-        self.0.as_ref()
+        self.as_ref()
     }
 
     pub fn __bytes__(&self) -> &[u8] {
@@ -83,5 +83,11 @@ impl From<SignatureOriginal> for Signature {
 impl fmt::Display for Signature {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.0)
+    }
+}
+
+impl AsRef<[u8]> for Signature {
+    fn as_ref(&self) -> &[u8] {
+        self.0.as_ref()
     }
 }
