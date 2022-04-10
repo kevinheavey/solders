@@ -25,7 +25,7 @@ pub use instruction::{AccountMeta, Instruction};
 mod hash;
 pub use hash::Hash as SolderHash;
 
-fn to_py_value_err<T: Error>(err: T) -> PyErr {
+fn to_py_value_err(err: &impl ToString) -> PyErr {
     PyValueError::new_err(err.to_string())
 }
 

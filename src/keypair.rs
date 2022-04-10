@@ -24,7 +24,7 @@ impl Keypair {
     #[staticmethod]
     pub fn from_bytes(raw_bytes: &[u8]) -> PyResult<Self> {
         KeypairOriginal::from_bytes(raw_bytes)
-            .map_or_else(|e| Err(to_py_value_err(e)), |v| Ok(v.into()))
+            .map_or_else(|e| Err(to_py_value_err(&e)), |v| Ok(v.into()))
     }
 
     /// Returns this `Keypair` as a byte array
@@ -64,18 +64,13 @@ impl Keypair {
 
     #[staticmethod]
     pub fn from_seed(seed: &[u8]) -> PyResult<Self> {
-        match keypair_from_seed(seed) {
-            Ok(val) => Ok(val.into()),
-            Err(val) => Err(PyValueError::new_err(val.to_string())),
-        }
+        keypair_from_seed(seed).map_or_else(|e| Err(to_py_value_err(&e)), |v| Ok(v.into()))
     }
 
     #[staticmethod]
     pub fn from_seed_phrase_and_passphrase(seed_phrase: &str, passphrase: &str) -> PyResult<Self> {
-        match keypair_from_seed_phrase_and_passphrase(seed_phrase, passphrase) {
-            Ok(val) => Ok(val.into()),
-            Err(val) => Err(PyValueError::new_err(val.to_string())),
-        }
+        keypair_from_seed_phrase_and_passphrase(seed_phrase, passphrase)
+            .map_or_else(|e| Err(to_py_value_err(&e)), |v| Ok(v.into()))
     }
 
     pub fn __hash__(&self) -> PyResult<isize> {

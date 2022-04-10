@@ -5,6 +5,8 @@ use solana_sdk::hash::{hash, Hash as HashOriginal, HASH_BYTES};
 
 use crate::{calculate_hash, to_py_value_err, RichcmpFull};
 
+// fn handle_pyvalue_err()
+
 #[pyclass]
 #[derive(Clone, Copy, Default, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
 pub struct Hash(HashOriginal);
@@ -32,7 +34,7 @@ impl Hash {
     #[staticmethod]
     #[pyo3(name = "from_string")]
     pub fn new_from_string(s: &str) -> PyResult<Self> {
-        HashOriginal::from_str(s).map_or_else(|e| Err(to_py_value_err(e)), |v| Ok(v.into()))
+        HashOriginal::from_str(s).map_or_else(|e| Err(to_py_value_err(&e)), |v| Ok(v.into()))
     }
 
     #[staticmethod]

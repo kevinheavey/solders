@@ -38,7 +38,7 @@ impl Pubkey {
     #[staticmethod]
     #[pyo3(name = "from_string")]
     pub fn new_from_str(s: &str) -> PyResult<Self> {
-        PubkeyOriginal::from_str(s).map_or_else(|e| Err(to_py_value_err(e)), |v| Ok(v.into()))
+        PubkeyOriginal::from_str(s).map_or_else(|e| Err(to_py_value_err(&e)), |v| Ok(v.into()))
     }
 
     #[staticmethod]
@@ -54,7 +54,7 @@ impl Pubkey {
         program_id: &Self,
     ) -> PyResult<Self> {
         PubkeyOriginal::create_with_seed(&from_public_key.0, seed, &program_id.0)
-            .map_or_else(|e| Err(to_py_value_err(e)), |v| Ok(v.into()))
+            .map_or_else(|e| Err(to_py_value_err(&e)), |v| Ok(v.into()))
     }
 
     #[staticmethod]
