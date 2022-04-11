@@ -23,6 +23,8 @@ mod instruction;
 pub use instruction::{AccountMeta, Instruction};
 mod hash;
 pub use hash::Hash as SolderHash;
+mod message;
+pub use message::Message;
 
 fn to_py_value_err(err: &impl ToString) -> PyErr {
     PyValueError::new_err(err.to_string())
