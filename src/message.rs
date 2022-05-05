@@ -21,7 +21,7 @@ fn convert_otpional_pubkey(pubkey: Option<&Pubkey>) -> Option<&PubkeyOriginal> {
 }
 #[pyclass]
 #[derive(PartialEq, Debug, Clone)]
-pub struct Message(pub MessageOriginal);
+pub struct Message(MessageOriginal);
 
 #[pymethods]
 impl Message {

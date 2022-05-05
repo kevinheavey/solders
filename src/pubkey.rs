@@ -18,7 +18,7 @@ use solana_sdk::pubkey::{Pubkey as PubkeyOriginal, PUBKEY_BYTES};
 ///
 #[pyclass]
 #[derive(Eq, PartialEq, Ord, PartialOrd, Debug, Default, Hash, Clone)]
-pub struct Pubkey(pub PubkeyOriginal);
+pub struct Pubkey(PubkeyOriginal);
 
 #[pymethods]
 impl Pubkey {
@@ -112,6 +112,12 @@ impl RichcmpFull for Pubkey {}
 impl From<PubkeyOriginal> for Pubkey {
     fn from(pubkey: PubkeyOriginal) -> Self {
         Self(pubkey)
+    }
+}
+
+impl From<&Pubkey> for PubkeyOriginal {
+    fn from(pubkey: &Pubkey) -> Self {
+        pubkey.0
     }
 }
 

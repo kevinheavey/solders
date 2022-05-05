@@ -22,13 +22,13 @@ use crate::{pubkey::Pubkey, RichcmpEqualityOnly};
 /// accounts which actually may be mutated are specified as writable.
 #[pyclass]
 #[derive(PartialEq, Debug, Clone)]
-pub struct AccountMeta(pub AccountMetaOriginal);
+pub struct AccountMeta(AccountMetaOriginal);
 #[pymethods]
 impl AccountMeta {
     /// Construct metadata for an account.
     #[new]
     pub fn new(pubkey: &Pubkey, is_signer: bool, is_writable: bool) -> Self {
-        let underlying_pubkey = pubkey.0;
+        let underlying_pubkey = pubkey.into();
         let underlying = if is_writable {
             AccountMetaOriginal::new(underlying_pubkey, is_signer)
         } else {
@@ -84,7 +84,7 @@ impl Instruction {
         let underlying_accounts: Vec<AccountMetaOriginal> =
             accounts.into_iter().map(|x| x.0).collect();
         let underlying =
-            InstructionOriginal::new_with_bytes(program_id.0, data, underlying_accounts);
+            InstructionOriginal::new_with_bytes(program_id.into(), data, underlying_accounts);
         underlying.into()
     }
 
@@ -166,7 +166,8 @@ impl CompiledInstruction {
     }
 
     pub fn program_id(&self, program_ids: Vec<Pubkey>) -> Pubkey {
-        let underlying_pubkeys: Vec<PubkeyOriginal> = program_ids.iter().map(|x| x.0).collect();
+        let underlying_pubkeys: Vec<PubkeyOriginal> =
+            program_ids.iter().map(|x| x.into()).collect();
         let underlying = *self.0.program_id(&underlying_pubkeys[..]);
         underlying.into()
     }

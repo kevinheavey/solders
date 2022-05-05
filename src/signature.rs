@@ -7,7 +7,7 @@ use crate::{calculate_hash, handle_py_value_err, RichcmpFull};
 
 #[pyclass]
 #[derive(Clone, Copy, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
-pub struct Signature(pub SignatureOriginal);
+pub struct Signature(SignatureOriginal);
 
 #[pymethods]
 impl Signature {
