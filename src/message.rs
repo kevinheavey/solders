@@ -1,16 +1,19 @@
 use pyo3::prelude::*;
 use solana_sdk::{
-    instruction::Instruction as InstructionOriginal, message::legacy::Message as MessageOriginal,
+    instruction::{
+        CompiledInstruction as CompiledInstructionOriginal, Instruction as InstructionOriginal,
+    },
+    message::legacy::Message as MessageOriginal,
     pubkey::Pubkey as PubkeyOriginal,
 };
 
-use crate::{Instruction, Pubkey, SolderHash};
+use crate::{CompiledInstruction, Instruction, Pubkey, SolderHash};
 
-fn convert_instructions(instructions: &[Instruction]) -> Vec<InstructionOriginal> {
+fn convert_instructions(instructions: Vec<Instruction>) -> Vec<InstructionOriginal> {
     instructions
-        .iter()
+        .into_iter()
         .map(|x| -> solana_sdk::instruction::Instruction { x.into() })
-        .collect::<Vec<_>>()
+        .collect()
 }
 
 fn convert_otpional_pubkey(pubkey: Option<&Pubkey>) -> Option<&PubkeyOriginal> {
@@ -20,14 +23,17 @@ fn convert_otpional_pubkey(pubkey: Option<&Pubkey>) -> Option<&PubkeyOriginal> {
 #[derive(PartialEq, Debug, Clone)]
 pub struct Message(pub MessageOriginal);
 
+#[pymethods]
 impl Message {
-    pub fn new(instructions: &[Instruction], payer: Option<&Pubkey>) -> Self {
+    #[new]
+    pub fn new(instructions: Vec<Instruction>, payer: Option<&Pubkey>) -> Self {
         let instructions_inner = convert_instructions(instructions);
         MessageOriginal::new(&instructions_inner[..], convert_otpional_pubkey(payer)).into()
     }
 
+    #[staticmethod]
     pub fn new_with_blockhash(
-        instructions: &[Instruction],
+        instructions: Vec<Instruction>,
         payer: Option<&Pubkey>,
         blockhash: &SolderHash,
     ) -> Self {
@@ -36,6 +42,30 @@ impl Message {
             &instructions_inner[..],
             convert_otpional_pubkey(payer),
             blockhash.as_ref(),
+        )
+        .into()
+    }
+
+    #[staticmethod]
+    pub fn new_with_compiled_instructions(
+        num_required_signatures: u8,
+        num_readonly_signed_accounts: u8,
+        num_readonly_unsigned_accounts: u8,
+        account_keys: Vec<Pubkey>,
+        recent_blockhash: SolderHash,
+        instructions: Vec<CompiledInstruction>,
+    ) -> Self {
+        let instructions_inner: Vec<CompiledInstructionOriginal> =
+            instructions.into_iter().map(|x| x.into()).collect();
+        let account_keys_inner: Vec<PubkeyOriginal> =
+            account_keys.into_iter().map(|x| x.into()).collect();
+        MessageOriginal::new_with_compiled_instructions(
+            num_required_signatures,
+            num_readonly_signed_accounts,
+            num_readonly_unsigned_accounts,
+            account_keys_inner,
+            recent_blockhash.into(),
+            instructions_inner,
         )
         .into()
     }

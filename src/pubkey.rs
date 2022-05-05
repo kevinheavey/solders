@@ -115,6 +115,12 @@ impl From<PubkeyOriginal> for Pubkey {
     }
 }
 
+impl From<Pubkey> for PubkeyOriginal {
+    fn from(pubkey: Pubkey) -> Self {
+        pubkey.0
+    }
+}
+
 impl fmt::Display for Pubkey {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.0)

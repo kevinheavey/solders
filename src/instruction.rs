@@ -74,7 +74,7 @@ impl From<AccountMetaOriginal> for AccountMeta {
 }
 
 #[pyclass]
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Clone)]
 pub struct Instruction(pub InstructionOriginal);
 
 #[pymethods]
@@ -132,9 +132,9 @@ impl From<InstructionOriginal> for Instruction {
     }
 }
 
-impl From<&Instruction> for InstructionOriginal {
-    fn from(ix: &Instruction) -> InstructionOriginal {
-        ix.0.clone()
+impl From<Instruction> for InstructionOriginal {
+    fn from(ix: Instruction) -> InstructionOriginal {
+        ix.0
     }
 }
 
@@ -150,7 +150,7 @@ impl AsRef<InstructionOriginal> for Instruction {
 /// which is the core of a Solana transaction. It is created during the
 /// construction of `Message`. Most users will not interact with it directly.
 #[pyclass]
-#[derive(PartialEq, Eq, Debug)]
+#[derive(PartialEq, Eq, Debug, Clone)]
 pub struct CompiledInstruction(CompiledInstructionOriginal);
 
 #[pymethods]
@@ -207,5 +207,11 @@ impl RichcmpEqualityOnly for CompiledInstruction {}
 impl From<CompiledInstructionOriginal> for CompiledInstruction {
     fn from(ix: CompiledInstructionOriginal) -> Self {
         Self(ix)
+    }
+}
+
+impl From<CompiledInstruction> for CompiledInstructionOriginal {
+    fn from(ix: CompiledInstruction) -> Self {
+        ix.0
     }
 }

@@ -72,6 +72,12 @@ impl From<HashOriginal> for Hash {
     }
 }
 
+impl From<Hash> for HashOriginal {
+    fn from(h: Hash) -> HashOriginal {
+        h.0
+    }
+}
+
 impl AsRef<HashOriginal> for Hash {
     fn as_ref(&self) -> &HashOriginal {
         &self.0
