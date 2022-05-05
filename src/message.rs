@@ -69,10 +69,85 @@ impl Message {
         )
         .into()
     }
+
+    pub fn hash(&self) -> SolderHash {
+        self.0.hash().into()
+    }
+
+    #[staticmethod]
+    pub fn hash_raw_message(message_bytes: &[u8]) -> SolderHash {
+        MessageOriginal::hash_raw_message(message_bytes).into()
+    }
+
+    pub fn compile_instruction(&self, ix: &Instruction) -> CompiledInstruction {
+        self.0.compile_instruction(ix.as_ref()).into()
+    }
+
+    pub fn serialize(&self) -> Vec<u8> {
+        self.0.serialize()
+    }
+
+    pub fn program_id(&self, instruction_index: usize) -> Option<Pubkey> {
+        self.0.program_id(instruction_index).map(|x| x.into())
+    }
+
+    pub fn program_index(&self, instruction_index: usize) -> Option<usize> {
+        self.0.program_index(instruction_index)
+    }
+
+    pub fn program_ids(&self) -> Vec<Pubkey> {
+        self.0.program_ids().into_iter().map(|x| x.into()).collect()
+    }
+
+    pub fn is_key_passed_to_program(&self, key_index: usize) -> bool {
+        self.0.is_key_passed_to_program(key_index)
+    }
+
+    pub fn is_key_called_as_program(&self, key_index: usize) -> bool {
+        self.0.is_key_called_as_program(key_index)
+    }
+
+    pub fn is_non_loader_key(&self, key_index: usize) -> bool {
+        self.0.is_non_loader_key(key_index)
+    }
+
+    pub fn program_position(&self, index: usize) -> Option<usize> {
+        self.0.program_position(index)
+    }
+
+    pub fn maybe_executable(&self, i: usize) -> bool {
+        self.0.maybe_executable(i)
+    }
+
+    pub fn is_writable(&self, i: usize) -> bool {
+        self.0.is_writable(i)
+    }
+
+    pub fn is_signer(&self, i: usize) -> bool {
+        self.0.is_signer(i)
+    }
+
+    pub fn signer_keys(&self) -> Vec<Pubkey> {
+        self.0.signer_keys().into_iter().map(|x| x.into()).collect()
+    }
+
+    pub fn has_duplicates(&self) -> bool {
+        self.0.has_duplicates()
+    }
+
+    pub fn is_upgradeable_loader_present(&self) -> bool {
+        self.0.is_upgradeable_loader_present()
+    }
 }
 
 impl From<MessageOriginal> for Message {
     fn from(message: MessageOriginal) -> Self {
         Self(message)
+    }
+}
+
+impl From<&Message> for MessageOriginal {
+    fn from(message: &Message) -> Self {
+        message.0.clone()
     }
 }
