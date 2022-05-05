@@ -75,7 +75,7 @@ impl From<AccountMetaOriginal> for AccountMeta {
 
 #[pyclass]
 #[derive(PartialEq, Debug)]
-pub struct Instruction(InstructionOriginal);
+pub struct Instruction(pub InstructionOriginal);
 
 #[pymethods]
 impl Instruction {
@@ -129,6 +129,18 @@ impl RichcmpEqualityOnly for Instruction {}
 impl From<InstructionOriginal> for Instruction {
     fn from(ix: InstructionOriginal) -> Self {
         Self(ix)
+    }
+}
+
+impl From<&Instruction> for InstructionOriginal {
+    fn from(ix: &Instruction) -> InstructionOriginal {
+        ix.0.clone()
+    }
+}
+
+impl AsRef<InstructionOriginal> for Instruction {
+    fn as_ref(&self) -> &InstructionOriginal {
+        &self.0
     }
 }
 

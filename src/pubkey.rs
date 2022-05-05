@@ -126,3 +126,9 @@ impl AsRef<[u8]> for Pubkey {
         self.0.as_ref()
     }
 }
+
+impl AsRef<PubkeyOriginal> for Pubkey {
+    fn as_ref(&self) -> &PubkeyOriginal {
+        &self.0
+    }
+}
