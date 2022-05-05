@@ -1,13 +1,15 @@
-use pyo3::prelude::*;
+use pyo3::{prelude::*, pyclass::CompareOp};
 use solana_sdk::{
     instruction::{
         CompiledInstruction as CompiledInstructionOriginal, Instruction as InstructionOriginal,
     },
-    message::legacy::Message as MessageOriginal,
+    message::{legacy::Message as MessageOriginal, MessageHeader as MessageHeaderOriginal},
     pubkey::Pubkey as PubkeyOriginal,
 };
 
-use crate::{CompiledInstruction, Instruction, Pubkey, SolderHash};
+use crate::{
+    handle_py_value_err, CompiledInstruction, Instruction, Pubkey, RichcmpEqualityOnly, SolderHash,
+};
 
 fn convert_instructions(instructions: Vec<Instruction>) -> Vec<InstructionOriginal> {
     instructions
@@ -19,8 +21,59 @@ fn convert_instructions(instructions: Vec<Instruction>) -> Vec<InstructionOrigin
 fn convert_otpional_pubkey(pubkey: Option<&Pubkey>) -> Option<&PubkeyOriginal> {
     pubkey.map(|p| p.as_ref())
 }
+
 #[pyclass]
-#[derive(PartialEq, Debug, Clone)]
+#[derive(PartialEq, Eq, Debug)]
+pub struct MessageHeader(MessageHeaderOriginal);
+
+#[pymethods]
+impl MessageHeader {
+    #[new]
+    pub fn new(
+        num_required_signatures: u8,
+        num_readonly_signed_accounts: u8,
+        num_readonly_unsigned_accounts: u8,
+    ) -> Self {
+        MessageHeaderOriginal {
+            num_required_signatures,
+            num_readonly_signed_accounts,
+            num_readonly_unsigned_accounts,
+        }
+        .into()
+    }
+
+    #[getter]
+    pub fn num_required_signatures(&self) -> u8 {
+        self.0.num_required_signatures
+    }
+
+    #[getter]
+    pub fn num_readonly_signed_accounts(&self) -> u8 {
+        self.0.num_readonly_signed_accounts
+    }
+
+    #[getter]
+    pub fn num_readonly_unsigned_accounts(&self) -> u8 {
+        self.0.num_readonly_unsigned_accounts
+    }
+
+    pub fn __repr__(&self) -> String {
+        format!("{:#?}", self)
+    }
+
+    pub fn __str__(&self) -> String {
+        format!("{:?}", self)
+    }
+}
+
+impl From<MessageHeaderOriginal> for MessageHeader {
+    fn from(h: MessageHeaderOriginal) -> Self {
+        Self(h)
+    }
+}
+
+#[pyclass]
+#[derive(PartialEq, Eq, Debug, Clone, Default)]
 pub struct Message(MessageOriginal);
 
 #[pymethods]
@@ -29,6 +82,36 @@ impl Message {
     pub fn new(instructions: Vec<Instruction>, payer: Option<&Pubkey>) -> Self {
         let instructions_inner = convert_instructions(instructions);
         MessageOriginal::new(&instructions_inner[..], convert_otpional_pubkey(payer)).into()
+    }
+
+    #[getter]
+    pub fn header(&self) -> MessageHeader {
+        self.0.header.into()
+    }
+
+    #[getter]
+    pub fn account_keys(&self) -> Vec<Pubkey> {
+        self.0
+            .account_keys
+            .clone()
+            .into_iter()
+            .map(|x| x.into())
+            .collect()
+    }
+
+    #[getter]
+    pub fn recent_blockhash(&self) -> SolderHash {
+        self.0.recent_blockhash.into()
+    }
+
+    #[getter]
+    pub fn instructions(&self) -> Vec<CompiledInstruction> {
+        self.0
+            .instructions
+            .clone()
+            .into_iter()
+            .map(|x| x.into())
+            .collect()
     }
 
     #[staticmethod]
@@ -138,7 +221,32 @@ impl Message {
     pub fn is_upgradeable_loader_present(&self) -> bool {
         self.0.is_upgradeable_loader_present()
     }
+
+    #[staticmethod]
+    #[pyo3(name = "default")]
+    pub fn new_default() -> Self {
+        Self::default()
+    }
+
+    #[staticmethod]
+    pub fn deserialize(data: &[u8]) -> PyResult<Self> {
+        handle_py_value_err(bincode::deserialize::<MessageOriginal>(data))
+    }
+
+    pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
+        self.richcmp(other, op)
+    }
+
+    pub fn __repr__(&self) -> String {
+        format!("{:#?}", self)
+    }
+
+    pub fn __str__(&self) -> String {
+        format!("{:?}", self)
+    }
 }
+
+impl RichcmpEqualityOnly for Message {}
 
 impl From<MessageOriginal> for Message {
     fn from(message: MessageOriginal) -> Self {
