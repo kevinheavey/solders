@@ -118,5 +118,6 @@ fn solders(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_class::<Instruction>()?;
     m.add_class::<CompiledInstruction>()?;
     m.add_class::<SolderHash>()?;
+    m.add_class::<Message>()?;
     Ok(())
 }
