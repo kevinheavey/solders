@@ -191,7 +191,36 @@ impl Transaction {
     pub fn sanitize(&self) -> PyResult<()> {
         handle_py_value_err(self.0.sanitize())
     }
+
+    pub fn serialize(&self) -> PyResult<Vec<u8>> {
+        handle_py_value_err(bincode::serialize(&self.0))
+    }
+
+    #[staticmethod]
+    #[pyo3(name = "default")]
+    pub fn new_default() -> Self {
+        Self::default()
+    }
+
+    #[staticmethod]
+    pub fn deserialize(data: &[u8]) -> PyResult<Self> {
+        handle_py_value_err(bincode::deserialize::<TransactionOriginal>(data))
+    }
+
+    pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
+        self.richcmp(other, op)
+    }
+
+    pub fn __repr__(&self) -> String {
+        format!("{:#?}", self)
+    }
+
+    pub fn __str__(&self) -> String {
+        format!("{:?}", self)
+    }
 }
+
+impl RichcmpEqualityOnly for Transaction {}
 
 impl From<TransactionOriginal> for Transaction {
     fn from(tx: TransactionOriginal) -> Self {
