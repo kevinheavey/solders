@@ -11,19 +11,9 @@ use solana_sdk::{
 };
 
 use crate::{
-    handle_py_value_err, CompiledInstruction, Instruction, Pubkey, RichcmpEqualityOnly, SolderHash,
+    convert_instructions, convert_optional_pubkey, handle_py_value_err, CompiledInstruction,
+    Instruction, Pubkey, RichcmpEqualityOnly, SolderHash,
 };
-
-fn convert_instructions(instructions: Vec<Instruction>) -> Vec<InstructionOriginal> {
-    instructions
-        .into_iter()
-        .map(|x| -> solana_sdk::instruction::Instruction { x.into() })
-        .collect()
-}
-
-fn convert_otpional_pubkey(pubkey: Option<&Pubkey>) -> Option<&PubkeyOriginal> {
-    pubkey.map(|p| p.as_ref())
-}
 
 #[pyclass]
 #[derive(PartialEq, Eq, Debug, Default)]
@@ -93,7 +83,7 @@ impl Message {
     #[new]
     pub fn new(instructions: Vec<Instruction>, payer: Option<&Pubkey>) -> Self {
         let instructions_inner = convert_instructions(instructions);
-        MessageOriginal::new(&instructions_inner[..], convert_otpional_pubkey(payer)).into()
+        MessageOriginal::new(&instructions_inner[..], convert_optional_pubkey(payer)).into()
     }
 
     #[getter]
@@ -135,7 +125,7 @@ impl Message {
         let instructions_inner = convert_instructions(instructions);
         MessageOriginal::new_with_blockhash(
             &instructions_inner[..],
-            convert_otpional_pubkey(payer),
+            convert_optional_pubkey(payer),
             blockhash.as_ref(),
         )
         .into()
@@ -263,6 +253,12 @@ impl RichcmpEqualityOnly for Message {}
 impl From<MessageOriginal> for Message {
     fn from(message: MessageOriginal) -> Self {
         Self(message)
+    }
+}
+
+impl From<Message> for MessageOriginal {
+    fn from(message: Message) -> Self {
+        message.0
     }
 }
 

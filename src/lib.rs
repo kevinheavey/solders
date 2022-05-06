@@ -5,7 +5,8 @@ use pyo3::{
     pyclass::CompareOp,
 };
 use solana_sdk::{
-    pubkey::bytes_are_curve_point,
+    instruction::Instruction as InstructionOriginal,
+    pubkey::{bytes_are_curve_point, Pubkey as PubkeyOriginal},
     short_vec::{decode_shortu16_len, ShortU16},
 };
 use std::{
@@ -33,6 +34,17 @@ fn to_py_value_err(err: &impl ToString) -> PyErr {
 
 fn handle_py_value_err<T: Into<P>, E: ToString, P>(res: Result<T, E>) -> PyResult<P> {
     res.map_or_else(|e| Err(to_py_value_err(&e)), |v| Ok(v.into()))
+}
+
+fn convert_optional_pubkey(pubkey: Option<&Pubkey>) -> Option<&PubkeyOriginal> {
+    pubkey.map(|p| p.as_ref())
+}
+
+fn convert_instructions(instructions: Vec<Instruction>) -> Vec<InstructionOriginal> {
+    instructions
+        .into_iter()
+        .map(|x| -> solana_sdk::instruction::Instruction { x.into() })
+        .collect()
 }
 
 // #[derive(Debug)]
