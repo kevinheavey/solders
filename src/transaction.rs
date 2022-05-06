@@ -99,6 +99,10 @@ impl Transaction {
         )
         .into()
     }
+
+    pub fn data(&self, instruction_index: usize) -> &[u8] {
+        self.0.data(instruction_index)
+    }
 }
 
 impl From<TransactionOriginal> for Transaction {
