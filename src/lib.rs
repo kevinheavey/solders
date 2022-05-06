@@ -133,5 +133,6 @@ fn solders(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_class::<SolderHash>()?;
     m.add_class::<Message>()?;
     m.add_class::<MessageHeader>()?;
+    m.add_class::<Transaction>()?;
     Ok(())
 }
