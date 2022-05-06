@@ -18,6 +18,10 @@ use crate::{
     Instruction, Keypair, Message, Pubkey, RichcmpEqualityOnly, SolderHash,
 };
 
+fn convert_keypairs(keypairs: &Vec<Keypair>) -> Vec<&KeypairOriginal> {
+    keypairs.iter().map(|x| x.as_ref()).collect()
+}
+
 #[pyclass]
 #[derive(Debug, PartialEq, Default, Eq, Clone, Serialize, Deserialize)]
 pub struct Transaction(TransactionOriginal);
@@ -30,8 +34,7 @@ impl Transaction {
         message: &Message,
         recent_blockhash: SolderHash,
     ) -> Self {
-        let underlying_keypairs: Vec<&KeypairOriginal> =
-            from_keypairs.iter().map(|x| x.as_ref()).collect();
+        let underlying_keypairs = convert_keypairs(&from_keypairs);
         TransactionOriginal::new(
             &underlying_keypairs,
             message.into(),
@@ -50,6 +53,22 @@ impl Transaction {
         TransactionOriginal::new_with_payer(
             &convert_instructions(instructions),
             convert_optional_pubkey(payer),
+        )
+        .into()
+    }
+
+    #[staticmethod]
+    pub fn new_signed_with_payer(
+        instructions: Vec<Instruction>,
+        payer: Option<&Pubkey>,
+        signing_keypairs: Vec<Keypair>,
+        recent_blockhash: SolderHash,
+    ) -> Self {
+        TransactionOriginal::new_signed_with_payer(
+            &convert_instructions(instructions),
+            convert_optional_pubkey(payer),
+            &convert_keypairs(&signing_keypairs),
+            recent_blockhash.into(),
         )
         .into()
     }
