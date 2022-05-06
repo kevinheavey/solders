@@ -24,6 +24,8 @@ mod hash;
 pub use hash::Hash as SolderHash;
 mod message;
 pub use message::{Message, MessageHeader};
+mod transaction;
+pub use transaction::Transaction;
 
 fn to_py_value_err(err: &impl ToString) -> PyErr {
     PyValueError::new_err(err.to_string())

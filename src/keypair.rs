@@ -102,3 +102,21 @@ impl From<KeypairOriginal> for Keypair {
         Self(keypair)
     }
 }
+
+impl From<Keypair> for KeypairOriginal {
+    fn from(k: Keypair) -> Self {
+        k.0
+    }
+}
+
+impl AsRef<KeypairOriginal> for Keypair {
+    fn as_ref(&self) -> &KeypairOriginal {
+        &self.0
+    }
+}
+
+impl Clone for Keypair {
+    fn clone(&self) -> Self {
+        Self::from_bytes(&self.to_bytes_array()).unwrap()
+    }
+}
