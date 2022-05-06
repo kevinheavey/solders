@@ -43,7 +43,7 @@ fn convert_optional_pubkey(pubkey: Option<&Pubkey>) -> Option<&PubkeyOriginal> {
 fn convert_instructions(instructions: Vec<Instruction>) -> Vec<InstructionOriginal> {
     instructions
         .into_iter()
-        .map(|x| -> solana_sdk::instruction::Instruction { x.into() })
+        .map(solana_sdk::instruction::Instruction::from)
         .collect()
 }
 

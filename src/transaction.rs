@@ -72,6 +72,33 @@ impl Transaction {
         )
         .into()
     }
+
+    #[staticmethod]
+    pub fn new_with_compiled_instructions(
+        from_keypairs: Vec<Keypair>,
+        keys: Vec<Pubkey>,
+        recent_blockhash: SolderHash,
+        program_ids: Vec<Pubkey>,
+        instructions: Vec<CompiledInstruction>,
+    ) -> Self {
+        let converted_keypairs = &convert_keypairs(&from_keypairs);
+        let converted_keys: Vec<PubkeyOriginal> =
+            keys.into_iter().map(PubkeyOriginal::from).collect();
+        let converted_program_ids: Vec<PubkeyOriginal> =
+            program_ids.into_iter().map(PubkeyOriginal::from).collect();
+        let converted_instructions = instructions
+            .into_iter()
+            .map(solana_sdk::instruction::CompiledInstruction::from)
+            .collect();
+        TransactionOriginal::new_with_compiled_instructions(
+            converted_keypairs,
+            &converted_keys[..],
+            recent_blockhash.into(),
+            converted_program_ids,
+            converted_instructions,
+        )
+        .into()
+    }
 }
 
 impl From<TransactionOriginal> for Transaction {
