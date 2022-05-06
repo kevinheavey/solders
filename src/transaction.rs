@@ -1,17 +1,10 @@
 use pyo3::{prelude::*, pyclass::CompareOp};
 use serde::{Deserialize, Serialize};
 use solana_sdk::{
-    instruction::{
-        CompiledInstruction as CompiledInstructionOriginal, Instruction as InstructionOriginal,
-    },
-    message::{
-        legacy::Message as MessageOriginal, MessageHeader as MessageHeaderOriginal,
-        MESSAGE_HEADER_LENGTH,
-    },
     pubkey::Pubkey as PubkeyOriginal,
     sanitize::Sanitize,
     signature::Signature as SignatureOriginal,
-    signer::{keypair::Keypair as KeypairOriginal, signers::Signers, Signer},
+    signer::keypair::Keypair as KeypairOriginal,
     transaction::{uses_durable_nonce, Transaction as TransactionOriginal},
 };
 
