@@ -97,7 +97,7 @@ impl Message {
             .account_keys
             .clone()
             .into_iter()
-            .map(|x| x.into())
+            .map(Pubkey::from)
             .collect()
     }
 
@@ -112,7 +112,7 @@ impl Message {
             .instructions
             .clone()
             .into_iter()
-            .map(|x| x.into())
+            .map(CompiledInstruction::from)
             .collect()
     }
 
@@ -140,10 +140,12 @@ impl Message {
         recent_blockhash: SolderHash,
         instructions: Vec<CompiledInstruction>,
     ) -> Self {
-        let instructions_inner: Vec<CompiledInstructionOriginal> =
-            instructions.into_iter().map(|x| x.into()).collect();
+        let instructions_inner: Vec<CompiledInstructionOriginal> = instructions
+            .into_iter()
+            .map(CompiledInstructionOriginal::from)
+            .collect();
         let account_keys_inner: Vec<PubkeyOriginal> =
-            account_keys.into_iter().map(|x| x.into()).collect();
+            account_keys.into_iter().map(PubkeyOriginal::from).collect();
         MessageOriginal::new_with_compiled_instructions(
             num_required_signatures,
             num_readonly_signed_accounts,
@@ -173,7 +175,7 @@ impl Message {
     }
 
     pub fn program_id(&self, instruction_index: usize) -> Option<Pubkey> {
-        self.0.program_id(instruction_index).map(|x| x.into())
+        self.0.program_id(instruction_index).map(Pubkey::from)
     }
 
     pub fn program_index(&self, instruction_index: usize) -> Option<usize> {
@@ -181,7 +183,7 @@ impl Message {
     }
 
     pub fn program_ids(&self) -> Vec<Pubkey> {
-        self.0.program_ids().into_iter().map(|x| x.into()).collect()
+        self.0.program_ids().into_iter().map(Pubkey::from).collect()
     }
 
     pub fn is_key_passed_to_program(&self, key_index: usize) -> bool {
@@ -213,7 +215,7 @@ impl Message {
     }
 
     pub fn signer_keys(&self) -> Vec<Pubkey> {
-        self.0.signer_keys().into_iter().map(|x| x.into()).collect()
+        self.0.signer_keys().into_iter().map(Pubkey::from).collect()
     }
 
     pub fn has_duplicates(&self) -> bool {
