@@ -168,7 +168,7 @@ impl CompiledInstruction {
     pub fn program_id(&self, program_ids: Vec<Pubkey>) -> Pubkey {
         let underlying_pubkeys: Vec<PubkeyOriginal> =
             program_ids.iter().map(PubkeyOriginal::from).collect();
-        let underlying = *self.0.program_id(&underlying_pubkeys[..]);
+        let underlying = *self.0.program_id(&underlying_pubkeys);
         underlying.into()
     }
 

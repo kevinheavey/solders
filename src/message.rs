@@ -81,7 +81,7 @@ impl Message {
     #[new]
     pub fn new(instructions: Vec<Instruction>, payer: Option<&Pubkey>) -> Self {
         let instructions_inner = convert_instructions(instructions);
-        MessageOriginal::new(&instructions_inner[..], convert_optional_pubkey(payer)).into()
+        MessageOriginal::new(&instructions_inner, convert_optional_pubkey(payer)).into()
     }
 
     #[getter]
@@ -122,7 +122,7 @@ impl Message {
     ) -> Self {
         let instructions_inner = convert_instructions(instructions);
         MessageOriginal::new_with_blockhash(
-            &instructions_inner[..],
+            &instructions_inner,
             convert_optional_pubkey(payer),
             blockhash.as_ref(),
         )

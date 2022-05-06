@@ -13,7 +13,7 @@ use crate::{
     Instruction, Keypair, Message, Pubkey, RichcmpEqualityOnly, Signature, SolderHash,
 };
 
-fn convert_keypairs(keypairs: &Vec<Keypair>) -> Vec<&KeypairOriginal> {
+fn convert_keypairs(keypairs: &[Keypair]) -> Vec<&KeypairOriginal> {
     keypairs.iter().map(|x| x.as_ref()).collect()
 }
 
@@ -102,7 +102,7 @@ impl Transaction {
             .collect();
         TransactionOriginal::new_with_compiled_instructions(
             converted_keypairs,
-            &converted_keys[..],
+            &converted_keys,
             recent_blockhash.into(),
             converted_program_ids,
             converted_instructions,
@@ -168,7 +168,7 @@ impl Transaction {
     ) -> PyResult<Vec<Option<usize>>> {
         let converted_pubkeys: Vec<PubkeyOriginal> =
             pubkeys.into_iter().map(PubkeyOriginal::from).collect();
-        handle_py_value_err(self.0.get_signing_keypair_positions(&converted_pubkeys[..]))
+        handle_py_value_err(self.0.get_signing_keypair_positions(&converted_pubkeys))
     }
 
     pub fn replace_signatures(&mut self, signers: Vec<(Pubkey, Signature)>) -> PyResult<()> {
@@ -181,7 +181,7 @@ impl Transaction {
                 )
             })
             .collect();
-        handle_py_value_err(self.0.replace_signatures(&converted_signers[..]))
+        handle_py_value_err(self.0.replace_signatures(&converted_signers))
     }
 
     pub fn uses_durable_nonce(&self) -> Option<CompiledInstruction> {

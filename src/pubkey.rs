@@ -62,14 +62,14 @@ impl Pubkey {
 
     #[staticmethod]
     pub fn create_program_address(seeds: Vec<&[u8]>, program_id: &Self) -> Self {
-        PubkeyOriginal::create_program_address(&seeds[..], &program_id.0)
+        PubkeyOriginal::create_program_address(&seeds, &program_id.0)
             .expect("Failed to create program address. This is extremely unlikely.")
             .into()
     }
 
     #[staticmethod]
     pub fn find_program_address(seeds: Vec<&[u8]>, program_id: &Self) -> (Self, u8) {
-        let (pubkey, nonce) = PubkeyOriginal::find_program_address(&seeds[..], &program_id.0);
+        let (pubkey, nonce) = PubkeyOriginal::find_program_address(&seeds, &program_id.0);
         (pubkey.into(), nonce)
     }
 
