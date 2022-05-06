@@ -1,5 +1,4 @@
 use bincode::serialize;
-use instruction::CompiledInstruction;
 use pyo3::{
     exceptions::{PyTypeError, PyValueError},
     prelude::*,
@@ -20,11 +19,11 @@ pub use signature::Signature;
 mod keypair;
 pub use keypair::Keypair;
 mod instruction;
-pub use instruction::{AccountMeta, Instruction};
+pub use instruction::{AccountMeta, CompiledInstruction, Instruction};
 mod hash;
 pub use hash::Hash as SolderHash;
 mod message;
-pub use message::Message;
+pub use message::{Message, MessageHeader};
 
 fn to_py_value_err(err: &impl ToString) -> PyErr {
     PyValueError::new_err(err.to_string())
@@ -119,5 +118,6 @@ fn solders(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_class::<CompiledInstruction>()?;
     m.add_class::<SolderHash>()?;
     m.add_class::<Message>()?;
+    m.add_class::<MessageHeader>()?;
     Ok(())
 }

@@ -3,7 +3,10 @@ use solana_sdk::{
     instruction::{
         CompiledInstruction as CompiledInstructionOriginal, Instruction as InstructionOriginal,
     },
-    message::{legacy::Message as MessageOriginal, MessageHeader as MessageHeaderOriginal},
+    message::{
+        legacy::Message as MessageOriginal, MessageHeader as MessageHeaderOriginal,
+        MESSAGE_HEADER_LENGTH,
+    },
     pubkey::Pubkey as PubkeyOriginal,
 };
 
@@ -23,11 +26,14 @@ fn convert_otpional_pubkey(pubkey: Option<&Pubkey>) -> Option<&PubkeyOriginal> {
 }
 
 #[pyclass]
-#[derive(PartialEq, Eq, Debug)]
+#[derive(PartialEq, Eq, Debug, Default)]
 pub struct MessageHeader(MessageHeaderOriginal);
 
 #[pymethods]
 impl MessageHeader {
+    #[classattr]
+    const LENGTH: usize = MESSAGE_HEADER_LENGTH;
+
     #[new]
     pub fn new(
         num_required_signatures: u8,
@@ -40,6 +46,12 @@ impl MessageHeader {
             num_readonly_unsigned_accounts,
         }
         .into()
+    }
+
+    #[staticmethod]
+    #[pyo3(name = "default")]
+    pub fn new_default() -> Self {
+        Self::default()
     }
 
     #[getter]

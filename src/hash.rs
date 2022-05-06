@@ -40,6 +40,12 @@ impl Hash {
         HashOriginal::new_unique().into()
     }
 
+    #[staticmethod]
+    #[pyo3(name = "default")]
+    pub fn new_default() -> Self {
+        Self::default()
+    }
+
     #[allow(clippy::wrong_self_convention)]
     pub fn to_bytes(&self) -> &[u8] {
         self.as_ref()
