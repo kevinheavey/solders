@@ -103,6 +103,12 @@ impl Transaction {
     pub fn data(&self, instruction_index: usize) -> &[u8] {
         self.0.data(instruction_index)
     }
+
+    pub fn key(&self, instruction_index: usize, accounts_index: usize) -> Option<Pubkey> {
+        self.0
+            .key(instruction_index, accounts_index)
+            .map(Pubkey::from)
+    }
 }
 
 impl From<TransactionOriginal> for Transaction {
