@@ -9,6 +9,7 @@ use solana_sdk::{
         MESSAGE_HEADER_LENGTH,
     },
     pubkey::Pubkey as PubkeyOriginal,
+    sanitize::Sanitize,
     signature::Signature as SignatureOriginal,
     signer::{keypair::Keypair as KeypairOriginal, signers::Signers, Signer},
     transaction::{uses_durable_nonce, Transaction as TransactionOriginal},
@@ -192,6 +193,10 @@ impl Transaction {
 
     pub fn uses_durable_nonce(&self) -> Option<CompiledInstruction> {
         uses_durable_nonce(&self.0).map(|x| CompiledInstruction::from(x.clone()))
+    }
+
+    pub fn sanitize(&self) -> PyResult<()> {
+        handle_py_value_err(self.0.sanitize())
     }
 }
 
