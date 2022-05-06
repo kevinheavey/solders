@@ -15,7 +15,7 @@ use solana_sdk::{
 
 use crate::{
     convert_instructions, convert_optional_pubkey, handle_py_value_err, CompiledInstruction,
-    Instruction, Keypair, Message, Pubkey, RichcmpEqualityOnly, SolderHash,
+    Instruction, Keypair, Message, Pubkey, RichcmpEqualityOnly, Signature, SolderHash,
 };
 
 fn convert_keypairs(keypairs: &Vec<Keypair>) -> Vec<&KeypairOriginal> {
@@ -41,6 +41,21 @@ impl Transaction {
             recent_blockhash.into(),
         )
         .into()
+    }
+
+    #[getter]
+    pub fn signatures(&self) -> Vec<Signature> {
+        self.0
+            .signatures
+            .clone()
+            .into_iter()
+            .map(Signature::from)
+            .collect()
+    }
+
+    #[getter]
+    pub fn message(&self) -> Message {
+        self.0.message.clone().into()
     }
 
     #[staticmethod]
@@ -107,6 +122,12 @@ impl Transaction {
     pub fn key(&self, instruction_index: usize, accounts_index: usize) -> Option<Pubkey> {
         self.0
             .key(instruction_index, accounts_index)
+            .map(Pubkey::from)
+    }
+
+    pub fn signer_key(&self, instruction_index: usize, accounts_index: usize) -> Option<Pubkey> {
+        self.0
+            .signer_key(instruction_index, accounts_index)
             .map(Pubkey::from)
     }
 }
