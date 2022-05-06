@@ -9,8 +9,9 @@ use solana_sdk::{
         MESSAGE_HEADER_LENGTH,
     },
     pubkey::Pubkey as PubkeyOriginal,
+    signature::Signature as SignatureOriginal,
     signer::{keypair::Keypair as KeypairOriginal, signers::Signers, Signer},
-    transaction::Transaction as TransactionOriginal,
+    transaction::{uses_durable_nonce, Transaction as TransactionOriginal},
 };
 
 use crate::{
@@ -129,6 +130,68 @@ impl Transaction {
         self.0
             .signer_key(instruction_index, accounts_index)
             .map(Pubkey::from)
+    }
+
+    pub fn message_data(&self) -> Vec<u8> {
+        self.0.message_data()
+    }
+
+    pub fn sign(&mut self, keypairs: Vec<Keypair>, recent_blockhash: SolderHash) -> PyResult<()> {
+        let converted_keypairs = convert_keypairs(&keypairs);
+        handle_py_value_err(
+            self.0
+                .try_sign(&converted_keypairs, recent_blockhash.into()),
+        )
+    }
+
+    pub fn try_partial_sign(
+        &mut self,
+        keypairs: Vec<Keypair>,
+        recent_blockhash: SolderHash,
+    ) -> PyResult<()> {
+        let converted_keypairs = convert_keypairs(&keypairs);
+        handle_py_value_err(
+            self.0
+                .try_partial_sign(&converted_keypairs, recent_blockhash.into()),
+        )
+    }
+
+    pub fn verify(&self) -> PyResult<()> {
+        handle_py_value_err(self.0.verify())
+    }
+
+    pub fn verify_and_hash_message(&self) -> PyResult<SolderHash> {
+        handle_py_value_err(self.0.verify_and_hash_message())
+    }
+
+    pub fn verify_with_results(&self) -> Vec<bool> {
+        self.0.verify_with_results()
+    }
+
+    pub fn get_signing_keypair_positions(
+        &self,
+        pubkeys: Vec<Pubkey>,
+    ) -> PyResult<Vec<Option<usize>>> {
+        let converted_pubkeys: Vec<PubkeyOriginal> =
+            pubkeys.into_iter().map(PubkeyOriginal::from).collect();
+        handle_py_value_err(self.0.get_signing_keypair_positions(&converted_pubkeys[..]))
+    }
+
+    pub fn replace_signatures(&mut self, signers: Vec<(Pubkey, Signature)>) -> PyResult<()> {
+        let converted_signers: Vec<(PubkeyOriginal, SignatureOriginal)> = signers
+            .into_iter()
+            .map(|(pubkey, signature)| {
+                (
+                    PubkeyOriginal::from(pubkey),
+                    SignatureOriginal::from(signature),
+                )
+            })
+            .collect();
+        handle_py_value_err(self.0.replace_signatures(&converted_signers[..]))
+    }
+
+    pub fn uses_durable_nonce(&self) -> Option<CompiledInstruction> {
+        uses_durable_nonce(&self.0).map(|x| CompiledInstruction::from(x.clone()))
     }
 }
 

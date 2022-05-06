@@ -77,6 +77,12 @@ impl From<SignatureOriginal> for Signature {
     }
 }
 
+impl From<Signature> for SignatureOriginal {
+    fn from(sig: Signature) -> Self {
+        sig.0
+    }
+}
+
 impl fmt::Display for Signature {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.0)
