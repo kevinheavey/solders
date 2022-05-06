@@ -1,8 +1,6 @@
 use pyo3::{prelude::*, pyclass::CompareOp};
 use solana_sdk::{
-    instruction::{
-        CompiledInstruction as CompiledInstructionOriginal, Instruction as InstructionOriginal,
-    },
+    instruction::CompiledInstruction as CompiledInstructionOriginal,
     message::{
         legacy::Message as MessageOriginal, MessageHeader as MessageHeaderOriginal,
         MESSAGE_HEADER_LENGTH,
