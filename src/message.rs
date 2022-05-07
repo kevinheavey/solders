@@ -1,4 +1,4 @@
-use pyo3::{prelude::*, pyclass::CompareOp};
+use pyo3::{prelude::*, pyclass::CompareOp, types::PyBytes};
 use solana_sdk::{
     instruction::CompiledInstruction as CompiledInstructionOriginal,
     message::{
@@ -168,8 +168,8 @@ impl Message {
         self.0.compile_instruction(ix.as_ref()).into()
     }
 
-    pub fn serialize(&self) -> Vec<u8> {
-        self.0.serialize()
+    pub fn serialize<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+        PyBytes::new(py, &self.0.serialize())
     }
 
     pub fn program_id(&self, instruction_index: usize) -> Option<Pubkey> {

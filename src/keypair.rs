@@ -6,6 +6,8 @@ use solana_sdk::signer::{
     Signer,
 };
 
+const LENGTH: usize = 64;
+
 use crate::{handle_py_value_err, pubkey::Pubkey, signature::Signature, RichcmpEqualityOnly};
 
 #[pyclass]
@@ -22,12 +24,12 @@ impl Keypair {
 
     /// Recovers a `Keypair` from a byte array
     #[staticmethod]
-    pub fn from_bytes(raw_bytes: &[u8]) -> PyResult<Self> {
-        handle_py_value_err(KeypairOriginal::from_bytes(raw_bytes))
+    pub fn from_bytes(raw_bytes: [u8; LENGTH]) -> PyResult<Self> {
+        handle_py_value_err(KeypairOriginal::from_bytes(&raw_bytes))
     }
 
     /// Returns this `Keypair` as a byte array
-    pub fn to_bytes_array(&self) -> [u8; 64] {
+    pub fn to_bytes_array(&self) -> [u8; LENGTH] {
         self.0.to_bytes()
     }
 
@@ -62,8 +64,8 @@ impl Keypair {
     }
 
     #[staticmethod]
-    pub fn from_seed(seed: &[u8]) -> PyResult<Self> {
-        handle_py_value_err(keypair_from_seed(seed))
+    pub fn from_seed(seed: [u8; 32]) -> PyResult<Self> {
+        handle_py_value_err(keypair_from_seed(&seed))
     }
 
     #[staticmethod]
@@ -117,6 +119,6 @@ impl AsRef<KeypairOriginal> for Keypair {
 
 impl Clone for Keypair {
     fn clone(&self) -> Self {
-        Self::from_bytes(&self.to_bytes_array()).unwrap()
+        Self::from_bytes(self.to_bytes_array()).unwrap()
     }
 }

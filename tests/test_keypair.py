@@ -19,7 +19,7 @@ def test_from_bytes_wrong_size(test_input: bytes):
     with raises(ValueError) as excinfo:
         Keypair.from_bytes(test_input)
     assert (
-        excinfo.value.args[0] == "signature error: Keypair must be 64 bytes in length"
+        excinfo.value.args[0] == f"expected a sequence of length 64 (got {len(test_input)})"
     )
 
 
@@ -63,13 +63,13 @@ def test_from_seed() -> None:
     too_short_seed = bytes([0] * 31)
     with raises(ValueError) as excinfo:
         Keypair.from_seed(too_short_seed)
-    assert excinfo.value.args[0] == "Seed is too short"
+    assert excinfo.value.args[0] == "expected a sequence of length 32 (got 31)"
 
 
 def test_from_seed_phrase_and_passphrase() -> None:
     mnemonic = Mnemonic()
     passphrase = "42"
     seed = Seed(mnemonic, passphrase)
-    expected_keypair = Keypair.from_seed(bytes(seed))
+    expected_keypair = Keypair.from_seed(bytes(seed)[:32])
     keypair = Keypair.from_seed_phrase_and_passphrase(mnemonic.phrase, passphrase)
     assert keypair.pubkey() == expected_keypair.pubkey()

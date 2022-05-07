@@ -1,4 +1,4 @@
-use pyo3::{prelude::*, pyclass::CompareOp};
+use pyo3::{prelude::*, pyclass::CompareOp, types::PyBytes};
 use serde::{Deserialize, Serialize};
 use solana_sdk::{
     pubkey::Pubkey as PubkeyOriginal,
@@ -126,8 +126,8 @@ impl Transaction {
             .map(Pubkey::from)
     }
 
-    pub fn message_data(&self) -> Vec<u8> {
-        self.0.message_data()
+    pub fn message_data<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+        PyBytes::new(py, &self.0.message_data())
     }
 
     pub fn sign(&mut self, keypairs: Vec<Keypair>, recent_blockhash: SolderHash) -> PyResult<()> {
@@ -138,7 +138,7 @@ impl Transaction {
         )
     }
 
-    pub fn try_partial_sign(
+    pub fn partial_sign(
         &mut self,
         keypairs: Vec<Keypair>,
         recent_blockhash: SolderHash,
@@ -184,6 +184,10 @@ impl Transaction {
         handle_py_value_err(self.0.replace_signatures(&converted_signers))
     }
 
+    pub fn is_signed(&self) -> bool {
+        self.0.is_signed()
+    }
+
     pub fn uses_durable_nonce(&self) -> Option<CompiledInstruction> {
         uses_durable_nonce(&self.0).map(|x| CompiledInstruction::from(x.clone()))
     }
@@ -192,8 +196,9 @@ impl Transaction {
         handle_py_value_err(self.0.sanitize())
     }
 
-    pub fn serialize(&self) -> PyResult<Vec<u8>> {
-        handle_py_value_err(bincode::serialize(&self.0))
+    pub fn serialize<'a>(&self, py: Python<'a>) -> PyResult<&'a PyBytes> {
+        let as_vec: Vec<u8> = handle_py_value_err(bincode::serialize(&self.0))?;
+        Ok(PyBytes::new(py, &as_vec))
     }
 
     #[staticmethod]

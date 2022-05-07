@@ -33,8 +33,8 @@ impl Signature {
         handle_py_value_err(SignatureOriginal::from_str(s))
     }
 
-    pub fn verify(&self, pubkey_bytes: &[u8], message_bytes: &[u8]) -> bool {
-        self.0.verify(pubkey_bytes, message_bytes)
+    pub fn verify(&self, pubkey_bytes: [u8; 32], message_bytes: &[u8]) -> bool {
+        self.0.verify(&pubkey_bytes, message_bytes)
     }
 
     #[allow(clippy::wrong_self_convention)]

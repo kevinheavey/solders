@@ -1,4 +1,5 @@
-use pyo3::{basic::CompareOp, prelude::*};
+use pyo3::{basic::CompareOp, prelude::*, types::PyBytes};
+use serde::{Deserialize, Serialize};
 use solana_sdk::{
     instruction::{
         AccountMeta as AccountMetaOriginal, CompiledInstruction as CompiledInstructionOriginal,
@@ -7,7 +8,7 @@ use solana_sdk::{
     pubkey::Pubkey as PubkeyOriginal,
 };
 
-use crate::{pubkey::Pubkey, RichcmpEqualityOnly};
+use crate::{handle_py_value_err, pubkey::Pubkey, RichcmpEqualityOnly};
 
 /// Describes a single account read or written by a program during instruction
 /// execution.
@@ -74,7 +75,7 @@ impl From<AccountMetaOriginal> for AccountMeta {
 }
 
 #[pyclass]
-#[derive(PartialEq, Debug, Clone)]
+#[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
 pub struct Instruction(pub InstructionOriginal);
 
 #[pymethods]
@@ -96,8 +97,8 @@ impl Instruction {
 
     /// Opaque data passed to the program for its own interpretation.
     #[getter]
-    pub fn data(&self) -> Vec<u8> {
-        self.0.clone().data
+    pub fn data<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+        PyBytes::new(py, &self.0.data)
     }
 
     /// Metadata describing accounts that should be passed to the program.
@@ -121,6 +122,17 @@ impl Instruction {
 
     pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
         self.richcmp(other, op)
+    }
+
+    pub fn serialize<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+        let ser = bincode::serialize(&self).unwrap();
+        PyBytes::new(py, &ser)
+    }
+
+    #[staticmethod]
+    pub fn deserialize(data: &[u8]) -> PyResult<Self> {
+        let deser = bincode::deserialize::<Self>(data);
+        handle_py_value_err(deser)
     }
 }
 
@@ -150,7 +162,7 @@ impl AsRef<InstructionOriginal> for Instruction {
 /// which is the core of a Solana transaction. It is created during the
 /// construction of `Message`. Most users will not interact with it directly.
 #[pyclass]
-#[derive(PartialEq, Eq, Debug, Clone)]
+#[derive(PartialEq, Eq, Debug, Clone, Serialize, Deserialize)]
 pub struct CompiledInstruction(CompiledInstructionOriginal);
 
 #[pymethods]
@@ -180,14 +192,14 @@ impl CompiledInstruction {
 
     /// Ordered indices into the transaction keys array indicating which accounts to pass to the program.
     #[getter]
-    pub fn accounts(&self) -> Vec<u8> {
-        self.0.accounts.clone()
+    pub fn accounts<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+        PyBytes::new(py, &self.0.accounts)
     }
 
     /// The program input data.
     #[getter]
-    pub fn data(&self) -> Vec<u8> {
-        self.0.data.clone()
+    pub fn data<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+        PyBytes::new(py, &self.0.data)
     }
 
     pub fn __repr__(&self) -> String {
@@ -200,6 +212,17 @@ impl CompiledInstruction {
 
     pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
         self.richcmp(other, op)
+    }
+
+    pub fn serialize<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+        let ser = bincode::serialize(&self).unwrap();
+        PyBytes::new(py, &ser)
+    }
+
+    #[staticmethod]
+    pub fn deserialize(data: &[u8]) -> PyResult<Self> {
+        let deser = bincode::deserialize::<Self>(data);
+        handle_py_value_err(deser)
     }
 }
 

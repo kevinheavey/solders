@@ -7,8 +7,7 @@ from solders import (
     AccountMeta,
     CompiledInstruction,
 )
-
-ZERO_BYTES = bytes([0, 0, 0, 0])
+from .utils import ZERO_BYTES
 
 
 def test_message_signed_keys_len() -> None:
