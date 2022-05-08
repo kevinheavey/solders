@@ -89,6 +89,10 @@ impl Keypair {
     pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
         self.richcmp(other, op)
     }
+
+    pub fn is_interactive(&self) -> bool {
+        self.0.is_interactive()
+    }
 }
 
 impl RichcmpEqualityOnly for Keypair {}
