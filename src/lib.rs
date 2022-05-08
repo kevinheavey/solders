@@ -15,6 +15,8 @@ use std::{
 };
 mod pubkey;
 pub use pubkey::Pubkey;
+mod signer;
+pub use signer::Signer;
 mod signature;
 pub use signature::Signature;
 mod keypair;
@@ -96,6 +98,19 @@ fn calculate_hash(t: &impl Hash) -> u64 {
     let mut s = DefaultHasher::new();
     t.hash(&mut s);
     s.finish()
+}
+
+pub trait RichcmpEqOnlyPrecalculated: PartialEq {
+    fn richcmp(&self, eq_val: bool, op: CompareOp) -> PyResult<bool> {
+        match op {
+            CompareOp::Eq => Ok(eq_val),
+            CompareOp::Ne => Ok(!eq_val),
+            CompareOp::Lt => Err(richcmp_type_error("<")),
+            CompareOp::Gt => Err(richcmp_type_error(">")),
+            CompareOp::Le => Err(richcmp_type_error("<=")),
+            CompareOp::Ge => Err(richcmp_type_error(">=")),
+        }
+    }
 }
 
 pub trait RichcmpEqualityOnly: PartialEq {

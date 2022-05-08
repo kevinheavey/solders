@@ -1,18 +1,24 @@
 use pyo3::{prelude::*, pyclass::CompareOp, types::PyBytes};
-use solana_sdk::signer::{
-    keypair::{
-        keypair_from_seed, keypair_from_seed_phrase_and_passphrase, Keypair as KeypairOriginal,
+use solana_sdk::{
+    pubkey::Pubkey as PubkeyOriginal,
+    signature::Signature as SignatureOriginal,
+    signer::{
+        keypair::{
+            keypair_from_seed, keypair_from_seed_phrase_and_passphrase, Keypair as KeypairOriginal,
+        },
+        Signer as SignerTrait, SignerError,
     },
-    Signer,
 };
 
 const LENGTH: usize = 64;
 
-use crate::{handle_py_value_err, pubkey::Pubkey, signature::Signature, RichcmpEqualityOnly};
+use crate::{
+    handle_py_value_err, pubkey::Pubkey, signature::Signature, RichcmpEqOnlyPrecalculated, Signer,
+};
 
 #[pyclass]
 #[derive(PartialEq, Debug)]
-pub struct Keypair(KeypairOriginal);
+pub struct Keypair(pub KeypairOriginal);
 
 #[pymethods]
 impl Keypair {
@@ -55,12 +61,14 @@ impl Keypair {
         self.to_base58_string()
     }
 
-    pub fn pubkey(&self) -> Pubkey {
-        self.0.pubkey().into()
+    #[pyo3(name = "pubkey")]
+    pub fn py_pubkey(&self) -> Pubkey {
+        self.pubkey().into()
     }
 
-    pub fn sign_message(&self, message: &[u8]) -> Signature {
-        self.0.sign_message(message).into()
+    #[pyo3(name = "sign_message")]
+    pub fn py_sign_message(&self, message: &[u8]) -> Signature {
+        self.sign_message(message).into()
     }
 
     #[staticmethod]
@@ -86,16 +94,25 @@ impl Keypair {
         })
     }
 
-    pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
-        self.richcmp(other, op)
+    fn __richcmp__(&self, other: Signer, op: CompareOp) -> PyResult<bool> {
+        let other_eq = match other {
+            Signer::KeypairWrapper(kp) => kp.0 == self.0,
+            Signer::PresignerWrapper(ps) => ps.0 == self.0,
+        };
+        self.richcmp(other_eq, op)
     }
 
-    pub fn is_interactive(&self) -> bool {
-        self.0.is_interactive()
+    #[pyo3(name = "is_interactive")]
+    pub fn py_is_interactive(&self) -> bool {
+        self.is_interactive()
+    }
+
+    fn __repr__(&self) -> String {
+        format!("{:#?}", self)
     }
 }
 
-impl RichcmpEqualityOnly for Keypair {}
+impl RichcmpEqOnlyPrecalculated for Keypair {}
 
 impl Default for Keypair {
     fn default() -> Self {
@@ -124,5 +141,23 @@ impl AsRef<KeypairOriginal> for Keypair {
 impl Clone for Keypair {
     fn clone(&self) -> Self {
         Self::from_bytes(self.to_bytes_array()).unwrap()
+    }
+}
+
+impl SignerTrait for Keypair {
+    fn pubkey(&self) -> PubkeyOriginal {
+        self.0.pubkey()
+    }
+    fn try_pubkey(&self) -> Result<PubkeyOriginal, SignerError> {
+        self.0.try_pubkey()
+    }
+    fn sign_message(&self, message: &[u8]) -> SignatureOriginal {
+        self.0.sign_message(message)
+    }
+    fn try_sign_message(&self, message: &[u8]) -> Result<SignatureOriginal, SignerError> {
+        self.0.try_sign_message(message)
+    }
+    fn is_interactive(&self) -> bool {
+        self.0.is_interactive()
     }
 }
