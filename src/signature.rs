@@ -97,3 +97,9 @@ impl AsRef<[u8]> for Signature {
         self.0.as_ref()
     }
 }
+
+impl AsRef<SignatureOriginal> for Signature {
+    fn as_ref(&self) -> &SignatureOriginal {
+        &self.0
+    }
+}

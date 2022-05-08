@@ -2,6 +2,7 @@ use crate::Pubkey;
 use pyo3::prelude::*;
 use solana_sdk::pubkey;
 
+#[derive(Clone, Debug)]
 #[pyclass]
 pub struct Sysvar;
 
