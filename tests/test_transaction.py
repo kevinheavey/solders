@@ -11,7 +11,8 @@ from solders import (
     Message,
     MessageHeader,
     SystemProgram,
-    Signature
+    Signature,
+    Sysvar,
 )
 from .utils import ZERO_BYTES
 
@@ -149,7 +150,9 @@ def with_changed_fields(
         original_instruction.data,
         accounts_to_use,
     )
-    account_keys_to_use = original_message.account_keys if account_keys is None else account_keys
+    account_keys_to_use = (
+        original_message.account_keys if account_keys is None else account_keys
+    )
     new_message = Message.new_with_compiled_instructions(
         header.num_required_signatures,
         header.num_readonly_signed_accounts,
@@ -219,8 +222,12 @@ def test_sanitize_txs() -> None:
         tx.sanitize()
     assert excinfo.value.args[0] == "index out of bounds"
 
-    tx_tmp = with_changed_header(original_tx, num_readonly_signed_accounts = 2, num_readonly_unsigned_accounts = 3)
-    tx = with_changed_fields(tx_tmp, account_keys=tx_tmp.message.account_keys + [Pubkey.default()])
+    tx_tmp = with_changed_header(
+        original_tx, num_readonly_signed_accounts=2, num_readonly_unsigned_accounts=3
+    )
+    tx = with_changed_fields(
+        tx_tmp, account_keys=tx_tmp.message.account_keys + [Pubkey.default()]
+    )
     with raises(ValueError) as excinfo:
         tx.sanitize()
     assert excinfo.value.args[0] == "index out of bounds"
@@ -720,6 +727,7 @@ def test_transaction_missing_keypair() -> None:
         Transaction.new_unsigned(message).sign([], Hash.default())
     assert excinfo.value.args[0] == "not enough signers"
 
+
 def test_transaction_wrong_key() -> None:
     program_id = Pubkey.default()
     keypair0 = Keypair()
@@ -761,53 +769,55 @@ def test_transaction_instruction_with_duplicate_keys() -> None:
     message = Message([ix], id0)
     tx = Transaction.new_unsigned(message)
     tx.sign([keypair0], Hash.default())
-    assert tx.message.instructions[0] == CompiledInstruction(2, ZERO_BYTES, bytes([0, 1, 0, 1]))
+    assert tx.message.instructions[0] == CompiledInstruction(
+        2, ZERO_BYTES, bytes([0, 1, 0, 1])
+    )
     assert tx.is_signed()
 
 
-def test_try_sign_dyn_keypairs() -> None:
-    program_id = Pubkey.default()
-    keypair = Keypair()
-    pubkey = keypair.pubkey()
-    presigner_keypair = Keypair()
-    presigner_pubkey = presigner_keypair.pubkey()
+# def test_try_sign_dyn_keypairs() -> None:
+#     program_id = Pubkey.default()
+#     keypair = Keypair()
+#     pubkey = keypair.pubkey()
+#     presigner_keypair = Keypair()
+#     presigner_pubkey = presigner_keypair.pubkey()
 
-    ix = Instruction(
-        program_id,
-        ZERO_BYTES,
-        [
-            AccountMeta(pubkey, True, True),
-            AccountMeta(presigner_pubkey, True, True),
-        ],
-    )
-    message = Message([ix], pubkey)
-    tx = Transaction.new_unsigned(message)
+#     ix = Instruction(
+#         program_id,
+#         ZERO_BYTES,
+#         [
+#             AccountMeta(pubkey, True, True),
+#             AccountMeta(presigner_pubkey, True, True),
+#         ],
+#     )
+#     message = Message([ix], pubkey)
+#     tx = Transaction.new_unsigned(message)
 
-    presigner_sig = presigner_keypair.sign_message(tx.message_data())
-    presigner = Presigner(presigner_pubkey, presigner_sig)
+#     presigner_sig = presigner_keypair.sign_message(tx.message_data())
+#     presigner = Presigner(presigner_pubkey, presigner_sig)
 
-    signers = [keypair, presigner]
+#     signers = [keypair, presigner]
 
-    res = tx.try_sign(signers, Hash.default())
-    assert tx.signatures[0] == keypair.sign_message(tx.message_data())
-    assert tx.signatures[1] == presigner_sig
+#     res = tx.try_sign(signers, Hash.default())
+#     assert tx.signatures[0] == keypair.sign_message(tx.message_data())
+#     assert tx.signatures[1] == presigner_sig
 
-    # Wrong key should error, not panic
-    another_pubkey = Pubkey.new_unique()
-    ix = Instruction(
-        program_id,
-        ZERO_BYTES,
-        [
-            AccountMeta(another_pubkey, True, True),
-            AccountMeta(presigner_pubkey, True, True),
-        ],
-    )
-    message = Message([ix], another_pubkey)
-    tx = Transaction.new_unsigned(message)
-    with raises(ValueError) as excinfo:
-        tx.try_sign(signers, Hash.default())
-    assert excinfo.value.args[0] == "foo"
-    assert tx.signatures == [Signature.default(), Signature.default()]
+#     # Wrong key should error, not panic
+#     another_pubkey = Pubkey.new_unique()
+#     ix = Instruction(
+#         program_id,
+#         ZERO_BYTES,
+#         [
+#             AccountMeta(another_pubkey, True, True),
+#             AccountMeta(presigner_pubkey, True, True),
+#         ],
+#     )
+#     message = Message([ix], another_pubkey)
+#     tx = Transaction.new_unsigned(message)
+#     with raises(ValueError) as excinfo:
+#         tx.try_sign(signers, Hash.default())
+#     assert excinfo.value.args[0] == "foo"
+#     assert tx.signatures == [Signature.default(), Signature.default()]
 
 
 def nonced_transfer_tx() -> Tuple[Pubkey, Pubkey, Transaction]:
@@ -816,8 +826,8 @@ def nonced_transfer_tx() -> Tuple[Pubkey, Pubkey, Transaction]:
     nonce_keypair = Keypair()
     nonce_pubkey = nonce_keypair.pubkey()
     instructions = [
-        system_instruction.advance_nonce_account(nonce_pubkey, nonce_pubkey),
-        system_instruction.transfer(from_pubkey, nonce_pubkey, 42),
+        SystemProgram.advance_nonce_account(nonce_pubkey, nonce_pubkey),
+        SystemProgram.transfer(from_pubkey, nonce_pubkey, 42),
     ]
     message = Message(instructions, nonce_pubkey)
     tx = Transaction([from_keypair, nonce_keypair], message, Hash.default())
@@ -826,17 +836,17 @@ def nonced_transfer_tx() -> Tuple[Pubkey, Pubkey, Transaction]:
 
 def tx_uses_nonce_ok() -> None:
     (_, _, tx) = nonced_transfer_tx()
-    assert uses_durable_nonce(tx) is not None
+    assert tx.uses_durable_nonce() is not None
 
 
 def tx_uses_nonce_empty_ix_fail() -> None:
-    assert uses_durable_nonce(Transaction.default()) is None
+    assert Transaction.default().uses_durable_nonce() is None
 
 
 def tx_uses_nonce_bad_prog_id_idx_fail() -> None:
     (_, _, tx) = nonced_transfer_tx()
-    tx.message.instructions.get_mut(0).program_id_index = 255
-    assert uses_durable_nonce(tx) is None
+    with_changed_pid_index = with_changed_fields(tx, program_id_index=255)
+    assert with_changed_pid_index.uses_durable_nonce() is None
 
 
 def tx_uses_nonce_first_prog_id_not_nonce_fail() -> None:
@@ -845,12 +855,12 @@ def tx_uses_nonce_first_prog_id_not_nonce_fail() -> None:
     nonce_keypair = Keypair()
     nonce_pubkey = nonce_keypair.pubkey()
     instructions = [
-        system_instruction.transfer(from_pubkey, nonce_pubkey, 42),
-        system_instruction.advance_nonce_account(nonce_pubkey, nonce_pubkey),
+        SystemProgram.transfer(from_pubkey, nonce_pubkey, 42),
+        SystemProgram.advance_nonce_account(nonce_pubkey, nonce_pubkey),
     ]
     message = Message(instructions, from_pubkey)
     tx = Transaction([from_keypair, nonce_keypair], message, Hash.default())
-    assert uses_durable_nonce(tx) is None
+    assert tx.uses_durable_nonce() is None
 
 
 def tx_uses_ro_nonce_account() -> None:
@@ -860,12 +870,13 @@ def tx_uses_ro_nonce_account() -> None:
     nonce_pubkey = nonce_keypair.pubkey()
     account_metas = [
         AccountMeta(nonce_pubkey, False, False),
-        AccountMeta(sysvar.recent_blockhashes.id(), False, False),
+        AccountMeta(Sysvar.RECENT_BLOCKHASHES, False, False),
         AccountMeta(nonce_pubkey, True, False),
     ]
+    advance_nonce_account_idx = b"\x04\x00\x00\x00"
     nonce_instruction = Instruction(
-        system_program.id(),
-        system_instruction.SystemInstruction.AdvanceNonceAccount,
+        SystemProgram.ID,
+        advance_nonce_account_idx,
         account_metas,
     )
     tx = Transaction.new_signed_with_payer(
@@ -874,7 +885,7 @@ def tx_uses_ro_nonce_account() -> None:
         [from_keypair, nonce_keypair],
         Hash.default(),
     )
-    assert uses_durable_nonce(tx) is None
+    assert tx.uses_durable_nonce() is None
 
 
 def tx_uses_nonce_wrong_first_nonce_ix_fail() -> None:
@@ -883,46 +894,49 @@ def tx_uses_nonce_wrong_first_nonce_ix_fail() -> None:
     nonce_keypair = Keypair()
     nonce_pubkey = nonce_keypair.pubkey()
     instructions = [
-        system_instruction.withdraw_nonce_account(
+        SystemProgram.withdraw_nonce_account(
             nonce_pubkey,
             nonce_pubkey,
             from_pubkey,
             42,
         ),
-        system_instruction.transfer(from_pubkey, nonce_pubkey, 42),
+        SystemProgram.transfer(from_pubkey, nonce_pubkey, 42),
     ]
     message = Message(instructions, nonce_pubkey)
     tx = Transaction([from_keypair, nonce_keypair], message, Hash.default())
-    assert uses_durable_nonce(tx) is None
+    assert tx.uses_durable_nonce() is None
 
 
 def get_nonce_pub_from_ix_ok() -> None:
     (_, nonce_pubkey, tx) = nonced_transfer_tx()
-    nonce_ix = uses_durable_nonce(tx)
-    assert get_nonce_pubkey_from_instruction(nonce_ix, tx) == nonce_pubkey
+    nonce_ix = tx.uses_durable_nonce()
+    assert nonce_ix is not None
+    assert tx.get_nonce_pubkey_from_instruction(nonce_ix) == nonce_pubkey
 
 
 def get_nonce_pub_from_ix_no_accounts_fail() -> None:
     (_, _, tx) = nonced_transfer_tx()
-    nonce_ix = uses_durable_nonce(tx)
-    nonce_ix = nonce_ix.clone()
-    nonce_ix.accounts.clear()
-    assert get_nonce_pubkey_from_instruction(nonce_ix, tx) == None
+    nonce_ix = tx.uses_durable_nonce()
+    assert nonce_ix is not None
+    nonce_ix = tx.uses_durable_nonce()
+    assert nonce_ix is not None
+    nonce_ix.accounts = b""
+    assert tx.get_nonce_pubkey_from_instruction(nonce_ix) == None
 
 
 def get_nonce_pub_from_ix_bad_acc_idx_fail() -> None:
     (_, _, tx) = nonced_transfer_tx()
-    nonce_ix = uses_durable_nonce(tx)
-    nonce_ix = nonce_ix.clone()
-    nonce_ix.accounts[0] = 255
-    assert get_nonce_pubkey_from_instruction(nonce_ix, tx) == None
+    nonce_ix = tx.uses_durable_nonce()
+    assert nonce_ix is not None
+    nonce_ix.accounts = bytes([255, *list(nonce_ix.accounts[1:])])
+    assert tx.get_nonce_pubkey_from_instruction(nonce_ix) == None
 
 
 def tx_keypair_pubkey_mismatch() -> None:
     from_keypair = Keypair()
     from_pubkey = from_keypair.pubkey()
     to_pubkey = Pubkey.new_unique()
-    instructions = [system_instruction.transfer(from_pubkey, to_pubkey, 42)]
+    instructions = [SystemProgram.transfer(from_pubkey, to_pubkey, 42)]
     tx = Transaction.new_with_payer(instructions, from_pubkey)
     unused_keypair = Keypair()
     with raises(ValueError) as excinfo:
