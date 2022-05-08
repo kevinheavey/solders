@@ -74,6 +74,12 @@ impl From<AccountMetaOriginal> for AccountMeta {
     }
 }
 
+impl From<AccountMeta> for AccountMetaOriginal {
+    fn from(am: AccountMeta) -> Self {
+        am.0
+    }
+}
+
 #[pyclass]
 #[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
 pub struct Instruction(pub InstructionOriginal);
@@ -110,6 +116,14 @@ impl Instruction {
             .into_iter()
             .map(AccountMeta)
             .collect()
+    }
+
+    #[setter]
+    pub fn set_accounts(&mut self, accounts: Vec<AccountMeta>) {
+        self.0.accounts = accounts
+            .into_iter()
+            .map(AccountMetaOriginal::from)
+            .collect();
     }
 
     pub fn __repr__(&self) -> String {
