@@ -29,6 +29,8 @@ mod transaction;
 pub use transaction::Transaction;
 mod system_program;
 pub use system_program::SystemProgram;
+mod sysvar;
+use sysvar::Sysvar;
 
 fn to_py_value_err(err: &impl ToString) -> PyErr {
     PyValueError::new_err(err.to_string())
@@ -137,5 +139,6 @@ fn solders(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_class::<MessageHeader>()?;
     m.add_class::<Transaction>()?;
     m.add_class::<SystemProgram>()?;
+    m.add_class::<Sysvar>()?;
     Ok(())
 }
