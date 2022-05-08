@@ -1,7 +1,7 @@
 use std::{fmt, str::FromStr};
 
 use pyo3::{basic::CompareOp, prelude::*};
-use solana_sdk::signature::Signature as SignatureOriginal;
+use solana_sdk::signature::{Signature as SignatureOriginal, SIGNATURE_BYTES};
 
 use crate::{calculate_hash, handle_py_value_err, RichcmpFull};
 
@@ -11,6 +11,9 @@ pub struct Signature(SignatureOriginal);
 
 #[pymethods]
 impl Signature {
+    #[classattr]
+    pub const LENGTH: usize = SIGNATURE_BYTES;
+
     #[new]
     pub fn new(signature_slice: &[u8]) -> Self {
         SignatureOriginal::new(signature_slice).into()
