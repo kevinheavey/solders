@@ -18,7 +18,7 @@ use solana_sdk::pubkey::{Pubkey as PubkeyOriginal, PUBKEY_BYTES};
 ///
 #[pyclass]
 #[derive(Eq, PartialEq, Ord, PartialOrd, Debug, Default, Hash, Clone)]
-pub struct Pubkey(PubkeyOriginal);
+pub struct Pubkey(pub PubkeyOriginal);
 
 #[pymethods]
 impl Pubkey {

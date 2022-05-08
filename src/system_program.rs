@@ -1,6 +1,7 @@
 use pyo3::prelude::*;
 use solana_sdk::{
     instruction::Instruction as InstructionOriginal,
+    pubkey as pubkey_macro,
     pubkey::Pubkey as PubkeyOriginal,
     system_instruction::{
         advance_nonce_account, allocate, allocate_with_seed, assign, assign_with_seed,
@@ -21,6 +22,9 @@ pub struct SystemProgram;
 
 #[pymethods]
 impl SystemProgram {
+    #[classattr]
+    pub const ID: Pubkey = Pubkey(pubkey_macro!("11111111111111111111111111111111"));
+
     #[staticmethod]
     pub fn create_account(
         from_pubkey: &Pubkey,

@@ -273,6 +273,7 @@ class Transaction:
     def __str__(self) -> str: ...
 
 class SystemProgram:
+    ID: ClassVar[Pubkey]
     @staticmethod
     def create_account(
         from_pubkey: Pubkey,
