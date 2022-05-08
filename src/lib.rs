@@ -30,7 +30,9 @@ pub use transaction::Transaction;
 mod system_program;
 pub use system_program::SystemProgram;
 mod sysvar;
-use sysvar::Sysvar;
+pub use sysvar::Sysvar;
+mod presigner;
+pub use presigner::Presigner;
 
 fn to_py_value_err(err: &impl ToString) -> PyErr {
     PyValueError::new_err(err.to_string())
@@ -140,5 +142,6 @@ fn solders(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_class::<Transaction>()?;
     m.add_class::<SystemProgram>()?;
     m.add_class::<Sysvar>()?;
+    m.add_class::<Presigner>()?;
     Ok(())
 }
