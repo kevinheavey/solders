@@ -427,7 +427,7 @@ def test_transaction_minimum_serialized_size() -> None:
     num_required_sigs_size = 1
     num_readonly_accounts_size = 2
     blockhash_size = 32
-    signature_size = 64
+    signature_size = Signature.LENGTH
     pubkey_size = 32
     tx_sigs_len = len(tx.signatures)
     assert tx_sigs_len == 1
