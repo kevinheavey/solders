@@ -239,3 +239,9 @@ impl From<CompiledInstruction> for CompiledInstructionOriginal {
         ix.0
     }
 }
+
+impl AsRef<CompiledInstructionOriginal> for CompiledInstruction {
+    fn as_ref(&self) -> &CompiledInstructionOriginal {
+        &self.0
+    }
+}

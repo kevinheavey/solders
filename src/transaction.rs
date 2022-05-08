@@ -5,7 +5,9 @@ use solana_sdk::{
     sanitize::Sanitize,
     signature::Signature as SignatureOriginal,
     signer::keypair::Keypair as KeypairOriginal,
-    transaction::{uses_durable_nonce, Transaction as TransactionOriginal},
+    transaction::{
+        get_nonce_pubkey_from_instruction, uses_durable_nonce, Transaction as TransactionOriginal,
+    },
 };
 
 use crate::{
@@ -223,6 +225,10 @@ impl Transaction {
     pub fn __str__(&self) -> String {
         format!("{:?}", self)
     }
+
+    pub fn get_nonce_pubkey_from_instruction(&self, ix: &CompiledInstruction) -> Option<Pubkey> {
+        get_nonce_pubkey_from_instruction(ix.as_ref(), self.as_ref()).map(Pubkey::from)
+    }
 }
 
 impl RichcmpEqualityOnly for Transaction {}
@@ -230,5 +236,11 @@ impl RichcmpEqualityOnly for Transaction {}
 impl From<TransactionOriginal> for Transaction {
     fn from(tx: TransactionOriginal) -> Self {
         Self(tx)
+    }
+}
+
+impl AsRef<TransactionOriginal> for Transaction {
+    fn as_ref(&self) -> &TransactionOriginal {
+        &self.0
     }
 }
