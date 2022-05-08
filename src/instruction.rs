@@ -210,6 +210,11 @@ impl CompiledInstruction {
         PyBytes::new(py, &self.0.accounts)
     }
 
+    #[setter]
+    pub fn set_accounts(&mut self, accounts: Vec<u8>) {
+        self.0.accounts = accounts
+    }
+
     /// The program input data.
     #[getter]
     pub fn data<'a>(&self, py: Python<'a>) -> &'a PyBytes {
