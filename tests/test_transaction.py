@@ -1,4 +1,4 @@
-from typing import Tuple, Optional, List
+from typing import Tuple, Optional, List, Union
 from pytest import raises
 from solders import (
     Transaction,
@@ -13,6 +13,7 @@ from solders import (
     SystemProgram,
     Signature,
     Sysvar,
+    Presigner,
 )
 from .utils import ZERO_BYTES
 
@@ -775,49 +776,49 @@ def test_transaction_instruction_with_duplicate_keys() -> None:
     assert tx.is_signed()
 
 
-# def test_try_sign_dyn_keypairs() -> None:
-#     program_id = Pubkey.default()
-#     keypair = Keypair()
-#     pubkey = keypair.pubkey()
-#     presigner_keypair = Keypair()
-#     presigner_pubkey = presigner_keypair.pubkey()
+def test_try_sign_dyn_keypairs() -> None:
+    program_id = Pubkey.default()
+    keypair = Keypair()
+    pubkey = keypair.pubkey()
+    presigner_keypair = Keypair()
+    presigner_pubkey = presigner_keypair.pubkey()
 
-#     ix = Instruction(
-#         program_id,
-#         ZERO_BYTES,
-#         [
-#             AccountMeta(pubkey, True, True),
-#             AccountMeta(presigner_pubkey, True, True),
-#         ],
-#     )
-#     message = Message([ix], pubkey)
-#     tx = Transaction.new_unsigned(message)
+    ix = Instruction(
+        program_id,
+        ZERO_BYTES,
+        [
+            AccountMeta(pubkey, True, True),
+            AccountMeta(presigner_pubkey, True, True),
+        ],
+    )
+    message = Message([ix], pubkey)
+    tx = Transaction.new_unsigned(message)
 
-#     presigner_sig = presigner_keypair.sign_message(tx.message_data())
-#     presigner = Presigner(presigner_pubkey, presigner_sig)
+    presigner_sig = presigner_keypair.sign_message(tx.message_data())
+    presigner = Presigner(presigner_pubkey, presigner_sig)
 
-#     signers = [keypair, presigner]
+    signers: List[Union[Keypair, Presigner]] = [keypair, presigner]
 
-#     res = tx.try_sign(signers, Hash.default())
-#     assert tx.signatures[0] == keypair.sign_message(tx.message_data())
-#     assert tx.signatures[1] == presigner_sig
+    tx.sign(signers, Hash.default())
+    assert tx.signatures[0] == keypair.sign_message(tx.message_data())
+    assert tx.signatures[1] == presigner_sig
 
-#     # Wrong key should error, not panic
-#     another_pubkey = Pubkey.new_unique()
-#     ix = Instruction(
-#         program_id,
-#         ZERO_BYTES,
-#         [
-#             AccountMeta(another_pubkey, True, True),
-#             AccountMeta(presigner_pubkey, True, True),
-#         ],
-#     )
-#     message = Message([ix], another_pubkey)
-#     tx = Transaction.new_unsigned(message)
-#     with raises(ValueError) as excinfo:
-#         tx.try_sign(signers, Hash.default())
-#     assert excinfo.value.args[0] == "foo"
-#     assert tx.signatures == [Signature.default(), Signature.default()]
+    # Wrong key should error, not panic
+    another_pubkey = Pubkey.new_unique()
+    ix = Instruction(
+        program_id,
+        ZERO_BYTES,
+        [
+            AccountMeta(another_pubkey, True, True),
+            AccountMeta(presigner_pubkey, True, True),
+        ],
+    )
+    message = Message([ix], another_pubkey)
+    tx = Transaction.new_unsigned(message)
+    with raises(ValueError) as excinfo:
+        tx.sign(signers, Hash.default())
+    assert excinfo.value.args[0] == "keypair-pubkey mismatch"
+    assert tx.signatures == [Signature.default(), Signature.default()]
 
 
 def nonced_transfer_tx() -> Tuple[Pubkey, Pubkey, Transaction]:
