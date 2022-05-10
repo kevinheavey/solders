@@ -1,3 +1,4 @@
+#![allow(deprecated)]
 use pyo3::{prelude::*, pyclass::CompareOp, types::PyBytes};
 use serde::{Deserialize, Serialize};
 use solana_sdk::{
