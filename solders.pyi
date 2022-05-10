@@ -165,7 +165,9 @@ class MessageHeader:
 
 class Message:
     def __init__(
-        self, instructions: Sequence[Instruction], payer: Optional[Pubkey]
+        self,
+        instructions: Sequence[Instruction],
+        payer: Optional[Pubkey] = None,
     ) -> None: ...
     @property
     def header(self) -> MessageHeader: ...
@@ -228,7 +230,8 @@ class Transaction:
     def new_unsigned(message: Message) -> "Transaction": ...
     @staticmethod
     def new_with_payer(
-        instructions: Sequence[Instruction], payer: Optional[Pubkey]
+        instructions: Sequence[Instruction],
+        payer: Optional[Pubkey] = None,
     ) -> "Transaction": ...
     @staticmethod
     def new_signed_with_payer(
@@ -244,6 +247,10 @@ class Transaction:
         recent_blockhash: Hash,
         program_ids: Sequence[Pubkey],
         instructions: Sequence[CompiledInstruction],
+    ) -> "Transaction": ...
+    @staticmethod
+    def populate(
+        message: Message, signatures: Sequence[Signature]
     ) -> "Transaction": ...
     def data(self, instruction_index: int) -> bytes: ...
     def key(self, instruction_index: int, accounts_index: int) -> Optional[Pubkey]: ...

@@ -803,7 +803,7 @@ def test_try_sign_dyn_keypairs() -> None:
     assert tx.signatures[0] == keypair.sign_message(tx.message_data())
     assert tx.signatures[1] == presigner_sig
 
-    # Wrong key should error, not panic
+    # Wrong key should error
     another_pubkey = Pubkey.new_unique()
     ix = Instruction(
         program_id,

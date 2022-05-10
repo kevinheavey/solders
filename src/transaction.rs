@@ -106,6 +106,18 @@ impl Transaction {
         .into()
     }
 
+    #[staticmethod]
+    pub fn populate(message: Message, signatures: Vec<Signature>) -> Self {
+        (TransactionOriginal {
+            message: message.into(),
+            signatures: signatures
+                .into_iter()
+                .map(SignatureOriginal::from)
+                .collect(),
+        })
+        .into()
+    }
+
     pub fn data(&self, instruction_index: usize) -> &[u8] {
         self.0.data(instruction_index)
     }
