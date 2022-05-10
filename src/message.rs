@@ -13,7 +13,7 @@ use crate::{
     Instruction, Pubkey, RichcmpEqualityOnly, SolderHash,
 };
 
-#[pyclass]
+#[pyclass(module = "solders", subclass)]
 #[derive(PartialEq, Eq, Debug, Default)]
 pub struct MessageHeader(MessageHeaderOriginal);
 
@@ -72,7 +72,7 @@ impl From<MessageHeaderOriginal> for MessageHeader {
     }
 }
 
-#[pyclass]
+#[pyclass(module = "solders", subclass)]
 #[derive(PartialEq, Eq, Debug, Clone, Default)]
 pub struct Message(MessageOriginal);
 

@@ -16,7 +16,7 @@ use crate::{
     handle_py_value_err, pubkey::Pubkey, signature::Signature, RichcmpEqOnlyPrecalculated, Signer,
 };
 
-#[pyclass]
+#[pyclass(module = "solders", subclass)]
 #[derive(PartialEq, Debug)]
 pub struct Keypair(pub KeypairOriginal);
 

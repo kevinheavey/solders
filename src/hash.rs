@@ -5,7 +5,7 @@ use solana_sdk::hash::{hash, Hash as HashOriginal, HASH_BYTES};
 
 use crate::{calculate_hash, handle_py_value_err, RichcmpFull};
 
-#[pyclass]
+#[pyclass(module = "solders", subclass)]
 #[derive(Clone, Copy, Default, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
 pub struct Hash(HashOriginal);
 

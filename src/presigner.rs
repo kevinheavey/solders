@@ -8,7 +8,7 @@ use solana_sdk::{
 use crate::{handle_py_value_err, Pubkey, RichcmpEqOnlyPrecalculated, Signature, Signer};
 
 #[derive(Clone, Debug, Default, PartialEq)]
-#[pyclass]
+#[pyclass(module = "solders", subclass)]
 pub struct Presigner(pub PresignerOriginal);
 
 #[pymethods]

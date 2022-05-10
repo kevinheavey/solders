@@ -17,7 +17,7 @@ fn convert_instructions_from_original(ixs: Vec<InstructionOriginal>) -> Vec<Inst
     ixs.into_iter().map(Instruction::from).collect()
 }
 
-#[pyclass]
+#[pyclass(module = "solders", subclass)]
 pub struct SystemProgram;
 
 #[pymethods]

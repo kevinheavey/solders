@@ -3,7 +3,7 @@ use pyo3::prelude::*;
 use solana_sdk::pubkey;
 
 #[derive(Clone, Debug)]
-#[pyclass]
+#[pyclass(module = "solders", subclass)]
 pub struct Sysvar;
 
 #[pymethods]

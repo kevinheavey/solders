@@ -21,7 +21,7 @@ use crate::{handle_py_value_err, pubkey::Pubkey, RichcmpEqualityOnly};
 /// Note that because the Solana runtime schedules parallel transaction
 /// execution around which accounts are writable, care should be taken that only
 /// accounts which actually may be mutated are specified as writable.
-#[pyclass]
+#[pyclass(module = "solders", subclass)]
 #[derive(PartialEq, Debug, Clone)]
 pub struct AccountMeta(AccountMetaOriginal);
 #[pymethods]
@@ -80,7 +80,7 @@ impl From<AccountMeta> for AccountMetaOriginal {
     }
 }
 
-#[pyclass]
+#[pyclass(module = "solders", subclass)]
 #[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
 pub struct Instruction(pub InstructionOriginal);
 
@@ -175,7 +175,7 @@ impl AsRef<InstructionOriginal> for Instruction {
 /// A `CompiledInstruction` is a component of a multi-instruction [`Message`],
 /// which is the core of a Solana transaction. It is created during the
 /// construction of `Message`. Most users will not interact with it directly.
-#[pyclass]
+#[pyclass(module = "solders", subclass)]
 #[derive(PartialEq, Eq, Debug, Clone, Serialize, Deserialize)]
 pub struct CompiledInstruction(CompiledInstructionOriginal);
 

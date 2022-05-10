@@ -16,7 +16,7 @@ use crate::{
     SolderHash,
 };
 
-#[pyclass]
+#[pyclass(module = "solders", subclass)]
 #[derive(Debug, PartialEq, Default, Eq, Clone, Serialize, Deserialize)]
 pub struct Transaction(TransactionOriginal);
 

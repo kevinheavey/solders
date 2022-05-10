@@ -16,7 +16,7 @@ use solana_sdk::pubkey::{Pubkey as PubkeyOriginal, PUBKEY_BYTES};
 ///     >>> bytes(pubkey).hex()
 ///     '0101010101010101010101010101010101010101010101010101010101010101'
 ///
-#[pyclass]
+#[pyclass(module = "solders", subclass)]
 #[derive(Eq, PartialEq, Ord, PartialOrd, Debug, Default, Hash, Clone)]
 pub struct Pubkey(pub PubkeyOriginal);
 

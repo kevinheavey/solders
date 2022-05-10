@@ -5,7 +5,7 @@ use solana_sdk::signature::{Signature as SignatureOriginal, SIGNATURE_BYTES};
 
 use crate::{calculate_hash, handle_py_value_err, RichcmpFull};
 
-#[pyclass]
+#[pyclass(module = "solders", subclass)]
 #[derive(Clone, Copy, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub struct Signature(SignatureOriginal);
 
