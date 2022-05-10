@@ -17,18 +17,8 @@ from solders import (
 )
 
 BLOCKHASH = Hash.from_string("EETubP5AKHgjPAhzPAFcb8BAY1hMH639CWCFTqi3hq1k")
-
-
-@pytest.fixture(scope="session")
-def stubbed_sender() -> Keypair:
-    """Arbitrary known account to be used as sender."""
-    return Keypair.from_seed(bytes([8] * Pubkey.LENGTH))
-
-
-@pytest.fixture(scope="session")
-def stubbed_receiver() -> Pubkey:
-    """Arbitrary known public key to be used as receiver."""
-    return Pubkey.from_string("J3dxNj7nDRRqRRXuEMynDG57DkZK4jYRuv3Garmb1i99")
+SENDER = Keypair.from_seed(bytes([8] * Pubkey.LENGTH))
+RECIPIENT = Pubkey.from_string("J3dxNj7nDRRqRRXuEMynDG57DkZK4jYRuv3Garmb1i99")
 
 
 def test_dedup_signatures():
@@ -46,19 +36,16 @@ def test_dedup_signatures():
     txn.sign([kp1], BLOCKHASH)
 
 
-def test_wire_format_and_deserialize(
-    stubbed_receiver: Pubkey,
-    stubbed_sender: Keypair,
-):
+def test_wire_format_and_deserialize() -> None:
     """Test serialize/derialize transaction to/from wire format."""
     transfer = SystemProgram.transfer(
-        from_pubkey=stubbed_sender.pubkey(),
-        to_pubkey=stubbed_receiver,
+        from_pubkey=SENDER.pubkey(),
+        to_pubkey=RECIPIENT,
         lamports=49,
     )
-    message = Message([transfer], stubbed_sender.pubkey())
+    message = Message([transfer], SENDER.pubkey())
     expected_txn = Transaction.new_unsigned(message)
-    expected_txn.sign([stubbed_sender], BLOCKHASH)
+    expected_txn.sign([SENDER], BLOCKHASH)
     wire_txn = b64decode(
         b"AVuErQHaXv0SG0/PchunfxHKt8wMRfMZzqV0tkC5qO6owYxWU2v871AoWywGoFQr4z+q/7mE8lIufNl/kxj+nQ0BAAEDE5j2"
         b"LG0aRXxRumpLXz29L2n8qTIWIY3ImX5Ba9F9k8r9Q5/Mtmcn8onFxt47xKj+XdXXd3C8j/FcPu7csUrz/AAAAAAAAAAAAAAA"
@@ -69,7 +56,7 @@ def test_wire_format_and_deserialize(
     assert wire_txn == expected_txn.serialize()
 
 
-def test_populate():
+def test_populate() -> None:
     """Test populating transaction with a message and two signatures."""
     account_keys = [
         Pubkey(bytes([i + 1]).rjust(Pubkey.LENGTH, b"\0")) for i in range(5)
@@ -98,13 +85,11 @@ def test_populate():
     assert transaction.message.recent_blockhash == msg.recent_blockhash
 
 
-def test_serialize_unsigned_transaction(
-    stubbed_receiver: Pubkey, stubbed_sender: Keypair
-):
+def test_serialize_unsigned_transaction() -> None:
     """Test to serialize an unsigned transaction."""
     transfer = SystemProgram.transfer(
-        from_pubkey=stubbed_sender.pubkey(),
-        to_pubkey=stubbed_receiver,
+        from_pubkey=SENDER.pubkey(),
+        to_pubkey=RECIPIENT,
         lamports=49,
     )
     message = Message([transfer])
@@ -114,9 +99,9 @@ def test_serialize_unsigned_transaction(
     )
     assert Transaction.deserialize(txn.serialize()) == txn
 
-    message_with_payer = Message([transfer], stubbed_sender.pubkey())
+    message_with_payer = Message([transfer], SENDER.pubkey())
     txn_with_payer = Transaction.new_signed_with_payer(
-        [transfer], stubbed_sender.pubkey(), [stubbed_sender], BLOCKHASH
+        [transfer], SENDER.pubkey(), [SENDER], BLOCKHASH
     )
     # Properly signed transaction succeeds
     assert len(txn_with_payer.message.instructions) == 1
@@ -129,10 +114,8 @@ def test_serialize_unsigned_transaction(
     assert len(txn_with_payer.signatures) == 1
 
 
-def test_sort_account_metas():
-    """
-    Test AccountMeta sorting.
-    """
+def test_sort_account_metas() -> None:
+    """Test AccountMeta sorting."""
 
     # S6EA7XsNyxg4yx4DJRMm7fP21jgZb1fuzBAUGhgVtkP
     signer_one = Keypair.from_seed(
