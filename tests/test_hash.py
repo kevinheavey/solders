@@ -1,26 +1,35 @@
-from pytest import raises
+from pytest import raises, mark
 from based58 import b58encode
 
-from solders import Hash
+from solders import Hash, ParseHashError
+
+HASHED = Hash.hash(bytes([1]))
+HASH_BASE58_STR = b58encode(bytes(HASHED)).decode()
 
 
 def test_new_unique():
     assert Hash.new_unique() != Hash.new_unique()
 
 
-def test_from_string():
-    hashed = Hash.hash(bytes([1]))
-    hash_base58_str = b58encode(bytes(hashed)).decode()
-    assert Hash.from_string(hash_base58_str) == hashed
-    too_big_str = hash_base58_str * 2
-    with raises(ValueError) as excinfo:
-        Hash.from_string(too_big_str)
-    assert excinfo.value.args[0] == "string decoded to wrong size for hash"
-    too_small_str = hash_base58_str[: len(hash_base58_str) // 2]
-    with raises(ValueError) as excinfo:
-        Hash.from_string(too_big_str)
-    assert excinfo.value.args[0] == "string decoded to wrong size for hash"
-    non_base58_str = "I" + hash_base58_str[1:]
-    with raises(ValueError) as excinfo:
-        Hash.from_string(non_base58_str)
-    assert excinfo.value.args[0] == "failed to decoded string to hash"
+def test_from_string() -> None:
+    assert Hash.from_string(HASH_BASE58_STR) == HASHED
+
+
+@mark.parametrize(
+    "test_input,expected_err",
+    [
+        (
+            HASH_BASE58_STR * 2,
+            "string decoded to wrong size for hash",
+        ),
+        (
+            HASH_BASE58_STR[: len(HASH_BASE58_STR) // 2],
+            "string decoded to wrong size for hash",
+        ),
+        ("I" + HASH_BASE58_STR[1:], "failed to decoded string to hash"),
+    ],
+)
+def test_from_string_error(test_input: str, expected_err: str) -> None:
+    with raises(ParseHashError) as excinfo:
+        Hash.from_string(test_input)
+    assert excinfo.value.args[0] == expected_err

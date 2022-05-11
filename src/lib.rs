@@ -1,6 +1,6 @@
 use bincode::serialize;
 use pyo3::{
-    exceptions::{PyTypeError, PyValueError},
+    exceptions::{PyException, PyTypeError, PyValueError},
     prelude::*,
     pyclass::CompareOp,
 };
@@ -22,9 +22,9 @@ pub use signature::Signature;
 mod keypair;
 pub use keypair::Keypair;
 mod instruction;
-pub use instruction::{AccountMeta, CompiledInstruction, Instruction};
+pub use instruction::{AccountMeta, BincodeError, CompiledInstruction, Instruction};
 mod hash;
-pub use hash::Hash as SolderHash;
+pub use hash::{Hash as SolderHash, ParseHashError};
 mod message;
 pub use message::{Message, MessageHeader};
 mod transaction;
@@ -35,6 +35,25 @@ mod sysvar;
 pub use sysvar::Sysvar;
 mod presigner;
 pub use presigner::Presigner;
+
+struct PyErrWrapper(PyErr);
+
+impl From<PyErrWrapper> for PyErr {
+    fn from(e: PyErrWrapper) -> Self {
+        e.0
+    }
+}
+
+fn to_py_err<T: Into<PyErrWrapper>>(e: T) -> PyErr {
+    let wrapped: PyErrWrapper = e.into();
+    wrapped.into()
+}
+
+fn handle_py_err<T: Into<P>, E: ToString + Into<PyErrWrapper>, P>(
+    res: Result<T, E>,
+) -> PyResult<P> {
+    res.map_or_else(|e| Err(to_py_err(e)), |v| Ok(v.into()))
+}
 
 fn to_py_value_err(err: &impl ToString) -> PyErr {
     PyValueError::new_err(err.to_string())
@@ -158,5 +177,7 @@ fn solders(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_class::<SystemProgram>()?;
     m.add_class::<Sysvar>()?;
     m.add_class::<Presigner>()?;
+    m.add("ParseHashError", _py.get_type::<ParseHashError>())?;
+    m.add("BincodeError", _py.get_type::<BincodeError>())?;
     Ok(())
 }

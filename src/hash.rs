@@ -1,9 +1,19 @@
 use std::{fmt, str::FromStr};
 
-use pyo3::{basic::CompareOp, prelude::*};
-use solana_sdk::hash::{hash, Hash as HashOriginal, HASH_BYTES};
+use pyo3::{basic::CompareOp, create_exception, exceptions::PyException, prelude::*};
+use solana_sdk::hash::{
+    hash, Hash as HashOriginal, ParseHashError as ParseHashErrorOriginal, HASH_BYTES,
+};
 
-use crate::{calculate_hash, handle_py_value_err, RichcmpFull};
+use crate::{calculate_hash, handle_py_err, PyErrWrapper, RichcmpFull};
+
+create_exception!(solders, ParseHashError, PyException);
+
+impl From<ParseHashErrorOriginal> for PyErrWrapper {
+    fn from(e: ParseHashErrorOriginal) -> Self {
+        Self(ParseHashError::new_err(e.to_string()))
+    }
+}
 
 #[pyclass(module = "solders", subclass)]
 #[derive(Clone, Copy, Default, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
@@ -32,7 +42,7 @@ impl Hash {
     #[staticmethod]
     #[pyo3(name = "from_string")]
     pub fn new_from_string(s: &str) -> PyResult<Self> {
-        handle_py_value_err(HashOriginal::from_str(s))
+        handle_py_err(HashOriginal::from_str(s))
     }
 
     #[staticmethod]

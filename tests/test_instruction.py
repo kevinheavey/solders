@@ -1,5 +1,6 @@
-from typing import cast
-from solders import Instruction, CompiledInstruction, AccountMeta, Pubkey
+from typing import cast, Union
+from pytest import mark, raises
+from solders import Instruction, CompiledInstruction, AccountMeta, Pubkey, BincodeError
 
 
 def test_accounts_setter() -> None:
@@ -20,3 +21,9 @@ def test_accounts_setter_compiled_ix() -> None:
     new_accounts_as_list = list(b"foo")
     ix.accounts = cast(bytes, new_accounts_as_list)
     assert ix.accounts == bytes(new_accounts_as_list)
+
+@mark.parametrize("to_deserialize", [Instruction, CompiledInstruction])
+def test_bincode_error(to_deserialize: Union[Instruction, CompiledInstruction]) -> None:
+    with raises(BincodeError) as excinfo:
+        Instruction.deserialize(b"foo")
+    assert excinfo.value.args[0] == "io error: unexpected end of file"

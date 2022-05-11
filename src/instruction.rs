@@ -1,4 +1,7 @@
-use pyo3::{basic::CompareOp, prelude::*, types::PyBytes};
+use bincode::ErrorKind;
+use pyo3::{
+    basic::CompareOp, create_exception, exceptions::PyException, prelude::*, types::PyBytes,
+};
 use serde::{Deserialize, Serialize};
 use solana_sdk::{
     instruction::{
@@ -8,7 +11,9 @@ use solana_sdk::{
     pubkey::Pubkey as PubkeyOriginal,
 };
 
-use crate::{handle_py_value_err, pubkey::Pubkey, RichcmpEqualityOnly};
+use crate::{
+    handle_py_err, handle_py_value_err, pubkey::Pubkey, PyErrWrapper, RichcmpEqualityOnly,
+};
 
 /// Describes a single account read or written by a program during instruction
 /// execution.
@@ -80,6 +85,14 @@ impl From<AccountMeta> for AccountMetaOriginal {
     }
 }
 
+create_exception!(solders, BincodeError, PyException);
+
+impl From<Box<ErrorKind>> for PyErrWrapper {
+    fn from(e: Box<ErrorKind>) -> Self {
+        Self(BincodeError::new_err(e.to_string()))
+    }
+}
+
 #[pyclass(module = "solders", subclass)]
 #[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
 pub struct Instruction(pub InstructionOriginal);
@@ -146,7 +159,7 @@ impl Instruction {
     #[staticmethod]
     pub fn deserialize(data: &[u8]) -> PyResult<Self> {
         let deser = bincode::deserialize::<Self>(data);
-        handle_py_value_err(deser)
+        handle_py_err(deser)
     }
 }
 
@@ -241,7 +254,7 @@ impl CompiledInstruction {
     #[staticmethod]
     pub fn deserialize(data: &[u8]) -> PyResult<Self> {
         let deser = bincode::deserialize::<Self>(data);
-        handle_py_value_err(deser)
+        handle_py_err(deser)
     }
 }
 
