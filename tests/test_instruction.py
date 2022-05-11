@@ -22,6 +22,7 @@ def test_accounts_setter_compiled_ix() -> None:
     ix.accounts = cast(bytes, new_accounts_as_list)
     assert ix.accounts == bytes(new_accounts_as_list)
 
+
 @mark.parametrize("to_deserialize", [Instruction, CompiledInstruction])
 def test_bincode_error(to_deserialize: Union[Instruction, CompiledInstruction]) -> None:
     with raises(BincodeError) as excinfo:
