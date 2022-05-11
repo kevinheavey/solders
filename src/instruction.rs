@@ -1,7 +1,4 @@
-use bincode::ErrorKind;
-use pyo3::{
-    basic::CompareOp, create_exception, exceptions::PyException, prelude::*, types::PyBytes,
-};
+use pyo3::{basic::CompareOp, prelude::*, types::PyBytes};
 use serde::{Deserialize, Serialize};
 use solana_sdk::{
     instruction::{
@@ -11,7 +8,7 @@ use solana_sdk::{
     pubkey::Pubkey as PubkeyOriginal,
 };
 
-use crate::{handle_py_err, pubkey::Pubkey, PyErrWrapper, RichcmpEqualityOnly};
+use crate::{handle_py_err, pubkey::Pubkey, RichcmpEqualityOnly};
 
 /// Describes a single account read or written by a program during instruction
 /// execution.
