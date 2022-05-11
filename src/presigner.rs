@@ -2,10 +2,13 @@ use pyo3::{prelude::*, pyclass::CompareOp};
 use solana_sdk::{
     pubkey::Pubkey as PubkeyOriginal,
     signature::Signature as SignatureOriginal,
-    signer::{presigner::Presigner as PresignerOriginal, Signer as SignerTrait, SignerError},
+    signer::{
+        presigner::Presigner as PresignerOriginal, Signer as SignerTrait,
+        SignerError as SignerErrorOriginal,
+    },
 };
 
-use crate::{handle_py_value_err, Pubkey, RichcmpEqOnlyPrecalculated, Signature, Signer};
+use crate::{handle_py_err, Pubkey, RichcmpEqOnlyPrecalculated, Signature, Signer};
 
 #[derive(Clone, Debug, Default, PartialEq)]
 #[pyclass(module = "solders", subclass)]
@@ -25,7 +28,7 @@ impl Presigner {
 
     #[pyo3(name = "sign_message")]
     pub fn py_sign_message(&self, message: &[u8]) -> PyResult<Signature> {
-        handle_py_value_err(self.try_sign_message(message))
+        handle_py_err(self.try_sign_message(message))
     }
 
     fn __richcmp__(&self, other: Signer, op: CompareOp) -> PyResult<bool> {
@@ -57,13 +60,13 @@ impl SignerTrait for Presigner {
     fn pubkey(&self) -> PubkeyOriginal {
         self.0.pubkey()
     }
-    fn try_pubkey(&self) -> Result<PubkeyOriginal, SignerError> {
+    fn try_pubkey(&self) -> Result<PubkeyOriginal, SignerErrorOriginal> {
         self.0.try_pubkey()
     }
     fn sign_message(&self, message: &[u8]) -> SignatureOriginal {
         self.0.sign_message(message)
     }
-    fn try_sign_message(&self, message: &[u8]) -> Result<SignatureOriginal, SignerError> {
+    fn try_sign_message(&self, message: &[u8]) -> Result<SignatureOriginal, SignerErrorOriginal> {
         self.0.try_sign_message(message)
     }
     fn is_interactive(&self) -> bool {

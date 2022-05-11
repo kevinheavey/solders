@@ -1,8 +1,18 @@
 use std::{fmt, hash::Hash, str::FromStr};
 
-use crate::{calculate_hash, handle_py_value_err, RichcmpFull};
-use pyo3::{basic::CompareOp, prelude::*};
-use solana_sdk::pubkey::{Pubkey as PubkeyOriginal, PUBKEY_BYTES};
+use crate::{calculate_hash, handle_py_err, handle_py_value_err, PyErrWrapper, RichcmpFull};
+use pyo3::{basic::CompareOp, create_exception, exceptions::PyException, prelude::*};
+use solana_sdk::pubkey::{
+    Pubkey as PubkeyOriginal, PubkeyError as PubkeyErrorOriginal, PUBKEY_BYTES,
+};
+
+create_exception!(solders, PubkeyError, PyException);
+
+impl From<PubkeyErrorOriginal> for PyErrWrapper {
+    fn from(e: PubkeyErrorOriginal) -> Self {
+        Self(PubkeyError::new_err(e.to_string()))
+    }
+}
 /// A public key.
 ///
 /// Args:
@@ -53,7 +63,7 @@ impl Pubkey {
         seed: &str,
         program_id: &Self,
     ) -> PyResult<Self> {
-        handle_py_value_err(PubkeyOriginal::create_with_seed(
+        handle_py_err(PubkeyOriginal::create_with_seed(
             &from_public_key.0,
             seed,
             &program_id.0,

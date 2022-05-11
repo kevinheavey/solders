@@ -16,6 +16,8 @@ from solders import (
     Signature,
     Sysvar,
     Presigner,
+    SanitizeError,
+    SignerError,
 )
 from .utils import ZERO_BYTES
 
@@ -81,7 +83,7 @@ def test_refs_invalid_program_id() -> None:
         [],
         instructions,
     )
-    with raises(ValueError) as excinfo:
+    with raises(SanitizeError) as excinfo:
         tx.sanitize()
     assert excinfo.value.args[0] == "index out of bounds"
 
@@ -97,7 +99,7 @@ def test_refs_invalid_account() -> None:
         instructions,
     )
     assert get_program_id(tx, 0) == Pubkey.default()
-    with raises(ValueError) as excinfo:
+    with raises(SanitizeError) as excinfo:
         tx.sanitize()
     assert excinfo.value.args[0] == "index out of bounds"
 
@@ -189,43 +191,43 @@ def test_sanitize_txs() -> None:
     assert len(tx.message.account_keys) == 3
     tx = with_changed_header(original_tx, num_required_signatures=3)
     assert tx.message.header.num_required_signatures == 3
-    with raises(ValueError) as excinfo:
+    with raises(SanitizeError) as excinfo:
         tx.sanitize()
     assert excinfo.value.args[0] == "index out of bounds"
 
     tx = with_changed_header(
         original_tx, num_readonly_signed_accounts=4, num_readonly_unsigned_accounts=0
     )
-    with raises(ValueError) as excinfo:
+    with raises(SanitizeError) as excinfo:
         tx.sanitize()
     assert excinfo.value.args[0] == "index out of bounds"
 
     tx = with_changed_header(
         original_tx, num_readonly_signed_accounts=2, num_readonly_unsigned_accounts=2
     )
-    with raises(ValueError) as excinfo:
+    with raises(SanitizeError) as excinfo:
         tx.sanitize()
     assert excinfo.value.args[0] == "index out of bounds"
 
     tx = with_changed_header(
         original_tx, num_readonly_signed_accounts=0, num_readonly_unsigned_accounts=4
     )
-    with raises(ValueError) as excinfo:
+    with raises(SanitizeError) as excinfo:
         tx.sanitize()
     assert excinfo.value.args[0] == "index out of bounds"
 
     tx = with_changed_fields(original_tx, program_id_index=3)
-    with raises(ValueError) as excinfo:
+    with raises(SanitizeError) as excinfo:
         tx.sanitize()
     assert excinfo.value.args[0] == "index out of bounds"
 
     tx = with_changed_fields(original_tx, accounts_first_byte=3)
-    with raises(ValueError) as excinfo:
+    with raises(SanitizeError) as excinfo:
         tx.sanitize()
     assert excinfo.value.args[0] == "index out of bounds"
 
     tx = with_changed_fields(tx, program_id_index=0)
-    with raises(ValueError) as excinfo:
+    with raises(SanitizeError) as excinfo:
         tx.sanitize()
     assert excinfo.value.args[0] == "index out of bounds"
 
@@ -235,14 +237,14 @@ def test_sanitize_txs() -> None:
     tx = with_changed_fields(
         tx_tmp, account_keys=tx_tmp.message.account_keys + [Pubkey.default()]
     )
-    with raises(ValueError) as excinfo:
+    with raises(SanitizeError) as excinfo:
         tx.sanitize()
     assert excinfo.value.args[0] == "index out of bounds"
 
     tx = with_changed_header(
         original_tx, num_readonly_signed_accounts=2, num_required_signatures=1
     )
-    with raises(ValueError) as excinfo:
+    with raises(SanitizeError) as excinfo:
         tx.sanitize()
     assert excinfo.value.args[0] == "index out of bounds"
 
@@ -677,7 +679,7 @@ def test_sdk_serialize() -> None:
 def test_transaction_missing_key() -> None:
     keypair = Keypair()
     message = Message([], None)
-    with raises(ValueError) as excinfo:
+    with raises(SignerError) as excinfo:
         Transaction.new_unsigned(message).sign([keypair], Hash.default())
     assert excinfo.value.args[0] == "keypair-pubkey mismatch"
 
@@ -691,7 +693,7 @@ def test_partial_sign_mismatched_key() -> None:
         [AccountMeta(fee_payer, True, True)],
     )
     message = Message([ix], fee_payer)
-    with raises(ValueError) as excinfo:
+    with raises(SignerError) as excinfo:
         Transaction.new_unsigned(message).partial_sign([keypair], Hash.default())
     assert excinfo.value.args[0] == "keypair-pubkey mismatch"
 
@@ -730,7 +732,7 @@ def test_transaction_missing_keypair() -> None:
     id0 = keypair0.pubkey()
     ix = Instruction(program_id, ZERO_BYTES, [AccountMeta(id0, True, True)])
     message = Message([ix], id0)
-    with raises(ValueError) as excinfo:
+    with raises(SignerError) as excinfo:
         Transaction.new_unsigned(message).sign([], Hash.default())
     assert excinfo.value.args[0] == "not enough signers"
 
@@ -741,7 +743,7 @@ def test_transaction_wrong_key() -> None:
     wrong_id = Pubkey.default()
     ix = Instruction(program_id, ZERO_BYTES, [AccountMeta(wrong_id, True, True)])
     message = Message([ix], wrong_id)
-    with raises(ValueError) as excinfo:
+    with raises(SignerError) as excinfo:
         Transaction.new_unsigned(message).sign([keypair0], Hash.default())
     assert excinfo.value.args[0] == "keypair-pubkey mismatch"
 
@@ -821,7 +823,7 @@ def test_try_sign_dyn_keypairs() -> None:
     )
     message = Message([ix], another_pubkey)
     tx = Transaction.new_unsigned(message)
-    with raises(ValueError) as excinfo:
+    with raises(SignerError) as excinfo:
         tx.sign(signers, Hash.default())
     assert excinfo.value.args[0] == "keypair-pubkey mismatch"
     assert tx.signatures == [Signature.default(), Signature.default()]
@@ -946,9 +948,9 @@ def tx_keypair_pubkey_mismatch() -> None:
     instructions = [SystemProgram.transfer(from_pubkey, to_pubkey, 42)]
     tx = Transaction.new_with_payer(instructions, from_pubkey)
     unused_keypair = Keypair()
-    with raises(ValueError) as excinfo:
+    with raises(SignerError) as excinfo:
         tx.partial_sign([from_keypair, unused_keypair], Hash.default())
-    assert excinfo.value.args[0] == "SignerError.KeypairPubkeyMismatch"
+    assert excinfo.value.args[0] == "keypair-pubkey mismatch"
 
 
 # The below tests are ported from solana-py tests.

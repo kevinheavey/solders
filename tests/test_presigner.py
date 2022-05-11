@@ -1,5 +1,5 @@
 from pytest import raises
-from solders import Keypair, Presigner
+from solders import Keypair, Presigner, SignerError
 
 
 def test_presigner() -> None:
@@ -13,7 +13,7 @@ def test_presigner() -> None:
     assert presigner.pubkey() == pubkey
     assert presigner.sign_message(data) == sig
     bad_data = bytes([2])
-    with raises(ValueError) as excinfo:
+    with raises(SignerError) as excinfo:
         presigner.sign_message(bad_data)
     assert excinfo.value.args[0] == "presigner error"
 

@@ -1,20 +1,39 @@
 #![allow(deprecated)]
-use pyo3::{prelude::*, pyclass::CompareOp, types::PyBytes};
+use pyo3::{
+    create_exception, exceptions::PyException, prelude::*, pyclass::CompareOp, types::PyBytes,
+};
 use serde::{Deserialize, Serialize};
 use solana_sdk::{
     pubkey::Pubkey as PubkeyOriginal,
-    sanitize::Sanitize,
+    sanitize::{Sanitize, SanitizeError as SanitizeErrorOriginal},
     signature::Signature as SignatureOriginal,
     transaction::{
         get_nonce_pubkey_from_instruction, uses_durable_nonce, Transaction as TransactionOriginal,
+        TransactionError as TransactionErrorOriginal,
     },
 };
 
 use crate::{
-    convert_instructions, convert_optional_pubkey, handle_py_value_err, signer::SignerVec,
-    CompiledInstruction, Instruction, Message, Pubkey, RichcmpEqualityOnly, Signature, Signer,
-    SolderHash,
+    convert_instructions, convert_optional_pubkey, handle_py_err, signer::SignerVec,
+    CompiledInstruction, Instruction, Message, Pubkey, PyErrWrapper, RichcmpEqualityOnly,
+    Signature, Signer, SolderHash,
 };
+
+create_exception!(solders, TransactionError, PyException);
+
+impl From<TransactionErrorOriginal> for PyErrWrapper {
+    fn from(e: TransactionErrorOriginal) -> Self {
+        Self(TransactionError::new_err(e.to_string()))
+    }
+}
+
+create_exception!(solders, SanitizeError, PyException);
+
+impl From<SanitizeErrorOriginal> for PyErrWrapper {
+    fn from(e: SanitizeErrorOriginal) -> Self {
+        Self(SanitizeError::new_err(e.to_string()))
+    }
+}
 
 #[pyclass(module = "solders", subclass)]
 #[derive(Debug, PartialEq, Default, Eq, Clone, Serialize, Deserialize)]
@@ -140,7 +159,7 @@ impl Transaction {
     }
 
     pub fn sign(&mut self, keypairs: Vec<Signer>, recent_blockhash: SolderHash) -> PyResult<()> {
-        handle_py_value_err(
+        handle_py_err(
             self.0
                 .try_sign(&SignerVec(keypairs), recent_blockhash.into()),
         )
@@ -151,18 +170,18 @@ impl Transaction {
         keypairs: Vec<Signer>,
         recent_blockhash: SolderHash,
     ) -> PyResult<()> {
-        handle_py_value_err(
+        handle_py_err(
             self.0
                 .try_partial_sign(&SignerVec(keypairs), recent_blockhash.into()),
         )
     }
 
     pub fn verify(&self) -> PyResult<()> {
-        handle_py_value_err(self.0.verify())
+        handle_py_err(self.0.verify())
     }
 
     pub fn verify_and_hash_message(&self) -> PyResult<SolderHash> {
-        handle_py_value_err(self.0.verify_and_hash_message())
+        handle_py_err(self.0.verify_and_hash_message())
     }
 
     pub fn verify_with_results(&self) -> Vec<bool> {
@@ -175,7 +194,7 @@ impl Transaction {
     ) -> PyResult<Vec<Option<usize>>> {
         let converted_pubkeys: Vec<PubkeyOriginal> =
             pubkeys.into_iter().map(PubkeyOriginal::from).collect();
-        handle_py_value_err(self.0.get_signing_keypair_positions(&converted_pubkeys))
+        handle_py_err(self.0.get_signing_keypair_positions(&converted_pubkeys))
     }
 
     pub fn replace_signatures(&mut self, signers: Vec<(Pubkey, Signature)>) -> PyResult<()> {
@@ -188,7 +207,7 @@ impl Transaction {
                 )
             })
             .collect();
-        handle_py_value_err(self.0.replace_signatures(&converted_signers))
+        handle_py_err(self.0.replace_signatures(&converted_signers))
     }
 
     pub fn is_signed(&self) -> bool {
@@ -200,11 +219,11 @@ impl Transaction {
     }
 
     pub fn sanitize(&self) -> PyResult<()> {
-        handle_py_value_err(self.0.sanitize())
+        handle_py_err(self.0.sanitize())
     }
 
     pub fn serialize<'a>(&self, py: Python<'a>) -> PyResult<&'a PyBytes> {
-        let as_vec: Vec<u8> = handle_py_value_err(bincode::serialize(&self.0))?;
+        let as_vec: Vec<u8> = handle_py_err(bincode::serialize(&self.0))?;
         Ok(PyBytes::new(py, &as_vec))
     }
 
@@ -216,7 +235,7 @@ impl Transaction {
 
     #[staticmethod]
     pub fn deserialize(data: &[u8]) -> PyResult<Self> {
-        handle_py_value_err(bincode::deserialize::<TransactionOriginal>(data))
+        handle_py_err(bincode::deserialize::<TransactionOriginal>(data))
     }
 
     pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {

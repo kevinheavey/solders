@@ -17,7 +17,7 @@ use std::{
 mod pubkey;
 pub use pubkey::Pubkey;
 mod signer;
-pub use signer::Signer;
+pub use signer::{Signer, SignerError};
 mod signature;
 pub use signature::Signature;
 mod keypair;
@@ -29,7 +29,7 @@ pub use hash::{Hash as SolderHash, ParseHashError};
 mod message;
 pub use message::{Message, MessageHeader};
 mod transaction;
-pub use transaction::Transaction;
+pub use transaction::{SanitizeError, Transaction};
 mod system_program;
 pub use system_program::SystemProgram;
 mod sysvar;
@@ -188,5 +188,7 @@ fn solders(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_class::<Presigner>()?;
     m.add("ParseHashError", _py.get_type::<ParseHashError>())?;
     m.add("BincodeError", _py.get_type::<BincodeError>())?;
+    m.add("SignerError", _py.get_type::<SignerError>())?;
+    m.add("SanitizeError", _py.get_type::<SanitizeError>())?;
     Ok(())
 }

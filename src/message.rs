@@ -9,8 +9,8 @@ use solana_sdk::{
 };
 
 use crate::{
-    convert_instructions, convert_optional_pubkey, handle_py_value_err, CompiledInstruction,
-    Instruction, Pubkey, RichcmpEqualityOnly, SolderHash,
+    convert_instructions, convert_optional_pubkey, handle_py_err, CompiledInstruction, Instruction,
+    Pubkey, RichcmpEqualityOnly, SolderHash,
 };
 
 #[pyclass(module = "solders", subclass)]
@@ -232,7 +232,7 @@ impl Message {
 
     #[staticmethod]
     pub fn deserialize(data: &[u8]) -> PyResult<Self> {
-        handle_py_value_err(bincode::deserialize::<MessageOriginal>(data))
+        handle_py_err(bincode::deserialize::<MessageOriginal>(data))
     }
 
     pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
