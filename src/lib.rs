@@ -1,5 +1,6 @@
-use bincode::serialize;
+use bincode::{serialize, ErrorKind};
 use pyo3::{
+    create_exception,
     exceptions::{PyException, PyTypeError, PyValueError},
     prelude::*,
     pyclass::CompareOp,
@@ -22,7 +23,7 @@ pub use signature::Signature;
 mod keypair;
 pub use keypair::Keypair;
 mod instruction;
-pub use instruction::{AccountMeta, BincodeError, CompiledInstruction, Instruction};
+pub use instruction::{AccountMeta, CompiledInstruction, Instruction};
 mod hash;
 pub use hash::{Hash as SolderHash, ParseHashError};
 mod message;
@@ -61,6 +62,14 @@ fn to_py_value_err(err: &impl ToString) -> PyErr {
 
 fn handle_py_value_err<T: Into<P>, E: ToString, P>(res: Result<T, E>) -> PyResult<P> {
     res.map_or_else(|e| Err(to_py_value_err(&e)), |v| Ok(v.into()))
+}
+
+create_exception!(solders, BincodeError, PyException);
+
+impl From<Box<ErrorKind>> for PyErrWrapper {
+    fn from(e: Box<ErrorKind>) -> Self {
+        Self(BincodeError::new_err(e.to_string()))
+    }
 }
 
 fn convert_optional_pubkey(pubkey: Option<&Pubkey>) -> Option<&PubkeyOriginal> {

@@ -1,4 +1,4 @@
-use pyo3::{prelude::*, pyclass::CompareOp, types::PyBytes};
+use pyo3::{create_exception, prelude::*, pyclass::CompareOp, types::PyBytes};
 use solana_sdk::{
     pubkey::Pubkey as PubkeyOriginal,
     signature::Signature as SignatureOriginal,
@@ -13,7 +13,8 @@ use solana_sdk::{
 const LENGTH: usize = 64;
 
 use crate::{
-    handle_py_value_err, pubkey::Pubkey, signature::Signature, RichcmpEqOnlyPrecalculated, Signer,
+    handle_py_value_err, pubkey::Pubkey, signature::Signature, PyErrWrapper,
+    RichcmpEqOnlyPrecalculated, Signer,
 };
 
 #[pyclass(module = "solders", subclass)]

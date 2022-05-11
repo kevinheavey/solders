@@ -11,9 +11,7 @@ use solana_sdk::{
     pubkey::Pubkey as PubkeyOriginal,
 };
 
-use crate::{
-    handle_py_err, handle_py_value_err, pubkey::Pubkey, PyErrWrapper, RichcmpEqualityOnly,
-};
+use crate::{handle_py_err, pubkey::Pubkey, PyErrWrapper, RichcmpEqualityOnly};
 
 /// Describes a single account read or written by a program during instruction
 /// execution.
@@ -82,14 +80,6 @@ impl From<AccountMetaOriginal> for AccountMeta {
 impl From<AccountMeta> for AccountMetaOriginal {
     fn from(am: AccountMeta) -> Self {
         am.0
-    }
-}
-
-create_exception!(solders, BincodeError, PyException);
-
-impl From<Box<ErrorKind>> for PyErrWrapper {
-    fn from(e: Box<ErrorKind>) -> Self {
-        Self(BincodeError::new_err(e.to_string()))
     }
 }
 
