@@ -6,7 +6,7 @@ use solana_sdk::signature::{Signature as SignatureOriginal, SIGNATURE_BYTES};
 use crate::{calculate_hash, handle_py_value_err, RichcmpFull};
 
 #[pyclass(module = "solders", subclass)]
-#[derive(Clone, Copy, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[derive(Clone, Copy, Default, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
 pub struct Signature(SignatureOriginal);
 
 #[pymethods]
@@ -61,6 +61,10 @@ impl Signature {
 
     pub fn __str__(&self) -> String {
         self.string()
+    }
+
+    pub fn __repr__(&self) -> String {
+        format!("{:#?}", self)
     }
 
     pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> bool {
