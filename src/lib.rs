@@ -1,4 +1,4 @@
-use bincode::{serialize, ErrorKind};
+use bincode::ErrorKind;
 use pyo3::{
     create_exception,
     exceptions::{PyException, PyTypeError, PyValueError},
@@ -6,9 +6,7 @@ use pyo3::{
     pyclass::CompareOp,
 };
 use solana_sdk::{
-    instruction::Instruction as InstructionOriginal,
-    pubkey::{bytes_are_curve_point, Pubkey as PubkeyOriginal},
-    short_vec::{decode_shortu16_len, ShortU16},
+    instruction::Instruction as InstructionOriginal, pubkey::Pubkey as PubkeyOriginal,
 };
 use std::{
     collections::hash_map::DefaultHasher,
@@ -83,40 +81,6 @@ fn convert_instructions(instructions: Vec<Instruction>) -> Vec<InstructionOrigin
         .collect()
 }
 
-// #[derive(Debug)]
-// pub struct SignatureError(SignatureOriginalError);
-
-// impl std::convert::From<SignatureError> for PyErr {
-//     fn from(err: SignatureError) -> PyErr {
-//         PyValueError::new_err(err.0.to_string())
-//     }
-// }
-
-/// Check if _bytes s is a valid point on curve or not.
-#[pyfunction]
-fn is_on_curve(_bytes: &[u8]) -> bool {
-    bytes_are_curve_point(_bytes)
-}
-
-/// Return the serialized length.
-#[pyfunction]
-fn encode_length(value: u16) -> Vec<u8> {
-    serialize(&ShortU16(value)).unwrap()
-}
-
-/// Return the decoded value and how many bytes it consumed.
-#[pyfunction]
-fn decode_length(raw_bytes: &[u8]) -> PyResult<(usize, usize)> {
-    if raw_bytes == b"" {
-        return Ok((0, 0));
-    }
-    let res = decode_shortu16_len(raw_bytes);
-    match res {
-        Ok(val) => Ok(val),
-        Err(_) => Err(PyValueError::new_err("Could not decode value.")),
-    }
-}
-
 fn richcmp_type_error(op: &str) -> PyErr {
     let msg = format!("{} not supported.", op);
     PyTypeError::new_err(msg)
@@ -170,9 +134,6 @@ pub trait RichcmpFull: PartialEq + PartialOrd {
 /// A Python module implemented in Rust.
 #[pymodule]
 fn solders(_py: Python, m: &PyModule) -> PyResult<()> {
-    m.add_function(wrap_pyfunction!(encode_length, m)?)?;
-    m.add_function(wrap_pyfunction!(decode_length, m)?)?;
-    m.add_function(wrap_pyfunction!(is_on_curve, m)?)?;
     m.add_class::<Pubkey>()?;
     m.add_class::<Keypair>()?;
     m.add_class::<Signature>()?;
