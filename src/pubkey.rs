@@ -87,17 +87,12 @@ impl Pubkey {
         self.0.is_on_curve()
     }
 
-    #[pyo3(name = "to_string")]
-    pub fn string(&self) -> String {
-        self.to_string()
-    }
-
     pub fn to_bytes(&self) -> &[u8] {
         self.as_ref()
     }
 
     fn __str__(&self) -> String {
-        self.string()
+        self.to_string()
     }
 
     fn __repr__(&self) -> String {

@@ -26,13 +26,8 @@ impl Hash {
         HashOriginal::new_from_array(hash_bytes).into()
     }
 
-    #[pyo3(name = "to_string")]
-    pub fn string(&self) -> String {
-        self.to_string()
-    }
-
     pub fn __str__(&self) -> String {
-        self.string()
+        self.to_string()
     }
 
     pub fn __repr__(&self) -> String {

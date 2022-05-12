@@ -54,13 +54,8 @@ impl Signature {
         self.to_bytes()
     }
 
-    #[pyo3(name = "to_string")]
-    pub fn string(&self) -> String {
-        self.to_string()
-    }
-
     pub fn __str__(&self) -> String {
-        self.string()
+        self.to_string()
     }
 
     pub fn __repr__(&self) -> String {
