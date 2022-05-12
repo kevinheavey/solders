@@ -784,7 +784,7 @@ def test_transaction_instruction_with_duplicate_keys() -> None:
     assert tx.is_signed()
 
 
-def test_try_sign_dyn_keypairs() -> None:
+def test_sign_dyn_keypairs() -> None:
     program_id = Pubkey.default()
     keypair = Keypair()
     pubkey = keypair.pubkey()
@@ -827,6 +827,35 @@ def test_try_sign_dyn_keypairs() -> None:
         tx.sign(signers, Hash.default())
     assert excinfo.value.args[0] == "keypair-pubkey mismatch"
     assert tx.signatures == [Signature.default(), Signature.default()]
+
+
+def test_offline_multisig() -> None:
+    """Test signing a transaction, serializing it, then having someone else deserialize and sign it."""
+    program_id = Pubkey.default()
+    alice_keypair = Keypair()
+    bob_keypair = Keypair()
+    alice_pubkey = alice_keypair.pubkey()
+    bob_pubkey = bob_keypair.pubkey()
+
+    ix = Instruction(
+        program_id,
+        ZERO_BYTES,
+        [
+            AccountMeta(alice_pubkey, True, True),
+            AccountMeta(bob_pubkey, True, True),
+        ],
+    )
+    message = Message([ix], bob_pubkey)
+    tx = Transaction.new_unsigned(message)
+    tx.partial_sign([bob_keypair], BLOCKHASH)
+    assert tx.signatures[0] == bob_keypair.sign_message(tx.message_data())
+    serialized = tx.serialize()
+    deserialized = Transaction.deserialize(serialized)
+
+    deserialized.partial_sign([alice_keypair], BLOCKHASH)
+    assert deserialized.signatures[0] == bob_keypair.sign_message(tx.message_data())
+    assert deserialized.signatures[1] == alice_keypair.sign_message(tx.message_data())
+    assert deserialized.message == tx.message
 
 
 def nonced_transfer_tx() -> Tuple[Pubkey, Pubkey, Transaction]:
