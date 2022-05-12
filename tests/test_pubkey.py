@@ -1,5 +1,5 @@
 from pytest import raises, mark
-from solders import is_on_curve, Pubkey
+from solders import Pubkey
 
 on_curve_data = [
     (
@@ -27,11 +27,6 @@ def test_wrong_size():
     assert excinfo.value.args[0] == msg
 
 
-@mark.parametrize("test_input,expected", on_curve_data)
-def test_is_on_curve(test_input, expected):
-    result = is_on_curve(test_input)
-    assert result is expected
-
 
 @mark.parametrize("test_input,expected", on_curve_data)
 def test_is_on_curve_method(test_input, expected):
@@ -39,11 +34,6 @@ def test_is_on_curve_method(test_input, expected):
     result = pubkey.is_on_curve()
     assert result is expected
 
-
-def test_is_on_curve_wrong_length():
-    data = b"\xc1M"
-    with raises(BaseException):
-        is_on_curve(data)
 
 
 def test_length_classattr():
