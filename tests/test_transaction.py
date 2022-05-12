@@ -843,22 +843,22 @@ def nonced_transfer_tx() -> Tuple[Pubkey, Pubkey, Transaction]:
     return (from_pubkey, nonce_pubkey, tx)
 
 
-def tx_uses_nonce_ok() -> None:
+def test_tx_uses_nonce_ok() -> None:
     (_, _, tx) = nonced_transfer_tx()
     assert tx.uses_durable_nonce() is not None
 
 
-def tx_uses_nonce_empty_ix_fail() -> None:
+def test_tx_uses_nonce_empty_ix_fail() -> None:
     assert Transaction.default().uses_durable_nonce() is None
 
 
-def tx_uses_nonce_bad_prog_id_idx_fail() -> None:
+def test_tx_uses_nonce_bad_prog_id_idx_fail() -> None:
     (_, _, tx) = nonced_transfer_tx()
     with_changed_pid_index = with_changed_fields(tx, program_id_index=255)
     assert with_changed_pid_index.uses_durable_nonce() is None
 
 
-def tx_uses_nonce_first_prog_id_not_nonce_fail() -> None:
+def test_tx_uses_nonce_first_prog_id_not_nonce_fail() -> None:
     from_keypair = Keypair()
     from_pubkey = from_keypair.pubkey()
     nonce_keypair = Keypair()
@@ -872,7 +872,7 @@ def tx_uses_nonce_first_prog_id_not_nonce_fail() -> None:
     assert tx.uses_durable_nonce() is None
 
 
-def tx_uses_ro_nonce_account() -> None:
+def test_tx_uses_ro_nonce_account() -> None:
     from_keypair = Keypair()
     from_pubkey = from_keypair.pubkey()
     nonce_keypair = Keypair()
@@ -897,7 +897,7 @@ def tx_uses_ro_nonce_account() -> None:
     assert tx.uses_durable_nonce() is None
 
 
-def tx_uses_nonce_wrong_first_nonce_ix_fail() -> None:
+def test_tx_uses_nonce_wrong_first_nonce_ix_fail() -> None:
     from_keypair = Keypair()
     from_pubkey = from_keypair.pubkey()
     nonce_keypair = Keypair()
@@ -916,14 +916,14 @@ def tx_uses_nonce_wrong_first_nonce_ix_fail() -> None:
     assert tx.uses_durable_nonce() is None
 
 
-def get_nonce_pub_from_ix_ok() -> None:
+def test_get_nonce_pub_from_ix_ok() -> None:
     (_, nonce_pubkey, tx) = nonced_transfer_tx()
     nonce_ix = tx.uses_durable_nonce()
     assert nonce_ix is not None
     assert tx.get_nonce_pubkey_from_instruction(nonce_ix) == nonce_pubkey
 
 
-def get_nonce_pub_from_ix_no_accounts_fail() -> None:
+def test_get_nonce_pub_from_ix_no_accounts_fail() -> None:
     (_, _, tx) = nonced_transfer_tx()
     nonce_ix = tx.uses_durable_nonce()
     assert nonce_ix is not None
@@ -933,7 +933,7 @@ def get_nonce_pub_from_ix_no_accounts_fail() -> None:
     assert tx.get_nonce_pubkey_from_instruction(nonce_ix) == None
 
 
-def get_nonce_pub_from_ix_bad_acc_idx_fail() -> None:
+def test_get_nonce_pub_from_ix_bad_acc_idx_fail() -> None:
     (_, _, tx) = nonced_transfer_tx()
     nonce_ix = tx.uses_durable_nonce()
     assert nonce_ix is not None
@@ -941,7 +941,7 @@ def get_nonce_pub_from_ix_bad_acc_idx_fail() -> None:
     assert tx.get_nonce_pubkey_from_instruction(nonce_ix) == None
 
 
-def tx_keypair_pubkey_mismatch() -> None:
+def test_tx_keypair_pubkey_mismatch() -> None:
     from_keypair = Keypair()
     from_pubkey = from_keypair.pubkey()
     to_pubkey = Pubkey.new_unique()
