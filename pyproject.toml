@@ -9,7 +9,7 @@ license = "Apache"
 python = "^3.7"
 
 [tool.poetry.dev-dependencies]
-maturin = "^0.12.5"
+maturin = "^0.12.16"
 black = "^21.12b0"
 wemake-python-styleguide = "^0.16.0"
 mypy = "^0.930"
