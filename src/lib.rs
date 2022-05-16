@@ -34,6 +34,8 @@ mod sysvar;
 pub use sysvar::Sysvar;
 mod presigner;
 pub use presigner::Presigner;
+mod mymod;
+pub use mymod::double;
 
 struct PyErrWrapper(PyErr);
 
@@ -134,6 +136,12 @@ pub trait RichcmpFull: PartialEq + PartialOrd {
 /// A Python module implemented in Rust.
 #[pymodule]
 fn solders(_py: Python, m: &PyModule) -> PyResult<()> {
+    let mymodule = PyModule::new(_py, "mymod")?;
+    mymodule.add_function(wrap_pyfunction!(double, m)?)?;
+    _py.import("sys")?
+        .getattr("modules")?
+        .set_item("solders.mymod", mymodule)?;
+    m.add_submodule(mymodule)?;
     m.add_class::<Pubkey>()?;
     m.add_class::<Keypair>()?;
     m.add_class::<Signature>()?;
