@@ -10,6 +10,7 @@ use solana_sdk::{
         create_nonce_account_with_seed, transfer, transfer_many, transfer_with_seed,
         withdraw_nonce_account, SystemInstruction as SystemInstructionOriginal,
     },
+    system_program,
 };
 
 use crate::{Instruction, Pubkey};
@@ -25,6 +26,12 @@ pub struct CreateAccountParams {
     lamports: u64,
     space: u64,
     owner: Pubkey,
+}
+
+pub fn create_sysvar_mod(py: Python<'_>) -> PyResult<&PyModule> {
+    let system_program_mod = PyModule::new(py, "system_program")?;
+    system_program_mod.add("ID", Pubkey(system_program::ID))?;
+    Ok(system_program_mod)
 }
 
 #[pyclass(module = "solders", subclass)]
