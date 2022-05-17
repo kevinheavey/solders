@@ -1,7 +1,7 @@
 from pytest import raises, mark
 from based58 import b58encode
 
-from solders import Hash, ParseHashError
+from solders.hash import Hash, ParseHashError
 
 HASHED = Hash.hash(bytes([1]))
 HASH_BASE58_STR = b58encode(bytes(HASHED)).decode()

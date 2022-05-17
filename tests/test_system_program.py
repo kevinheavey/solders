@@ -1,5 +1,7 @@
 from typing import List
-from solders import SystemProgram, Pubkey, Instruction
+from solders.system_program import SystemProgram
+from solders.pubkey import Pubkey
+from solders.instruction import Instruction
 
 
 def test_id() -> None:

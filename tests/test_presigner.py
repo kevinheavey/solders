@@ -1,5 +1,7 @@
 from pytest import raises
-from solders import Keypair, Presigner, SignerError
+from solders.keypair import Keypair
+from solders.presigner import Presigner
+from solders.errors import SignerError
 
 
 def test_presigner() -> None:

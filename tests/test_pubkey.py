@@ -1,5 +1,5 @@
 from pytest import raises, mark
-from solders import Pubkey
+from solders.pubkey import Pubkey
 
 on_curve_data = [
     (

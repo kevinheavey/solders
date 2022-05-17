@@ -9,7 +9,7 @@ use solana_sdk::{
     instruction::Instruction as InstructionOriginal, pubkey::Pubkey as PubkeyOriginal,
 };
 use std::{
-    collections::hash_map::DefaultHasher,
+    collections::{hash_map::DefaultHasher, HashMap},
     hash::{Hash, Hasher},
 };
 mod pubkey;
@@ -34,8 +34,6 @@ mod sysvar;
 pub use sysvar::Sysvar;
 mod presigner;
 pub use presigner::Presigner;
-mod mymod;
-pub use mymod::double;
 
 struct PyErrWrapper(PyErr);
 
@@ -136,28 +134,55 @@ pub trait RichcmpFull: PartialEq + PartialOrd {
 /// A Python module implemented in Rust.
 #[pymodule]
 fn solders(_py: Python, m: &PyModule) -> PyResult<()> {
-    let mymodule = PyModule::new(_py, "mymod")?;
-    mymodule.add_function(wrap_pyfunction!(double, m)?)?;
-    _py.import("sys")?
-        .getattr("modules")?
-        .set_item("solders.mymod", mymodule)?;
-    m.add_submodule(mymodule)?;
-    m.add_class::<Pubkey>()?;
-    m.add_class::<Keypair>()?;
-    m.add_class::<Signature>()?;
-    m.add_class::<AccountMeta>()?;
-    m.add_class::<Instruction>()?;
-    m.add_class::<CompiledInstruction>()?;
-    m.add_class::<SolderHash>()?;
-    m.add_class::<Message>()?;
-    m.add_class::<MessageHeader>()?;
-    m.add_class::<Transaction>()?;
-    m.add_class::<SystemProgram>()?;
-    m.add_class::<Sysvar>()?;
-    m.add_class::<Presigner>()?;
-    m.add("ParseHashError", _py.get_type::<ParseHashError>())?;
-    m.add("BincodeError", _py.get_type::<BincodeError>())?;
-    m.add("SignerError", _py.get_type::<SignerError>())?;
-    m.add("SanitizeError", _py.get_type::<SanitizeError>())?;
+    let hash_mod = PyModule::new(_py, "hash")?;
+    hash_mod.add_class::<SolderHash>()?;
+    hash_mod.add("ParseHashError", _py.get_type::<ParseHashError>())?;
+    let instruction_mod = PyModule::new(_py, "instruction")?;
+    instruction_mod.add_class::<AccountMeta>()?;
+    instruction_mod.add_class::<Instruction>()?;
+    instruction_mod.add_class::<CompiledInstruction>()?;
+    let pubkey_mod = PyModule::new(_py, "pubkey")?;
+    pubkey_mod.add_class::<Pubkey>()?;
+    let keypair_mod = PyModule::new(_py, "keypair")?;
+    keypair_mod.add_class::<Keypair>()?;
+    let signature_mod = PyModule::new(_py, "signature")?;
+    signature_mod.add_class::<Signature>()?;
+    let message_mod = PyModule::new(_py, "message")?;
+    message_mod.add_class::<Message>()?;
+    message_mod.add_class::<MessageHeader>()?;
+    let transaction_mod = PyModule::new(_py, "transaction")?;
+    transaction_mod.add_class::<Transaction>()?;
+    transaction_mod.add("SanitizeError", _py.get_type::<SanitizeError>())?;
+    let system_program_mod = PyModule::new(_py, "system_program")?;
+    system_program_mod.add_class::<SystemProgram>()?;
+    let sysvar_mod = PyModule::new(_py, "sysvar")?;
+    sysvar_mod.add_class::<Sysvar>()?;
+    let presigner_mod = PyModule::new(_py, "presigner")?;
+    presigner_mod.add_class::<Presigner>()?;
+    let errors_mod = PyModule::new(_py, "errors")?;
+    errors_mod.add("BincodeError", _py.get_type::<BincodeError>())?;
+    errors_mod.add("SignerError", _py.get_type::<SignerError>())?;
+    let submodules = vec![
+        hash_mod,
+        instruction_mod,
+        pubkey_mod,
+        keypair_mod,
+        signature_mod,
+        message_mod,
+        transaction_mod,
+        system_program_mod,
+        sysvar_mod,
+        presigner_mod,
+        errors_mod,
+    ];
+    let modules: HashMap<String, &PyModule> = submodules
+        .iter()
+        .map(|x| (format!("solders.{}", x.name().unwrap()), *x))
+        .collect();
+    let sys_modules = _py.import("sys")?.getattr("modules")?;
+    sys_modules.call_method1("update", (modules,))?;
+    for submod in submodules {
+        m.add_submodule(submod)?;
+    }
     Ok(())
 }

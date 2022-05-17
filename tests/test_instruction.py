@@ -1,6 +1,8 @@
 from typing import cast, Union
 from pytest import mark, raises
-from solders import Instruction, CompiledInstruction, AccountMeta, Pubkey, BincodeError
+from solders.instruction import Instruction, CompiledInstruction, AccountMeta
+from solders.pubkey import Pubkey
+from solders.errors import BincodeError
 
 
 def test_accounts_setter() -> None:

@@ -1,4 +1,5 @@
-from solders import Pubkey, AccountMeta
+from solders.pubkey import Pubkey
+from solders.instruction import AccountMeta
 
 PUBKEY = Pubkey.default()
 

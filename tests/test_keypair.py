@@ -3,7 +3,8 @@ from typing import Callable
 from pytest import raises, mark
 
 from pybip39 import Mnemonic, Seed
-from solders import Keypair, Pubkey
+from solders.keypair import Keypair
+from solders.pubkey import Pubkey
 
 
 def test_from_bytes():

@@ -2,23 +2,17 @@ from typing import Tuple, Optional, List, Union
 from base64 import b64decode, b64encode
 from based58 import b58encode
 from pytest import raises
-from solders import (
-    Transaction,
-    Pubkey,
-    Keypair,
-    CompiledInstruction,
-    Hash,
-    Instruction,
-    AccountMeta,
-    Message,
-    MessageHeader,
-    SystemProgram,
-    Signature,
-    Sysvar,
-    Presigner,
-    SanitizeError,
-    SignerError,
-)
+from solders.transaction import Transaction, SanitizeError
+from solders.pubkey import Pubkey
+from solders.keypair import Keypair
+from solders.instruction import CompiledInstruction,Instruction,AccountMeta
+from solders.hash import Hash
+from solders.message import Message, MessageHeader
+from solders.system_program import SystemProgram
+from solders.signature import Signature
+from solders.sysvar import Sysvar
+from solders.presigner import Presigner
+from solders.errors import SignerError
 from .utils import ZERO_BYTES
 
 BLOCKHASH = Hash.from_string("EETubP5AKHgjPAhzPAFcb8BAY1hMH639CWCFTqi3hq1k")

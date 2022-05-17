@@ -1,3 +1,4 @@
+use dict_derive::{FromPyObject, IntoPyObject};
 use pyo3::prelude::*;
 use solana_sdk::{
     instruction::Instruction as InstructionOriginal,
@@ -7,7 +8,7 @@ use solana_sdk::{
         advance_nonce_account, allocate, allocate_with_seed, assign, assign_with_seed,
         create_account, create_account_with_seed, create_nonce_account,
         create_nonce_account_with_seed, transfer, transfer_many, transfer_with_seed,
-        withdraw_nonce_account,
+        withdraw_nonce_account, SystemInstruction as SystemInstructionOriginal,
     },
 };
 
@@ -17,6 +18,15 @@ fn convert_instructions_from_original(ixs: Vec<InstructionOriginal>) -> Vec<Inst
     ixs.into_iter().map(Instruction::from).collect()
 }
 
+#[derive(FromPyObject, IntoPyObject)]
+pub struct CreateAccountParams {
+    from_pubkey: Pubkey,
+    to_pubkey: Pubkey,
+    lamports: u64,
+    space: u64,
+    owner: Pubkey,
+}
+
 #[pyclass(module = "solders", subclass)]
 pub struct SystemProgram;
 
@@ -24,6 +34,11 @@ pub struct SystemProgram;
 impl SystemProgram {
     #[classattr]
     pub const ID: Pubkey = Pubkey(pubkey_macro!("11111111111111111111111111111111"));
+
+    // #[staticmethod]
+    // pub fn decode_create_account(data: &[u8]) -> CreateAccountParams {
+    //     let deser = bincode::deserialize::<SystemInstructionOriginal>(data).unwrap();
+    // }
 
     #[staticmethod]
     pub fn create_account(

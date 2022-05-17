@@ -1,6 +1,8 @@
 from based58 import b58encode, b58decode
 from pytest import raises, fixture
-from solders import Signature, Keypair, Pubkey
+from solders.signature import Signature
+from solders.keypair import Keypair
+from solders.pubkey import Pubkey
 
 
 @fixture(scope="module")
