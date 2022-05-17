@@ -12,6 +12,7 @@ use std::{
     collections::{hash_map::DefaultHasher, HashMap},
     hash::{Hash, Hasher},
 };
+use system_program::create_system_program_mod;
 use sysvar::create_sysvar_mod;
 mod pubkey;
 pub use pubkey::Pubkey;
@@ -153,8 +154,7 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
     let transaction_mod = PyModule::new(py, "transaction")?;
     transaction_mod.add_class::<Transaction>()?;
     transaction_mod.add("SanitizeError", py.get_type::<SanitizeError>())?;
-    let system_program_mod = PyModule::new(py, "system_program")?;
-    system_program_mod.add_class::<SystemProgram>()?;
+    let system_program_mod = create_system_program_mod(py)?;
     let sysvar_mod = create_sysvar_mod(py)?;
     let presigner_mod = PyModule::new(py, "presigner")?;
     presigner_mod.add_class::<Presigner>()?;

@@ -8,7 +8,7 @@ from solders.keypair import Keypair
 from solders.instruction import CompiledInstruction,Instruction,AccountMeta
 from solders.hash import Hash
 from solders.message import Message, MessageHeader
-from solders.system_program import SystemProgram
+from solders import system_program
 from solders.signature import Signature
 from solders.sysvar import RECENT_BLOCKHASHES
 from solders.presigner import Presigner
@@ -409,7 +409,7 @@ def test_transaction_minimum_serialized_size() -> None:
     alice_keypair = Keypair()
     alice_pubkey = alice_keypair.pubkey()
     bob_pubkey = Pubkey.new_unique()
-    ix = SystemProgram.transfer(alice_pubkey, bob_pubkey, 42)
+    ix = system_program.transfer(alice_pubkey, bob_pubkey, 42)
     u32_size = 4
     u64_size = 8
     expected_data_size = u32_size + u64_size
@@ -858,8 +858,8 @@ def nonced_transfer_tx() -> Tuple[Pubkey, Pubkey, Transaction]:
     nonce_keypair = Keypair()
     nonce_pubkey = nonce_keypair.pubkey()
     instructions = [
-        SystemProgram.advance_nonce_account(nonce_pubkey, nonce_pubkey),
-        SystemProgram.transfer(from_pubkey, nonce_pubkey, 42),
+        system_program.advance_nonce_account(nonce_pubkey, nonce_pubkey),
+        system_program.transfer(from_pubkey, nonce_pubkey, 42),
     ]
     message = Message(instructions, nonce_pubkey)
     tx = Transaction([from_keypair, nonce_keypair], message, Hash.default())
@@ -887,8 +887,8 @@ def test_tx_uses_nonce_first_prog_id_not_nonce_fail() -> None:
     nonce_keypair = Keypair()
     nonce_pubkey = nonce_keypair.pubkey()
     instructions = [
-        SystemProgram.transfer(from_pubkey, nonce_pubkey, 42),
-        SystemProgram.advance_nonce_account(nonce_pubkey, nonce_pubkey),
+        system_program.transfer(from_pubkey, nonce_pubkey, 42),
+        system_program.advance_nonce_account(nonce_pubkey, nonce_pubkey),
     ]
     message = Message(instructions, from_pubkey)
     tx = Transaction([from_keypair, nonce_keypair], message, Hash.default())
@@ -907,7 +907,7 @@ def test_tx_uses_ro_nonce_account() -> None:
     ]
     advance_nonce_account_idx = b"\x04\x00\x00\x00"
     nonce_instruction = Instruction(
-        SystemProgram.ID,
+        system_program.ID,
         advance_nonce_account_idx,
         account_metas,
     )
@@ -926,13 +926,13 @@ def test_tx_uses_nonce_wrong_first_nonce_ix_fail() -> None:
     nonce_keypair = Keypair()
     nonce_pubkey = nonce_keypair.pubkey()
     instructions = [
-        SystemProgram.withdraw_nonce_account(
+        system_program.withdraw_nonce_account(
             nonce_pubkey,
             nonce_pubkey,
             from_pubkey,
             42,
         ),
-        SystemProgram.transfer(from_pubkey, nonce_pubkey, 42),
+        system_program.transfer(from_pubkey, nonce_pubkey, 42),
     ]
     message = Message(instructions, nonce_pubkey)
     tx = Transaction([from_keypair, nonce_keypair], message, Hash.default())
@@ -968,7 +968,7 @@ def test_tx_keypair_pubkey_mismatch() -> None:
     from_keypair = Keypair()
     from_pubkey = from_keypair.pubkey()
     to_pubkey = Pubkey.new_unique()
-    instructions = [SystemProgram.transfer(from_pubkey, to_pubkey, 42)]
+    instructions = [system_program.transfer(from_pubkey, to_pubkey, 42)]
     tx = Transaction.new_with_payer(instructions, from_pubkey)
     unused_keypair = Keypair()
     with raises(SignerError) as excinfo:
@@ -982,10 +982,10 @@ def test_tx_keypair_pubkey_mismatch() -> None:
 def test_dedup_signatures():
     """Test signature deduplication."""
     kp1, kp2 = Keypair(), Keypair()
-    transfer1 = SystemProgram.transfer(
+    transfer1 = system_program.transfer(
         from_pubkey=kp1.pubkey(), to_pubkey=kp2.pubkey(), lamports=123
     )
-    transfer2 = SystemProgram.transfer(
+    transfer2 = system_program.transfer(
         from_pubkey=kp1.pubkey(), to_pubkey=kp2.pubkey(), lamports=123
     )
     instructions = [transfer1, transfer2]
@@ -996,7 +996,7 @@ def test_dedup_signatures():
 
 def test_wire_format_and_deserialize() -> None:
     """Test serialize/derialize transaction to/from wire format."""
-    transfer = SystemProgram.transfer(
+    transfer = system_program.transfer(
         from_pubkey=SENDER.pubkey(),
         to_pubkey=RECIPIENT,
         lamports=49,
@@ -1045,7 +1045,7 @@ def test_populate() -> None:
 
 def test_serialize_unsigned_transaction() -> None:
     """Test to serialize an unsigned transaction."""
-    transfer = SystemProgram.transfer(
+    transfer = system_program.transfer(
         from_pubkey=SENDER.pubkey(),
         to_pubkey=RECIPIENT,
         lamports=49,
@@ -1315,17 +1315,17 @@ def test_sort_account_metas() -> None:
         )
     )
     instructions = [
-        SystemProgram.transfer(
+        system_program.transfer(
             from_pubkey=signer_one.pubkey(),
             to_pubkey=receiver_one.pubkey(),
             lamports=2_000_000,
         ),
-        SystemProgram.transfer(
+        system_program.transfer(
             from_pubkey=signer_two.pubkey(),
             to_pubkey=receiver_two.pubkey(),
             lamports=2_000_000,
         ),
-        SystemProgram.transfer(
+        system_program.transfer(
             from_pubkey=signer_three.pubkey(),
             to_pubkey=receiver_three.pubkey(),
             lamports=2_000_000,
