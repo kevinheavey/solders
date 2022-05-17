@@ -10,7 +10,7 @@ from solders.hash import Hash
 from solders.message import Message, MessageHeader
 from solders.system_program import SystemProgram
 from solders.signature import Signature
-from solders.sysvar import Sysvar
+from solders.sysvar import RECENT_BLOCKHASHES
 from solders.presigner import Presigner
 from solders.errors import SignerError
 from .utils import ZERO_BYTES
@@ -902,7 +902,7 @@ def test_tx_uses_ro_nonce_account() -> None:
     nonce_pubkey = nonce_keypair.pubkey()
     account_metas = [
         AccountMeta(nonce_pubkey, False, False),
-        AccountMeta(Sysvar.RECENT_BLOCKHASHES, False, False),
+        AccountMeta(RECENT_BLOCKHASHES, False, False),
         AccountMeta(nonce_pubkey, True, False),
     ]
     advance_nonce_account_idx = b"\x04\x00\x00\x00"
