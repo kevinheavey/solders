@@ -27,13 +27,11 @@ def test_wrong_size():
     assert excinfo.value.args[0] == msg
 
 
-
 @mark.parametrize("test_input,expected", on_curve_data)
 def test_is_on_curve_method(test_input, expected):
     pubkey = Pubkey(test_input)
     result = pubkey.is_on_curve()
     assert result is expected
-
 
 
 def test_length_classattr():

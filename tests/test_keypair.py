@@ -20,7 +20,8 @@ def test_from_bytes_wrong_size(test_input: bytes):
     with raises(ValueError) as excinfo:
         Keypair.from_bytes(test_input)
     assert (
-        excinfo.value.args[0] == f"expected a sequence of length 64 (got {len(test_input)})"
+        excinfo.value.args[0]
+        == f"expected a sequence of length 64 (got {len(test_input)})"
     )
 
 

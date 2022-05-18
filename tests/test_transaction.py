@@ -5,7 +5,7 @@ from pytest import raises
 from solders.transaction import Transaction, SanitizeError
 from solders.pubkey import Pubkey
 from solders.keypair import Keypair
-from solders.instruction import CompiledInstruction,Instruction,AccountMeta
+from solders.instruction import CompiledInstruction, Instruction, AccountMeta
 from solders.hash import Hash
 from solders.message import Message, MessageHeader
 from solders import system_program
