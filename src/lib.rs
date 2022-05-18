@@ -4,6 +4,7 @@ use pyo3::{
     exceptions::{PyException, PyTypeError, PyValueError},
     prelude::*,
     pyclass::CompareOp,
+    types::IntoPyDict,
 };
 use solana_sdk::{
     instruction::Instruction as InstructionOriginal, pubkey::Pubkey as PubkeyOriginal,
@@ -161,7 +162,7 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
     let errors_mod = PyModule::new(py, "errors")?;
     errors_mod.add("BincodeError", py.get_type::<BincodeError>())?;
     errors_mod.add("SignerError", py.get_type::<SignerError>())?;
-    let submodules = vec![
+    let submodules = [
         hash_mod,
         instruction_mod,
         pubkey_mod,

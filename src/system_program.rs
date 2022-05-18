@@ -1,5 +1,5 @@
 use dict_derive::{FromPyObject, IntoPyObject};
-use pyo3::prelude::*;
+use pyo3::{exceptions::PyValueError, prelude::*};
 use solana_sdk::{
     instruction::Instruction as InstructionOriginal,
     pubkey::Pubkey as PubkeyOriginal,
@@ -18,7 +18,7 @@ use solana_sdk::{
     system_program,
 };
 
-use crate::{Instruction, Pubkey};
+use crate::{handle_py_err, Instruction, Pubkey, RichcmpEqualityOnly};
 
 fn convert_instructions_from_original(ixs: Vec<InstructionOriginal>) -> Vec<Instruction> {
     ixs.into_iter().map(Instruction::from).collect()
@@ -34,10 +34,11 @@ pub struct CreateAccountParams {
 }
 
 pub fn create_system_program_mod(py: Python<'_>) -> PyResult<&PyModule> {
-    let system_program_mod = PyModule::new(py, "system_program")?;
+    let system_program_mod = PyModule::new(py, "_system_program")?;
     system_program_mod.add("ID", Pubkey(system_program::ID))?;
     let funcs = [
         wrap_pyfunction!(create_account, system_program_mod)?,
+        wrap_pyfunction!(decode_create_account, system_program_mod)?,
         wrap_pyfunction!(create_account_with_seed, system_program_mod)?,
         wrap_pyfunction!(assign, system_program_mod)?,
         wrap_pyfunction!(assign_with_seed, system_program_mod)?,
@@ -60,25 +61,36 @@ pub fn create_system_program_mod(py: Python<'_>) -> PyResult<&PyModule> {
 #[pyclass(module = "solders", subclass)]
 pub struct SystemProgram;
 
-// #[pyfunction]
-// pub fn decode_create_account(data: &[u8]) -> CreateAccountParams {
-//     let deser = bincode::deserialize::<SystemInstructionOriginal>(data).unwrap();
-// }
+#[pyfunction]
+pub fn decode_create_account(instruction: Instruction) -> PyResult<CreateAccountParams> {
+    let keys = instruction.0.accounts;
+    let parsed_data = handle_py_err(bincode::deserialize::<SystemInstructionOriginal>(
+        instruction.0.data.as_slice(),
+    ))?;
+    match parsed_data {
+        SystemInstructionOriginal::CreateAccount {
+            lamports,
+            space,
+            owner,
+        } => Ok(CreateAccountParams {
+            from_pubkey: keys[0].pubkey.into(),
+            to_pubkey: keys[1].pubkey.into(),
+            lamports,
+            space,
+            owner: owner.into(),
+        }),
+        _ => Err(PyValueError::new_err("uh oh")),
+    }
+}
 
 #[pyfunction]
-pub fn create_account(
-    from_pubkey: &Pubkey,
-    to_pubkey: &Pubkey,
-    lamports: u64,
-    space: u64,
-    owner: &Pubkey,
-) -> Instruction {
+pub fn create_account(params: CreateAccountParams) -> Instruction {
     create_account_original(
-        from_pubkey.as_ref(),
-        to_pubkey.as_ref(),
-        lamports,
-        space,
-        owner.as_ref(),
+        params.from_pubkey.as_ref(),
+        params.to_pubkey.as_ref(),
+        params.lamports,
+        params.space,
+        params.owner.as_ref(),
     )
     .into()
 }
