@@ -18,19 +18,10 @@ use solana_sdk::{
     system_program,
 };
 
-use crate::{handle_py_err, Instruction, Pubkey, RichcmpEqualityOnly};
+use crate::{handle_py_err, Instruction, Pubkey, RichcmpEqualityOnly, Transaction};
 
 fn convert_instructions_from_original(ixs: Vec<InstructionOriginal>) -> Vec<Instruction> {
     ixs.into_iter().map(Instruction::from).collect()
-}
-
-#[derive(FromPyObject, IntoPyObject)]
-pub struct CreateAccountParams {
-    from_pubkey: Pubkey,
-    to_pubkey: Pubkey,
-    lamports: u64,
-    space: u64,
-    owner: Pubkey,
 }
 
 pub fn create_system_program_mod(py: Python<'_>) -> PyResult<&PyModule> {
@@ -58,8 +49,14 @@ pub fn create_system_program_mod(py: Python<'_>) -> PyResult<&PyModule> {
     Ok(system_program_mod)
 }
 
-#[pyclass(module = "solders", subclass)]
-pub struct SystemProgram;
+#[derive(FromPyObject, IntoPyObject)]
+pub struct CreateAccountParams {
+    from_pubkey: Pubkey,
+    to_pubkey: Pubkey,
+    lamports: u64,
+    space: u64,
+    owner: Pubkey,
+}
 
 #[pyfunction]
 pub fn decode_create_account(instruction: Instruction) -> PyResult<CreateAccountParams> {
@@ -79,7 +76,7 @@ pub fn decode_create_account(instruction: Instruction) -> PyResult<CreateAccount
             space,
             owner: owner.into(),
         }),
-        _ => Err(PyValueError::new_err("uh oh")),
+        _ => Err(PyValueError::new_err("Not a CreateAccount instruction")),
     }
 }
 
@@ -95,80 +92,277 @@ pub fn create_account(params: CreateAccountParams) -> Instruction {
     .into()
 }
 
-#[pyfunction]
-pub fn create_account_with_seed(
-    from_pubkey: &Pubkey,
-    to_pubkey: &Pubkey, // must match create_with_seed(base, seed, owner)
-    base: &Pubkey,
-    seed: &str,
+#[derive(FromPyObject, IntoPyObject)]
+pub struct CreateAccountWithSeedParams {
+    from_pubkey: Pubkey,
+    to_pubkey: Pubkey,
+    base: Pubkey,
+    seed: String,
     lamports: u64,
     space: u64,
-    owner: &Pubkey,
-) -> Instruction {
+    owner: Pubkey,
+}
+
+#[pyfunction]
+pub fn create_account_with_seed(params: CreateAccountWithSeedParams) -> Instruction {
     create_account_with_seed_original(
-        from_pubkey.as_ref(),
-        to_pubkey.as_ref(),
-        base.as_ref(),
-        seed,
-        lamports,
-        space,
-        owner.as_ref(),
+        params.from_pubkey.as_ref(),
+        params.to_pubkey.as_ref(),
+        params.base.as_ref(),
+        &params.seed,
+        params.lamports,
+        params.space,
+        params.owner.as_ref(),
     )
     .into()
 }
 
 #[pyfunction]
-pub fn assign(pubkey: &Pubkey, owner: &Pubkey) -> Instruction {
-    assign_original(pubkey.as_ref(), owner.as_ref()).into()
+pub fn decode_create_account_with_seed(
+    instruction: Instruction,
+) -> PyResult<CreateAccountWithSeedParams> {
+    let keys = instruction.0.accounts;
+    let parsed_data = handle_py_err(bincode::deserialize::<SystemInstructionOriginal>(
+        instruction.0.data.as_slice(),
+    ))?;
+    match parsed_data {
+        SystemInstructionOriginal::CreateAccountWithSeed {
+            base,
+            seed,
+            lamports,
+            space,
+            owner,
+        } => Ok(CreateAccountWithSeedParams {
+            from_pubkey: keys[0].pubkey.into(),
+            to_pubkey: keys[1].pubkey.into(),
+            base: base.into(),
+            seed,
+            lamports,
+            space,
+            owner: owner.into(),
+        }),
+        _ => Err(PyValueError::new_err(
+            "Not a CreateAccountWithSeed instruction",
+        )),
+    }
+}
+
+#[derive(FromPyObject, IntoPyObject)]
+pub struct AssignParams {
+    pubkey: Pubkey,
+    owner: Pubkey,
 }
 
 #[pyfunction]
-pub fn assign_with_seed(
-    address: &Pubkey, // must match create_with_seed(base, seed, owner)
-    base: &Pubkey,
-    seed: &str,
-    owner: &Pubkey,
-) -> Instruction {
-    assign_with_seed_original(address.as_ref(), base.as_ref(), seed, owner.as_ref()).into()
+pub fn assign(params: AssignParams) -> Instruction {
+    assign_original(params.pubkey.as_ref(), params.owner.as_ref()).into()
 }
 
 #[pyfunction]
-pub fn transfer(from_pubkey: &Pubkey, to_pubkey: &Pubkey, lamports: u64) -> Instruction {
-    transfer_original(from_pubkey.as_ref(), to_pubkey.as_ref(), lamports).into()
+pub fn decode_assign(instruction: Instruction) -> PyResult<AssignParams> {
+    let pubkey = instruction.0.accounts[0].pubkey;
+    let parsed_data = handle_py_err(bincode::deserialize::<SystemInstructionOriginal>(
+        instruction.0.data.as_slice(),
+    ))?;
+    match parsed_data {
+        SystemInstructionOriginal::Assign { owner } => Ok(AssignParams {
+            pubkey: pubkey.into(),
+            owner: owner.into(),
+        }),
+        _ => Err(PyValueError::new_err("Not an Assign instruction")),
+    }
+}
+
+#[derive(FromPyObject, IntoPyObject)]
+pub struct AssignWithSeedParams {
+    address: Pubkey,
+    base: Pubkey,
+    seed: String,
+    owner: Pubkey,
 }
 
 #[pyfunction]
-pub fn transfer_with_seed(
-    from_pubkey: &Pubkey, // must match create_with_seed(base, seed, owner)
-    from_base: &Pubkey,
-    from_seed: &str,
-    from_owner: &Pubkey,
-    to_pubkey: &Pubkey,
+pub fn assign_with_seed(params: AssignWithSeedParams) -> Instruction {
+    assign_with_seed_original(
+        params.address.as_ref(),
+        params.base.as_ref(),
+        &params.seed,
+        params.owner.as_ref(),
+    )
+    .into()
+}
+
+#[pyfunction]
+pub fn decode_assign_with_seed(instruction: Instruction) -> PyResult<AssignWithSeedParams> {
+    let address = instruction.0.accounts[0].pubkey;
+    let parsed_data = handle_py_err(bincode::deserialize::<SystemInstructionOriginal>(
+        instruction.0.data.as_slice(),
+    ))?;
+    match parsed_data {
+        SystemInstructionOriginal::AssignWithSeed { base, seed, owner } => {
+            Ok(AssignWithSeedParams {
+                address: address.into(),
+                base: base.into(),
+                seed: seed.into(),
+                owner: owner.into(),
+            })
+        }
+        _ => Err(PyValueError::new_err("Not an AssignWithSeed instruction")),
+    }
+}
+
+#[derive(FromPyObject, IntoPyObject)]
+pub struct TransferParams {
+    from_pubkey: Pubkey,
+    to_pubkey: Pubkey,
     lamports: u64,
-) -> Instruction {
-    transfer_with_seed_original(
-        from_pubkey.as_ref(),
-        from_base.as_ref(),
-        from_seed.into(),
-        from_owner.as_ref(),
-        to_pubkey.as_ref(),
-        lamports,
+}
+
+#[pyfunction]
+pub fn transfer(params: TransferParams) -> Instruction {
+    transfer_original(
+        params.from_pubkey.as_ref(),
+        params.to_pubkey.as_ref(),
+        params.lamports,
     )
     .into()
 }
+
 #[pyfunction]
-pub fn allocate(pubkey: &Pubkey, space: u64) -> Instruction {
-    allocate_original(pubkey.as_ref(), space).into()
+pub fn decode_transfer(instruction: Instruction) -> PyResult<TransferParams> {
+    let keys = instruction.0.accounts;
+    let from_pubkey = keys[0].pubkey;
+    let to_pubkey = keys[1].pubkey;
+    let parsed_data = handle_py_err(bincode::deserialize::<SystemInstructionOriginal>(
+        instruction.0.data.as_slice(),
+    ))?;
+    match parsed_data {
+        SystemInstructionOriginal::Transfer { lamports } => Ok(TransferParams {
+            from_pubkey: from_pubkey.into(),
+            to_pubkey: to_pubkey.into(),
+            lamports,
+        }),
+        _ => Err(PyValueError::new_err("Not a Transfer instruction")),
+    }
 }
+
+#[derive(FromPyObject, IntoPyObject)]
+pub struct TransferWithSeedParams {
+    from_pubkey: Pubkey,
+    from_base: Pubkey,
+    from_seed: String,
+    from_owner: Pubkey,
+    to_pubkey: Pubkey,
+    lamports: u64,
+}
+
 #[pyfunction]
-pub fn allocate_with_seed(
-    address: &Pubkey, // must match create_with_seed(base, seed, owner)
-    base: &Pubkey,
-    seed: &str,
+pub fn transfer_with_seed(params: TransferWithSeedParams) -> Instruction {
+    transfer_with_seed_original(
+        params.from_pubkey.as_ref(),
+        params.from_base.as_ref(),
+        params.from_seed,
+        params.from_owner.as_ref(),
+        params.to_pubkey.as_ref(),
+        params.lamports,
+    )
+    .into()
+}
+
+#[pyfunction]
+pub fn decode_transfer_with_seed(instruction: Instruction) -> PyResult<TransferWithSeedParams> {
+    let keys = instruction.0.accounts;
+    let from_pubkey = keys[0].pubkey;
+    let from_base = keys[1].pubkey;
+    let to_pubkey = keys[2].pubkey;
+    let parsed_data = handle_py_err(bincode::deserialize::<SystemInstructionOriginal>(
+        instruction.0.data.as_slice(),
+    ))?;
+    match parsed_data {
+        SystemInstructionOriginal::TransferWithSeed {
+            lamports,
+            from_seed,
+            from_owner,
+        } => Ok(TransferWithSeedParams {
+            from_pubkey: from_pubkey.into(),
+            from_base: from_base.into(),
+            to_pubkey: to_pubkey.into(),
+            from_seed,
+            from_owner: from_owner.into(),
+            lamports,
+        }),
+        _ => Err(PyValueError::new_err("Not a TransferWithSeed instruction")),
+    }
+}
+
+#[derive(FromPyObject, IntoPyObject)]
+pub struct AllocateParams {
+    pubkey: Pubkey,
     space: u64,
-    owner: &Pubkey,
-) -> Instruction {
-    allocate_with_seed_original(address.as_ref(), base.as_ref(), seed, space, owner.as_ref()).into()
+}
+
+#[pyfunction]
+pub fn allocate(params: AllocateParams) -> Instruction {
+    allocate_original(params.pubkey.as_ref(), params.space).into()
+}
+
+#[pyfunction]
+pub fn decode_allocate(instruction: Instruction) -> PyResult<AllocateParams> {
+    let pubkey = instruction.0.accounts[0].pubkey;
+    let parsed_data = handle_py_err(bincode::deserialize::<SystemInstructionOriginal>(
+        instruction.0.data.as_slice(),
+    ))?;
+    match parsed_data {
+        SystemInstructionOriginal::Allocate { space } => Ok(AllocateParams {
+            pubkey: pubkey.into(),
+            space,
+        }),
+        _ => Err(PyValueError::new_err("Not an Allocate instruction")),
+    }
+}
+
+#[derive(FromPyObject, IntoPyObject)]
+pub struct AllocateWithSeedParams {
+    address: Pubkey,
+    base: Pubkey,
+    seed: String,
+    space: u64,
+    owner: Pubkey,
+}
+
+#[pyfunction]
+pub fn allocate_with_seed(params: AllocateWithSeedParams) -> Instruction {
+    allocate_with_seed_original(
+        params.address.as_ref(),
+        params.base.as_ref(),
+        &params.seed,
+        params.space,
+        params.owner.as_ref(),
+    )
+    .into()
+}
+
+#[pyfunction]
+pub fn decode_allocate_with_seed(instruction: Instruction) -> PyResult<AllocateWithSeedParams> {
+    let address = instruction.0.accounts[0].pubkey;
+    let parsed_data = handle_py_err(bincode::deserialize::<SystemInstructionOriginal>(
+        instruction.0.data.as_slice(),
+    ))?;
+    match parsed_data {
+        SystemInstructionOriginal::AllocateWithSeed {
+            base,
+            seed,
+            space,
+            owner,
+        } => Ok(AllocateWithSeedParams {
+            address: address.into(),
+            base: base.into(),
+            seed,
+            space,
+            owner: owner.into(),
+        }),
+        _ => Err(PyValueError::new_err("Not an AllocateWithSeed instruction")),
+    }
 }
 
 #[pyfunction]
