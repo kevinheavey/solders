@@ -214,7 +214,7 @@ pub fn decode_assign_with_seed(instruction: Instruction) -> PyResult<AssignWithS
             Ok(AssignWithSeedParams {
                 address: address.into(),
                 base: base.into(),
-                seed: seed,
+                seed,
                 owner: owner.into(),
             })
         }
