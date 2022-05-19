@@ -1,9 +1,10 @@
-from typing import List, Sequence, Union
+from typing import List, Sequence, Union, ClassVar
 from solders.pubkey import Pubkey
 from solders.presigner import Presigner
 from solders.signature import Signature
 
 class Keypair:
+    LENGTH: ClassVar[int]
     def __init__(self) -> None: ...
     @staticmethod
     def from_bytes(raw_bytes: Union[bytes, Sequence[int]]) -> "Keypair": ...

@@ -10,8 +10,6 @@ use solana_sdk::{
     },
 };
 
-const LENGTH: usize = 64;
-
 use crate::{
     handle_py_value_err, pubkey::Pubkey, signature::Signature, RichcmpEqOnlyPrecalculated, Signer,
 };
@@ -22,6 +20,8 @@ pub struct Keypair(pub KeypairOriginal);
 
 #[pymethods]
 impl Keypair {
+    #[classattr]
+    const LENGTH: usize = 64;
     /// Constructs a new, random `Keypair` using `OsRng`
     #[new]
     pub fn new() -> Self {
@@ -30,12 +30,12 @@ impl Keypair {
 
     /// Recovers a `Keypair` from a byte array
     #[staticmethod]
-    pub fn from_bytes(raw_bytes: [u8; LENGTH]) -> PyResult<Self> {
+    pub fn from_bytes(raw_bytes: [u8; Self::LENGTH]) -> PyResult<Self> {
         handle_py_value_err(KeypairOriginal::from_bytes(&raw_bytes))
     }
 
     /// Returns this `Keypair` as a byte array
-    pub fn to_bytes_array(&self) -> [u8; LENGTH] {
+    pub fn to_bytes_array(&self) -> [u8; Self::LENGTH] {
         self.0.to_bytes()
     }
 

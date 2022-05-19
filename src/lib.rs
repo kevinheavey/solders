@@ -4,7 +4,6 @@ use pyo3::{
     exceptions::{PyException, PyTypeError, PyValueError},
     prelude::*,
     pyclass::CompareOp,
-    types::IntoPyDict,
 };
 use solana_sdk::{
     instruction::Instruction as InstructionOriginal, pubkey::Pubkey as PubkeyOriginal,

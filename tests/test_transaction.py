@@ -409,7 +409,10 @@ def test_transaction_minimum_serialized_size() -> None:
     alice_keypair = Keypair()
     alice_pubkey = alice_keypair.pubkey()
     bob_pubkey = Pubkey.new_unique()
-    ix = system_program.transfer(alice_pubkey, bob_pubkey, 42)
+    params = system_program.TransferParams(
+        from_pubkey=alice_pubkey, to_pubkey=bob_pubkey, lamports=42
+    )
+    ix = system_program.transfer(params)
     u32_size = 4
     u64_size = 8
     expected_data_size = u32_size + u64_size
@@ -858,8 +861,14 @@ def nonced_transfer_tx() -> Tuple[Pubkey, Pubkey, Transaction]:
     nonce_keypair = Keypair()
     nonce_pubkey = nonce_keypair.pubkey()
     instructions = [
-        system_program.advance_nonce_account(nonce_pubkey, nonce_pubkey),
-        system_program.transfer(from_pubkey, nonce_pubkey, 42),
+        system_program.advance_nonce_account(
+            system_program.AdvanceNonceAccountParams(
+                nonce_pubkey=nonce_pubkey, authorized_pubkey=nonce_pubkey
+            )
+        ),
+        system_program.transfer(
+            {"from_pubkey": from_pubkey, "to_pubkey": nonce_pubkey, "lamports": 42}
+        ),
     ]
     message = Message(instructions, nonce_pubkey)
     tx = Transaction([from_keypair, nonce_keypair], message, Hash.default())
@@ -887,8 +896,12 @@ def test_tx_uses_nonce_first_prog_id_not_nonce_fail() -> None:
     nonce_keypair = Keypair()
     nonce_pubkey = nonce_keypair.pubkey()
     instructions = [
-        system_program.transfer(from_pubkey, nonce_pubkey, 42),
-        system_program.advance_nonce_account(nonce_pubkey, nonce_pubkey),
+        system_program.transfer(
+            {"from_pubkey": from_pubkey, "to_pubkey": nonce_pubkey, "lamports": 42}
+        ),
+        system_program.advance_nonce_account(
+            {"nonce_pubkey": nonce_pubkey, "authorized_pubkey": nonce_pubkey}
+        ),
     ]
     message = Message(instructions, from_pubkey)
     tx = Transaction([from_keypair, nonce_keypair], message, Hash.default())
@@ -927,12 +940,16 @@ def test_tx_uses_nonce_wrong_first_nonce_ix_fail() -> None:
     nonce_pubkey = nonce_keypair.pubkey()
     instructions = [
         system_program.withdraw_nonce_account(
-            nonce_pubkey,
-            nonce_pubkey,
-            from_pubkey,
-            42,
+            {
+                "nonce_pubkey": nonce_pubkey,
+                "authorized_pubkey": nonce_pubkey,
+                "to_pubkey": from_pubkey,
+                "lamports": 42,
+            },
         ),
-        system_program.transfer(from_pubkey, nonce_pubkey, 42),
+        system_program.transfer(
+            {"from_pubkey": from_pubkey, "to_pubkey": nonce_pubkey, "lamports": 42}
+        ),
     ]
     message = Message(instructions, nonce_pubkey)
     tx = Transaction([from_keypair, nonce_keypair], message, Hash.default())
@@ -968,7 +985,11 @@ def test_tx_keypair_pubkey_mismatch() -> None:
     from_keypair = Keypair()
     from_pubkey = from_keypair.pubkey()
     to_pubkey = Pubkey.new_unique()
-    instructions = [system_program.transfer(from_pubkey, to_pubkey, 42)]
+    instructions = [
+        system_program.transfer(
+            {"from_pubkey": from_pubkey, "to_pubkey": to_pubkey, "lamports": 42}
+        )
+    ]
     tx = Transaction.new_with_payer(instructions, from_pubkey)
     unused_keypair = Keypair()
     with raises(SignerError) as excinfo:
@@ -983,10 +1004,10 @@ def test_dedup_signatures():
     """Test signature deduplication."""
     kp1, kp2 = Keypair(), Keypair()
     transfer1 = system_program.transfer(
-        from_pubkey=kp1.pubkey(), to_pubkey=kp2.pubkey(), lamports=123
+        dict(from_pubkey=kp1.pubkey(), to_pubkey=kp2.pubkey(), lamports=123)
     )
     transfer2 = system_program.transfer(
-        from_pubkey=kp1.pubkey(), to_pubkey=kp2.pubkey(), lamports=123
+        dict(from_pubkey=kp1.pubkey(), to_pubkey=kp2.pubkey(), lamports=123)
     )
     instructions = [transfer1, transfer2]
     message = Message(instructions)
@@ -997,9 +1018,11 @@ def test_dedup_signatures():
 def test_wire_format_and_deserialize() -> None:
     """Test serialize/derialize transaction to/from wire format."""
     transfer = system_program.transfer(
-        from_pubkey=SENDER.pubkey(),
-        to_pubkey=RECIPIENT,
-        lamports=49,
+        dict(
+            from_pubkey=SENDER.pubkey(),
+            to_pubkey=RECIPIENT,
+            lamports=49,
+        )
     )
     message = Message([transfer], SENDER.pubkey())
     expected_txn = Transaction.new_unsigned(message)
@@ -1046,9 +1069,11 @@ def test_populate() -> None:
 def test_serialize_unsigned_transaction() -> None:
     """Test to serialize an unsigned transaction."""
     transfer = system_program.transfer(
-        from_pubkey=SENDER.pubkey(),
-        to_pubkey=RECIPIENT,
-        lamports=49,
+        dict(
+            from_pubkey=SENDER.pubkey(),
+            to_pubkey=RECIPIENT,
+            lamports=49,
+        )
     )
     message = Message([transfer])
     txn = Transaction.new_unsigned(message)
@@ -1316,19 +1341,25 @@ def test_sort_account_metas() -> None:
     )
     instructions = [
         system_program.transfer(
-            from_pubkey=signer_one.pubkey(),
-            to_pubkey=receiver_one.pubkey(),
-            lamports=2_000_000,
+            dict(
+                from_pubkey=signer_one.pubkey(),
+                to_pubkey=receiver_one.pubkey(),
+                lamports=2_000_000,
+            )
         ),
         system_program.transfer(
-            from_pubkey=signer_two.pubkey(),
-            to_pubkey=receiver_two.pubkey(),
-            lamports=2_000_000,
+            dict(
+                from_pubkey=signer_two.pubkey(),
+                to_pubkey=receiver_two.pubkey(),
+                lamports=2_000_000,
+            )
         ),
         system_program.transfer(
-            from_pubkey=signer_three.pubkey(),
-            to_pubkey=receiver_three.pubkey(),
-            lamports=2_000_000,
+            dict(
+                from_pubkey=signer_three.pubkey(),
+                to_pubkey=receiver_three.pubkey(),
+                lamports=2_000_000,
+            )
         ),
     ]
     fee_payer = signer_one

@@ -18,7 +18,7 @@ use solana_sdk::{
     system_program,
 };
 
-use crate::{handle_py_err, Instruction, Pubkey, RichcmpEqualityOnly, Transaction};
+use crate::{handle_py_err, Instruction, Pubkey};
 
 fn convert_instructions_from_original(ixs: Vec<InstructionOriginal>) -> Vec<Instruction> {
     ixs.into_iter().map(Instruction::from).collect()
@@ -31,17 +31,28 @@ pub fn create_system_program_mod(py: Python<'_>) -> PyResult<&PyModule> {
         wrap_pyfunction!(create_account, system_program_mod)?,
         wrap_pyfunction!(decode_create_account, system_program_mod)?,
         wrap_pyfunction!(create_account_with_seed, system_program_mod)?,
+        wrap_pyfunction!(decode_create_account_with_seed, system_program_mod)?,
         wrap_pyfunction!(assign, system_program_mod)?,
+        wrap_pyfunction!(decode_assign, system_program_mod)?,
         wrap_pyfunction!(assign_with_seed, system_program_mod)?,
+        wrap_pyfunction!(decode_assign_with_seed, system_program_mod)?,
         wrap_pyfunction!(transfer, system_program_mod)?,
+        wrap_pyfunction!(decode_transfer, system_program_mod)?,
         wrap_pyfunction!(transfer_with_seed, system_program_mod)?,
+        wrap_pyfunction!(decode_transfer_with_seed, system_program_mod)?,
         wrap_pyfunction!(allocate, system_program_mod)?,
+        wrap_pyfunction!(decode_allocate, system_program_mod)?,
         wrap_pyfunction!(allocate_with_seed, system_program_mod)?,
+        wrap_pyfunction!(decode_allocate_with_seed, system_program_mod)?,
         wrap_pyfunction!(transfer_many, system_program_mod)?,
         wrap_pyfunction!(create_nonce_account, system_program_mod)?,
+        wrap_pyfunction!(initialize_nonce_account, system_program_mod)?,
+        wrap_pyfunction!(decode_initialize_nonce_account, system_program_mod)?,
         wrap_pyfunction!(create_nonce_account_with_seed, system_program_mod)?,
         wrap_pyfunction!(advance_nonce_account, system_program_mod)?,
+        wrap_pyfunction!(decode_advance_nonce_account, system_program_mod)?,
         wrap_pyfunction!(withdraw_nonce_account, system_program_mod)?,
+        wrap_pyfunction!(decode_withdraw_nonce_account, system_program_mod)?,
     ];
     for func in funcs {
         system_program_mod.add_function(func)?;
@@ -203,7 +214,7 @@ pub fn decode_assign_with_seed(instruction: Instruction) -> PyResult<AssignWithS
             Ok(AssignWithSeedParams {
                 address: address.into(),
                 base: base.into(),
-                seed: seed.into(),
+                seed: seed,
                 owner: owner.into(),
             })
         }
@@ -393,6 +404,44 @@ pub fn create_nonce_account(
     (ixs[0].clone().into(), ixs[1].clone().into())
 }
 
+#[derive(FromPyObject, IntoPyObject)]
+pub struct InitializeNonceAccountParams {
+    nonce_pubkey: Pubkey,
+    authority: Pubkey,
+}
+
+#[pyfunction]
+pub fn initialize_nonce_account(params: InitializeNonceAccountParams) -> Instruction {
+    create_nonce_account(
+        &Pubkey::default(),
+        &params.nonce_pubkey,
+        &params.authority,
+        0,
+    )
+    .1
+}
+
+#[pyfunction]
+pub fn decode_initialize_nonce_account(
+    instruction: Instruction,
+) -> PyResult<InitializeNonceAccountParams> {
+    let nonce_pubkey = instruction.0.accounts[0].pubkey;
+    let parsed_data = handle_py_err(bincode::deserialize::<SystemInstructionOriginal>(
+        instruction.0.data.as_slice(),
+    ))?;
+    match parsed_data {
+        SystemInstructionOriginal::InitializeNonceAccount(authority) => {
+            Ok(InitializeNonceAccountParams {
+                authority: authority.into(),
+                nonce_pubkey: nonce_pubkey.into(),
+            })
+        }
+        _ => Err(PyValueError::new_err(
+            "Not an InitializeNonceAccount instruction",
+        )),
+    }
+}
+
 #[pyfunction]
 pub fn create_nonce_account_with_seed(
     from_pubkey: &Pubkey,
@@ -413,23 +462,83 @@ pub fn create_nonce_account_with_seed(
     (ixs[0].clone().into(), ixs[1].clone().into())
 }
 
-#[pyfunction]
-pub fn advance_nonce_account(nonce_pubkey: &Pubkey, authorized_pubkey: &Pubkey) -> Instruction {
-    advance_nonce_account_original(nonce_pubkey.as_ref(), authorized_pubkey.as_ref()).into()
+#[derive(FromPyObject, IntoPyObject)]
+pub struct AdvanceNonceAccountParams {
+    nonce_pubkey: Pubkey,
+    authorized_pubkey: Pubkey,
 }
 
 #[pyfunction]
-pub fn withdraw_nonce_account(
-    nonce_pubkey: &Pubkey,
-    authorized_pubkey: &Pubkey,
-    to_pubkey: &Pubkey,
-    lamports: u64,
-) -> Instruction {
-    withdraw_nonce_account_original(
-        nonce_pubkey.as_ref(),
-        authorized_pubkey.as_ref(),
-        to_pubkey.as_ref(),
-        lamports,
+pub fn advance_nonce_account(params: AdvanceNonceAccountParams) -> Instruction {
+    advance_nonce_account_original(
+        params.nonce_pubkey.as_ref(),
+        params.authorized_pubkey.as_ref(),
     )
     .into()
+}
+
+#[pyfunction]
+pub fn decode_advance_nonce_account(
+    instruction: Instruction,
+) -> PyResult<AdvanceNonceAccountParams> {
+    let keys = instruction.0.accounts;
+    let nonce_pubkey = keys[0].pubkey;
+    let authorized_pubkey = keys[2].pubkey;
+    let parsed_data = handle_py_err(bincode::deserialize::<SystemInstructionOriginal>(
+        instruction.0.data.as_slice(),
+    ))?;
+    match parsed_data {
+        SystemInstructionOriginal::AdvanceNonceAccount => Ok(AdvanceNonceAccountParams {
+            authorized_pubkey: authorized_pubkey.into(),
+            nonce_pubkey: nonce_pubkey.into(),
+        }),
+        _ => Err(PyValueError::new_err(
+            "Not an AdvanceNonceAccount instruction",
+        )),
+    }
+}
+
+#[derive(FromPyObject, IntoPyObject)]
+pub struct WithdrawNonceAccountParams {
+    nonce_pubkey: Pubkey,
+    authorized_pubkey: Pubkey,
+    to_pubkey: Pubkey,
+    lamports: u64,
+}
+
+#[pyfunction]
+pub fn withdraw_nonce_account(params: WithdrawNonceAccountParams) -> Instruction {
+    withdraw_nonce_account_original(
+        params.nonce_pubkey.as_ref(),
+        params.authorized_pubkey.as_ref(),
+        params.to_pubkey.as_ref(),
+        params.lamports,
+    )
+    .into()
+}
+
+#[pyfunction]
+pub fn decode_withdraw_nonce_account(
+    instruction: Instruction,
+) -> PyResult<WithdrawNonceAccountParams> {
+    let keys = instruction.0.accounts;
+    let nonce_pubkey = keys[0].pubkey;
+    let to_pubkey = keys[1].pubkey;
+    let authorized_pubkey = keys[4].pubkey;
+    let parsed_data = handle_py_err(bincode::deserialize::<SystemInstructionOriginal>(
+        instruction.0.data.as_slice(),
+    ))?;
+    match parsed_data {
+        SystemInstructionOriginal::WithdrawNonceAccount(lamports) => {
+            Ok(WithdrawNonceAccountParams {
+                authorized_pubkey: authorized_pubkey.into(),
+                nonce_pubkey: nonce_pubkey.into(),
+                to_pubkey: to_pubkey.into(),
+                lamports,
+            })
+        }
+        _ => Err(PyValueError::new_err(
+            "Not a WithdrawNonceAccount instruction",
+        )),
+    }
 }
