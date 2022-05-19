@@ -110,6 +110,33 @@ def test_create_account_with_seed():
     )
 
 
+def test_initialize_nonce_account():
+    params = sp.InitializeNonceAccountParams(
+        nonce_pubkey=Keypair().pubkey(), authority=Keypair().pubkey()
+    )
+    assert (
+        sp.decode_initialize_nonce_account(sp.initialize_nonce_account(params))
+        == params
+    )
+
+
+def test_advance_nonce_account():
+    params = sp.AdvanceNonceAccountParams(
+        nonce_pubkey=Keypair().pubkey(), authorized_pubkey=Keypair().pubkey()
+    )
+    assert sp.decode_advance_nonce_account(sp.advance_nonce_account(params)) == params
+
+
+def test_withdraw_nonce_account():
+    params = sp.WithdrawNonceAccountParams(
+        nonce_pubkey=Keypair().pubkey(),
+        authorized_pubkey=Keypair().pubkey(),
+        to_pubkey=Keypair().pubkey(),
+        lamports=42,
+    )
+    assert sp.decode_withdraw_nonce_account(sp.withdraw_nonce_account(params)) == params
+
+
 def test_create_nonce_account2():
     from_keypair = Keypair.from_bytes(
         bytes(
