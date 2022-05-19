@@ -31,9 +31,8 @@ mod message;
 pub use message::{Message, MessageHeader};
 mod transaction;
 pub use transaction::{SanitizeError, Transaction};
-mod system_program;
-pub use system_program::SystemProgram;
 mod presigner;
+mod system_program;
 mod sysvar;
 pub use presigner::Presigner;
 
