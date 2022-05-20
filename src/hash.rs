@@ -36,11 +36,30 @@ impl Hash {
 
     #[staticmethod]
     #[pyo3(name = "from_string")]
+    /// Create a ``Hash`` from a base-58 string.
+    ///
+    /// Args:
+    ///     s (str): The base-58 encoded string
+    ///
+    /// Example:
+    ///
+    ///     >>> from solders.hash import Hash
+    ///     >>> Hash.from_string("4uQeVj5tqViQh7yWWGStvkEG1Zmhx6uasJtWCJziofM")
+    ///     Hash(
+    ///         4uQeVj5tqViQh7yWWGStvkEG1Zmhx6uasJtWCJziofM,
+    ///     )
+    ///
+    /// Returns:
+    ///     Hash
     pub fn new_from_string(s: &str) -> PyResult<Self> {
         handle_py_err(HashOriginal::from_str(s))
     }
 
     #[staticmethod]
+    /// Create a unique Hash for tests and benchmarks.
+    ///
+    /// Returns:
+    //      Hash
     pub fn new_unique() -> Self {
         HashOriginal::new_unique().into()
     }
