@@ -16,6 +16,11 @@ impl From<ParseHashErrorOriginal> for PyErrWrapper {
 }
 
 #[pyclass(module = "solders", subclass)]
+/// A SHA-256 hash, most commonly used for blockhashes.
+///
+/// Args:
+///     hash_bytes (bytes): the hashed bytes.
+///
 #[derive(Clone, Copy, Default, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
 pub struct Hash(HashOriginal);
 
@@ -41,6 +46,9 @@ impl Hash {
     /// Args:
     ///     s (str): The base-58 encoded string
     ///
+    /// Returns:
+    ///     Hash
+    ///
     /// Example:
     ///
     ///     >>> from solders.hash import Hash
@@ -49,8 +57,6 @@ impl Hash {
     ///         4uQeVj5tqViQh7yWWGStvkEG1Zmhx6uasJtWCJziofM,
     ///     )
     ///
-    /// Returns:
-    ///     Hash
     pub fn new_from_string(s: &str) -> PyResult<Self> {
         handle_py_err(HashOriginal::from_str(s))
     }
@@ -59,24 +65,30 @@ impl Hash {
     /// Create a unique Hash for tests and benchmarks.
     ///
     /// Returns:
-    //      Hash
+    ///     Hash
     pub fn new_unique() -> Self {
         HashOriginal::new_unique().into()
     }
 
     #[staticmethod]
     #[pyo3(name = "default")]
+    /// The default ``Hash`` object.
+    ///
+    /// Returns:
+    ///     Hash
+    /// Example:
+    ///     >>> from solders.hash import Hash
+    ///     >>> Hash.default()
+    ///     Hash(
+    ///         11111111111111111111111111111111,
+    ///     )
     pub fn new_default() -> Self {
         Self::default()
     }
 
-    #[allow(clippy::wrong_self_convention)]
-    pub fn to_bytes(&self) -> &[u8] {
-        self.as_ref()
-    }
 
     pub fn __bytes__(&self) -> &[u8] {
-        self.to_bytes()
+        self.as_ref()
     }
 
     pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> bool {
@@ -85,6 +97,20 @@ impl Hash {
 
     #[staticmethod]
     #[allow(clippy::self_named_constructors)]
+    /// Return a Sha256 hash for the given data.
+    ///
+    /// Args:
+    ///     val (bytes): the data to hash.
+    ///
+    /// Returns:
+    ///     Hash
+    ///
+    /// Example:
+    ///     >>> from solders.hash import Hash
+    ///     >>> >>> Hash.hash(b"foo")
+    ///     Hash(
+    ///         3yMApqCuCjXDWPrbjfR5mjCPTHqFG8Pux1TxQrEM35jj,
+    ///     )
     pub fn hash(val: &[u8]) -> Self {
         hash(val).into()
     }
