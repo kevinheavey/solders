@@ -9,4 +9,5 @@ Modules:
    :maxdepth: 2
 
    hash
+   instruction
    pubkey

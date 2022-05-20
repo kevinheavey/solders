@@ -13,7 +13,7 @@ use crate::{handle_py_err, pubkey::Pubkey, RichcmpEqualityOnly};
 /// Describes a single account read or written by a program during instruction
 /// execution.
 ///
-/// When constructing an [`Instruction`], a list of all accounts that may be
+/// When constructing an :class:`Instruction`, a list of all accounts that may be
 /// read or written during the execution of that instruction must be supplied.
 /// Any account that may be mutated by the program during execution, either its
 /// data or metadata such as held lamports, must be writable.
@@ -21,6 +21,11 @@ use crate::{handle_py_err, pubkey::Pubkey, RichcmpEqualityOnly};
 /// Note that because the Solana runtime schedules parallel transaction
 /// execution around which accounts are writable, care should be taken that only
 /// accounts which actually may be mutated are specified as writable.
+///
+/// Args:
+///     pubkey (Pubkey): An account's public key.
+///     is_signer (bool): True if an :class:`Instruction` requires a :class:`Transaction` signature matching ``pubkey``.
+///     is_writable (bool): True if the account data or metadata may be mutated during program execution.
 #[pyclass(module = "solders", subclass)]
 #[derive(PartialEq, Debug, Clone)]
 pub struct AccountMeta(AccountMetaOriginal);
@@ -81,6 +86,67 @@ impl From<AccountMeta> for AccountMetaOriginal {
 }
 
 #[pyclass(module = "solders", subclass)]
+/// A directive for a single invocation of a Solana program.
+///
+/// An instruction specifies which program it is calling, which accounts it may
+/// read or modify, and additional data that serves as input to the program. One
+/// or more instructions are included in transactions submitted by Solana
+/// clients. Instructions are also used to describe `cross-program
+/// invocations <https://docs.solana.com/developing/programming-model/calling-between-programs/>`_.
+///
+/// During execution, a program will receive a list of account data as one of
+/// its arguments, in the same order as specified during ``Instruction``
+/// construction.
+///
+/// While Solana is agnostic to the format of the instruction data, it has
+/// built-in support for serialization via
+/// `borsh <https://docs.rs/borsh/latest/borsh/>`_
+/// and `bincode <https://docs.rs/bincode/latest/bincode/>`_.
+///
+/// When constructing an ``Instruction``, a list of all accounts that may be
+/// read or written during the execution of that instruction must be supplied as
+/// :class:`AccountMeta` values.
+///
+/// **Specifying Account Metadata**
+///
+/// Any account whose data may be mutated by the program during execution must
+/// be specified as writable. During execution, writing to an account that was
+/// not specified as writable will cause the transaction to fail. Writing to an
+/// account that is not owned by the program will cause the transaction to fail.
+///
+/// Any account whose lamport balance may be mutated by the program during
+/// execution must be specified as writable. During execution, mutating the
+/// lamports of an account that was not specified as writable will cause the
+/// transaction to fail. While _subtracting_ lamports from an account not owned
+/// by the program will cause the transaction to fail, _adding_ lamports to any
+/// account is allowed, as long is it is mutable.
+///
+/// Accounts that are not read or written by the program may still be specified
+/// in an ``Instruction``'s account list. These will affect scheduling of program
+/// execution by the runtime, but will otherwise be ignored.
+///
+/// When building a transaction, the Solana runtime coalesces all accounts used
+/// by all instructions in that transaction, along with accounts and permissions
+/// required by the runtime, into a single account list. Some accounts and
+/// account permissions required by the runtime to process a transaction are
+/// *not* required to be included in an ``Instruction``'s account list. These
+/// include:
+///
+/// * The program ID: it is a separate field of ``Instruction``
+/// * The transaction's fee-paying account: it is added during :class:`Message`
+///   construction. A program may still require the fee payer as part of the
+///   account list if it directly references it.
+///
+///
+/// Programs may require signatures from some accounts, in which case they
+/// should be specified as signers during ``Instruction`` construction. The
+/// program must still validate during execution that the account is a signer.
+///
+/// Args:
+///     program_id (Pubkey): Pubkey of the program that executes this instruction.
+///     data (bytes): Opaque data passed to the program for its own interpretation.
+///     accounts (list[AccountMeta]): Metadata describing accounts that should be passed to the program.
+///
 #[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
 pub struct Instruction(pub InstructionOriginal);
 
@@ -95,19 +161,16 @@ impl Instruction {
         underlying.into()
     }
 
-    /// Pubkey of the program that executes this instruction.
     #[getter]
     pub fn program_id(&self) -> Pubkey {
         self.0.program_id.into()
     }
 
-    /// Opaque data passed to the program for its own interpretation.
     #[getter]
     pub fn data<'a>(&self, py: Python<'a>) -> &'a PyBytes {
         PyBytes::new(py, &self.0.data)
     }
 
-    /// Metadata describing accounts that should be passed to the program.
     #[getter]
     pub fn accounts(&self) -> Vec<AccountMeta> {
         self.0
@@ -172,9 +235,9 @@ impl AsRef<InstructionOriginal> for Instruction {
 
 /// A compact encoding of an instruction.
 ///
-/// A `CompiledInstruction` is a component of a multi-instruction [`Message`],
+/// A ``CompiledInstruction`` is a component of a multi-instruction :class:`Message`,
 /// which is the core of a Solana transaction. It is created during the
-/// construction of `Message`. Most users will not interact with it directly.
+/// construction of :class:`Message`. Most users will not interact with it directly.
 #[pyclass(module = "solders", subclass)]
 #[derive(PartialEq, Eq, Debug, Clone, Serialize, Deserialize)]
 pub struct CompiledInstruction(CompiledInstructionOriginal);
