@@ -219,7 +219,7 @@ impl Instruction {
         self.richcmp(other, op)
     }
 
-    pub fn serialize<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+    pub fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
         let ser = bincode::serialize(&self).unwrap();
         PyBytes::new(py, &ser)
     }
@@ -314,7 +314,7 @@ impl CompiledInstruction {
         self.richcmp(other, op)
     }
 
-    pub fn serialize<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+    pub fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
         let ser = bincode::serialize(&self).unwrap();
         PyBytes::new(py, &ser)
     }

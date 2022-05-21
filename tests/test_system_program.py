@@ -305,12 +305,12 @@ def test_create_nonce_account2():
         create_account_ixs, None, blockhash
     )
     create_account_txn = Transaction.new_unsigned(create_account_message)
-    create_account_hash = create_account_message.serialize()
+    create_account_bytes = bytes(create_account_message)
 
     create_account_txn.partial_sign(
         [
             Presigner(
-                from_keypair.pubkey(), from_keypair.sign_message(create_account_hash)
+                from_keypair.pubkey(), from_keypair.sign_message(create_account_bytes)
             )
         ],
         blockhash,
@@ -318,7 +318,7 @@ def test_create_nonce_account2():
     create_account_txn.partial_sign(
         [
             Presigner(
-                nonce_keypair.pubkey(), nonce_keypair.sign_message(create_account_hash)
+                nonce_keypair.pubkey(), nonce_keypair.sign_message(create_account_bytes)
             )
         ],
         blockhash,
@@ -572,10 +572,10 @@ def test_advance_nonce_and_transfer():
     msg = Message.new_with_blockhash(instructions, from_keypair.pubkey(), blockhash)
     txn = Transaction.new_unsigned(msg)
 
-    msg_hash = msg.serialize()
+    msg_bytes = bytes(msg)
 
     txn.partial_sign(
-        [Presigner(from_keypair.pubkey(), from_keypair.sign_message(msg_hash))],
+        [Presigner(from_keypair.pubkey(), from_keypair.sign_message(msg_bytes))],
         blockhash,
     )
 

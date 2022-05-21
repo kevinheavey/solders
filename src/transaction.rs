@@ -222,7 +222,7 @@ impl Transaction {
         handle_py_err(self.0.sanitize())
     }
 
-    pub fn serialize<'a>(&self, py: Python<'a>) -> PyResult<&'a PyBytes> {
+    pub fn __bytes__<'a>(&self, py: Python<'a>) -> PyResult<&'a PyBytes> {
         let as_vec: Vec<u8> = handle_py_err(bincode::serialize(&self.0))?;
         Ok(PyBytes::new(py, &as_vec))
     }

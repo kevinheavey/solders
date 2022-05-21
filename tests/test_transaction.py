@@ -397,7 +397,7 @@ def create_sample_transaction() -> Transaction:
 
 def test_transaction_serialize() -> None:
     tx = create_sample_transaction()
-    ser = tx.serialize()
+    ser = bytes(tx)
     deser = Transaction.deserialize(ser)
     assert tx == deser
 
@@ -424,7 +424,7 @@ def test_transaction_minimum_serialized_size() -> None:
 
     message = Message([ix], alice_pubkey)
     assert (
-        len(message.instructions[0].serialize()) == expected_instruction_size
+        len(bytes(message.instructions[0])) == expected_instruction_size
     ), "unexpected Instruction.serialized_size"
 
     tx = Transaction([alice_keypair], message, Hash.default())
@@ -452,7 +452,7 @@ def test_transaction_minimum_serialized_size() -> None:
     )
     assert expected_transaction_size == 215
     assert (
-        len(tx.serialize()) == expected_transaction_size
+        len(bytes(tx)) == expected_transaction_size
     ), "unexpected serialized transaction size"
 
 
@@ -461,7 +461,7 @@ def test_transaction_minimum_serialized_size() -> None:
 
 
 def test_sdk_serialize() -> None:
-    assert create_sample_transaction().serialize() == bytes(
+    assert bytes(create_sample_transaction()) == bytes(
         [
             1,
             71,
@@ -846,7 +846,7 @@ def test_offline_multisig() -> None:
     tx = Transaction.new_unsigned(message)
     tx.partial_sign([bob_keypair], BLOCKHASH)
     assert tx.signatures[0] == bob_keypair.sign_message(tx.message_data())
-    serialized = tx.serialize()
+    serialized = bytes(tx)
     deserialized = Transaction.deserialize(serialized)
 
     deserialized.partial_sign([alice_keypair], BLOCKHASH)
@@ -1034,7 +1034,7 @@ def test_wire_format_and_deserialize() -> None:
     )
     txn = Transaction.deserialize(wire_txn)
     assert txn == expected_txn
-    assert wire_txn == expected_txn.serialize()
+    assert wire_txn == bytes(expected_txn)
 
 
 def test_populate() -> None:
@@ -1080,7 +1080,7 @@ def test_serialize_unsigned_transaction() -> None:
     assert (
         txn.signatures == [Signature.default()] * message.header.num_required_signatures
     )
-    assert Transaction.deserialize(txn.serialize()) == txn
+    assert Transaction.deserialize(bytes(txn)) == txn
 
     message_with_payer = Message([transfer], SENDER.pubkey())
     txn_with_payer = Transaction.new_signed_with_payer(
@@ -1093,7 +1093,7 @@ def test_serialize_unsigned_transaction() -> None:
         b"LG0aRXxRumpLXz29L2n8qTIWIY3ImX5Ba9F9k8r9Q5/Mtmcn8onFxt47xKj+XdXXd3C8j/FcPu7csUrz/AAAAAAAAAAAAAAA"
         b"AAAAAAAAAAAAAAAAAAAAAAAAAAAAxJrndgN4IFTxep3s6kO0ROug7bEsbx0xxuDkqEvwUusBAgIAAQwCAAAAMQAAAAAAAAA="
     )
-    assert txn_with_payer.serialize() == expected_serialization
+    assert bytes(txn_with_payer) == expected_serialization
     assert len(txn_with_payer.signatures) == 1
 
 
@@ -1380,7 +1380,7 @@ def test_sort_account_metas() -> None:
 
     js_msg_b64_check = b"AwABBwZtbiRMvgQjcE2kVx9yon8XqPSO5hwc2ApflnOZMu0Qo9G5/xbhB0sp8/03Rv9x4MKSkQ+k4LB6lNLvCgKZ/ju/aw+EyQpTObVa3Xm+NA1gSTzutgFCTfkDto/0KtuIHHAMpKRb92NImxKeWQJ2/291j6nTzFj1D6nW25p7TofHmVsGt8uFnTv7+8vsWZ0uN7azdxa+jCIIm4WzKK+4uKfX39t5UA7S1soBQaJkTGOQkSbBo39gIjDkbW0TrevslgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAxJrndgN4IFTxep3s6kO0ROug7bEsbx0xxuDkqEvwUusDBgIABAwCAAAAgIQeAAAAAAAGAgIFDAIAAACAhB4AAAAAAAYCAQMMAgAAAICEHgAAAAAA"  # noqa: E501 pylint: disable=line-too-long
 
-    assert b64encode(tx_msg.serialize()) == js_msg_b64_check
+    assert b64encode(bytes(tx_msg)) == js_msg_b64_check
 
     # Transaction should organize AccountMetas by PublicKey
     assert tx_msg.account_keys[0] == fee_payer.pubkey()

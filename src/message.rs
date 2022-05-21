@@ -168,7 +168,7 @@ impl Message {
         self.0.compile_instruction(ix.as_ref()).into()
     }
 
-    pub fn serialize<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+    pub fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
         PyBytes::new(py, &self.0.serialize())
     }
 
