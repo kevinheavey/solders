@@ -398,7 +398,7 @@ def create_sample_transaction() -> Transaction:
 def test_transaction_serialize() -> None:
     tx = create_sample_transaction()
     ser = bytes(tx)
-    deser = Transaction.deserialize(ser)
+    deser = Transaction.from_bytes(ser)
     assert tx == deser
 
 
@@ -847,7 +847,7 @@ def test_offline_multisig() -> None:
     tx.partial_sign([bob_keypair], BLOCKHASH)
     assert tx.signatures[0] == bob_keypair.sign_message(tx.message_data())
     serialized = bytes(tx)
-    deserialized = Transaction.deserialize(serialized)
+    deserialized = Transaction.from_bytes(serialized)
 
     deserialized.partial_sign([alice_keypair], BLOCKHASH)
     assert deserialized.signatures[0] == bob_keypair.sign_message(tx.message_data())
@@ -1032,7 +1032,7 @@ def test_wire_format_and_deserialize() -> None:
         b"LG0aRXxRumpLXz29L2n8qTIWIY3ImX5Ba9F9k8r9Q5/Mtmcn8onFxt47xKj+XdXXd3C8j/FcPu7csUrz/AAAAAAAAAAAAAAA"
         b"AAAAAAAAAAAAAAAAAAAAAAAAAAAAxJrndgN4IFTxep3s6kO0ROug7bEsbx0xxuDkqEvwUusBAgIAAQwCAAAAMQAAAAAAAAA="
     )
-    txn = Transaction.deserialize(wire_txn)
+    txn = Transaction.from_bytes(wire_txn)
     assert txn == expected_txn
     assert wire_txn == bytes(expected_txn)
 
@@ -1080,7 +1080,7 @@ def test_serialize_unsigned_transaction() -> None:
     assert (
         txn.signatures == [Signature.default()] * message.header.num_required_signatures
     )
-    assert Transaction.deserialize(bytes(txn)) == txn
+    assert Transaction.from_bytes(bytes(txn)) == txn
 
     message_with_payer = Message([transfer], SENDER.pubkey())
     txn_with_payer = Transaction.new_signed_with_payer(

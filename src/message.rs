@@ -231,7 +231,7 @@ impl Message {
     }
 
     #[staticmethod]
-    pub fn deserialize(data: &[u8]) -> PyResult<Self> {
+    pub fn from_bytes(data: &[u8]) -> PyResult<Self> {
         handle_py_err(bincode::deserialize::<MessageOriginal>(data))
     }
 

@@ -290,8 +290,8 @@ def test_create_nonce_account2():
     js_wire_txn = base64.b64decode(
         b"AkBAiPTJfOYZRLOZUpH7vIxyJQovMxO7X8FxXyRzae8CECBZ9LS5G8hxZVMdVL6uSIzLHb/0aLYhO5FEVmfhwguY5ZtOCOGqjwyAOVr8L2eBXgX482L/rcmF6ELORIcD1GdAFBQ/1Hc/LByer9TbJfNqzjesdzTJEHohnStduU4OAgADBTqF5SfUR/5I9i2gnIHHEr01j2JItmpFHSaRd74NaZ1wvICzr4gFWblct6+DODXkCxQiipQzG81MS5S4IkqB7uEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAan1RcZLFaO4IqEX3PSl4jPA1wxRbIas0TYBi6pQAAABqfVFxksXFEhjMlMPUrxf1ja7gibof1E49vZigAAAABXbYHxIfw3Z5Qq1LH8aj6Sj6LuqbCuwFhAmo21XevlfwICAgABNAAAAACAhB4AAAAAAFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAwEDBCQGAAAAOoXlJ9RH/kj2LaCcgccSvTWPYki2akUdJpF3vg1pnXA="  # noqa: E501 pylint: disable=line-too-long
     )
-    cli_expected_txn = Transaction.deserialize(cli_wire_txn)  # noqa: F841
-    js_expected_txn = Transaction.deserialize(js_wire_txn)
+    cli_expected_txn = Transaction.from_bytes(cli_wire_txn)  # noqa: F841
+    js_expected_txn = Transaction.from_bytes(js_wire_txn)
 
     create_account_ixs = sp.create_nonce_account(
         from_pubkey=from_keypair.pubkey(),
@@ -551,8 +551,8 @@ def test_advance_nonce_and_transfer():
         b"Af67rLfP5WxsOgvZWndq34S2KbQq++x03eZkZagzbVQ2tRyfFyn6OWByp8q3P2a03HDeVtpUWhq1y1a6R0DcPAIBAAIFOoXlJ9RH/kj2LaCcgccSvTWPYki2akUdJpF3vg1pnXC8gLOviAVZuVy3r4M4NeQLFCKKlDMbzUxLlLgiSoHu4fx8NgMSbd8b4Rw7yjH49BGlIWU72U/q2ftVCQYoAN0KAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGp9UXGSxWjuCKhF9z0peIzwNcMUWyGrNE2AYuqUAAAE13Mu8zaQSpG0zzGHpG62nK56DbGhuS4kXMF/ChHY1jAgMDAQQABAQAAAADAgACDAIAAACAhB4AAAAAAA=="  # noqa: E501 pylint: disable=line-too-long
     )
 
-    cli_expected_txn = Transaction.deserialize(cli_wire_txn)  # noqa: F841
-    js_expected_txn = Transaction.deserialize(js_wire_txn)
+    cli_expected_txn = Transaction.from_bytes(cli_wire_txn)  # noqa: F841
+    js_expected_txn = Transaction.from_bytes(js_wire_txn)
     instructions = [
         sp.advance_nonce_account(
             sp.AdvanceNonceAccountParams(

@@ -225,7 +225,7 @@ impl Instruction {
     }
 
     #[staticmethod]
-    pub fn deserialize(data: &[u8]) -> PyResult<Self> {
+    pub fn from_bytes(data: &[u8]) -> PyResult<Self> {
         let deser = bincode::deserialize::<Self>(data);
         handle_py_err(deser)
     }
@@ -320,7 +320,7 @@ impl CompiledInstruction {
     }
 
     #[staticmethod]
-    pub fn deserialize(data: &[u8]) -> PyResult<Self> {
+    pub fn from_bytes(data: &[u8]) -> PyResult<Self> {
         let deser = bincode::deserialize::<Self>(data);
         handle_py_err(deser)
     }
