@@ -116,6 +116,38 @@ impl From<MessageHeaderOriginal> for MessageHeader {
 
 #[pyclass(module = "solders", subclass)]
 #[derive(PartialEq, Eq, Debug, Clone, Default)]
+/// A Solana transaction message.
+///
+/// Some constructors accept an optional `payer`, the account responsible for
+/// paying the cost of executing a transaction. In most cases, callers should
+/// specify the payer explicitly in these constructors. In some cases though,
+/// the caller is not _required_ to specify the payer, but is still allowed to:
+/// in the ``Message`` object, the first account is always the fee-payer, so if
+/// the caller has knowledge that the first account of the constructed
+/// transaction's ``Message`` is both a signer and the expected fee-payer, then
+/// redundantly specifying the fee-payer is not strictly required.
+///
+/// Args:
+///     instructions (Sequence[Instruction]): The instructions to include in the message.
+///     payer (Optional[Pubkey]): The fee payer. Defaults to ``None``.
+///
+/// Example::
+///
+///     from solders.message import Message
+///     from solders.keypair import Keypair
+///     from solders.instruction import Instruction
+///     from solders.hash import Hash
+///     from solders.transaction import Transaction
+///     
+///     program_id = Pubkey.default()
+///     arbitrary_instruction_data = bytes([1])
+///     accounts = []
+///     instruction = Instruction(program_id, arbitrary_instruction_data, accounts)
+///     payer = Keypair()
+///     message = Message([instruction], payer.pubkey())
+///     blockhash = Hash.default()  # replace with a real blockhash
+///     tx = Transaction([payer], message, blockhash);
+///
 pub struct Message(MessageOriginal);
 
 #[pymethods]
@@ -127,11 +159,13 @@ impl Message {
     }
 
     #[getter]
+    /// MessageHeader: The message header, identifying signed and read-only ``account_keys``.
     pub fn header(&self) -> MessageHeader {
         self.0.header.into()
     }
 
     #[getter]
+    /// list[Pubkey]: All the account keys used by this transaction.
     pub fn account_keys(&self) -> Vec<Pubkey> {
         self.0
             .account_keys
@@ -142,11 +176,14 @@ impl Message {
     }
 
     #[getter]
+    /// Hash: The id of a recent ledger entry.
     pub fn recent_blockhash(&self) -> SolderHash {
         self.0.recent_blockhash.into()
     }
 
     #[getter]
+    /// list[CompiledInstruction]: Programs that will be executed in sequence
+    /// and committed in one atomic transaction if all succeed.
     pub fn instructions(&self) -> Vec<CompiledInstruction> {
         self.0
             .instructions
@@ -157,6 +194,30 @@ impl Message {
     }
 
     #[staticmethod]
+    /// Create a new message while setting the blockhash.
+    /// Args:
+    ///     instructions (Sequence[Instruction]): The instructions to include in the message.
+    ///     payer (Optional[Pubkey]): The fee payer. Defaults to ``None``.
+    ///     blockhash (Hash): a recent blockhash.
+    ///
+    /// Example::
+    ///     from solders.message import Message
+    ///     from solders.keypair import Keypair
+    ///     from solders.pubkey import Pubkey
+    ///     from solders.instruction import Instruction, AccountMeta
+    ///     from solders.hash import Hash
+    ///     from solders.transaction import Transaction
+    ///     
+    ///     program_id = Pubkey.default()
+    ///     blockhash = Hash.default()  # replace with a real blockhash
+    ///     arbitrary_instruction_data = bytes([1])
+    ///     accounts: list[AccountMeta] = []
+    ///     instruction = Instruction(program_id, arbitrary_instruction_data, accounts)
+    ///     payer = Keypair()
+    ///     message = Message.new_with_blockhash([instruction], payer.pubkey(), blockhash)
+    ///     tx = Transaction.new_unsigned(message)
+    ///     tx.sign([payer], tx.message.recent_blockhash)
+    ///
     pub fn new_with_blockhash(
         instructions: Vec<Instruction>,
         payer: Option<&Pubkey>,
