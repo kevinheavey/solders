@@ -99,7 +99,7 @@ impl Pubkey {
         format!("{:#?}", self)
     }
 
-    fn __bytes__(&self) -> &[u8] {
+    pub fn __bytes__(&self) -> &[u8] {
         self.to_bytes()
     }
 

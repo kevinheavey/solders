@@ -11,7 +11,8 @@ use solana_sdk::{
 };
 
 use crate::{
-    handle_py_value_err, pubkey::Pubkey, signature::Signature, RichcmpEqOnlyPrecalculated, Signer,
+    calculate_hash, handle_py_value_err, pubkey::Pubkey, signature::Signature,
+    RichcmpEqOnlyPrecalculated, Signer,
 };
 
 #[pyclass(module = "solders", subclass)]
@@ -202,14 +203,8 @@ impl Keypair {
         ))
     }
 
-    pub fn __hash__(&self) -> PyResult<isize> {
-        // call `hash((class_name, bytes(obj)))`
-        Python::with_gil(|py| {
-            let builtins = PyModule::import(py, "builtins")?;
-            let arg1 = "Keypair";
-            let arg2 = self.__bytes__(py);
-            builtins.getattr("hash")?.call1(((arg1, arg2),))?.extract()
-        })
+    pub fn __hash__(&self) -> u64 {
+        calculate_hash(&("Keypair", self.pubkey()))
     }
 
     fn __richcmp__(&self, other: Signer, op: CompareOp) -> PyResult<bool> {
