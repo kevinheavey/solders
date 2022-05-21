@@ -16,25 +16,56 @@ use crate::{
 
 #[pyclass(module = "solders", subclass)]
 #[derive(PartialEq, Debug)]
+/// A vanilla Ed25519 key pair.
+///
+/// Calling ``Keypair()`` creates a new, random ``Keypair``.
+///
+/// Example::
+///     from solders.keypair import Keypair
+///     
+///     assert Keypair() != Keypair()
+///
 pub struct Keypair(pub KeypairOriginal);
 
 #[pymethods]
 impl Keypair {
     #[classattr]
+    /// The length of a keypair in bytes.
     const LENGTH: usize = 64;
-    /// Constructs a new, random `Keypair` using `OsRng`
     #[new]
+    /// Constructs a new, random ``Keypair`` using ``OsRng``
     pub fn new() -> Self {
         KeypairOriginal::new().into()
     }
 
-    /// Recovers a `Keypair` from a byte array
+    /// Recovers a ``Keypair`` from bytes.
+    ///
+    /// Args:
+    ///     raw_bytes (bytes): a 64-byte keypair.
+    ///
+    /// Returns:
+    ///     Keypair: a keypair object.
+    ///
+    /// Example::
+    ///     from solders.keypair import Keypair
+    ///     kp = Keypair()
+    ///     assert kp == Keypair.from_bytes(bytes(kp))
+    ///
     #[staticmethod]
     pub fn from_bytes(raw_bytes: [u8; Self::LENGTH]) -> PyResult<Self> {
         handle_py_value_err(KeypairOriginal::from_bytes(&raw_bytes))
     }
 
-    /// Returns this `Keypair` as a byte array
+    /// Returns this ``Keypair`` as a byte array.
+    ///
+    /// Returns:
+    ///     list[int]: the keypair as a list of 64 u8 ints.
+    ///
+    /// Example::
+    ///      from solders.keypair import Keypair
+    ///      raw_bytes = bytes([1] * 64)
+    ///      assert Keypair.from_bytes(raw_bytes).to_bytes_array() == list(raw_bytes)
+    ///
     pub fn to_bytes_array(&self) -> [u8; Self::LENGTH] {
         self.0.to_bytes()
     }
@@ -43,16 +74,49 @@ impl Keypair {
         PyBytes::new(py, self.to_bytes_array().as_slice())
     }
 
-    /// Recovers a `Keypair` from a base58-encoded string
     #[staticmethod]
+    /// Recovers a ``Keypair`` from a base58-encoded string.
+    ///
+    /// Args:
+    ///     s (str): The base58-encoded string.
+    ///
+    /// Returns:
+    ///     Keypair: a keypair oject.
+    ///
+    /// Example::
+    ///     from solders.keypair import Keypair
+    ///     
+    ///     raw_bytes = bytes([0] * 64)
+    ///     base58_str = "1" * 64
+    ///     assert Keypair.from_base58_string(base58_str) == Keypair.from_bytes(raw_bytes)
+    ///     
     pub fn from_base58_string(s: &str) -> Self {
         KeypairOriginal::from_base58_string(s).into()
     }
-    /// Gets this `Keypair`'s secret key
+    /// Gets this ``Keypair``'s secret key.
+    ///
+    /// Returns:
+    ///     bytes: The secret key in 32 bytes.
+    ///
+    /// Example::
+    ///     from solders.keypair import Keypair
+    ///     
+    ///     kp = Keypair.from_bytes(bytes([1] * 64))
+    ///     assert kp.secret() == bytes([1] * 32)
+    ///
     pub fn secret(&self) -> &[u8] {
         self.0.secret().as_ref()
     }
 
+    /// Return this keypair as a base58-encoded string.
+    ///
+    /// Returns:
+    ///     str: the base58-encoded string.
+    ///
+    /// Example:
+    ///     >>> from solders.keypair import Keypair
+    ///     >>> Keypair.from_bytes([1] * 64).to_base58_string()
+    ///     '2AXDGYSE4f2sz7tvMMzyHvUfcoJmxudvdhBcmiUSo6ijwfYmfZYsKRxboQMPh3R4kUhXRVdtSXFXMheka4Rc4P2'
     pub fn to_base58_string(&self) -> String {
         self.0.to_base58_string()
     }

@@ -47,7 +47,7 @@ impl Hash {
     ///     s (str): The base-58 encoded string
     ///
     /// Returns:
-    ///     Hash
+    ///     Hash: a ``Hash`` object.
     ///
     /// Example:
     ///
@@ -65,7 +65,7 @@ impl Hash {
     /// Create a unique Hash for tests and benchmarks.
     ///
     /// Returns:
-    ///     Hash
+    ///     Hash: a ``Hash`` object.
     pub fn new_unique() -> Self {
         HashOriginal::new_unique().into()
     }
@@ -75,7 +75,7 @@ impl Hash {
     /// The default ``Hash`` object.
     ///
     /// Returns:
-    ///     Hash
+    ///     Hash: a ``Hash`` object.
     /// Example:
     ///     >>> from solders.hash import Hash
     ///     >>> Hash.default()
@@ -85,7 +85,6 @@ impl Hash {
     pub fn new_default() -> Self {
         Self::default()
     }
-
 
     pub fn __bytes__(&self) -> &[u8] {
         self.as_ref()
@@ -103,7 +102,7 @@ impl Hash {
     ///     val (bytes): the data to hash.
     ///
     /// Returns:
-    ///     Hash
+    ///     Hash: a ``Hash`` object.
     ///
     /// Example:
     ///     >>> from solders.hash import Hash

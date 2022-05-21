@@ -225,6 +225,34 @@ impl Instruction {
     }
 
     #[staticmethod]
+    /// Deserialize a serialized ``Instruction`` object.
+    ///
+    /// Args:
+    ///     data (bytes): the serialized ``Instruction``.
+    ///
+    /// Returns:
+    ///     Instruction: the deserialized ``Instruction``.
+    ///
+    /// Example::
+    ///
+    ///     from solders.pubkey import Pubkey
+    ///     from solders.instruction import AccountMeta, Instruction
+    ///     
+    ///     from_pubkey = Pubkey.new_unique()
+    ///     to_pubkey = Pubkey.new_unique()
+    ///     program_id = Pubkey.new_unique()
+    ///     instruction_data = bytes([1])
+    ///     instruction = Instruction(
+    ///         program_id,
+    ///         instruction_data,
+    ///         [
+    ///             AccountMeta(from_pubkey, is_signer=True, is_writable=True),
+    ///             AccountMeta(to_pubkey, is_signer=True, is_writable=True),
+    ///         ],
+    ///     )
+    ///     serialized = bytes(instruction)
+    ///     assert Instruction.from_bytes(serialized) == instruction
+
     pub fn from_bytes(data: &[u8]) -> PyResult<Self> {
         let deser = bincode::deserialize::<Self>(data);
         handle_py_err(deser)
@@ -256,6 +284,14 @@ impl AsRef<InstructionOriginal> for Instruction {
 /// A ``CompiledInstruction`` is a component of a multi-instruction :class:`Message`,
 /// which is the core of a Solana transaction. It is created during the
 /// construction of :class:`Message`. Most users will not interact with it directly.
+///
+/// Args:
+///     program_id_index (int): Index into the transaction keys array indicating the
+///         program account that executes this instruction.
+///     data (bytes): The program input data.
+///     accounts (bytes): Ordered indices into the transaction keys array indicating
+///         which accounts to pass to the program.
+///
 #[pyclass(module = "solders", subclass)]
 #[derive(PartialEq, Eq, Debug, Clone, Serialize, Deserialize)]
 pub struct CompiledInstruction(CompiledInstructionOriginal);
@@ -279,13 +315,11 @@ impl CompiledInstruction {
         underlying.into()
     }
 
-    /// Index into the transaction keys array indicating the program account that executes this instruction.
     #[getter]
     pub fn program_id_index(&self) -> u8 {
         self.0.program_id_index
     }
 
-    /// Ordered indices into the transaction keys array indicating which accounts to pass to the program.
     #[getter]
     pub fn accounts<'a>(&self, py: Python<'a>) -> &'a PyBytes {
         PyBytes::new(py, &self.0.accounts)
@@ -296,7 +330,6 @@ impl CompiledInstruction {
         self.0.accounts = accounts
     }
 
-    /// The program input data.
     #[getter]
     pub fn data<'a>(&self, py: Python<'a>) -> &'a PyBytes {
         PyBytes::new(py, &self.0.data)
@@ -320,6 +353,13 @@ impl CompiledInstruction {
     }
 
     #[staticmethod]
+    /// Deserialize a serialized ``CompiledInstruction`` object.
+    ///
+    /// Args:
+    ///     data (bytes): the serialized ``CompiledInstruction``.
+    ///
+    /// Returns:
+    ///     CompiledInstruction: The deserialized ``CompiledInstruction``.
     pub fn from_bytes(data: &[u8]) -> PyResult<Self> {
         let deser = bincode::deserialize::<Self>(data);
         handle_py_err(deser)

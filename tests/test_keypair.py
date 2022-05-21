@@ -12,7 +12,23 @@ def test_from_bytes():
         b"\x99\xda\x95Y\xe1^\x91>\xe9\xab.S\xe3\xdf\xadW]\xa3;I\xbe\x11%\xbb\x92.3IOI"
         b'\x88(\x1b/I\tn>]\xbd\x0f\xcf\xa9\xc0\xc0\xcd\x92\xd9\xab;!TK4\xd5\xddJe\xd9\x8b\x87\x8b\x99"'
     )
-    Keypair.from_bytes(raw_bytes)
+    kp = Keypair.from_bytes(raw_bytes)
+    assert bytes(kp) == raw_bytes
+
+
+def test_to_bytes_array():
+    kp = Keypair()
+    assert kp.to_bytes_array() == list(bytes(kp))
+
+
+def test_str():
+    expected = (
+        "2AXDGYSE4f2sz7tvMMzyHvUfcoJmxudvdhBcmiUSo6ij"
+        "wfYmfZYsKRxboQMPh3R4kUhXRVdtSXFXMheka4Rc4P2"
+    )
+    kp = Keypair.from_bytes([1] * 64)
+    assert str(kp) == expected
+    assert Keypair.from_base58_string(expected) == kp
 
 
 @mark.parametrize("test_input", [bytes(0), bytes(1), bytes(65)])

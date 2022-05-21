@@ -10,4 +10,5 @@ Modules:
 
    hash
    instruction
+   keypair
    pubkey
