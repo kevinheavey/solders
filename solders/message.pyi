@@ -41,6 +41,13 @@ class Message:
         instructions: Sequence[Instruction], payer: Optional[Pubkey], blockhash: Hash
     ) -> "Message": ...
     @staticmethod
+    def new_with_nonce(
+        instructions: Sequence[Instruction],
+        payer: Optional[Pubkey],
+        nonce_account_pubkey: Pubkey,
+        nonce_authority_pubkey: Pubkey,
+    ) -> "Message": ...
+    @staticmethod
     def new_with_compiled_instructions(
         num_required_signatures: int,
         num_readonly_signed_accounts: int,

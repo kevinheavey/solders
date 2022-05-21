@@ -233,6 +233,23 @@ impl Message {
     }
 
     #[staticmethod]
+    pub fn new_with_nonce(
+        instructions: Vec<Instruction>,
+        payer: Option<&Pubkey>,
+        nonce_account_pubkey: &Pubkey,
+        nonce_authority_pubkey: &Pubkey,
+    ) -> Self {
+        let instructions_inner = convert_instructions(instructions);
+        MessageOriginal::new_with_nonce(
+            instructions_inner,
+            convert_optional_pubkey(payer),
+            nonce_account_pubkey.as_ref(),
+            nonce_authority_pubkey.as_ref(),
+        )
+        .into()
+    }
+
+    #[staticmethod]
     pub fn new_with_compiled_instructions(
         num_required_signatures: u8,
         num_readonly_signed_accounts: u8,
