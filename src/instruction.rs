@@ -26,12 +26,30 @@ use crate::{handle_py_err, pubkey::Pubkey, RichcmpEqualityOnly};
 ///     pubkey (Pubkey): An account's public key.
 ///     is_signer (bool): True if an :class:`Instruction` requires a :class:`Transaction` signature matching ``pubkey``.
 ///     is_writable (bool): True if the account data or metadata may be mutated during program execution.
+///
+/// Example::
+///
+///     from solders.pubkey import Pubkey
+///     from solders.instruction import AccountMeta, Instruction
+///     
+///     from_pubkey = Pubkey.new_unique()
+///     to_pubkey = Pubkey.new_unique()
+///     program_id = Pubkey.new_unique()
+///     instruction_data = bytes([1])
+///     instruction = Instruction(
+///         program_id,
+///         instruction_data,
+///         [
+///             AccountMeta(from_pubkey, is_signer=True, is_writable=True),
+///             AccountMeta(to_pubkey, is_signer=True, is_writable=True),
+///         ],
+///     )
+///
 #[pyclass(module = "solders", subclass)]
 #[derive(PartialEq, Debug, Clone)]
 pub struct AccountMeta(AccountMetaOriginal);
 #[pymethods]
 impl AccountMeta {
-    /// Construct metadata for an account.
     #[new]
     pub fn new(pubkey: &Pubkey, is_signer: bool, is_writable: bool) -> Self {
         let underlying_pubkey = pubkey.into();
