@@ -15,6 +15,44 @@ use crate::{
 
 #[pyclass(module = "solders", subclass)]
 #[derive(PartialEq, Eq, Debug, Default)]
+/// Describes the organization of a :class:`Message`'s account keys.
+///
+/// Every :class:`~solders.instruction.Instruction` specifies which accounts it may reference, or
+/// otherwise requires specific permissions of. Those specifications are:
+/// whether the account is read-only, or read-write; and whether the account
+/// must have signed the transaction containing the instruction.
+///
+/// Whereas an individual ``Instruction`` contains a list of all accounts they may
+/// access, along with their required permissions, a ``Message`` contains a
+/// single shared flat list of *all* accounts required by *all* instructions in
+/// a transaction. When building a ``Message``, this flat list is created and
+/// each ``Instruction`` is converted to :class:`~solders.instruction.CompiledInstruction`. Each
+/// ``CompiledInstruction`` then references by index the accounts they require in
+/// the single shared account list.
+///
+/// The shared account list is ordered by the permissions required of the accounts:
+///
+/// * accounts that are writable and signers
+/// * accounts that are read-only and signers
+/// * accounts that are writable and not signers
+/// * accounts that are read-only and not signers
+///
+/// Given this ordering, the fields of ``MessageHeader`` describe which accounts
+/// in a transaction require which permissions.
+///
+/// When multiple transactions access the same read-only accounts, the runtime
+/// may process them in parallel, in a single
+/// `PoH <https://docs.solana.com/cluster/synchronization>`_ entry.
+/// Transactions that access the same read-write accounts are processed sequentially.
+///
+/// Args:
+///     num_required_signatures (int): The number of signatures required for this message
+///         to be considered valid. The signers of those signatures must match the
+///         first ``num_required_signatures`` of :attr:`Message.account_keys`.
+///     num_readonly_signed_accounts (int): The last ``num_readonly_signed_accounts`` of
+///         the signed keys are read-only accounts.
+///     num_readonly_unsigned_accounts (int): The last ``num_readonly_unsigned_accounts``
+///         of the unsigned keys are read-only accounts.
 pub struct MessageHeader(MessageHeaderOriginal);
 
 #[pymethods]
@@ -38,6 +76,10 @@ impl MessageHeader {
 
     #[staticmethod]
     #[pyo3(name = "default")]
+    /// Create a new default ``MessageHeader``.
+    ///
+    /// Returns:
+    ///     MessageHeader: default ``MessageHeader``.
     pub fn new_default() -> Self {
         Self::default()
     }

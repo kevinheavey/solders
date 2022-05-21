@@ -24,7 +24,8 @@ use crate::{handle_py_err, pubkey::Pubkey, RichcmpEqualityOnly};
 ///
 /// Args:
 ///     pubkey (Pubkey): An account's public key.
-///     is_signer (bool): True if an :class:`Instruction` requires a :class:`Transaction` signature matching ``pubkey``.
+///     is_signer (bool): True if an :class:`Instruction` requires a :class:`~solders.transaction.Transaction`
+///         signature matching ``pubkey``.
 ///     is_writable (bool): True if the account data or metadata may be mutated during program execution.
 ///
 /// Example::
@@ -151,7 +152,7 @@ impl From<AccountMeta> for AccountMetaOriginal {
 /// include:
 ///
 /// * The program ID: it is a separate field of ``Instruction``
-/// * The transaction's fee-paying account: it is added during :class:`Message`
+/// * The transaction's fee-paying account: it is added during :class:`~solders.message.Message`
 ///   construction. A program may still require the fee payer as part of the
 ///   account list if it directly references it.
 ///
@@ -281,9 +282,9 @@ impl AsRef<InstructionOriginal> for Instruction {
 
 /// A compact encoding of an instruction.
 ///
-/// A ``CompiledInstruction`` is a component of a multi-instruction :class:`Message`,
+/// A ``CompiledInstruction`` is a component of a multi-instruction :class:`~solders.message.Message`,
 /// which is the core of a Solana transaction. It is created during the
-/// construction of :class:`Message`. Most users will not interact with it directly.
+/// construction of ``Message``. Most users will not interact with it directly.
 ///
 /// Args:
 ///     program_id_index (int): Index into the transaction keys array indicating the

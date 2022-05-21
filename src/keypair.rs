@@ -116,7 +116,7 @@ impl Keypair {
     }
 
     #[pyo3(name = "pubkey")]
-    /// Get this keypair's :class:`Pubkey`.
+    /// Get this keypair's :class:`~solders.pubkey.Pubkey`.
     ///
     /// Returns:
     ///     Pubkey: the pubkey of this keypair.
