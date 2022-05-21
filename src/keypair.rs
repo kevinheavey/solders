@@ -88,7 +88,9 @@ impl Keypair {
     ///     
     ///     raw_bytes = bytes([0] * 64)
     ///     base58_str = "1" * 64
-    ///     assert Keypair.from_base58_string(base58_str) == Keypair.from_bytes(raw_bytes)
+    ///     kp = Keypair.from_base58_string(base58_str)
+    ///     assert kp == Keypair.from_bytes(raw_bytes)
+    ///     assert str(kp) == base58_str
     ///     
     pub fn from_base58_string(s: &str) -> Self {
         KeypairOriginal::from_base58_string(s).into()
@@ -108,39 +110,91 @@ impl Keypair {
         self.0.secret().as_ref()
     }
 
-    /// Return this keypair as a base58-encoded string.
-    ///
-    /// Returns:
-    ///     str: the base58-encoded string.
-    ///
-    /// Example:
-    ///     >>> from solders.keypair import Keypair
-    ///     >>> Keypair.from_bytes([1] * 64).to_base58_string()
-    ///     '2AXDGYSE4f2sz7tvMMzyHvUfcoJmxudvdhBcmiUSo6ijwfYmfZYsKRxboQMPh3R4kUhXRVdtSXFXMheka4Rc4P2'
-    pub fn to_base58_string(&self) -> String {
+    pub fn __str__(&self) -> String {
         self.0.to_base58_string()
     }
 
-    pub fn __str__(&self) -> String {
-        self.to_base58_string()
-    }
-
     #[pyo3(name = "pubkey")]
+    /// Get this keypair's :class:`Pubkey`.
+    ///
+    /// Returns:
+    ///     Pubkey: the pubkey of this keypair.
+    ///
+    /// Example::
+    ///     from solders.keypair import Keypair
+    ///     from solders.pubkey import Pubkey
+    ///     
+    ///     seed_bytes = bytes([0] * 32)
+    ///     pubkey_bytes = bytes([1] * 32)
+    ///     kp = Keypair.from_bytes(seed_bytes + pubkey_bytes)
+    ///     assert kp.pubkey() == Pubkey(pubkey_bytes)
+    ///
     pub fn py_pubkey(&self) -> Pubkey {
         self.pubkey().into()
     }
 
     #[pyo3(name = "sign_message")]
+    /// Sign a mesage with this keypair, producing an Ed25519 signature over the provided message bytes.
+    ///
+    /// Args:
+    ///     message (bytes): The message to sign.
+    ///
+    /// Returns:
+    ///     Signature: The Ed25519 signature.
+    ///
+    /// Example:
+    ///     >>> from solders.keypair import Keypair
+    ///     >>> seed = bytes([1] * 32)
+    ///     >>> keypair = Keypair.from_seed(seed)
+    ///     >>> msg = b"hello"
+    ///     >>> sig = keypair.sign_message(msg)
+    ///     >>> bytes(sig).hex()
+    ///     'e1430c6ebd0d53573b5c803452174f8991ef5955e0906a09e8fdc7310459e9c82a402526748c3431fe7f0e5faafbf7e703234789734063ee42be17af16438d08'
+    ///
     pub fn py_sign_message(&self, message: &[u8]) -> Signature {
         self.sign_message(message).into()
     }
 
     #[staticmethod]
+    /// Generate a keypair from a 32 byte seed.
+    ///
+    /// Args:
+    ///     seed: 32-byte seed.
+    /// Returns:
+    ///     Keypair: The generated keypair.
+    ///
+    /// Example::
+    ///
+    ///     from solders.keypair import Keypair
+    ///     from solders.pubkey import Pubkey
+    ///     
+    ///     seed_bytes = bytes([0] * 32)
+    ///     from_seed = Keypair.from_seed(seed_bytes)
+    ///     from_bytes = Keypair.from_bytes(seed_bytes + bytes(from_seed.pubkey()))
+    ///     assert from_seed == from_bytes
+    ///
     pub fn from_seed(seed: [u8; 32]) -> PyResult<Self> {
         handle_py_value_err(keypair_from_seed(&seed))
     }
 
     #[staticmethod]
+    /// Generate a keypair from a seed phrase and passphrase.
+    ///
+    /// Args:
+    ///     seed_phrase (string): Secret seed phrase.
+    ///     passphrase (string): Passphrase.
+    ///
+    /// Example::
+    ///     from pybip39 import Mnemonic, Seed
+    ///     from solders.keypair import Keypair
+    ///    
+    ///     mnemonic = Mnemonic()
+    ///     passphrase = "42"
+    ///     seed = Seed(mnemonic, passphrase)
+    ///     expected_keypair = Keypair.from_seed(bytes(seed)[:32])
+    ///     keypair = Keypair.from_seed_phrase_and_passphrase(mnemonic.phrase, passphrase)
+    ///     assert keypair.pubkey() == expected_keypair.pubkey()
+    ///
     pub fn from_seed_phrase_and_passphrase(seed_phrase: &str, passphrase: &str) -> PyResult<Self> {
         handle_py_value_err(keypair_from_seed_phrase_and_passphrase(
             seed_phrase,
@@ -167,6 +221,11 @@ impl Keypair {
     }
 
     #[pyo3(name = "is_interactive")]
+    /// Whether the impelmentation requires user interaction to sign.
+    ///
+    /// Returns:
+    ///     bool: True if user interaction is required.
+    ///
     pub fn py_is_interactive(&self) -> bool {
         self.is_interactive()
     }

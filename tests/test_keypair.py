@@ -31,6 +31,19 @@ def test_str():
     assert Keypair.from_base58_string(expected) == kp
 
 
+def test_sign_message():
+    seed = bytes([1] * 32)
+    keypair = Keypair.from_seed(seed)
+    msg = b"hello"
+    expected_hex = (
+        "e1430c6ebd0d53573b5c803452174f8991ef5955e0906a09e8"
+        "fdc7310459e9c82a402526748c3431fe7f0e5faafbf7e703234"
+        "789734063ee42be17af16438d08"
+    )
+    signature = keypair.sign_message(msg)
+    assert bytes(signature).hex() == expected_hex
+
+
 @mark.parametrize("test_input", [bytes(0), bytes(1), bytes(65)])
 def test_from_bytes_wrong_size(test_input: bytes):
     with raises(ValueError) as excinfo:
