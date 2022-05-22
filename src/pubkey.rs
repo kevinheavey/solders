@@ -19,7 +19,7 @@ impl From<PubkeyErrorOriginal> for PyErrWrapper {
 ///      pubkey_bytes (bytes): The pubkey in bytes.
 ///
 /// Example:
-///     >>> from solders import Pubkey
+///     >>> from solders.pubkey import Pubkey
 ///     >>> pubkey = Pubkey(bytes([1] * 32))
 ///     >>> str(pubkey)
 ///     '4vJ9JU1bJJE96FWSJKvHsmmFADCg4gpZQff4P3bkLKi'

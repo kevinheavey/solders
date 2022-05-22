@@ -106,7 +106,7 @@ impl Hash {
     ///
     /// Example:
     ///     >>> from solders.hash import Hash
-    ///     >>> >>> Hash.hash(b"foo")
+    ///     >>> Hash.hash(b"foo")
     ///     Hash(
     ///         3yMApqCuCjXDWPrbjfR5mjCPTHqFG8Pux1TxQrEM35jj,
     ///     )
