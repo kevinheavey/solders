@@ -233,6 +233,40 @@ impl Message {
     }
 
     #[staticmethod]
+    /// Create a new message for a `nonced transaction <https://docs.solana.com/implemented-proposals/durable-tx-nonces>`_.
+    ///
+    /// Args:
+    ///     instructions (Sequence[Instruction]): The instructions to include in the message.
+    ///     payer (Optional[Pubkey]): The fee payer. Defaults to ``None``.
+    ///     nonce_account_pubkey (Pubkey): The nonce account pubkey.
+    ///     nonce_authority_pubkey (Pubkey): The nonce account authority (for advance and close).
+    ///
+    /// In this type of transaction, the blockhash is replaced with a *durable
+    /// transaction nonce*, allowing for extended time to pass between the
+    /// transaction's signing and submission to the blockchain.
+    ///
+    /// Example::
+    ///     from solders.message import Message
+    ///     from solders.keypair import Keypair
+    ///     from solders.pubkey import Pubkey
+    ///     from solders.instruction import Instruction, AccountMeta
+    ///     from solders.hash import Hash
+    ///     from solders.transaction import Transaction
+    ///     
+    ///     program_id = Pubkey.default()
+    ///     blockhash = Hash.default()  # replace with a real blockhash
+    ///     arbitrary_instruction_data = bytes([1])
+    ///     accounts: list[AccountMeta] = []
+    ///     instruction = Instruction(program_id, arbitrary_instruction_data, accounts)
+    ///     payer = Keypair()
+    ///     nonce_account = Pubkey.default()  # replace with a real nonce account
+    ///     message = Message.new_with_nonce(
+    ///         [instruction], payer.pubkey(), nonce_account, payer.pubkey()
+    ///     )
+    ///     # This transaction will need to be signed later, using the blockhash
+    ///     # stored in the nonce account.
+    ///     tx = Transaction.new_unsigned(message)
+    ///     
     pub fn new_with_nonce(
         instructions: Vec<Instruction>,
         payer: Option<&Pubkey>,
