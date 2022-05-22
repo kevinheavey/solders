@@ -201,6 +201,7 @@ impl Message {
     ///     blockhash (Hash): a recent blockhash.
     ///
     /// Example::
+    ///
     ///     from solders.message import Message
     ///     from solders.keypair import Keypair
     ///     from solders.pubkey import Pubkey
@@ -246,6 +247,7 @@ impl Message {
     /// transaction's signing and submission to the blockchain.
     ///
     /// Example::
+    ///
     ///     from solders.message import Message
     ///     from solders.keypair import Keypair
     ///     from solders.pubkey import Pubkey
@@ -410,6 +412,7 @@ impl Message {
     ///     Message: the deserialized ``Message``.
     ///
     /// Example::
+    ///
     ///     from solders.pubkey import Pubkey
     ///     from solders.instruction import AccountMeta, Instruction
     ///     from solders.message import Message
