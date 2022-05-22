@@ -119,11 +119,11 @@ pub trait SignerTraitWrapper: ToSignerOriginal {
     }
 }
 
-pub trait RichcmpEqOnlyPrecalculated: PartialEq {
-    fn richcmp(&self, eq_val: bool, op: CompareOp) -> PyResult<bool> {
+pub trait RichcmpEqualityOnly: PartialEq {
+    fn richcmp(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
         match op {
-            CompareOp::Eq => Ok(eq_val),
-            CompareOp::Ne => Ok(!eq_val),
+            CompareOp::Eq => Ok(self == other),
+            CompareOp::Ne => Ok(self != other),
             CompareOp::Lt => Err(richcmp_type_error("<")),
             CompareOp::Gt => Err(richcmp_type_error(">")),
             CompareOp::Le => Err(richcmp_type_error("<=")),
@@ -132,11 +132,12 @@ pub trait RichcmpEqOnlyPrecalculated: PartialEq {
     }
 }
 
-pub trait RichcmpEqualityOnly: PartialEq {
-    fn richcmp(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
+pub trait RichcmpSigner: SignerTraitWrapper {
+    fn richcmp(&self, other: impl SignerTraitWrapper, op: CompareOp) -> PyResult<bool> {
+        let eq_val = self.pubkey() == other.pubkey();
         match op {
-            CompareOp::Eq => Ok(self == other),
-            CompareOp::Ne => Ok(self != other),
+            CompareOp::Eq => Ok(eq_val),
+            CompareOp::Ne => Ok(!eq_val),
             CompareOp::Lt => Err(richcmp_type_error("<")),
             CompareOp::Gt => Err(richcmp_type_error(">")),
             CompareOp::Le => Err(richcmp_type_error("<=")),

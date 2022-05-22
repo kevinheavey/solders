@@ -2,8 +2,7 @@ use pyo3::{prelude::*, pyclass::CompareOp};
 use solana_sdk::signer::{presigner::Presigner as PresignerOriginal, Signer as SignerTrait};
 
 use crate::{
-    handle_py_err, Pubkey, RichcmpEqOnlyPrecalculated, Signature, Signer, SignerTraitWrapper,
-    ToSignerOriginal,
+    handle_py_err, Pubkey, RichcmpSigner, Signature, Signer, SignerTraitWrapper, ToSignerOriginal,
 };
 
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -28,11 +27,7 @@ impl Presigner {
     }
 
     fn __richcmp__(&self, other: Signer, op: CompareOp) -> PyResult<bool> {
-        let other_eq = match other {
-            Signer::KeypairWrapper(kp) => kp.0 == self.0,
-            Signer::PresignerWrapper(ps) => ps.0 == self.0,
-        };
-        self.richcmp(other_eq, op)
+        self.richcmp(other, op)
     }
 
     #[staticmethod]
@@ -60,4 +55,4 @@ impl ToSignerOriginal for Presigner {
 
 impl SignerTraitWrapper for Presigner {}
 
-impl RichcmpEqOnlyPrecalculated for Presigner {}
+impl RichcmpSigner for Presigner {}

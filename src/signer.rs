@@ -6,7 +6,7 @@ use solana_sdk::{
     signer::{signers::Signers, Signer as SignerTrait, SignerError as SignerErrorOriginal},
 };
 
-use crate::{Keypair, Presigner, PyErrWrapper};
+use crate::{Keypair, NullSigner, Presigner, PyErrWrapper, SignerTraitWrapper, ToSignerOriginal};
 
 create_exception!(solders, SignerError, PyException);
 
@@ -20,40 +20,20 @@ impl From<SignerErrorOriginal> for PyErrWrapper {
 pub enum Signer {
     KeypairWrapper(Keypair),
     PresignerWrapper(Presigner),
+    NullSignerWrapper(NullSigner),
 }
 
-impl SignerTrait for Signer {
-    fn pubkey(&self) -> PubkeyOriginal {
+impl ToSignerOriginal for Signer {
+    fn to_inner(&self) -> Box<dyn SignerTrait> {
         match self {
-            Signer::KeypairWrapper(x) => x.0.pubkey(),
-            Signer::PresignerWrapper(x) => x.0.pubkey(),
-        }
-    }
-    fn try_pubkey(&self) -> Result<PubkeyOriginal, SignerErrorOriginal> {
-        match self {
-            Signer::KeypairWrapper(x) => x.0.try_pubkey(),
-            Signer::PresignerWrapper(x) => x.0.try_pubkey(),
-        }
-    }
-    fn sign_message(&self, message: &[u8]) -> SignatureOriginal {
-        match self {
-            Signer::KeypairWrapper(x) => x.0.sign_message(message),
-            Signer::PresignerWrapper(x) => x.0.sign_message(message),
-        }
-    }
-    fn try_sign_message(&self, message: &[u8]) -> Result<SignatureOriginal, SignerErrorOriginal> {
-        match self {
-            Signer::KeypairWrapper(x) => x.0.try_sign_message(message),
-            Signer::PresignerWrapper(x) => x.0.try_sign_message(message),
-        }
-    }
-    fn is_interactive(&self) -> bool {
-        match self {
-            Signer::KeypairWrapper(x) => x.0.is_interactive(),
-            Signer::PresignerWrapper(x) => x.0.is_interactive(),
+            Signer::KeypairWrapper(x) => x.to_inner(),
+            Signer::PresignerWrapper(x) => x.to_inner(),
+            Signer::NullSignerWrapper(x) => x.to_inner(),
         }
     }
 }
+
+impl SignerTraitWrapper for Signer {}
 
 pub struct SignerVec(pub Vec<Signer>);
 

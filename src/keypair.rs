@@ -7,8 +7,8 @@ use solana_sdk::signer::{
 };
 
 use crate::{
-    calculate_hash, handle_py_value_err, pubkey::Pubkey, signature::Signature,
-    RichcmpEqOnlyPrecalculated, Signer, SignerTraitWrapper, ToSignerOriginal,
+    calculate_hash, handle_py_value_err, pubkey::Pubkey, signature::Signature, RichcmpSigner,
+    Signer, SignerTraitWrapper, ToSignerOriginal,
 };
 
 #[pyclass(module = "solders", subclass)]
@@ -204,11 +204,7 @@ impl Keypair {
     }
 
     fn __richcmp__(&self, other: Signer, op: CompareOp) -> PyResult<bool> {
-        let other_eq = match other {
-            Signer::KeypairWrapper(kp) => kp.0 == self.0,
-            Signer::PresignerWrapper(ps) => ps.0 == self.0,
-        };
-        self.richcmp(other_eq, op)
+        self.richcmp(other, op)
     }
 
     #[pyo3(name = "is_interactive")]
@@ -226,7 +222,7 @@ impl Keypair {
     }
 }
 
-impl RichcmpEqOnlyPrecalculated for Keypair {}
+impl RichcmpSigner for Keypair {}
 
 impl Default for Keypair {
     fn default() -> Self {
