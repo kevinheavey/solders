@@ -1,18 +1,14 @@
 use pyo3::{prelude::*, pyclass::CompareOp, types::PyBytes};
-use solana_sdk::{
-    pubkey::Pubkey as PubkeyOriginal,
-    signature::Signature as SignatureOriginal,
-    signer::{
-        keypair::{
-            keypair_from_seed, keypair_from_seed_phrase_and_passphrase, Keypair as KeypairOriginal,
-        },
-        Signer as SignerTrait, SignerError,
+use solana_sdk::signer::{
+    keypair::{
+        keypair_from_seed, keypair_from_seed_phrase_and_passphrase, Keypair as KeypairOriginal,
     },
+    Signer as SignerTrait,
 };
 
 use crate::{
     calculate_hash, handle_py_value_err, pubkey::Pubkey, signature::Signature,
-    RichcmpEqOnlyPrecalculated, Signer,
+    RichcmpEqOnlyPrecalculated, Signer, SignerTraitWrapper, ToSignerOriginal,
 };
 
 #[pyclass(module = "solders", subclass)]
@@ -262,20 +258,10 @@ impl Clone for Keypair {
     }
 }
 
-impl SignerTrait for Keypair {
-    fn pubkey(&self) -> PubkeyOriginal {
-        self.0.pubkey()
-    }
-    fn try_pubkey(&self) -> Result<PubkeyOriginal, SignerError> {
-        self.0.try_pubkey()
-    }
-    fn sign_message(&self, message: &[u8]) -> SignatureOriginal {
-        self.0.sign_message(message)
-    }
-    fn try_sign_message(&self, message: &[u8]) -> Result<SignatureOriginal, SignerError> {
-        self.0.try_sign_message(message)
-    }
-    fn is_interactive(&self) -> bool {
-        self.0.is_interactive()
+impl ToSignerOriginal for Keypair {
+    fn to_inner(&self) -> Box<dyn SignerTrait> {
+        Box::new(self.clone().0)
     }
 }
+
+impl SignerTraitWrapper for Keypair {}

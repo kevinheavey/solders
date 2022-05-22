@@ -6,7 +6,10 @@ use pyo3::{
     pyclass::CompareOp,
 };
 use solana_sdk::{
-    instruction::Instruction as InstructionOriginal, pubkey::Pubkey as PubkeyOriginal,
+    instruction::Instruction as InstructionOriginal,
+    pubkey::Pubkey as PubkeyOriginal,
+    signature::Signature as SignatureOriginal,
+    signer::{Signer as SignerTrait, SignerError as SignerErrorOriginal},
 };
 use std::{
     collections::{hash_map::DefaultHasher, HashMap},
@@ -31,9 +34,11 @@ pub use message::{Message, MessageHeader};
 mod transaction;
 pub use transaction::{SanitizeError, Transaction};
 mod presigner;
+pub use presigner::Presigner;
+mod null_signer;
+pub use null_signer::NullSigner;
 mod system_program;
 mod sysvar;
-pub use presigner::Presigner;
 
 struct PyErrWrapper(PyErr);
 
@@ -90,6 +95,28 @@ fn calculate_hash(t: &impl Hash) -> u64 {
     let mut s = DefaultHasher::new();
     t.hash(&mut s);
     s.finish()
+}
+
+pub trait ToSignerOriginal {
+    fn to_inner(&self) -> Box<dyn SignerTrait>;
+}
+
+pub trait SignerTraitWrapper: ToSignerOriginal {
+    fn pubkey(&self) -> PubkeyOriginal {
+        self.to_inner().pubkey()
+    }
+    fn try_pubkey(&self) -> Result<PubkeyOriginal, SignerErrorOriginal> {
+        self.to_inner().try_pubkey()
+    }
+    fn sign_message(&self, message: &[u8]) -> SignatureOriginal {
+        self.to_inner().sign_message(message)
+    }
+    fn try_sign_message(&self, message: &[u8]) -> Result<SignatureOriginal, SignerErrorOriginal> {
+        self.to_inner().try_sign_message(message)
+    }
+    fn is_interactive(&self) -> bool {
+        self.to_inner().is_interactive()
+    }
 }
 
 pub trait RichcmpEqOnlyPrecalculated: PartialEq {
