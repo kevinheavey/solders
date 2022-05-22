@@ -1,5 +1,7 @@
 from solders.message import Message, MessageHeader
+from solders.keypair import Keypair
 from solders.pubkey import Pubkey
+from solders.transaction import Transaction
 from solders.hash import Hash
 from solders.instruction import Instruction, AccountMeta, CompiledInstruction
 
@@ -183,3 +185,18 @@ def test_message_hash() -> None:
     assert message.hash() == Hash.from_string(
         "7VWCF4quo2CcWQFNUayZiorxpiR5ix8YzLebrXKf3fMF"
     )
+
+
+def test_new_with_nonce():
+    program_id = Pubkey.default()
+    blockhash = Hash.default()
+    arbitrary_instruction_data = bytes([1])
+    accounts: list[AccountMeta] = []
+    instruction = Instruction(program_id, arbitrary_instruction_data, accounts)
+    payer = Keypair()
+    nonce_account = Pubkey.default()
+    message = Message.new_with_nonce(
+        [instruction], payer.pubkey(), nonce_account, payer.pubkey()
+    )
+    tx = Transaction.new_unsigned(message)
+    # just check that no exceptions are raised
