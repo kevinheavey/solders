@@ -309,6 +309,11 @@ impl CompiledInstruction {
         .into()
     }
 
+    /// Return the pubkey of the program that executes this instruction.
+    ///
+    /// Returns:
+    ///     Pubkey: The program ID.
+    ///
     pub fn program_id(&self, program_ids: Vec<Pubkey>) -> Pubkey {
         let underlying_pubkeys: Vec<PubkeyOriginal> =
             program_ids.iter().map(PubkeyOriginal::from).collect();

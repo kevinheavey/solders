@@ -340,26 +340,74 @@ impl Message {
         PyBytes::new(py, &self.0.serialize())
     }
 
+    /// Return the program ID of an instruction at a particular index in the message.
+    ///
+    /// Args:
+    ///     instruction_index (int): The position of the instruction in the
+    ///         message's list of instructions.
+    ///
+    /// Returns:
+    ///     Pubkey: The program ID.
+    ///
     pub fn program_id(&self, instruction_index: usize) -> Option<Pubkey> {
         self.0.program_id(instruction_index).map(Pubkey::from)
     }
 
+    /// Return the ``program_id_index`` of the instruction at ``instruction_index`` in the message.
+    ///
+    /// Args:
+    ///     instruction_index (int): The position of the instruction in the
+    ///         message's list of instructions.
+    ///
+    /// Returns:
+    ///     int: The program ID index.
+    ///
     pub fn program_index(&self, instruction_index: usize) -> Option<usize> {
         self.0.program_index(instruction_index)
     }
 
+    /// Return the program ID of each instruction in the message.
+    ///
+    /// Returns:
+    ///     list[Pubkey]: The program IDs.
+    ///
     pub fn program_ids(&self) -> Vec<Pubkey> {
         self.0.program_ids().into_iter().map(Pubkey::from).collect()
     }
 
+    /// Check if ``key_index`` is contained in the accounts of
+    /// any of the message's instructions.
+    ///
+    /// Args:
+    ///     key_index (int): The index to check.
+    ///
+    /// Returns:
+    ///     bool: True if the key is passed to the program.
+    ///
     pub fn is_key_passed_to_program(&self, key_index: usize) -> bool {
         self.0.is_key_passed_to_program(key_index)
     }
 
+    /// Check if the ``program_id_index`` of any of the message's instructions matches ``key_index``.
+    ///
+    /// Args:
+    ///     key_index (int): The index to check.
+    ///
+    /// Returns:
+    ///     bool: The result of the check.
+    ///
     pub fn is_key_called_as_program(&self, key_index: usize) -> bool {
         self.0.is_key_called_as_program(key_index)
     }
 
+    /// Check if the key is passed to the program OR if the key is not called as program.
+    ///
+    /// Args:
+    ///     key_index (int): The index to check.
+    ///
+    /// Returns:
+    ///     bool: The result of the check.
+    ///
     pub fn is_non_loader_key(&self, key_index: usize) -> bool {
         self.0.is_non_loader_key(key_index)
     }
@@ -384,6 +432,11 @@ impl Message {
         self.0.signer_keys().into_iter().map(Pubkey::from).collect()
     }
 
+    /// Check if ``account_keys`` has any duplicate keys.
+    ///
+    /// Returns:
+    ///     bool: ``True`` if there are duplicates.
+    ///
     pub fn has_duplicates(&self) -> bool {
         self.0.has_duplicates()
     }
