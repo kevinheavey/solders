@@ -219,7 +219,7 @@ impl Keypair {
     /// Whether the impelmentation requires user interaction to sign.
     ///
     /// Returns:
-    ///     bool: Always True for this class.
+    ///     bool: Always False for this class.
     ///
     pub fn py_is_interactive(&self) -> bool {
         self.is_interactive()
