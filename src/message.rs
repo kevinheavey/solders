@@ -309,15 +309,27 @@ impl Message {
         .into()
     }
 
+    /// Compute the blake3 hash of this transaction's message.
+    ///
+    /// Returns:
+    ///     Hash: the blake3 hash.
     pub fn hash(&self) -> SolderHash {
         self.0.hash().into()
     }
 
     #[staticmethod]
+    /// Compute the blake3 hash of a raw transaction message.
+    ///
+    /// Returns:
+    ///     Hash: the blake3 hash.
     pub fn hash_raw_message(message_bytes: &[u8]) -> SolderHash {
         MessageOriginal::hash_raw_message(message_bytes).into()
     }
 
+    /// Convert an :class:`~solders.Instruction` into a :class:~solders.CompiledInstruction using ``self.account_keys``.
+    ///
+    /// Returns:
+    ///     CompiledInstruction: the compiled instruction.
     pub fn compile_instruction(&self, ix: &Instruction) -> CompiledInstruction {
         self.0.compile_instruction(ix.as_ref()).into()
     }
@@ -380,11 +392,44 @@ impl Message {
 
     #[staticmethod]
     #[pyo3(name = "default")]
+    /// Create a new default ``Message``.
+    ///
+    /// Returns:
+    ///     Message: default ``Message``.
     pub fn new_default() -> Self {
         Self::default()
     }
 
     #[staticmethod]
+    /// Deserialize a serialized ``Message`` object.
+    ///
+    /// Args:
+    ///     data (bytes): the serialized ``Message``.
+    ///
+    /// Returns:
+    ///     Message: the deserialized ``Message``.
+    ///
+    /// Example::
+    ///     from solders.pubkey import Pubkey
+    ///     from solders.instruction import AccountMeta, Instruction
+    ///     from solders.message import Message
+    ///     
+    ///     from_pubkey = Pubkey.new_unique()
+    ///     to_pubkey = Pubkey.new_unique()
+    ///     program_id = Pubkey.new_unique()
+    ///     instruction_data = bytes([1])
+    ///     instruction = Instruction(
+    ///         program_id,
+    ///         instruction_data,
+    ///         [
+    ///             AccountMeta(from_pubkey, is_signer=True, is_writable=True),
+    ///             AccountMeta(to_pubkey, is_signer=True, is_writable=True),
+    ///         ],
+    ///     )
+    ///     message = Message([instruction])
+    ///     serialized = bytes(message)
+    ///     assert Message.from_bytes(serialized) == message
+    ///
     pub fn from_bytes(data: &[u8]) -> PyResult<Self> {
         handle_py_err(bincode::deserialize::<MessageOriginal>(data))
     }

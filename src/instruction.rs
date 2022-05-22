@@ -253,7 +253,7 @@ impl Instruction {
     ///     )
     ///     serialized = bytes(instruction)
     ///     assert Instruction.from_bytes(serialized) == instruction
-
+    ///
     pub fn from_bytes(data: &[u8]) -> PyResult<Self> {
         let deser = bincode::deserialize::<Self>(data);
         handle_py_err(deser)
@@ -361,6 +361,7 @@ impl CompiledInstruction {
     ///
     /// Returns:
     ///     CompiledInstruction: The deserialized ``CompiledInstruction``.
+    ///
     pub fn from_bytes(data: &[u8]) -> PyResult<Self> {
         let deser = bincode::deserialize::<Self>(data);
         handle_py_err(deser)
