@@ -1,14 +1,10 @@
 use pyo3::{prelude::*, pyclass::CompareOp};
-use solana_sdk::{
-    pubkey::Pubkey as PubkeyOriginal,
-    signature::Signature as SignatureOriginal,
-    signer::{
-        presigner::Presigner as PresignerOriginal, Signer as SignerTrait,
-        SignerError as SignerErrorOriginal,
-    },
-};
+use solana_sdk::signer::{presigner::Presigner as PresignerOriginal, Signer as SignerTrait};
 
-use crate::{handle_py_err, Pubkey, RichcmpEqOnlyPrecalculated, Signature, Signer};
+use crate::{
+    handle_py_err, Pubkey, RichcmpEqOnlyPrecalculated, Signature, Signer, SignerTraitWrapper,
+    ToSignerOriginal,
+};
 
 #[derive(Clone, Debug, Default, PartialEq)]
 #[pyclass(module = "solders", subclass)]
@@ -56,22 +52,12 @@ impl From<PresignerOriginal> for Presigner {
     }
 }
 
-impl SignerTrait for Presigner {
-    fn pubkey(&self) -> PubkeyOriginal {
-        self.0.pubkey()
-    }
-    fn try_pubkey(&self) -> Result<PubkeyOriginal, SignerErrorOriginal> {
-        self.0.try_pubkey()
-    }
-    fn sign_message(&self, message: &[u8]) -> SignatureOriginal {
-        self.0.sign_message(message)
-    }
-    fn try_sign_message(&self, message: &[u8]) -> Result<SignatureOriginal, SignerErrorOriginal> {
-        self.0.try_sign_message(message)
-    }
-    fn is_interactive(&self) -> bool {
-        self.0.is_interactive()
+impl ToSignerOriginal for Presigner {
+    fn to_inner(&self) -> Box<dyn SignerTrait> {
+        Box::new(self.0.clone())
     }
 }
+
+impl SignerTraitWrapper for Presigner {}
 
 impl RichcmpEqOnlyPrecalculated for Presigner {}
