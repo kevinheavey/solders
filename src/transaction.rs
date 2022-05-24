@@ -35,7 +35,7 @@ impl From<SanitizeErrorOriginal> for PyErrWrapper {
     }
 }
 
-#[pyclass(module = "solders", subclass)]
+#[pyclass(module = "solders.transaction", subclass)]
 #[derive(Debug, PartialEq, Default, Eq, Clone, Serialize, Deserialize)]
 /// An atomically-commited sequence of instructions.
 ///

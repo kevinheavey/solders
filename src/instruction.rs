@@ -38,7 +38,7 @@ use crate::{handle_py_err, pubkey::Pubkey, RichcmpEqualityOnly};
 ///     >>> accs = [AccountMeta(from_pubkey, is_signer=True, is_writable=True), AccountMeta(to_pubkey, is_signer=True, is_writable=True)]
 ///     >>> instruction = Instruction(program_id, instruction_data, accs)
 ///
-#[pyclass(module = "solders", subclass)]
+#[pyclass(module = "solders.instruction", subclass)]
 #[derive(PartialEq, Debug, Clone)]
 pub struct AccountMeta(AccountMetaOriginal);
 #[pymethods]
@@ -96,7 +96,7 @@ impl From<AccountMeta> for AccountMetaOriginal {
     }
 }
 
-#[pyclass(module = "solders", subclass)]
+#[pyclass(module = "solders.instruction", subclass)]
 /// A directive for a single invocation of a Solana program.
 ///
 /// An instruction specifies which program it is calling, which accounts it may
@@ -277,7 +277,7 @@ impl AsRef<InstructionOriginal> for Instruction {
 ///     accounts (bytes): Ordered indices into the transaction keys array indicating
 ///         which accounts to pass to the program.
 ///
-#[pyclass(module = "solders", subclass)]
+#[pyclass(module = "solders.instruction", subclass)]
 #[derive(PartialEq, Eq, Debug, Clone, Serialize, Deserialize)]
 pub struct CompiledInstruction(CompiledInstructionOriginal);
 

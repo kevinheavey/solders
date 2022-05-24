@@ -13,7 +13,7 @@ use crate::{
     Pubkey, RichcmpEqualityOnly, SolderHash,
 };
 
-#[pyclass(module = "solders", subclass)]
+#[pyclass(module = "solders.message", subclass)]
 #[derive(PartialEq, Eq, Debug, Default)]
 /// Describes the organization of a :class:`Message`'s account keys.
 ///
@@ -114,7 +114,7 @@ impl From<MessageHeaderOriginal> for MessageHeader {
     }
 }
 
-#[pyclass(module = "solders", subclass)]
+#[pyclass(module = "solders.message", subclass)]
 #[derive(PartialEq, Eq, Debug, Clone, Default)]
 /// A Solana transaction message.
 ///

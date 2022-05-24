@@ -26,7 +26,7 @@ impl From<PubkeyErrorOriginal> for PyErrWrapper {
 ///     >>> bytes(pubkey).hex()
 ///     '0101010101010101010101010101010101010101010101010101010101010101'
 ///
-#[pyclass(module = "solders", subclass)]
+#[pyclass(module = "solders.pubkey", subclass)]
 #[derive(Eq, PartialEq, Ord, PartialOrd, Debug, Default, Hash, Clone)]
 pub struct Pubkey(pub PubkeyOriginal);
 

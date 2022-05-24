@@ -5,7 +5,7 @@ use solana_sdk::signature::{Signature as SignatureOriginal, SIGNATURE_BYTES};
 
 use crate::{calculate_hash, handle_py_value_err, Pubkey, RichcmpFull};
 
-#[pyclass(module = "solders", subclass)]
+#[pyclass(module = "solders.signature", subclass)]
 #[derive(Clone, Copy, Default, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
 /// The ``Signature`` object is a wrapper around a raw bytes signature, typically
 /// returned by :meth:`~solders.keypair.Keypair.sign_message` or other similar methods.

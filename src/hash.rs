@@ -15,7 +15,7 @@ impl From<ParseHashErrorOriginal> for PyErrWrapper {
     }
 }
 
-#[pyclass(module = "solders", subclass)]
+#[pyclass(module = "solders.hash", subclass)]
 /// A SHA-256 hash, most commonly used for blockhashes.
 ///
 /// Args:

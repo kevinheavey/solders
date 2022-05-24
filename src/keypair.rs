@@ -11,7 +11,7 @@ use crate::{
     Signer, SignerTraitWrapper, ToSignerOriginal,
 };
 
-#[pyclass(module = "solders", subclass)]
+#[pyclass(module = "solders.keypair", subclass)]
 #[derive(PartialEq, Debug)]
 /// A vanilla Ed25519 key pair.
 ///

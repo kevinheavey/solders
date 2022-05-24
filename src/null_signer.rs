@@ -4,7 +4,7 @@ use solana_sdk::signer::{null_signer::NullSigner as NullSignerOriginal, Signer a
 use crate::{Pubkey, RichcmpSigner, Signature, Signer, SignerTraitWrapper, ToSignerOriginal};
 
 #[derive(Clone, Debug, Default, PartialEq)]
-#[pyclass(module = "solders", subclass)]
+#[pyclass(module = "solders.null_signer", subclass)]
 /// A signer implementation that always produces :meth:`solders.signature.Signature.default()`.
 /// Used as a placeholder for absentee signers whose 'Pubkey` is required to construct
 /// the transaction.

@@ -6,7 +6,7 @@ use crate::{
 };
 
 #[derive(Clone, Debug, Default, PartialEq)]
-#[pyclass(module = "solders", subclass)]
+#[pyclass(module = "solders.presigner", subclass)]
 /// A signer that represents a :class:`~solders.signature.Signature` that has been
 /// constructed externally. Performs a signature verification against the
 /// expected message upon ``sign()`` requests to affirm its relationship to
