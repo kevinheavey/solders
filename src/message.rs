@@ -137,6 +137,7 @@ impl From<MessageHeaderOriginal> for MessageHeader {
 ///     >>> from solders.instruction import Instruction
 ///     >>> from solders.hash import Hash
 ///     >>> from solders.transaction import Transaction
+///     >>> from solders.pubkey import Pubkey
 ///     >>> program_id = Pubkey.default()
 ///     >>> arbitrary_instruction_data = bytes([1])
 ///     >>> accounts = []

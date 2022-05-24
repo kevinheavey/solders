@@ -35,14 +35,8 @@ use crate::{handle_py_err, pubkey::Pubkey, RichcmpEqualityOnly};
 ///     >>> to_pubkey = Pubkey.new_unique()
 ///     >>> program_id = Pubkey.new_unique()
 ///     >>> instruction_data = bytes([1])
-///     >>> instruction = Instruction(
-///     >>>     program_id,
-///     >>>     instruction_data,
-///     >>>     [
-///     >>>         AccountMeta(from_pubkey, is_signer=True, is_writable=True),
-///     >>>         AccountMeta(to_pubkey, is_signer=True, is_writable=True),
-///     >>>     ],
-///     >>> )
+///     >>> accs = [AccountMeta(from_pubkey, is_signer=True, is_writable=True), AccountMeta(to_pubkey, is_signer=True, is_writable=True)]
+///     >>> instruction = Instruction(program_id, instruction_data, accs)
 ///
 #[pyclass(module = "solders", subclass)]
 #[derive(PartialEq, Debug, Clone)]
