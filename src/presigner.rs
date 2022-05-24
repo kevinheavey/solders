@@ -44,6 +44,26 @@ impl Presigner {
     }
 
     #[pyo3(name = "sign_message")]
+    /// Verifies the signature of the presigner and returns it if valid.
+    ///
+    /// Returns:
+    ///     Signature: The signature assigned to this object.
+    ///
+    /// Raises:
+    ///     SignerError: if the signature is invalid.
+    ///
+    /// Example:
+    ///
+    ///     >>> from solders.keypair import Keypair
+    ///     >>> from solders.presigner import Presigner
+    ///     >>> keypair = Keypair.from_seed(bytes([0] * 32))
+    ///     >>> pubkey = keypair.pubkey()
+    ///     >>> data = bytes([1])
+    ///     >>> sig = keypair.sign_message(data)
+    ///     >>> presigner = Presigner(pubkey, sig)
+    ///     >>> assert presigner.pubkey() == pubkey
+    ///     >>> assert presigner.sign_message(data) == sig
+    ///
     pub fn py_sign_message(&self, message: &[u8]) -> PyResult<Signature> {
         handle_py_err(self.try_sign_message(message))
     }
@@ -54,6 +74,11 @@ impl Presigner {
 
     #[staticmethod]
     #[pyo3(name = "default")]
+    /// Create a new default presigner.
+    ///
+    /// Returns:
+    ///     Presigner: The default presigner.
+    ///
     pub fn new_default() -> Self {
         Self::default()
     }
