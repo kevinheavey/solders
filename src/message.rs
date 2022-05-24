@@ -145,7 +145,7 @@ impl From<MessageHeaderOriginal> for MessageHeader {
 ///     >>> payer = Keypair()
 ///     >>> message = Message([instruction], payer.pubkey())
 ///     >>> blockhash = Hash.default()  # replace with a real blockhash
-///     >>> tx = Transaction([payer], message, blockhash);
+///     >>> tx = Transaction([payer], message, blockhash)
 ///
 pub struct Message(MessageOriginal);
 

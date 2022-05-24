@@ -37,6 +37,47 @@ impl From<SanitizeErrorOriginal> for PyErrWrapper {
 
 #[pyclass(module = "solders", subclass)]
 #[derive(Debug, PartialEq, Default, Eq, Clone, Serialize, Deserialize)]
+/// An atomically-commited sequence of instructions.
+///
+/// While :class:`~solders.instruction.Instruction`s are the basic unit of computation in Solana,
+/// they are submitted by clients in :class:`~solders.transaction.Transaction`s containing one or
+/// more instructions, and signed by one or more signers.
+///
+///
+/// See the `Rust module documentation <https://docs.rs/solana-sdk/latest/solana_sdk/transaction/index.html>`_ for more details about transactions.
+///
+/// Some constructors accept an optional ``payer``, the account responsible for
+/// paying the cost of executing a transaction. In most cases, callers should
+/// specify the payer explicitly in these constructors. In some cases though,
+/// the caller is not *required* to specify the payer, but is still allowed to:
+/// in the :class:`~solders.message.Message` object, the first account is always the fee-payer, so
+/// if the caller has knowledge that the first account of the constructed
+/// transaction's ``Message`` is both a signer and the expected fee-payer, then
+/// redundantly specifying the fee-payer is not strictly required.
+///
+/// The main ``Transaction()`` constructor creates a fully-signed transaction from a ``Message``.
+///
+/// Args:
+///     from_keypairs (Sequence[Keypair | Presigner]): The keypairs that are to sign the transaction.
+///     message (Message): The message to sign.
+///     recent_blockhash (Hash): The id of a recent ledger entry.
+///
+/// Example:
+///     >>> from solders.message import Message
+///     >>> from solders.keypair import Keypair
+///     >>> from solders.instruction import Instruction
+///     >>> from solders.hash import Hash
+///     >>> from solders.transaction import Transaction
+///     >>> from solders.pubkey import Pubkey
+///     >>> program_id = Pubkey.default()
+///     >>> arbitrary_instruction_data = bytes([1])
+///     >>> accounts = []
+///     >>> instruction = Instruction(program_id, arbitrary_instruction_data, accounts)
+///     >>> payer = Keypair()
+///     >>> message = Message([instruction], payer.pubkey())
+///     >>> blockhash = Hash.default()  # replace with a real blockhash
+///     >>> tx = Transaction([payer], message, blockhash);
+///
 pub struct Transaction(TransactionOriginal);
 
 #[pymethods]
@@ -56,6 +97,10 @@ impl Transaction {
     }
 
     #[getter]
+    /// list[Signature]: A set of signatures of a serialized :class:`~solders.message.Message`,
+    /// signed by the first keys of the message's :attr:`~solders.message.Message.account_keys`,
+    /// where the number of signatures is equal to ``num_required_signatures`` of the `Message`'s
+    /// :class:`~solders.message.MessageHeader`.
     pub fn signatures(&self) -> Vec<Signature> {
         self.0
             .signatures
@@ -66,16 +111,63 @@ impl Transaction {
     }
 
     #[getter]
+    /// Message: The message to sign.
     pub fn message(&self) -> Message {
         self.0.message.clone().into()
     }
 
     #[staticmethod]
+    /// Create an unsigned transaction from a :class:`~solders.message.Message`.
+    ///
+    /// Args:
+    ///     message (Message): The transaction's message.
+    ///
+    /// Returns:
+    ///     Transaction: The unsigned transaction.
+    ///
+    /// Example:
+    ///     >>> from solders.message import Message
+    ///     >>> from solders.keypair import Keypair
+    ///     >>> from solders.pubkey import Pubkey
+    ///     >>> from solders.instruction import Instruction, AccountMeta
+    ///     >>> from solders.hash import Hash
+    ///     >>> from solders.transaction import Transaction
+    ///     >>> program_id = Pubkey.default()
+    ///     >>> blockhash = Hash.default()  # replace with a real blockhash
+    ///     >>> arbitrary_instruction_data = bytes([1])
+    ///     >>> accounts: list[AccountMeta] = []
+    ///     >>> instruction = Instruction(program_id, arbitrary_instruction_data, accounts)
+    ///     >>> payer = Keypair()
+    ///     >>> message = Message.new_with_blockhash([instruction], payer.pubkey(), blockhash)
+    ///     >>> tx = Transaction.new_unsigned(message)
+    ///     >>> tx.sign([payer], tx.message.recent_blockhash)
+    ///
     pub fn new_unsigned(message: Message) -> Self {
         TransactionOriginal::new_unsigned(message.into()).into()
     }
 
     #[staticmethod]
+    /// Create an unsigned transaction from a list of :class:`~solders.instruction.Instruction`s.
+    ///
+    /// Args:
+    ///    instructions (Sequence[Instruction]): The instructions to include in the transaction message.
+    ///    payer (Optional[Pubkey], optional): The transaction fee payer. Defaults to None.
+    ///
+    /// Returns:
+    ///     Transaction: The unsigned transaction.
+    ///
+    /// Example:
+    ///     >>> from solders.keypair import Keypair
+    ///     >>> from solders.instruction import Instruction
+    ///     >>> from solders.transaction import Transaction
+    ///     >>> from solders.pubkey import Pubkey
+    ///     >>> program_id = Pubkey.default()
+    ///     >>> arbitrary_instruction_data = bytes([1])
+    ///     >>> accounts = []
+    ///     >>> instruction = Instruction(program_id, arbitrary_instruction_data, accounts)
+    ///     >>> payer = Keypair()
+    ///     >>> tx = Transaction.new_with_payer([instruction], payer)
+    ///
     pub fn new_with_payer(instructions: Vec<Instruction>, payer: Option<&Pubkey>) -> Self {
         TransactionOriginal::new_with_payer(
             &convert_instructions(instructions),
@@ -85,6 +177,31 @@ impl Transaction {
     }
 
     #[staticmethod]
+    /// Create a fully-signed transaction from a list of :class:`~solders.instruction.Instruction`s.
+    ///
+    /// Args:
+    ///    instructions (Sequence[Instruction]): The instructions to include in the transaction message.
+    ///    payer (Optional[Pubkey], optional): The transaction fee payer.
+    ///    signing_keypairs (Sequence[Keypair | Presigner]): The keypairs that will sign the transaction.
+    ///    recent_blockhash (Hash): The id of a recent ledger entry.
+    ///    
+    /// Returns:
+    ///     Transaction: The signed transaction.
+    ///
+    ///
+    /// Example:
+    ///     >>> from solders.keypair import Keypair
+    ///     >>> from solders.instruction import Instruction
+    ///     >>> from solders.transaction import Transaction
+    ///     >>> from solders.pubkey import Pubkey
+    ///     >>> program_id = Pubkey.default()
+    ///     >>> arbitrary_instruction_data = bytes([1])
+    ///     >>> accounts = []
+    ///     >>> instruction = Instruction(program_id, arbitrary_instruction_data, accounts)
+    ///     >>> payer = Keypair()
+    ///     >>> blockhash = Hash.default()  # replace with a real blockhash
+    ///     >>> tx = Transaction.new_signed_with_payer([instruction], payer.pubkey(), [payer], blockhash);
+    ///
     pub fn new_signed_with_payer(
         instructions: Vec<Instruction>,
         payer: Option<&Pubkey>,
@@ -101,6 +218,19 @@ impl Transaction {
     }
 
     #[staticmethod]
+    /// Create a fully-signed transaction from pre-compiled instructions.
+    ///
+    /// Args:
+    ///     from_keypairs (Sequence[Keypair | Presigner]): The keys used to sign the transaction.
+    ///     keys (Sequence[Pubkey]): The keys for the transaction.  These are the program state
+    ///         instances or lamport recipient keys.
+    ///     recent_blockhash (Hash): The PoH hash.
+    ///     program_ids (Sequence[Pubkey]): The keys that identify programs used in the `instruction` vector.
+    ///     instructions (Sequence[Instruction]): Instructions that will be executed atomically.
+    ///
+    /// Returns:
+    ///     Transaction: The signed transaction.
+    ///
     pub fn new_with_compiled_instructions(
         from_keypairs: Vec<Signer>,
         keys: Vec<Pubkey>,
