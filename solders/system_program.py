@@ -40,6 +40,23 @@ class CreateAccountParams(TypedDict):
 
 
 def create_account(params: CreateAccountParams) -> Instruction:
+    """Generate an instruction that creates a new account.
+        Args:
+            params: The create account params.
+        Example:
+            >>> from solders.pubkey import Pubkey
+            >>> from solders.system_program import create_account, CreateAccountParams
+            >>> from_account, new_account, program_id = Pubkey.new_unique(), Pubkey.new_unique(), Pubkey.new_unique()
+            >>> instruction = create_account(
+            ...     CreateAccountParams(
+            ...         from_pubkey=from_account, to_pubkey=new_account,
+            ...         lamports=1, space=1, owner=program_id)
+            ... )
+            >>> type(instruction)
+            <class 'solders.instruction.Instruction'>
+        Returns:
+            The instruction to create the account.
+    """
     return _create_account(dict(params))
 
 
