@@ -178,6 +178,8 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
     let message_mod = PyModule::new(py, "message")?;
     message_mod.add_class::<Message>()?;
     message_mod.add_class::<MessageHeader>()?;
+    let null_signer_mod = PyModule::new(py, "null_signer")?;
+    null_signer_mod.add_class::<NullSigner>()?;
     let transaction_mod = PyModule::new(py, "transaction")?;
     transaction_mod.add_class::<Transaction>()?;
     transaction_mod.add("SanitizeError", py.get_type::<SanitizeError>())?;
@@ -189,17 +191,18 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
     errors_mod.add("BincodeError", py.get_type::<BincodeError>())?;
     errors_mod.add("SignerError", py.get_type::<SignerError>())?;
     let submodules = [
+        errors_mod,
         hash_mod,
         instruction_mod,
-        pubkey_mod,
         keypair_mod,
-        signature_mod,
         message_mod,
+        null_signer_mod,
+        presigner_mod,
+        pubkey_mod,
+        signature_mod,
         transaction_mod,
         system_program_mod,
         sysvar_mod,
-        presigner_mod,
-        errors_mod,
     ];
     let modules: HashMap<String, &PyModule> = submodules
         .iter()
