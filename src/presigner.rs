@@ -7,6 +7,15 @@ use crate::{
 
 #[derive(Clone, Debug, Default, PartialEq)]
 #[pyclass(module = "solders", subclass)]
+/// A signer that represents a :class:`~solders.signature.Signature` that has been
+/// constructed externally. Performs a signature verification against the
+/// expected message upon ``sign()`` requests to affirm its relationship to
+/// the ``message`` bytes.
+///
+/// Args:
+///     pubkey (Pubkey): The pubkey of the signer.
+///     signature (Signature): The signature created by signing the message.
+///     
 pub struct Presigner(pub PresignerOriginal);
 
 #[pymethods]
@@ -17,6 +26,19 @@ impl Presigner {
     }
 
     #[pyo3(name = "pubkey")]
+    /// Get this signer's :class:`~solders.pubkey.Pubkey`.
+    ///
+    /// Returns:
+    ///     Pubkey: the pubkey of the presigner.
+    ///
+    /// Example:
+    ///     >>> from solders.keypair import Keypair
+    ///     >>> from solders.pubkey import Pubkey
+    ///     >>> seed_bytes = bytes([0] * 32)
+    ///     >>> pubkey_bytes = bytes([1] * 32)
+    ///     >>> kp = Keypair.from_bytes(seed_bytes + pubkey_bytes)
+    ///     >>> assert kp.pubkey() == Pubkey(pubkey_bytes)
+    ///
     pub fn py_pubkey(&self) -> Pubkey {
         self.pubkey().into()
     }

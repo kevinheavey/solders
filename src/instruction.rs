@@ -28,23 +28,21 @@ use crate::{handle_py_err, pubkey::Pubkey, RichcmpEqualityOnly};
 ///         signature matching ``pubkey``.
 ///     is_writable (bool): True if the account data or metadata may be mutated during program execution.
 ///
-/// Example::
-///
-///     from solders.pubkey import Pubkey
-///     from solders.instruction import AccountMeta, Instruction
-///     
-///     from_pubkey = Pubkey.new_unique()
-///     to_pubkey = Pubkey.new_unique()
-///     program_id = Pubkey.new_unique()
-///     instruction_data = bytes([1])
-///     instruction = Instruction(
-///         program_id,
-///         instruction_data,
-///         [
-///             AccountMeta(from_pubkey, is_signer=True, is_writable=True),
-///             AccountMeta(to_pubkey, is_signer=True, is_writable=True),
-///         ],
-///     )
+/// Example:
+///     >>> from solders.pubkey import Pubkey
+///     >>> from solders.instruction import AccountMeta, Instruction
+///     >>> from_pubkey = Pubkey.new_unique()
+///     >>> to_pubkey = Pubkey.new_unique()
+///     >>> program_id = Pubkey.new_unique()
+///     >>> instruction_data = bytes([1])
+///     >>> instruction = Instruction(
+///     >>>     program_id,
+///     >>>     instruction_data,
+///     >>>     [
+///     >>>         AccountMeta(from_pubkey, is_signer=True, is_writable=True),
+///     >>>         AccountMeta(to_pubkey, is_signer=True, is_writable=True),
+///     >>>     ],
+///     >>> )
 ///
 #[pyclass(module = "solders", subclass)]
 #[derive(PartialEq, Debug, Clone)]
@@ -234,25 +232,17 @@ impl Instruction {
     /// Returns:
     ///     Instruction: the deserialized ``Instruction``.
     ///
-    /// Example::
-    ///
-    ///     from solders.pubkey import Pubkey
-    ///     from solders.instruction import AccountMeta, Instruction
-    ///     
-    ///     from_pubkey = Pubkey.new_unique()
-    ///     to_pubkey = Pubkey.new_unique()
-    ///     program_id = Pubkey.new_unique()
-    ///     instruction_data = bytes([1])
-    ///     instruction = Instruction(
-    ///         program_id,
-    ///         instruction_data,
-    ///         [
-    ///             AccountMeta(from_pubkey, is_signer=True, is_writable=True),
-    ///             AccountMeta(to_pubkey, is_signer=True, is_writable=True),
-    ///         ],
-    ///     )
-    ///     serialized = bytes(instruction)
-    ///     assert Instruction.from_bytes(serialized) == instruction
+    /// Example:
+    ///     >>> from solders.pubkey import Pubkey
+    ///     >>> from solders.instruction import AccountMeta, Instruction
+    ///     >>> from_pubkey = Pubkey.new_unique()
+    ///     >>> to_pubkey = Pubkey.new_unique()
+    ///     >>> program_id = Pubkey.new_unique()
+    ///     >>> instruction_data = bytes([1])
+    ///     >>> accounts = [AccountMeta(from_pubkey, is_signer=True, is_writable=True), AccountMeta(to_pubkey, is_signer=True, is_writable=True),]
+    ///     >>> instruction = Instruction(program_id, instruction_data, accounts)
+    ///     >>> serialized = bytes(instruction)
+    ///     >>> assert Instruction.from_bytes(serialized) == instruction
     ///
     pub fn from_bytes(data: &[u8]) -> PyResult<Self> {
         let deser = bincode::deserialize::<Self>(data);

@@ -17,10 +17,10 @@ use crate::{
 ///
 /// Calling ``Keypair()`` creates a new, random ``Keypair``.
 ///
-/// Example::
-///     from solders.keypair import Keypair
+/// Example:
+///     >>> from solders.keypair import Keypair
 ///     
-///     assert Keypair() != Keypair()
+///     >>> assert Keypair() != Keypair()
 ///
 pub struct Keypair(pub KeypairOriginal);
 
@@ -43,10 +43,10 @@ impl Keypair {
     /// Returns:
     ///     Keypair: a keypair object.
     ///
-    /// Example::
-    ///     from solders.keypair import Keypair
-    ///     kp = Keypair()
-    ///     assert kp == Keypair.from_bytes(bytes(kp))
+    /// Example:
+    ///     >>> from solders.keypair import Keypair
+    ///     >>> kp = Keypair()
+    ///     >>> assert kp == Keypair.from_bytes(bytes(kp))
     ///
     #[staticmethod]
     pub fn from_bytes(raw_bytes: [u8; Self::LENGTH]) -> PyResult<Self> {
@@ -58,10 +58,10 @@ impl Keypair {
     /// Returns:
     ///     list[int]: the keypair as a list of 64 u8 ints.
     ///
-    /// Example::
-    ///      from solders.keypair import Keypair
-    ///      raw_bytes = bytes([1] * 64)
-    ///      assert Keypair.from_bytes(raw_bytes).to_bytes_array() == list(raw_bytes)
+    /// Example:
+    ///      >>> from solders.keypair import Keypair
+    ///      >>> raw_bytes = bytes([1] * 64)
+    ///      >>> assert Keypair.from_bytes(raw_bytes).to_bytes_array() == list(raw_bytes)
     ///
     pub fn to_bytes_array(&self) -> [u8; Self::LENGTH] {
         self.0.to_bytes()
@@ -80,14 +80,13 @@ impl Keypair {
     /// Returns:
     ///     Keypair: a keypair oject.
     ///
-    /// Example::
-    ///     from solders.keypair import Keypair
-    ///     
-    ///     raw_bytes = bytes([0] * 64)
-    ///     base58_str = "1" * 64
-    ///     kp = Keypair.from_base58_string(base58_str)
-    ///     assert kp == Keypair.from_bytes(raw_bytes)
-    ///     assert str(kp) == base58_str
+    /// Example:
+    ///     >>> from solders.keypair import Keypair
+    ///     >>> raw_bytes = bytes([0] * 64)
+    ///     >>> base58_str = "1" * 64
+    ///     >>> kp = Keypair.from_base58_string(base58_str)
+    ///     >>> assert kp == Keypair.from_bytes(raw_bytes)
+    ///     >>> assert str(kp) == base58_str
     ///     
     pub fn from_base58_string(s: &str) -> Self {
         KeypairOriginal::from_base58_string(s).into()
@@ -97,11 +96,10 @@ impl Keypair {
     /// Returns:
     ///     bytes: The secret key in 32 bytes.
     ///
-    /// Example::
-    ///     from solders.keypair import Keypair
-    ///     
-    ///     kp = Keypair.from_bytes(bytes([1] * 64))
-    ///     assert kp.secret() == bytes([1] * 32)
+    /// Example:
+    ///     >>> from solders.keypair import Keypair
+    ///     >>> kp = Keypair.from_bytes(bytes([1] * 64))
+    ///     >>> assert kp.secret() == bytes([1] * 32)
     ///
     pub fn secret(&self) -> &[u8] {
         self.0.secret().as_ref()
@@ -117,14 +115,13 @@ impl Keypair {
     /// Returns:
     ///     Pubkey: the pubkey of this keypair.
     ///
-    /// Example::
-    ///     from solders.keypair import Keypair
-    ///     from solders.pubkey import Pubkey
-    ///     
-    ///     seed_bytes = bytes([0] * 32)
-    ///     pubkey_bytes = bytes([1] * 32)
-    ///     kp = Keypair.from_bytes(seed_bytes + pubkey_bytes)
-    ///     assert kp.pubkey() == Pubkey(pubkey_bytes)
+    /// Example:
+    ///     >>> from solders.keypair import Keypair
+    ///     >>> from solders.pubkey import Pubkey
+    ///     >>> seed_bytes = bytes([0] * 32)
+    ///     >>> pubkey_bytes = bytes([1] * 32)
+    ///     >>> kp = Keypair.from_bytes(seed_bytes + pubkey_bytes)
+    ///     >>> assert kp.pubkey() == Pubkey(pubkey_bytes)
     ///
     pub fn py_pubkey(&self) -> Pubkey {
         self.pubkey().into()
@@ -160,15 +157,13 @@ impl Keypair {
     /// Returns:
     ///     Keypair: The generated keypair.
     ///
-    /// Example::
-    ///
-    ///     from solders.keypair import Keypair
-    ///     from solders.pubkey import Pubkey
-    ///     
-    ///     seed_bytes = bytes([0] * 32)
-    ///     from_seed = Keypair.from_seed(seed_bytes)
-    ///     from_bytes = Keypair.from_bytes(seed_bytes + bytes(from_seed.pubkey()))
-    ///     assert from_seed == from_bytes
+    /// Example:
+    ///     >>> from solders.keypair import Keypair
+    ///     >>> from solders.pubkey import Pubkey
+    ///     >>> seed_bytes = bytes([0] * 32)
+    ///     >>> from_seed = Keypair.from_seed(seed_bytes)
+    ///     >>> from_bytes = Keypair.from_bytes(seed_bytes + bytes(from_seed.pubkey()))
+    ///     >>> assert from_seed == from_bytes
     ///
     pub fn from_seed(seed: [u8; 32]) -> PyResult<Self> {
         handle_py_value_err(keypair_from_seed(&seed))
@@ -181,16 +176,15 @@ impl Keypair {
     ///     seed_phrase (string): Secret seed phrase.
     ///     passphrase (string): Passphrase.
     ///
-    /// Example::
-    ///     from pybip39 import Mnemonic, Seed
-    ///     from solders.keypair import Keypair
-    ///    
-    ///     mnemonic = Mnemonic()
-    ///     passphrase = "42"
-    ///     seed = Seed(mnemonic, passphrase)
-    ///     expected_keypair = Keypair.from_seed(bytes(seed)[:32])
-    ///     keypair = Keypair.from_seed_phrase_and_passphrase(mnemonic.phrase, passphrase)
-    ///     assert keypair.pubkey() == expected_keypair.pubkey()
+    /// Example:
+    ///     >>> from pybip39 import Mnemonic, Seed
+    ///     >>> from solders.keypair import Keypair
+    ///     >>> mnemonic = Mnemonic()
+    ///     >>> passphrase = "42"
+    ///     >>> seed = Seed(mnemonic, passphrase)
+    ///     >>> expected_keypair = Keypair.from_seed(bytes(seed)[:32])
+    ///     >>> keypair = Keypair.from_seed_phrase_and_passphrase(mnemonic.phrase, passphrase)
+    ///     >>> assert keypair.pubkey() == expected_keypair.pubkey()
     ///
     pub fn from_seed_phrase_and_passphrase(seed_phrase: &str, passphrase: &str) -> PyResult<Self> {
         handle_py_value_err(keypair_from_seed_phrase_and_passphrase(

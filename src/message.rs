@@ -131,22 +131,20 @@ impl From<MessageHeaderOriginal> for MessageHeader {
 ///     instructions (Sequence[Instruction]): The instructions to include in the message.
 ///     payer (Optional[Pubkey]): The fee payer. Defaults to ``None``.
 ///
-/// Example::
-///
-///     from solders.message import Message
-///     from solders.keypair import Keypair
-///     from solders.instruction import Instruction
-///     from solders.hash import Hash
-///     from solders.transaction import Transaction
-///     
-///     program_id = Pubkey.default()
-///     arbitrary_instruction_data = bytes([1])
-///     accounts = []
-///     instruction = Instruction(program_id, arbitrary_instruction_data, accounts)
-///     payer = Keypair()
-///     message = Message([instruction], payer.pubkey())
-///     blockhash = Hash.default()  # replace with a real blockhash
-///     tx = Transaction([payer], message, blockhash);
+/// Example:
+///     >>> from solders.message import Message
+///     >>> from solders.keypair import Keypair
+///     >>> from solders.instruction import Instruction
+///     >>> from solders.hash import Hash
+///     >>> from solders.transaction import Transaction
+///     >>> program_id = Pubkey.default()
+///     >>> arbitrary_instruction_data = bytes([1])
+///     >>> accounts = []
+///     >>> instruction = Instruction(program_id, arbitrary_instruction_data, accounts)
+///     >>> payer = Keypair()
+///     >>> message = Message([instruction], payer.pubkey())
+///     >>> blockhash = Hash.default()  # replace with a real blockhash
+///     >>> tx = Transaction([payer], message, blockhash);
 ///
 pub struct Message(MessageOriginal);
 
@@ -200,24 +198,22 @@ impl Message {
     ///     payer (Optional[Pubkey]): The fee payer. Defaults to ``None``.
     ///     blockhash (Hash): a recent blockhash.
     ///
-    /// Example::
-    ///
-    ///     from solders.message import Message
-    ///     from solders.keypair import Keypair
-    ///     from solders.pubkey import Pubkey
-    ///     from solders.instruction import Instruction, AccountMeta
-    ///     from solders.hash import Hash
-    ///     from solders.transaction import Transaction
-    ///     
-    ///     program_id = Pubkey.default()
-    ///     blockhash = Hash.default()  # replace with a real blockhash
-    ///     arbitrary_instruction_data = bytes([1])
-    ///     accounts: list[AccountMeta] = []
-    ///     instruction = Instruction(program_id, arbitrary_instruction_data, accounts)
-    ///     payer = Keypair()
-    ///     message = Message.new_with_blockhash([instruction], payer.pubkey(), blockhash)
-    ///     tx = Transaction.new_unsigned(message)
-    ///     tx.sign([payer], tx.message.recent_blockhash)
+    /// Example:
+    ///     >>> from solders.message import Message
+    ///     >>> from solders.keypair import Keypair
+    ///     >>> from solders.pubkey import Pubkey
+    ///     >>> from solders.instruction import Instruction, AccountMeta
+    ///     >>> from solders.hash import Hash
+    ///     >>> from solders.transaction import Transaction
+    ///     >>> program_id = Pubkey.default()
+    ///     >>> blockhash = Hash.default()  # replace with a real blockhash
+    ///     >>> arbitrary_instruction_data = bytes([1])
+    ///     >>> accounts: list[AccountMeta] = []
+    ///     >>> instruction = Instruction(program_id, arbitrary_instruction_data, accounts)
+    ///     >>> payer = Keypair()
+    ///     >>> message = Message.new_with_blockhash([instruction], payer.pubkey(), blockhash)
+    ///     >>> tx = Transaction.new_unsigned(message)
+    ///     >>> tx.sign([payer], tx.message.recent_blockhash)
     ///
     pub fn new_with_blockhash(
         instructions: Vec<Instruction>,
@@ -246,28 +242,23 @@ impl Message {
     /// transaction nonce*, allowing for extended time to pass between the
     /// transaction's signing and submission to the blockchain.
     ///
-    /// Example::
-    ///
-    ///     from solders.message import Message
-    ///     from solders.keypair import Keypair
-    ///     from solders.pubkey import Pubkey
-    ///     from solders.instruction import Instruction, AccountMeta
-    ///     from solders.hash import Hash
-    ///     from solders.transaction import Transaction
-    ///     
-    ///     program_id = Pubkey.default()
-    ///     blockhash = Hash.default()  # replace with a real blockhash
-    ///     arbitrary_instruction_data = bytes([1])
-    ///     accounts: list[AccountMeta] = []
-    ///     instruction = Instruction(program_id, arbitrary_instruction_data, accounts)
-    ///     payer = Keypair()
-    ///     nonce_account = Pubkey.default()  # replace with a real nonce account
-    ///     message = Message.new_with_nonce(
-    ///         [instruction], payer.pubkey(), nonce_account, payer.pubkey()
-    ///     )
-    ///     # This transaction will need to be signed later, using the blockhash
-    ///     # stored in the nonce account.
-    ///     tx = Transaction.new_unsigned(message)
+    /// Example:
+    ///     >>> from solders.message import Message
+    ///     >>> from solders.keypair import Keypair
+    ///     >>> from solders.pubkey import Pubkey
+    ///     >>> from solders.instruction import Instruction, AccountMeta
+    ///     >>> from solders.hash import Hash
+    ///     >>> from solders.transaction import Transaction
+    ///     >>> program_id = Pubkey.default()
+    ///     >>> blockhash = Hash.default()  # replace with a real blockhash
+    ///     >>> arbitrary_instruction_data = bytes([1])
+    ///     >>> accounts: list[AccountMeta] = []
+    ///     >>> instruction = Instruction(program_id, arbitrary_instruction_data, accounts)
+    ///     >>> payer = Keypair()
+    ///     >>> nonce_account = Pubkey.default()  # replace with a real nonce account
+    ///     >>> message = Message.new_with_nonce([instruction], payer.pubkey(), nonce_account, payer.pubkey())
+    ///     >>> # This transaction will need to be signed later, using the blockhash stored in the nonce account.
+    ///     >>> tx = Transaction.new_unsigned(message)
     ///     
     pub fn new_with_nonce(
         instructions: Vec<Instruction>,
@@ -464,27 +455,19 @@ impl Message {
     /// Returns:
     ///     Message: the deserialized ``Message``.
     ///
-    /// Example::
-    ///
-    ///     from solders.pubkey import Pubkey
-    ///     from solders.instruction import AccountMeta, Instruction
-    ///     from solders.message import Message
-    ///     
-    ///     from_pubkey = Pubkey.new_unique()
-    ///     to_pubkey = Pubkey.new_unique()
-    ///     program_id = Pubkey.new_unique()
-    ///     instruction_data = bytes([1])
-    ///     instruction = Instruction(
-    ///         program_id,
-    ///         instruction_data,
-    ///         [
-    ///             AccountMeta(from_pubkey, is_signer=True, is_writable=True),
-    ///             AccountMeta(to_pubkey, is_signer=True, is_writable=True),
-    ///         ],
-    ///     )
-    ///     message = Message([instruction])
-    ///     serialized = bytes(message)
-    ///     assert Message.from_bytes(serialized) == message
+    /// Example:
+    ///     >>> from solders.pubkey import Pubkey
+    ///     >>> from solders.instruction import AccountMeta, Instruction
+    ///     >>> from solders.message import Message
+    ///     >>> from_pubkey = Pubkey.new_unique()
+    ///     >>> to_pubkey = Pubkey.new_unique()
+    ///     >>> program_id = Pubkey.new_unique()
+    ///     >>> instruction_data = bytes([1])
+    ///     >>> accounts = [AccountMeta(from_pubkey, is_signer=True, is_writable=True), AccountMeta(to_pubkey, is_signer=True, is_writable=True)]
+    ///     >>> instruction = Instruction(program_id, instruction_data, accounts)
+    ///     >>> message = Message([instruction])
+    ///     >>> serialized = bytes(message)
+    ///     >>> assert Message.from_bytes(serialized) == message
     ///
     pub fn from_bytes(data: &[u8]) -> PyResult<Self> {
         handle_py_err(bincode::deserialize::<MessageOriginal>(data))
