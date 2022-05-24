@@ -257,6 +257,30 @@ impl Transaction {
     }
 
     #[staticmethod]
+    /// Create a fully-signed transaction from a message and its signatures.
+    ///
+    /// Args:
+    ///     message (Message): The transaction message.
+    ///     signatures (Sequence[Signature]): The message's signatures.
+    ///
+    /// Returns:
+    ///     Message: The signed transaction.
+    ///
+    /// Example:
+    ///
+    ///     >>> from solders.keypair import Keypair
+    ///     >>> from solders.instruction import Instruction
+    ///     >>> from solders.transaction import Transaction
+    ///     >>> from solders.pubkey import Pubkey
+    ///     >>> program_id = Pubkey.default()
+    ///     >>> arbitrary_instruction_data = bytes([1])
+    ///     >>> accounts = []
+    ///     >>> instruction = Instruction(program_id, arbitrary_instruction_data, accounts)
+    ///     >>> payer = Keypair()
+    ///     >>> blockhash = Hash.default()  # replace with a real blockhash
+    ///     >>> tx = Transaction.new_signed_with_payer([instruction], payer.pubkey(), [payer], blockhash);
+    ///     >>> assert tx == Transaction.populate(tx.message, tx.signatures)
+    ///
     pub fn populate(message: Message, signatures: Vec<Signature>) -> Self {
         (TransactionOriginal {
             message: message.into(),
@@ -268,26 +292,101 @@ impl Transaction {
         .into()
     }
 
+    /// Get the data for an instruction at the given index.
+    ///
+    /// Args:
+    ///     instruction_index (int): index into the ``instructions`` vector of the transaction's ``message``.
+    ///
+    /// Returns:
+    ///     bytes: The instruction data.
+    ///
     pub fn data(&self, instruction_index: usize) -> &[u8] {
         self.0.data(instruction_index)
     }
 
+    /// Get the :class:`~solders.pubkey.Pubkey` of an account required by one of the instructions in
+    /// the transaction.
+    ///
+    /// Returns ``None`` if `instruction_index` is greater than or equal to the
+    /// number of instructions in the transaction; or if `accounts_index` is
+    /// greater than or equal to the number of accounts in the instruction.
+    ///
+    /// Args:
+    ///     instruction_index (int): index into the ``instructions`` vector of the transaction's ``message``.
+    ///     account_index (int): index into the ``acounts`` list of the message's ``compiled_instructions``.
+    ///
+    /// Returns:
+    ///     Optional[Pubkey]: The account key.
+    ///
     pub fn key(&self, instruction_index: usize, accounts_index: usize) -> Option<Pubkey> {
         self.0
             .key(instruction_index, accounts_index)
             .map(Pubkey::from)
     }
 
+    /// Get the :class:`~solders.pubkey.Pubkey` of a signing account required by one of the
+    /// instructions in the transaction.
+    ///
+    /// The transaction does not need to be signed for this function to return a
+    /// signing account's pubkey.
+    ///
+    /// Returns ``None`` if the indexed account is not required to sign the
+    /// transaction. Returns ``None`` if the [`signatures`] field does not contain
+    /// enough elements to hold a signature for the indexed account (this should
+    /// only be possible if `Transaction` has been manually constructed).
+    ///
+    /// Returns `None` if `instruction_index` is greater than or equal to the
+    /// number of instructions in the transaction; or if `accounts_index` is
+    /// greater than or equal to the number of accounts in the instruction.
+    ///
+    /// Args:
+    ///     instruction_index (int): index into the ``instructions`` vector of the transaction's ``message``.
+    ///     account_index (int): index into the ``acounts`` list of the message's ``compiled_instructions``.
+    ///
+    /// Returns:
+    ///     Optional[Pubkey]: The account key.
+    ///
     pub fn signer_key(&self, instruction_index: usize, accounts_index: usize) -> Option<Pubkey> {
         self.0
             .signer_key(instruction_index, accounts_index)
             .map(Pubkey::from)
     }
 
+    /// Return the serialized message data to sign.
+    ///
+    /// Returns:
+    ///     bytes: The serialized message data.
+    ///
     pub fn message_data<'a>(&self, py: Python<'a>) -> &'a PyBytes {
         PyBytes::new(py, &self.0.message_data())
     }
 
+    /// Sign the transaction, returning any errors.
+    ///
+    /// This method fully signs a transaction with all required signers, which
+    /// must be present in the ``keypairs`` list. To sign with only some of the
+    /// required signers, use :meth:`Transaction.partial_sign`.
+    ///
+    /// If ``recent_blockhash`` is different than recorded in the transaction message's
+    /// ``recent_blockhash``] field, then the message's ``recent_blockhash`` will be updated
+    /// to the provided ``recent_blockhash``, and any prior signatures will be cleared.
+    ///
+    ///
+    /// **Errors:**
+    ///
+    /// Signing will fail if some required signers are not provided in
+    /// ``keypairs``; or, if the transaction has previously been partially signed,
+    /// some of the remaining required signers are not provided in ``keypairs``.
+    /// In other words, the transaction must be fully signed as a result of
+    /// calling this function.
+    ///
+    /// Signing will fail for any of the reasons described in the documentation
+    /// for :meth:`Transaction.partial_sign`.
+    ///
+    /// Args:
+    ///     keypairs (Sequence[Keypair | Presigner]): The signers for the transaction.
+    ///     recent_blockhash (Hash): The id of a recent ledger entry.
+    ///
     pub fn sign(&mut self, keypairs: Vec<Signer>, recent_blockhash: SolderHash) -> PyResult<()> {
         handle_py_err(
             self.0
@@ -295,6 +394,36 @@ impl Transaction {
         )
     }
 
+    /// Sign the transaction with a subset of required keys, returning any errors.
+    ///
+    /// Unlike :meth:`Transaction.sign`, this method does not require all
+    /// keypairs to be provided, allowing a transaction to be signed in multiple
+    /// steps.
+    ///
+    /// It is permitted to sign a transaction with the same keypair multiple
+    /// times.
+    ///
+    /// If ``recent_blockhash`` is different than recorded in the transaction message's
+    /// ``recent_blockhash`` field, then the message's ``recent_blockhash`` will be updated
+    /// to the provided ``recent_blockhash``, and any prior signatures will be cleared.
+    ///
+    /// **Errors:**
+    ///
+    /// Signing will fail if
+    ///
+    /// - The transaction's :class:`~solders.message.Message` is malformed such that the number of
+    ///   required signatures recorded in its header
+    ///   (``num_required_signatures``) is greater than the length of its
+    ///   account keys (``account_keys``).
+    /// - Any of the provided signers in ``keypairs`` is not a required signer of
+    ///   the message.
+    /// - Any of the signers is a :class:`~solders.presigner.Presigner`, and its provided signature is
+    ///   incorrect.
+    ///
+    /// Args:
+    ///     keypairs (Sequence[Keypair | Presigner]): The signers for the transaction.
+    ///     recent_blockhash (Hash): The id of a recent ledger entry.
+    ///     
     pub fn partial_sign(
         &mut self,
         keypairs: Vec<Signer>,
@@ -306,18 +435,42 @@ impl Transaction {
         )
     }
 
+    /// Verifies that all signers have signed the message.
+    ///
+    /// Raises:
+    ///     TransactionError: if the check fails.
     pub fn verify(&self) -> PyResult<()> {
         handle_py_err(self.0.verify())
     }
 
+    /// Verify the transaction and hash its message.
+    ///
+    /// Returns:
+    ///     Hash: The blake3 hash of the message.
+    ///
+    /// Raises:
+    ///     TransactionError: if the check fails.
     pub fn verify_and_hash_message(&self) -> PyResult<SolderHash> {
         handle_py_err(self.0.verify_and_hash_message())
     }
 
+    /// Verifies that all signers have signed the message.
+    ///
+    /// Returns:
+    ///     list[bool]: a list with the length of required signatures, where each element is either ``True`` if that signer has signed, or ``False`` if not.
+    ///
     pub fn verify_with_results(&self) -> Vec<bool> {
         self.0.verify_with_results()
     }
 
+    /// Get the positions of the pubkeys in account_keys associated with signing keypairs.
+    ///
+    /// Args:
+    ///     pubkeys (Sequence[Pubkey]): The pubkeys to find.
+    ///     
+    ///     Returns:
+    ///         list[Optional[int]]: The pubkey positions.
+    ///
     pub fn get_signing_keypair_positions(
         &self,
         pubkeys: Vec<Pubkey>,
@@ -327,6 +480,11 @@ impl Transaction {
         handle_py_err(self.0.get_signing_keypair_positions(&converted_pubkeys))
     }
 
+    /// Replace all the signatures and pubkeys.
+    ///
+    /// Args:
+    ///     signers (Sequence[Tuple[Pubkey, Signature]]): The replacement pubkeys and signatures.
+    ///
     pub fn replace_signatures(&mut self, signers: Vec<(Pubkey, Signature)>) -> PyResult<()> {
         let converted_signers: Vec<(PubkeyOriginal, SignatureOriginal)> = signers
             .into_iter()
@@ -340,14 +498,21 @@ impl Transaction {
         handle_py_err(self.0.replace_signatures(&converted_signers))
     }
 
+    /// Check if the transaction has been signed.
+    ///
+    /// Returns:
+    ///     bool: True if the transaction has been signed.
+    ///
     pub fn is_signed(&self) -> bool {
         self.0.is_signed()
     }
 
+    /// See https://docs.rs/solana-sdk/latest/solana_sdk/transaction/fn.uses_durable_nonce.html
     pub fn uses_durable_nonce(&self) -> Option<CompiledInstruction> {
         uses_durable_nonce(&self.0).map(|x| CompiledInstruction::from(x.clone()))
     }
 
+    /// Sanity checks the Transaction properties.
     pub fn sanitize(&self) -> PyResult<()> {
         handle_py_err(self.0.sanitize())
     }
@@ -359,11 +524,28 @@ impl Transaction {
 
     #[staticmethod]
     #[pyo3(name = "default")]
+    /// Return a new default transaction.
+    ///
+    /// Returns:
+    ///     Transaction: The default transaction.
     pub fn new_default() -> Self {
         Self::default()
     }
 
     #[staticmethod]
+    /// Deserialize a serialized ``Transaction`` object.
+    ///
+    /// Args:
+    ///     data (bytes): the serialized ``Transaction``.
+    ///
+    /// Returns:
+    ///     Transaction: the deserialized ``Transaction``.
+    ///
+    /// Example:
+    ///     >>> from solders.transaction import Transaction
+    ///     >>> tx = Transaction.default()
+    ///     >>> assert Transaction.from_bytes(bytes(tx)) == tx
+    ///
     pub fn from_bytes(data: &[u8]) -> PyResult<Self> {
         handle_py_err(bincode::deserialize::<TransactionOriginal>(data))
     }
