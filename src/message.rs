@@ -198,6 +198,9 @@ impl Message {
     ///     payer (Optional[Pubkey]): The fee payer. Defaults to ``None``.
     ///     blockhash (Hash): a recent blockhash.
     ///
+    /// Returns:
+    ///     Message: The message object.
+    ///
     /// Example:
     ///     >>> from solders.message import Message
     ///     >>> from solders.keypair import Keypair
@@ -277,6 +280,24 @@ impl Message {
     }
 
     #[staticmethod]
+    /// Create a new message by specifying all the fields required for the message, including the :class:`MessageHeader` fields.
+    ///
+    /// Args:
+    ///     num_required_signatures (int): The number of signatures required for this message
+    ///         to be considered valid. The signers of those signatures must match the
+    ///         first ``num_required_signatures`` of :attr:`Message.account_keys`.
+    ///     num_readonly_signed_accounts (int): The last ``num_readonly_signed_accounts`` of
+    ///         the signed keys are read-only accounts.
+    ///     num_readonly_unsigned_accounts (int): The last ``num_readonly_unsigned_accounts``
+    ///         of the unsigned keys are read-only accounts.
+    ///     account_keys (list[Pubkey]): All the account keys used by this transaction.
+    ///     recent_blockhash (Hash): The id of a recent ledger entry.
+    ///     instructions (list[CompiledInstruction]): Programs that will be executed in sequence
+    ///         and committed in one atomic transaction if all succeed.
+    ///
+    /// Returns:
+    ///     Message: The message object.
+    ///
     pub fn new_with_compiled_instructions(
         num_required_signatures: u8,
         num_readonly_signed_accounts: u8,
@@ -403,22 +424,27 @@ impl Message {
         self.0.is_non_loader_key(key_index)
     }
 
+    /// See https://docs.rs/solana-sdk/latest/solana_sdk/message/legacy/struct.Message.html#method.program_position
     pub fn program_position(&self, index: usize) -> Option<usize> {
         self.0.program_position(index)
     }
 
+    /// https://docs.rs/solana-sdk/latest/solana_sdk/message/legacy/struct.Message.html#method.maybe_executable
     pub fn maybe_executable(&self, i: usize) -> bool {
         self.0.maybe_executable(i)
     }
 
+    /// See https://docs.rs/solana-sdk/latest/solana_sdk/message/legacy/struct.Message.html#method.is_writable
     pub fn is_writable(&self, i: usize) -> bool {
         self.0.is_writable(i)
     }
 
+    /// See https://docs.rs/solana-sdk/latest/solana_sdk/message/legacy/struct.Message.html#method.is_signer
     pub fn is_signer(&self, i: usize) -> bool {
         self.0.is_signer(i)
     }
 
+    /// See https://docs.rs/solana-sdk/latest/solana_sdk/message/legacy/struct.Message.html#method.signer_keys
     pub fn signer_keys(&self) -> Vec<Pubkey> {
         self.0.signer_keys().into_iter().map(Pubkey::from).collect()
     }
@@ -432,6 +458,7 @@ impl Message {
         self.0.has_duplicates()
     }
 
+    /// See https://docs.rs/solana-sdk/latest/solana_sdk/message/legacy/struct.Message.html#method.is_upgradeable_loader_present
     pub fn is_upgradeable_loader_present(&self) -> bool {
         self.0.is_upgradeable_loader_present()
     }
