@@ -199,10 +199,6 @@ impl Pubkey {
         self.0.is_on_curve()
     }
 
-    pub fn to_bytes(&self) -> &[u8] {
-        self.as_ref()
-    }
-
     fn __str__(&self) -> String {
         self.to_string()
     }
@@ -212,7 +208,7 @@ impl Pubkey {
     }
 
     pub fn __bytes__(&self) -> &[u8] {
-        self.to_bytes()
+        self.as_ref()
     }
 
     fn __richcmp__(&self, other: &Self, op: CompareOp) -> bool {

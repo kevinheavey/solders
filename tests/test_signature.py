@@ -12,7 +12,11 @@ def signature() -> Signature:
 
 @fixture(scope="module")
 def signature_base58_str(signature: Signature) -> str:
-    return b58encode(bytes(signature)).decode()
+    return str(signature)
+
+
+def test_to_str(signature_base58_str: str, signature: Signature):
+    assert signature_base58_str == b58encode(bytes(signature)).decode()
 
 
 def test_from_string(signature: Signature, signature_base58_str: str):
@@ -38,13 +42,24 @@ def test_from_string_non_base58(signature_base58_str: str):
         Signature.from_string(bad_str)
     assert excinfo.value.args[0] == "failed to decode string to signature"
 
+def test_verify_valid():
+    kp = Keypair()
+    message = b"macaroni"
+    sig = kp.sign_message(message)
+    assert sig.verify(kp.pubkey(), message)
+
+def test_verify_invalid():
+    kp = Keypair()
+    message = b"macaroni"
+    sig = kp.sign_message(message)
+    assert not Signature.default().verify(kp.pubkey(), message)
 
 def test_off_curve_pubkey_verify_fails():
     # Golden point off the ed25519 curve
     off_curve_bytes = b58decode(b"9z5nJyQar1FUxVJxpBXzon6kHehbomeYiDaLi9WAMhCq")
     pubkey = Pubkey(off_curve_bytes)
     signature = Signature.default()
-    assert not signature.verify(bytes(pubkey), bytes([0]))
+    assert not signature.verify(pubkey, bytes([0]))
 
 
 def test_to_bytes_array(signature: Signature):
