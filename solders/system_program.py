@@ -229,7 +229,7 @@ def transfer(params: TransferParams) -> Instruction:
 
     Example:
         >>> from solders.pubkey import Pubkey
-        >>> from solders.system_program import Transfer, TransferParams
+        >>> from solders.system_program import transfer, TransferParams
         >>> sender, receiver = Pubkey.default(), Pubkey.default()
         >>> instruction = transfer(
         ...     TransferParams(from_pubkey=sender, to_pubkey=receiver, lamports=1000)
@@ -308,18 +308,20 @@ def allocate(params: AllocateParams) -> Instruction:
 
     Args:
         params (AllocateParams): The allocate params.
+
+    Returns:
+        Instruction: The allocate instruction.
+
     Example:
         >>> from solders.pubkey import Pubkey
         >>> from solders.system_program import allocate, AllocateParams
         >>> allocator = Pubkey.default()
         >>> instruction = allocate(
-        ...     AllocateParams(account_pubkey=allocator, space=65537)
+        ...     AllocateParams(pubkey=allocator, space=65537)
         ... )
         >>> type(instruction)
         <class 'solders.instruction.Instruction'>
-    
-    Returns:
-        Instruction: The allocate instruction.
+
     """
     return _allocate(dict(params))
 

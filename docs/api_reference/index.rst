@@ -19,3 +19,4 @@ Modules:
    signature
    system_program
    sysvar
+   transaction

@@ -35,12 +35,12 @@ impl From<SanitizeErrorOriginal> for PyErrWrapper {
     }
 }
 
-#[pyclass(module = "solders.transaction", subclass)]
+#[pyclass(module = "solders.transactionav", subclass)]
 #[derive(Debug, PartialEq, Default, Eq, Clone, Serialize, Deserialize)]
 /// An atomically-commited sequence of instructions.
 ///
-/// While :class:`~solders.instruction.Instruction`s are the basic unit of computation in Solana,
-/// they are submitted by clients in :class:`~solders.transaction.Transaction`s containing one or
+/// While :class:`~solders.instruction.Instruction`\s are the basic unit of computation in Solana,
+/// they are submitted by clients in :class:`~solders.transaction.Transaction`\s containing one or
 /// more instructions, and signed by one or more signers.
 ///
 ///
@@ -147,7 +147,7 @@ impl Transaction {
     }
 
     #[staticmethod]
-    /// Create an unsigned transaction from a list of :class:`~solders.instruction.Instruction`s.
+    /// Create an unsigned transaction from a list of :class:`~solders.instruction.Instruction`\s.
     ///
     /// Args:
     ///    instructions (Sequence[Instruction]): The instructions to include in the transaction message.
@@ -166,7 +166,7 @@ impl Transaction {
     ///     >>> accounts = []
     ///     >>> instruction = Instruction(program_id, arbitrary_instruction_data, accounts)
     ///     >>> payer = Keypair()
-    ///     >>> tx = Transaction.new_with_payer([instruction], payer)
+    ///     >>> tx = Transaction.new_with_payer([instruction], payer.pubkey())
     ///
     pub fn new_with_payer(instructions: Vec<Instruction>, payer: Option<&Pubkey>) -> Self {
         TransactionOriginal::new_with_payer(
@@ -177,7 +177,7 @@ impl Transaction {
     }
 
     #[staticmethod]
-    /// Create a fully-signed transaction from a list of :class:`~solders.instruction.Instruction`s.
+    /// Create a fully-signed transaction from a list of :class:`~solders.instruction.Instruction`\s.
     ///
     /// Args:
     ///    instructions (Sequence[Instruction]): The instructions to include in the transaction message.
