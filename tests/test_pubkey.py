@@ -53,7 +53,7 @@ def test_equality():
 
 def test_create_with_seed():
     """Test create with seed"""
-    default_public_key = Pubkey.from_string("11111111111111111111111111111111")
+    default_public_key = Pubkey.default()
     derived_key = Pubkey.create_with_seed(
         default_public_key, "limber chicken: 4/45", default_public_key
     )
