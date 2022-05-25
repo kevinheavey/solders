@@ -351,6 +351,7 @@ def test_create_nonce_account2():
     # XXX:  Cli message serialization do not sort on account metas producing discrepency
     # assert create_account_txn == cli_expected_txn
 
+
 def test_create_nonce_account_with_seed():
     from_pubkey = Keypair().pubkey()
     nonce_pubkey = Pubkey(bytes([3]).rjust(Pubkey.LENGTH, b"\0"))
@@ -367,8 +368,12 @@ def test_create_nonce_account_with_seed():
         owner=sp.ID,
     )
     authority = Pubkey.new_unique()
-    initialize_nonce_account_params = sp.InitializeNonceAccountParams(authority=authority, nonce_pubkey=nonce_pubkey)
-    ixs = sp.create_nonce_account_with_seed(from_pubkey, nonce_pubkey, base, seed, authority, lamports)
+    initialize_nonce_account_params = sp.InitializeNonceAccountParams(
+        authority=authority, nonce_pubkey=nonce_pubkey
+    )
+    ixs = sp.create_nonce_account_with_seed(
+        from_pubkey, nonce_pubkey, base, seed, authority, lamports
+    )
     assert sp.decode_create_account_with_seed(ixs[0]) == create_account_with_seed_params
     assert sp.decode_initialize_nonce_account(ixs[1]) == initialize_nonce_account_params
 

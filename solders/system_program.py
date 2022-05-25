@@ -30,7 +30,6 @@ from solders._system_program import (
     ID as _ID,
 )
 
-
 ID: Final[Pubkey] = _ID
 """Pubkey that identifies the System program."""
 
@@ -494,3 +493,44 @@ def decode_withdraw_nonce_account(
         WithdrawNonceAccountParams: The params used to create the instruction.
     """
     return cast(WithdrawNonceAccountParams, _decode_withdraw_nonce_account(instruction))
+
+
+__all__ = [
+    "ID",
+    "transfer_many",
+    "create_nonce_account",
+    "create_nonce_account_with_seed",
+    "CreateAccountParams",
+    "create_account",
+    "decode_create_account",
+    "CreateAccountWithSeedParams",
+    "create_account_with_seed",
+    "decode_create_account_with_seed",
+    "AssignParams",
+    "assign",
+    "decode_assign",
+    "AssignWithSeedParams",
+    "assign_with_seed",
+    "decode_assign_with_seed",
+    "TransferParams",
+    "transfer",
+    "decode_transfer",
+    "TransferWithSeedParams",
+    "transfer_with_seed",
+    "decode_transfer_with_seed",
+    "AllocateParams",
+    "allocate",
+    "decode_allocate",
+    "AllocateWithSeedParams",
+    "allocate_with_seed",
+    "decode_allocate_with_seed",
+    "InitializeNonceAccountParams",
+    "initialize_nonce_account",
+    "decode_initialize_nonce_account",
+    "AdvanceNonceAccountParams",
+    "advance_nonce_account",
+    "decode_advance_nonce_account",
+    "WithdrawNonceAccountParams",
+    "withdraw_nonce_account",
+    "decode_withdraw_nonce_account",
+]
