@@ -1,3 +1,6 @@
+test:
+	pytest tests/ && make doctest
+
 lint:
 	flake8 && mypy .
 
