@@ -128,8 +128,8 @@ impl From<AccountMeta> for AccountMetaOriginal {
 /// Any account whose lamport balance may be mutated by the program during
 /// execution must be specified as writable. During execution, mutating the
 /// lamports of an account that was not specified as writable will cause the
-/// transaction to fail. While _subtracting_ lamports from an account not owned
-/// by the program will cause the transaction to fail, _adding_ lamports to any
+/// transaction to fail. While *subtracting* lamports from an account not owned
+/// by the program will cause the transaction to fail, *adding* lamports to any
 /// account is allowed, as long is it is mutable.
 ///
 /// Accounts that are not read or written by the program may still be specified

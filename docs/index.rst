@@ -3,7 +3,7 @@ Solders
 
 ``solders`` is a Python binding to the
 `Solana Rust SDK <https://docs.rs/solana-sdk/latest/solana_sdk/>`_.
-It provides robust, high-performance solutions to core Solana tasks such as Transaction signing and serialization, and saves us from reimplementing Solana logic in pure Python.
+It provides robust, high-performance solutions to core Solana tasks such as transaction signing and serialization, and saves us from reimplementing Solana logic in pure Python.
 
 Installation
 ^^^^^^^^^^^^

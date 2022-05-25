@@ -29,7 +29,7 @@ impl Presigner {
     /// Get this signer's :class:`~solders.pubkey.Pubkey`.
     ///
     /// Returns:
-    ///     Pubkey: the pubkey of the presigner.
+    ///     Pubkey: The pubkey of the presigner.
     ///
     /// Example:
     ///     >>> from solders.keypair import Keypair

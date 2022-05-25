@@ -195,6 +195,11 @@ impl Pubkey {
         (pubkey.into(), nonce)
     }
 
+    /// Check that the pubkey is on the ed25519 curve.
+    ///
+    /// Returns:
+    ///     bool: `True` if the pubkey is on the curve.
+    ///
     pub fn is_on_curve(&self) -> bool {
         self.0.is_on_curve()
     }

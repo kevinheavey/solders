@@ -121,7 +121,7 @@ impl From<MessageHeaderOriginal> for MessageHeader {
 /// Some constructors accept an optional `payer`, the account responsible for
 /// paying the cost of executing a transaction. In most cases, callers should
 /// specify the payer explicitly in these constructors. In some cases though,
-/// the caller is not _required_ to specify the payer, but is still allowed to:
+/// the caller is not *required* to specify the payer, but is still allowed to:
 /// in the ``Message`` object, the first account is always the fee-payer, so if
 /// the caller has knowledge that the first account of the constructed
 /// transaction's ``Message`` is both a signer and the expected fee-payer, then
@@ -194,6 +194,7 @@ impl Message {
 
     #[staticmethod]
     /// Create a new message while setting the blockhash.
+    ///
     /// Args:
     ///     instructions (Sequence[Instruction]): The instructions to include in the message.
     ///     payer (Optional[Pubkey]): The fee payer. Defaults to ``None``.
@@ -327,7 +328,7 @@ impl Message {
     /// Compute the blake3 hash of this transaction's message.
     ///
     /// Returns:
-    ///     Hash: the blake3 hash.
+    ///     Hash: The blake3 hash.
     pub fn hash(&self) -> SolderHash {
         self.0.hash().into()
     }
@@ -336,15 +337,15 @@ impl Message {
     /// Compute the blake3 hash of a raw transaction message.
     ///
     /// Returns:
-    ///     Hash: the blake3 hash.
+    ///     Hash: The blake3 hash.
     pub fn hash_raw_message(message_bytes: &[u8]) -> SolderHash {
         MessageOriginal::hash_raw_message(message_bytes).into()
     }
 
-    /// Convert an :class:`~solders.Instruction` into a :class:~solders.CompiledInstruction using ``self.account_keys``.
+    /// Convert an :class:`~solders.Instruction` into a :class:`~solders.instruction.CompiledInstruction` using ``self.account_keys``.
     ///
     /// Returns:
-    ///     CompiledInstruction: the compiled instruction.
+    ///     CompiledInstruction: The compiled instruction.
     pub fn compile_instruction(&self, ix: &Instruction) -> CompiledInstruction {
         self.0.compile_instruction(ix.as_ref()).into()
     }
@@ -430,7 +431,7 @@ impl Message {
         self.0.program_position(index)
     }
 
-    /// https://docs.rs/solana-sdk/latest/solana_sdk/message/legacy/struct.Message.html#method.maybe_executable
+    /// See https://docs.rs/solana-sdk/latest/solana_sdk/message/legacy/struct.Message.html#method.maybe_executable
     pub fn maybe_executable(&self, i: usize) -> bool {
         self.0.maybe_executable(i)
     }
@@ -478,10 +479,10 @@ impl Message {
     /// Deserialize a serialized ``Message`` object.
     ///
     /// Args:
-    ///     data (bytes): the serialized ``Message``.
+    ///     data (bytes): The serialized ``Message``.
     ///
     /// Returns:
-    ///     Message: the deserialized ``Message``.
+    ///     Message: The deserialized ``Message``.
     ///
     /// Example:
     ///     >>> from solders.pubkey import Pubkey

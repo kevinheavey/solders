@@ -32,7 +32,7 @@ impl NullSigner {
     }
 
     #[pyo3(name = "sign_message")]
-    /// Simply returns :meth:`~solders.Signature.default()`.
+    /// Simply returns :meth:`solders.signature.Signature.default()`.
     ///
     /// Returns:
     ///     Signature: The default signature.

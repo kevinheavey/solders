@@ -19,7 +19,6 @@ use crate::{
 ///
 /// Example:
 ///     >>> from solders.keypair import Keypair
-///     
 ///     >>> assert Keypair() != Keypair()
 ///
 pub struct Keypair(pub KeypairOriginal);
@@ -98,8 +97,8 @@ impl Keypair {
     ///
     /// Example:
     ///     >>> from solders.keypair import Keypair
-    ///     >>> kp = Keypair.from_bytes(bytes([1] * 64))
-    ///     >>> assert kp.secret() == bytes([1] * 32)
+    ///     >>> kp = Keypair()
+    ///     >>> assert kp.secret() == bytes(kp)[:32]
     ///
     pub fn secret(&self) -> &[u8] {
         self.0.secret().as_ref()
@@ -150,10 +149,10 @@ impl Keypair {
     }
 
     #[staticmethod]
-    /// Generate a keypair from a 32 byte seed.
+    /// Generate a keypair from a 32-byte seed.
     ///
     /// Args:
-    ///     seed: 32-byte seed.
+    ///     seed (bytes): 32-byte seed.
     /// Returns:
     ///     Keypair: The generated keypair.
     ///
@@ -205,7 +204,7 @@ impl Keypair {
     /// Whether the impelmentation requires user interaction to sign.
     ///
     /// Returns:
-    ///     bool: Always False for this class.
+    ///     bool: Always ``False`` for this class.
     ///
     pub fn py_is_interactive(&self) -> bool {
         self.is_interactive()
