@@ -3,7 +3,7 @@ use pyo3::prelude::*;
 use solana_sdk::sysvar as sysvar_original;
 
 pub fn create_sysvar_mod(py: Python<'_>) -> PyResult<&PyModule> {
-    let sysvar_mod = PyModule::new(py, "sysvar")?;
+    let sysvar_mod = PyModule::new(py, "_sysvar")?;
     let sysvars = vec![
         ("CLOCK", sysvar_original::clock::ID),
         (
