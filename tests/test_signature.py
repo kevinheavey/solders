@@ -42,17 +42,19 @@ def test_from_string_non_base58(signature_base58_str: str):
         Signature.from_string(bad_str)
     assert excinfo.value.args[0] == "failed to decode string to signature"
 
+
 def test_verify_valid():
     kp = Keypair()
     message = b"macaroni"
     sig = kp.sign_message(message)
     assert sig.verify(kp.pubkey(), message)
 
+
 def test_verify_invalid():
     kp = Keypair()
     message = b"macaroni"
-    sig = kp.sign_message(message)
     assert not Signature.default().verify(kp.pubkey(), message)
+
 
 def test_off_curve_pubkey_verify_fails():
     # Golden point off the ed25519 curve

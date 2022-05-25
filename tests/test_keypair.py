@@ -4,7 +4,6 @@ from pytest import raises, mark
 
 from pybip39 import Mnemonic, Seed
 from solders.keypair import Keypair
-from solders.pubkey import Pubkey
 
 
 def test_from_bytes():
@@ -48,9 +47,10 @@ def test_sign_message():
 def test_from_bytes_wrong_size(test_input: bytes):
     with raises(ValueError) as excinfo:
         Keypair.from_bytes(test_input)
+    test_input_len = len(test_input)
     assert (
         excinfo.value.args[0]
-        == f"expected a sequence of length 64 (got {len(test_input)})"
+        == f"expected a sequence of length 64 (got {test_input_len})"
     )
 
 
@@ -99,7 +99,7 @@ def test_from_seed() -> None:
 
 def test_from_seed_phrase_and_passphrase() -> None:
     mnemonic = Mnemonic()
-    passphrase = "42"
+    passphrase = "42"  # noqa: S105
     seed = Seed(mnemonic, passphrase)
     expected_keypair = Keypair.from_seed(bytes(seed)[:32])
     keypair = Keypair.from_seed_phrase_and_passphrase(mnemonic.phrase, passphrase)

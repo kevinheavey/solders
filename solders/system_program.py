@@ -18,9 +18,9 @@ from solders._system_program import (
     decode_allocate as _decode_allocate,
     allocate_with_seed as _allocate_with_seed,
     decode_allocate_with_seed as _decode_allocate_with_seed,
-    transfer_many as transfer_many,
-    create_nonce_account as create_nonce_account,
-    create_nonce_account_with_seed as create_nonce_account_with_seed,
+    transfer_many,
+    create_nonce_account,
+    create_nonce_account_with_seed,
     initialize_nonce_account as _initialize_nonce_account,
     decode_initialize_nonce_account as _decode_initialize_nonce_account,
     advance_nonce_account as _advance_nonce_account,
@@ -32,7 +32,7 @@ from solders._system_program import (
 
 
 ID: Final[Pubkey] = _ID
-"""Public key that identifies the System program."""
+"""Pubkey that identifies the System program."""
 
 
 class CreateAccountParams(TypedDict):
@@ -41,13 +41,13 @@ class CreateAccountParams(TypedDict):
     from_pubkey: Pubkey
     """The account that will transfer lamports to the created account."""
     to_pubkey: Pubkey
-    """Public key of the created account."""
+    """Pubkey of the created account."""
     lamports: int
     """Amount of lamports to transfer to the created account."""
     space: int
     """Amount of space in bytes to allocate to the created account."""
     owner: Pubkey
-    """Public key of the program to assign as the owner of the created account."""
+    """Pubkey of the program to assign as the owner of the created account."""
 
 
 def create_account(params: CreateAccountParams) -> Instruction:
@@ -59,7 +59,9 @@ def create_account(params: CreateAccountParams) -> Instruction:
     Example:
         >>> from solders.pubkey import Pubkey
         >>> from solders.system_program import create_account, CreateAccountParams
-        >>> from_account, new_account, program_id = Pubkey.new_unique(), Pubkey.new_unique(), Pubkey.new_unique()
+        >>> from_account = Pubkey.new_unique()
+        >>> new_account = Pubkey.new_unique()
+        >>> program_id = Pubkey.new_unique()
         >>> instruction = create_account(
         ...     CreateAccountParams(
         ...         from_pubkey=from_account, to_pubkey=new_account,
@@ -74,7 +76,7 @@ def create_account(params: CreateAccountParams) -> Instruction:
 
 
 def decode_create_account(instruction: Instruction) -> CreateAccountParams:
-    """Decode a create account system instruction and retrieve the instruction params.
+    """Decode a create account instruction and retrieve the instruction params.
 
     Args:
         instruction (Instruction): The CreateAccount instruction.
@@ -91,21 +93,25 @@ class CreateAccountWithSeedParams(TypedDict):
     from_pubkey: Pubkey
     """The account that will transfer lamports to the created account."""
     to_pubkey: Pubkey
-    """Public key of the created account. Must be pre-calculated with :meth:`~solders.pubkey.Pubkey.create_with_seed`."""
+    """Pubkey of the created account.
+    Must be pre-calculated with :meth:`~solders.pubkey.Pubkey.create_with_seed`."""
     base: Pubkey
-    """Base public key to use to derive the address of the created account. Must be the same as the base key used to create ``to_pubkey``."""
+    """Base public key to use to derive the address of the created account.
+    Must be the same as the base key used to create ``to_pubkey``."""
     seed: str
-    """Seed to use to derive the address of the created account. Must be the same as the seed used to create ``to_pubkey``."""
+    """Seed to use to derive the address of the created account.
+    Must be the same as the seed used to create ``to_pubkey``."""
     lamports: int
     """Amount of lamports to transfer to the created account."""
     space: int
     """Amount of space in bytes to allocate to the created account."""
     owner: Pubkey
-    """Public key of the program to assign as the owner of the created account."""
+    """Pubkey of the program to assign as the owner of the created account."""
 
 
 def create_account_with_seed(params: CreateAccountWithSeedParams) -> Instruction:
-    """Generate a transaction instruction that creates a new account at an address generated with ``from``, a seed, and program_id.
+    """Generate a transaction instruction that creates a new account at an address
+    generated with ``from``, a seed, and program_id.
 
     Args:
         params (CreateAccountWithSeedParams): The CreateAccountWithSeed params.
@@ -119,7 +125,7 @@ def create_account_with_seed(params: CreateAccountWithSeedParams) -> Instruction
 def decode_create_account_with_seed(
     instruction: Instruction,
 ) -> CreateAccountWithSeedParams:
-    """Decode a create account with seed system instruction and retrieve the instruction params.
+    """Decode a create account with seed instruction and retrieve the instruction params.
 
     Args:
         instruction (Instruction): The CreateAccountWithSeed instruction.
@@ -134,10 +140,11 @@ def decode_create_account_with_seed(
 
 class AssignParams(TypedDict):
     """Assign system transaction params."""
+
     pubkey: Pubkey
-    """Public key of the account which will be assigned a new owner."""
+    """Pubkey of the account which will be assigned a new owner."""
     owner: Pubkey
-    """Public key of the program to assign as the owner."""
+    """Pubkey of the program to assign as the owner."""
 
 
 def assign(params: AssignParams) -> Instruction:
@@ -163,7 +170,7 @@ def assign(params: AssignParams) -> Instruction:
 
 
 def decode_assign(instruction: Instruction) -> AssignParams:
-    """Decode an assign system instruction and retrieve the instruction params.
+    """Decode an assign instruction and retrieve the instruction params.
 
     Args:
         instruction (Instruction): The Assign instruction.
@@ -176,14 +183,15 @@ def decode_assign(instruction: Instruction) -> AssignParams:
 
 class AssignWithSeedParams(TypedDict):
     """Assign account with seed system transaction params."""
+
     address: Pubkey
-    """Public key of the account which will be assigned a new owner."""
+    """Pubkey of the account which will be assigned a new owner."""
     base: Pubkey
     """Base public key to use to derive the address of the assigned account."""
     seed: str
     """Seed to use to derive the address of the assigned account."""
     owner: Pubkey
-    """Public key of the program to assign as the owner."""
+    """Pubkey of the program to assign as the owner."""
 
 
 def assign_with_seed(params: AssignWithSeedParams) -> Instruction:
@@ -199,7 +207,7 @@ def assign_with_seed(params: AssignWithSeedParams) -> Instruction:
 
 
 def decode_assign_with_seed(instruction: Instruction) -> AssignWithSeedParams:
-    """Decode an assign with seed system instruction and retrieve the instruction params.
+    """Decode an assign with seed instruction and retrieve the instruction params.
 
     Args:
         instruction (Instruction): The AssignWithSeed instruction.
@@ -207,18 +215,18 @@ def decode_assign_with_seed(instruction: Instruction) -> AssignWithSeedParams:
     Returns:
         AssignWithSeedParams: The params used to create the instruction.
     """
-    return cast(AssignWithSeedParams, _decode_create_account(instruction))
+    return cast(AssignWithSeedParams, _decode_assign_with_seed(instruction))
 
 
 class TransferParams(TypedDict):
     """Transfer system transaction params."""
+
     from_pubkey: Pubkey
     """Account that will transfer lamports."""
     to_pubkey: Pubkey
     """Account that will receive transferred lamports."""
     lamports: int
     """Amount of lamports to transfer."""
-
 
 
 def transfer(params: TransferParams) -> Instruction:
@@ -257,6 +265,7 @@ def decode_transfer(instruction: Instruction) -> TransferParams:
 
 class TransferWithSeedParams(TypedDict):
     """Transfer with seed system transaction params."""
+
     from_pubkey: Pubkey
     """Account that will transfer lamports."""
     from_base: Pubkey
@@ -284,7 +293,7 @@ def transfer_with_seed(params: TransferWithSeedParams) -> Instruction:
 
 
 def decode_transfer_with_seed(instruction: Instruction) -> TransferWithSeedParams:
-    """Decode a transfer with seed system instruction and retrieve the instruction params.
+    """Decode a transfer with seed instruction and retrieve the instruction params.
 
     Args:
         instruction (Instruction): The TransferWithSeed instruction.
@@ -297,6 +306,7 @@ def decode_transfer_with_seed(instruction: Instruction) -> TransferWithSeedParam
 
 class AllocateParams(TypedDict):
     """Allocate account system transaction params."""
+
     pubkey: Pubkey
     """Account to allocate."""
     space: int
@@ -327,7 +337,7 @@ def allocate(params: AllocateParams) -> Instruction:
 
 
 def decode_allocate(instruction: Instruction) -> AllocateParams:
-    """Decode an allocate system instruction and retrieve the instruction params.
+    """Decode an allocate instruction and retrieve the instruction params.
 
     Args:
         instruction (Instruction): The Allocate instruction.
@@ -340,6 +350,7 @@ def decode_allocate(instruction: Instruction) -> AllocateParams:
 
 class AllocateWithSeedParams(TypedDict):
     """Allocate account with seed system transaction params."""
+
     address: Pubkey
     """Account to allocate."""
     base: Pubkey
@@ -349,7 +360,7 @@ class AllocateWithSeedParams(TypedDict):
     space: int
     """Amount of space in bytes to allocate."""
     owner: Pubkey
-    """Public key of the program to assign as the owner of the allocated account."""
+    """Pubkey of the program to assign as the owner of the allocated account."""
 
 
 def allocate_with_seed(params: AllocateWithSeedParams) -> Instruction:
@@ -357,7 +368,7 @@ def allocate_with_seed(params: AllocateWithSeedParams) -> Instruction:
 
     Args:
         params (AllocateWithSeedParams): The AllocateWithSeed params.
-    
+
     Returns:
         Instruction: The AllocateWithSeed instruction.
     """
@@ -365,7 +376,7 @@ def allocate_with_seed(params: AllocateWithSeedParams) -> Instruction:
 
 
 def decode_allocate_with_seed(instruction: Instruction) -> AllocateWithSeedParams:
-    """Decode an allocate with seed system instruction and retrieve the instruction params.
+    """Decode an allocate with seed instruction and retrieve the instruction params.
 
     Args:
         instruction (Instruction): The AllocateWithSeed instruction.
@@ -378,10 +389,11 @@ def decode_allocate_with_seed(instruction: Instruction) -> AllocateWithSeedParam
 
 class InitializeNonceAccountParams(TypedDict):
     """Initialize nonce account system instruction params."""
+
     nonce_pubkey: Pubkey
     """Nonce account which will be initialized."""
     authority: Pubkey
-    """Public key to set as authority of the initialized nonce account."""
+    """Pubkey to set as authority of the initialized nonce account."""
 
 
 def initialize_nonce_account(params: InitializeNonceAccountParams) -> Instruction:
@@ -399,7 +411,7 @@ def initialize_nonce_account(params: InitializeNonceAccountParams) -> Instructio
 def decode_initialize_nonce_account(
     instruction: Instruction,
 ) -> InitializeNonceAccountParams:
-    """Decode an initialize nonce account system instruction and retrieve the instruction params.
+    """Decode an initialize nonce account instruction and retrieve the instruction params.
 
     Args:
         instruction (Instruction): The InitializeNonceAccount instruction.
@@ -414,10 +426,11 @@ def decode_initialize_nonce_account(
 
 class AdvanceNonceAccountParams(TypedDict):
     """Advance nonce account system instruction params."""
+
     nonce_pubkey: Pubkey
     """Nonce account."""
     authorized_pubkey: Pubkey
-    """Public key of the nonce authority."""
+    """Pubkey of the nonce authority."""
 
 
 def advance_nonce_account(params: AdvanceNonceAccountParams) -> Instruction:
@@ -433,7 +446,7 @@ def advance_nonce_account(params: AdvanceNonceAccountParams) -> Instruction:
 
 
 def decode_advance_nonce_account(instruction: Instruction) -> AdvanceNonceAccountParams:
-    """Decode an advance nonce account system instruction and retrieve the instruction params.
+    """Decode an advance nonce account instruction and retrieve the instruction params.
 
     Args:
         instruction (Instruction): The AdvanceNonceAccount instruction.
@@ -446,12 +459,13 @@ def decode_advance_nonce_account(instruction: Instruction) -> AdvanceNonceAccoun
 
 class WithdrawNonceAccountParams(TypedDict):
     """Withdraw nonce account system transaction params."""
+
     nonce_pubkey: Pubkey
     """Nonce account."""
     authorized_pubkey: Pubkey
-    """Public key of the nonce authority."""
+    """Pubkey of the nonce authority."""
     to_pubkey: Pubkey
-    """Public key of the account which will receive the withdrawn nonce account balance."""
+    """Pubkey of the account which will receive the withdrawn nonce account balance."""
     lamports: int
     """Amount of lamports to withdraw from the nonce account."""
 
@@ -471,7 +485,7 @@ def withdraw_nonce_account(params: WithdrawNonceAccountParams) -> Instruction:
 def decode_withdraw_nonce_account(
     instruction: Instruction,
 ) -> WithdrawNonceAccountParams:
-    """Decode a withdraw nonce account system instruction and retrieve the instruction params.
+    """Decode a withdraw nonce account instruction and retrieve the instruction params.
 
     Args:
         instruction (Instruction): The WithdrawNonceAccount instruction.

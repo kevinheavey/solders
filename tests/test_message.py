@@ -63,15 +63,15 @@ def test_message_payer_first() -> None:
 def test_program_position() -> None:
     program_id0 = Pubkey.default()
     program_id1 = Pubkey.new_unique()
-    id = Pubkey.new_unique()
+    id_ = Pubkey.new_unique()
     message = Message(
         [
-            Instruction(program_id0, ZERO_BYTES, [AccountMeta(id, False, True)]),
-            Instruction(program_id1, ZERO_BYTES, [AccountMeta(id, True, True)]),
+            Instruction(program_id0, ZERO_BYTES, [AccountMeta(id_, False, True)]),
+            Instruction(program_id1, ZERO_BYTES, [AccountMeta(id_, True, True)]),
         ],
-        id,
+        id_,
     )
-    assert message.program_position(0) == None
+    assert message.program_position(0) is None
     assert message.program_position(1) == 0
     assert message.program_position(2) == 1
 
@@ -104,7 +104,7 @@ def test_program_ids() -> None:
     key0 = Pubkey.new_unique()
     key1 = Pubkey.new_unique()
     loader2 = Pubkey.new_unique()
-    instructions = [CompiledInstruction(2, bytes(), bytes([0, 1]))]
+    instructions = [CompiledInstruction(2, b"", bytes([0, 1]))]
     message = Message.new_with_compiled_instructions(
         1,
         0,
@@ -120,7 +120,7 @@ def test_is_key_passed_to_program() -> None:
     key0 = Pubkey.new_unique()
     key1 = Pubkey.new_unique()
     loader2 = Pubkey.new_unique()
-    instructions = [CompiledInstruction(2, bytes(), bytes([0, 1]))]
+    instructions = [CompiledInstruction(2, b"", bytes([0, 1]))]
     message = Message.new_with_compiled_instructions(
         1,
         0,
@@ -139,7 +139,7 @@ def test_is_non_loader_key() -> None:
     key0 = Pubkey.new_unique()
     key1 = Pubkey.new_unique()
     loader2 = Pubkey.new_unique()
-    instructions = [CompiledInstruction(2, bytes(), bytes([0, 1]))]
+    instructions = [CompiledInstruction(2, b"", bytes([0, 1]))]
     message = Message.new_with_compiled_instructions(
         1,
         0,
@@ -189,7 +189,6 @@ def test_message_hash() -> None:
 
 def test_new_with_nonce():
     program_id = Pubkey.default()
-    blockhash = Hash.default()
     arbitrary_instruction_data = bytes([1])
     accounts: list[AccountMeta] = []
     instruction = Instruction(program_id, arbitrary_instruction_data, accounts)
@@ -198,5 +197,5 @@ def test_new_with_nonce():
     message = Message.new_with_nonce(
         [instruction], payer.pubkey(), nonce_account, payer.pubkey()
     )
-    tx = Transaction.new_unsigned(message)
+    Transaction.new_unsigned(message)
     # just check that no exceptions are raised

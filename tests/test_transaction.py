@@ -7,7 +7,7 @@ from solders.pubkey import Pubkey
 from solders.keypair import Keypair
 from solders.instruction import CompiledInstruction, Instruction, AccountMeta
 from solders.hash import Hash
-from solders.message import Message, MessageHeader
+from solders.message import Message
 from solders import system_program
 from solders.signature import Signature
 from solders.sysvar import RECENT_BLOCKHASHES
@@ -970,7 +970,7 @@ def test_get_nonce_pub_from_ix_no_accounts_fail() -> None:
     nonce_ix = tx.uses_durable_nonce()
     assert nonce_ix is not None
     nonce_ix.accounts = b""
-    assert tx.get_nonce_pubkey_from_instruction(nonce_ix) == None
+    assert tx.get_nonce_pubkey_from_instruction(nonce_ix) is None
 
 
 def test_get_nonce_pub_from_ix_bad_acc_idx_fail() -> None:
@@ -978,7 +978,7 @@ def test_get_nonce_pub_from_ix_bad_acc_idx_fail() -> None:
     nonce_ix = tx.uses_durable_nonce()
     assert nonce_ix is not None
     nonce_ix.accounts = bytes([255, *list(nonce_ix.accounts[1:])])
-    assert tx.get_nonce_pubkey_from_instruction(nonce_ix) == None
+    assert tx.get_nonce_pubkey_from_instruction(nonce_ix) is None
 
 
 def test_tx_keypair_pubkey_mismatch() -> None:
@@ -1004,10 +1004,10 @@ def test_dedup_signatures():
     """Test signature deduplication."""
     kp1, kp2 = Keypair(), Keypair()
     transfer1 = system_program.transfer(
-        dict(from_pubkey=kp1.pubkey(), to_pubkey=kp2.pubkey(), lamports=123)
+        {"from_pubkey": kp1.pubkey(), "to_pubkey": kp2.pubkey(), "lamports": 123}
     )
     transfer2 = system_program.transfer(
-        dict(from_pubkey=kp1.pubkey(), to_pubkey=kp2.pubkey(), lamports=123)
+        {"from_pubkey": kp1.pubkey(), "to_pubkey": kp2.pubkey(), "lamports": 123}
     )
     instructions = [transfer1, transfer2]
     message = Message(instructions)
@@ -1018,11 +1018,11 @@ def test_dedup_signatures():
 def test_wire_format_and_deserialize() -> None:
     """Test serialize/derialize transaction to/from wire format."""
     transfer = system_program.transfer(
-        dict(
-            from_pubkey=SENDER.pubkey(),
-            to_pubkey=RECIPIENT,
-            lamports=49,
-        )
+        {
+            "from_pubkey": SENDER.pubkey(),
+            "to_pubkey": RECIPIENT,
+            "lamports": 49,
+        }
     )
     message = Message([transfer], SENDER.pubkey())
     expected_txn = Transaction.new_unsigned(message)
@@ -1069,11 +1069,11 @@ def test_populate() -> None:
 def test_serialize_unsigned_transaction() -> None:
     """Test to serialize an unsigned transaction."""
     transfer = system_program.transfer(
-        dict(
-            from_pubkey=SENDER.pubkey(),
-            to_pubkey=RECIPIENT,
-            lamports=49,
-        )
+        {
+            "from_pubkey": SENDER.pubkey(),
+            "to_pubkey": RECIPIENT,
+            "lamports": 49,
+        }
     )
     message = Message([transfer])
     txn = Transaction.new_unsigned(message)
@@ -1082,7 +1082,6 @@ def test_serialize_unsigned_transaction() -> None:
     )
     assert Transaction.from_bytes(bytes(txn)) == txn
 
-    message_with_payer = Message([transfer], SENDER.pubkey())
     txn_with_payer = Transaction.new_signed_with_payer(
         [transfer], SENDER.pubkey(), [SENDER], BLOCKHASH
     )
@@ -1341,39 +1340,41 @@ def test_sort_account_metas() -> None:
     )
     instructions = [
         system_program.transfer(
-            dict(
-                from_pubkey=signer_one.pubkey(),
-                to_pubkey=receiver_one.pubkey(),
-                lamports=2_000_000,
-            )
+            {
+                "from_pubkey": signer_one.pubkey(),
+                "to_pubkey": receiver_one.pubkey(),
+                "lamports": 2_000_000,
+            }
         ),
         system_program.transfer(
-            dict(
-                from_pubkey=signer_two.pubkey(),
-                to_pubkey=receiver_two.pubkey(),
-                lamports=2_000_000,
-            )
+            {
+                "from_pubkey": signer_two.pubkey(),
+                "to_pubkey": receiver_two.pubkey(),
+                "lamports": 2_000_000,
+            }
         ),
         system_program.transfer(
-            dict(
-                from_pubkey=signer_three.pubkey(),
-                to_pubkey=receiver_three.pubkey(),
-                lamports=2_000_000,
-            )
+            {
+                "from_pubkey": signer_three.pubkey(),
+                "to_pubkey": receiver_three.pubkey(),
+                "lamports": 2_000_000,
+            }
         ),
     ]
     fee_payer = signer_one
     message = Message.new_with_blockhash(instructions, fee_payer.pubkey(), BLOCKHASH)
+    signers = [signer_one, signer_two, signer_three]
     sorted_signers = sorted(
-        [x.pubkey() for x in [signer_one, signer_two, signer_three]],
-        key=lambda x: str(x),
+        [x.pubkey() for x in signers],
+        key=str,
     )
     sorted_signers_excluding_fee_payer = [
         x for x in sorted_signers if str(x) != str(fee_payer.pubkey())
     ]
+    receivers = [receiver_one, receiver_two, receiver_three]
     sorted_receivers = sorted(
-        [x.pubkey() for x in [receiver_one, receiver_two, receiver_three]],
-        key=lambda x: str(x),
+        [x.pubkey() for x in receivers],
+        key=str,
     )
     txn = Transaction.new_unsigned(message)
     tx_msg = txn.message

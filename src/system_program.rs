@@ -377,6 +377,15 @@ pub fn decode_allocate_with_seed(instruction: Instruction) -> PyResult<AllocateW
 }
 
 #[pyfunction]
+/// Create new Transfer instructions to many destinations.
+///
+/// Args:
+///     from_pubkey (Pubkey): The sender pubkey.
+///     to_lamports (Sequence[tuple[int, Pubkey]]): The lamports to transfer to each pubkey.
+///
+/// Returns:
+///     list[Instruction]: The Transfer instructions.
+///
 pub fn transfer_many(from_pubkey: &Pubkey, to_lamports: Vec<(Pubkey, u64)>) -> Vec<Instruction> {
     let to_lamports_converted: Vec<(PubkeyOriginal, u64)> = to_lamports
         .into_iter()
@@ -389,6 +398,22 @@ pub fn transfer_many(from_pubkey: &Pubkey, to_lamports: Vec<(Pubkey, u64)>) -> V
 }
 
 #[pyfunction]
+/// Generate instructions to create and initialize a nonce account.
+///
+/// Args:
+///     from_pubkey (Pubkey): The account that will transfer
+///         lamports to the created nonce account.
+///     nonce_pubkey (Pubkey): Nonce account which will be
+///         created and initialized.
+///     authority (Pubkey): Pubkey to set as authority of the
+///         initialized nonce account.
+///     lamports (int): Amount of lamports to transfer to
+///         the created account.
+///
+/// Returns:
+///     tuple[Instruction, Instruction]: The CreateAccount
+///         instruction and the InitializeNonceAccount instruction.
+///
 pub fn create_nonce_account(
     from_pubkey: &Pubkey,
     nonce_pubkey: &Pubkey,
@@ -443,6 +468,28 @@ pub fn decode_initialize_nonce_account(
 }
 
 #[pyfunction]
+/// Generate instructions to create a nonce account with seed.
+///
+/// Args:
+///     from_pubkey (Pubkey): The account that will transfer
+///         lamports to the created nonce account.
+///     nonce_pubkey (Pubkey): Nonce account which will be
+///         created and initialized. Must be pre-calculated
+///         with :meth:`~solders.pubkey.Pubkey.create_with_seed`
+///     base (Pubkey): Base public key to use to derive the
+///         address of the created account. Must be the same
+///         as the base key used to create ``nonce_pubkey``.
+///     seed (str): Seed to use to derive the address of the created account.
+///         Must be the same as the seed used to create ``nonce_pubkey``.
+///     authority (Pubkey): Pubkey to set as authority of the
+///         initialized nonce account.
+///     lamports (int): Amount of lamports to transfer to
+///         the created account.
+///
+/// Returns:
+///     tuple[Instruction, Instruction]: The CreateAccountWithSeed
+///         instruction and the InitializeNonceAccount instruction.
+///
 pub fn create_nonce_account_with_seed(
     from_pubkey: &Pubkey,
     nonce_pubkey: &Pubkey,

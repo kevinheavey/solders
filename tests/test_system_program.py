@@ -63,6 +63,20 @@ def test_transfer():
     assert sp.decode_transfer(sp.transfer(params)) == params
 
 
+def test_transfer_many():
+    from_pubkey = Pubkey.new_unique()
+    params = [
+        sp.TransferParams(
+            from_pubkey=from_pubkey, to_pubkey=Keypair().pubkey(), lamports=123
+        )
+        for i in range(3)
+    ]
+    to_lamports = [(p["to_pubkey"], p["lamports"]) for p in params]
+    ixs = sp.transfer_many(from_pubkey, to_lamports)
+    decoded = [sp.decode_transfer(ix) for ix in ixs]
+    assert decoded == params
+
+
 def test_assign():
     """Test creating a transaction for assign."""
     params = sp.AssignParams(
@@ -70,6 +84,16 @@ def test_assign():
         owner=Pubkey(bytes([1]).rjust(Pubkey.LENGTH, b"\0")),
     )
     assert sp.decode_assign(sp.assign(params)) == params
+
+
+def test_assign_with_seed():
+    params = sp.AssignWithSeedParams(
+        address=Pubkey.new_unique(),
+        base=Pubkey.new_unique(),
+        seed="你好",
+        owner=Pubkey.new_unique(),
+    )
+    assert sp.decode_assign_with_seed(sp.assign_with_seed(params)) == params
 
 
 def test_allocate():
@@ -326,6 +350,27 @@ def test_create_nonce_account2():
     assert create_account_txn == js_expected_txn
     # XXX:  Cli message serialization do not sort on account metas producing discrepency
     # assert create_account_txn == cli_expected_txn
+
+def test_create_nonce_account_with_seed():
+    from_pubkey = Keypair().pubkey()
+    nonce_pubkey = Pubkey(bytes([3]).rjust(Pubkey.LENGTH, b"\0"))
+    base = Pubkey(bytes([1]).rjust(Pubkey.LENGTH, b"\0"))
+    seed = "gqln"
+    lamports = 123
+    create_account_with_seed_params = sp.CreateAccountWithSeedParams(
+        from_pubkey=from_pubkey,
+        to_pubkey=nonce_pubkey,
+        base=base,
+        seed=seed,
+        lamports=lamports,
+        space=80,
+        owner=sp.ID,
+    )
+    authority = Pubkey.new_unique()
+    initialize_nonce_account_params = sp.InitializeNonceAccountParams(authority=authority, nonce_pubkey=nonce_pubkey)
+    ixs = sp.create_nonce_account_with_seed(from_pubkey, nonce_pubkey, base, seed, authority, lamports)
+    assert sp.decode_create_account_with_seed(ixs[0]) == create_account_with_seed_params
+    assert sp.decode_initialize_nonce_account(ixs[1]) == initialize_nonce_account_params
 
 
 def test_advance_nonce_and_transfer():

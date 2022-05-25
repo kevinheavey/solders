@@ -65,9 +65,7 @@ class Transaction:
         self,
         pubkeys: Sequence[Pubkey],
     ) -> List[Optional[int]]: ...
-    def replace_signatures(
-        self, signers: Sequence[Tuple[Pubkey, Signature]]
-    ) -> None:
+    def replace_signatures(self, signers: Sequence[Tuple[Pubkey, Signature]]) -> None:
         """_summary_
 
         Args:
