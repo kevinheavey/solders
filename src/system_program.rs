@@ -411,8 +411,7 @@ pub fn transfer_many(from_pubkey: &Pubkey, to_lamports: Vec<(Pubkey, u64)>) -> V
 ///         the created account.
 ///
 /// Returns:
-///     tuple[Instruction, Instruction]: The CreateAccount
-///         instruction and the InitializeNonceAccount instruction.
+///     tuple[Instruction, Instruction]: The CreateAccount instruction and the InitializeNonceAccount instruction.
 ///
 pub fn create_nonce_account(
     from_pubkey: &Pubkey,
@@ -487,8 +486,7 @@ pub fn decode_initialize_nonce_account(
 ///         the created account.
 ///
 /// Returns:
-///     tuple[Instruction, Instruction]: The CreateAccountWithSeed
-///         instruction and the InitializeNonceAccount instruction.
+///     tuple[Instruction, Instruction]: The CreateAccountWithSeed instruction and the InitializeNonceAccount instruction.
 ///
 pub fn create_nonce_account_with_seed(
     from_pubkey: &Pubkey,
