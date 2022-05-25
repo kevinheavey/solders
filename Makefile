@@ -1,3 +1,9 @@
+lint:
+	flake8 && mypy .
+
+fmt:
+	black .
+
 serve:
 	python -m http.server -d docs/_build/html
 

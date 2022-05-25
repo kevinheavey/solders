@@ -19,11 +19,20 @@ Example Usage
 
 ::
 
+    >>> from solders.message import Message
+    >>> from solders.keypair import Keypair
+    >>> from solders.instruction import Instruction
+    >>> from solders.hash import Hash
+    >>> from solders.transaction import Transaction
     >>> from solders.pubkey import Pubkey
-    >>> Pubkey.default()
-    Pubkey(
-        11111111111111111111111111111111,
-    )
+    >>> program_id = Pubkey.default()
+    >>> arbitrary_instruction_data = bytes([1])
+    >>> accounts = []
+    >>> instruction = Instruction(program_id, arbitrary_instruction_data, accounts)
+    >>> payer = Keypair()
+    >>> message = Message([instruction], payer.pubkey())
+    >>> blockhash = Hash.default()  # replace with a real blockhash
+    >>> tx = Transaction([payer], message, blockhash)
 
 
 
