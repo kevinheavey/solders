@@ -1,0 +1,58 @@
+[
+  {
+    "name": "test_solders_create_program_address",
+    "mean": 9.569252649165565e-06
+  },
+  {
+    "name": "test_solpy_create_program_address",
+    "mean": 0.0003501774663610722
+  },
+  {
+    "name": "test_solders_sign_message",
+    "mean": 4.017214384085564e-05
+  },
+  {
+    "name": "test_solpy_sign_message",
+    "mean": 6.548685613738702e-05
+  },
+  {
+    "name": "test_solders_create_account_ix",
+    "mean": 3.012379703380018e-06
+  },
+  {
+    "name": "test_solpy_create_account_ix",
+    "mean": 3.398669057517439e-05
+  },
+  {
+    "name": "test_solders_decode_create_account",
+    "mean": 3.1224742299005203e-06
+  },
+  {
+    "name": "test_solpy_decode_create_account",
+    "mean": 3.5898471991719045e-05
+  },
+  {
+    "name": "test_solders_tx_to_bytes",
+    "mean": 2.3514648047757857e-06
+  },
+  {
+    "name": "test_solpy_tx_to_bytes",
+    "mean": 0.00039418687421479125
+  },
+  {
+    "name": "test_solders_tx_from_bytes",
+    "mean": 1.4584043477441054e-06
+  },
+  {
+    "name": "test_solpy_tx_from_bytes",
+    "mean": 3.786610781697522e-05
+  },
+  {
+    "name": "test_solders_sign_tx",
+    "mean": 4.7663825670572136e-05
+  },
+  {
+    "name": "test_solpy_sign_tx",
+    "mean": 0.00024913967475739514
+  }
+]
