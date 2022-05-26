@@ -1,0 +1,21 @@
+name: release
+
+on:
+  release:
+    types: [published]
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: dawidd6/action-download-artifact@v2
+        with:
+          workflow: build.yml
+          name: wheels
+      - name: Publish to PyPi
+        env:
+          MATURIN_PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+        uses: messense/maturin-action@v1
+        with:
+          command: upload
+          args: --skip-existing *

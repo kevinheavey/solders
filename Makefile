@@ -1,5 +1,5 @@
 test:
-	pytest tests/ && make doctest
+	pytest && make doctest
 
 lint:
 	cargo clippy & flake8 && mypy .

@@ -1,0 +1,192 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  name: solders
+  python_version: "3.9"
+
+jobs:
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ env.python_version }}
+          architecture: x64
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          profile: minimal
+          default: true
+      - name: Build wheels - x86_64
+        uses: messense/maturin-action@v1
+        with:
+          target: x86_64
+          args: --release --out dist
+      - name: Install built wheel - x86_64
+        run: |
+          pip install ${{ env.name }} --no-index --find-links dist --force-reinstall
+          pip install pytest based58
+          pytest
+      - name: Build wheels - universal2
+        uses: messense/maturin-action@v1
+        with:
+          args: --release --universal2 --out dist --no-sdist
+      - name: Install built wheel - universal2
+        run: |
+          pip install ${{ env.name }} --no-index --find-links dist --force-reinstall
+          pytest
+      - name: Upload wheels
+        uses: actions/upload-artifact@v2
+        with:
+          name: wheels
+          path: dist
+
+  windows:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        target: [x64, x86]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ env.python_version }}
+          architecture: ${{ matrix.target }}
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          profile: minimal
+          default: true
+      - name: Build wheels
+        uses: messense/maturin-action@v1
+        with:
+          target: ${{ matrix.target }}
+          args: --release --out dist --no-sdist
+      - name: Install built wheel
+        run: |
+          pip install ${{ env.name }} --no-index --find-links dist --force-reinstall
+          pip install pytest based58
+          pytest
+      - name: Upload wheels
+        uses: actions/upload-artifact@v2
+        with:
+          name: wheels
+          path: dist
+
+  linux:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: [x86_64, i686]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ env.python_version }}
+          architecture: x64
+      - name: Build Wheels
+        uses: messense/maturin-action@v1
+        with:
+          rust-toolchain: nightly
+          target: ${{ matrix.target }}
+          manylinux: auto
+          args: --release --out dist --no-sdist
+      - name: Install built wheel
+        if: matrix.target == 'x86_64'
+        run: |
+          pip install ${{ env.name }} --no-index --find-links dist --force-reinstall
+          pip install pytest based58
+          pytest
+      - name: Upload wheels
+        uses: actions/upload-artifact@v2
+        with:
+          name: wheels
+          path: dist
+
+  musllinux:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target:
+          - x86_64-unknown-linux-musl
+          - i686-unknown-linux-musl
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ env.python_version }}
+          architecture: x64
+      - name: Build wheels
+        uses: messense/maturin-action@v1
+        with:
+          rust-toolchain: nightly
+          target: ${{ matrix.target }}
+          manylinux: musllinux_1_2
+          args: --release --out dist --no-sdist
+      - name: Install built wheel
+        if: matrix.target == 'x86_64-unknown-linux-musl'
+        uses: addnab/docker-run-action@v3
+        with:
+          image: alpine:latest
+          options: -v ${{ github.workspace }}:/io -w /io
+          run: |
+            apk add py3-pip
+            pip3 install -U pip pytest
+            pip3 install ${{ env.name }} --no-index --find-links /io/dist/ --force-reinstall
+            cd tests && python3 -m pytest
+      - name: Upload wheels
+        uses: actions/upload-artifact@v2
+        with:
+          name: wheels
+          path: dist
+
+  linux-cross:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: [aarch64, armv7, s390x, ppc64le, ppc64]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version:
+      - name: Build Wheels
+        uses: messense/maturin-action@v1
+        with:
+          rust-toolchain: nightly
+          target: ${{ matrix.target }}
+          manylinux: auto
+          args: --release --out dist --no-sdist
+      - name: Upload wheels
+        uses: actions/upload-artifact@v2
+        with:
+          name: wheels
+          path: dist
+
+  sdist:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version:
+      - name: Build sdist
+        uses: messense/maturin-action@v1
+        with:
+          command: sdist
+          rust-toolchain: nightly
+          args: --out dist
+      - name: Upload sdist
+        uses: actions/upload-artifact@v2
+        with:
+          name: wheels
+          path: dist
