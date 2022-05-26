@@ -1,3 +1,3 @@
-from solders.solders import *  # noqa: F403,F401,WPS347
+from solders import solders  # type: ignore
 from . import system_program
 from . import sysvar
