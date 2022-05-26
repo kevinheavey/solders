@@ -131,7 +131,7 @@ jobs:
           rust-toolchain: nightly
           target: ${{ matrix.target }}
           manylinux: musllinux_1_2
-          args: --release --out dist --no-sdist
+          args: --release --out dist --no-sdist -i /bin/python3
       - name: Install built wheel
         if: matrix.target == 'x86_64-unknown-linux-musl'
         uses: addnab/docker-run-action@v3
