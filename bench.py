@@ -41,7 +41,7 @@ def test_solpy_sign_message(benchmark):
     benchmark(kp.sign, b"macaroni")
 
 
-def test_solders_create_account(benchmark):
+def test_solders_create_account_ix(benchmark):
     from_account = Pubkey.new_unique()
     new_account = Pubkey.new_unique()
     program_id = Pubkey.new_unique()
@@ -55,7 +55,7 @@ def test_solders_create_account(benchmark):
     benchmark(create_account, params)
 
 
-def test_solpy_create_account(benchmark):
+def test_solpy_create_account_ix(benchmark):
     from_account = SolpyKeypair().public_key
     new_account = SolpyKeypair().public_key
     program_id = SolpyKeypair().public_key
