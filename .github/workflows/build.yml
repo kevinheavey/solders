@@ -131,7 +131,7 @@ jobs:
           rust-toolchain: nightly
           target: ${{ matrix.target }}
           manylinux: musllinux_1_2
-          args: --release --out dist --no-sdist
+          args: --release --out dist --no-sdist -i /opt/python/cp39-cp39/bin/python
       - name: Install built wheel
         if: matrix.target == 'x86_64-unknown-linux-musl'
         uses: addnab/docker-run-action@v3
@@ -142,7 +142,7 @@ jobs:
             apk add py3-pip
             pip3 install -U pip pytest
             pip3 install ${{ env.name }} --no-index --find-links /io/dist/ --force-reinstall
-            cd tests && python3 -m pytest
+            python3 -m pytest
       - name: Upload wheels
         uses: actions/upload-artifact@v2
         with:
@@ -165,7 +165,7 @@ jobs:
           rust-toolchain: nightly
           target: ${{ matrix.target }}
           manylinux: auto
-          args: --release --out dist --no-sdist /opt/python/cp39-cp39/bin/python
+          args: --release --out dist --no-sdist -i /opt/python/cp39-cp39/bin/python
       - name: Upload wheels
         uses: actions/upload-artifact@v2
         with:
