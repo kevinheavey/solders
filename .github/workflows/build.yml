@@ -165,7 +165,7 @@ jobs:
           rust-toolchain: nightly
           target: ${{ matrix.target }}
           manylinux: auto
-          args: --release --out dist --no-sdist
+          args: --release --out dist --no-sdist -i /usr/bin/python
       - name: Upload wheels
         uses: actions/upload-artifact@v2
         with:
