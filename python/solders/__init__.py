@@ -1,4 +1,4 @@
-from solders.solders import (
+from solders.solders import (  # type: ignore
     errors,
     hash,
     instruction,
