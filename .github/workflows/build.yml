@@ -73,9 +73,9 @@ jobs:
           args: --release --out dist --no-sdist
       - name: Install built wheel
         run: |
-          pip install ${{ env.name }} --no-index --find-links dist --force-reinstall
-          pip install pytest based58 typing-extensions pybip39
-          pytest
+          python -m pip install dist/${{ env.PACKAGE_NAME }}-*.whl --force-reinstall
+          python -m pip install pytest based58 typing-extensions pybip39
+          python -m pytest
       - name: Upload wheels
         uses: actions/upload-artifact@v2
         with:
