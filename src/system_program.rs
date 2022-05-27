@@ -19,7 +19,7 @@ use solana_sdk::{
     system_program,
 };
 
-use crate::{handle_py_err, Instruction, Pubkey};
+use crate::{handle_py_err, Instruction, Keypair, Pubkey};
 
 fn convert_instructions_from_original(ixs: Vec<InstructionOriginal>) -> Vec<Instruction> {
     ixs.into_iter().map(Instruction::from).collect()
@@ -27,10 +27,8 @@ fn convert_instructions_from_original(ixs: Vec<InstructionOriginal>) -> Vec<Inst
 
 #[pyfunction]
 pub fn noop() -> [u8; 32] {
-    let mut rng = OsRng::default();
-    let mut dest = [0u8; 32];
-    rng.fill_bytes(&mut dest);
-    dest
+    let kp = Keypair::new();
+    kp.to_bytes_array()
 }
 
 pub fn create_system_program_mod(py: Python<'_>) -> PyResult<&PyModule> {
