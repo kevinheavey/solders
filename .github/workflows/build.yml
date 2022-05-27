@@ -140,7 +140,7 @@ jobs:
           options: -v ${{ github.workspace }}:/io -w /io
           run: |
             apk add py3-pip
-            pip3 install -U pip pytest
+            pip3 install -U pip pytest based58 typing-extensions pybip39
             pip3 install ${{ env.name }} --no-index --find-links /io/dist/ --force-reinstall
             python3 -m pytest
       - name: Upload wheels
