@@ -1,3 +1,4 @@
+from typing import List
 from solders.message import Message, MessageHeader
 from solders.keypair import Keypair
 from solders.pubkey import Pubkey
@@ -190,7 +191,7 @@ def test_message_hash() -> None:
 def test_new_with_nonce():
     program_id = Pubkey.default()
     arbitrary_instruction_data = bytes([1])
-    accounts: list[AccountMeta] = []
+    accounts: List[AccountMeta] = []
     instruction = Instruction(program_id, arbitrary_instruction_data, accounts)
     payer = Keypair()
     nonce_account = Pubkey.default()
