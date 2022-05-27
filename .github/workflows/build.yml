@@ -75,7 +75,7 @@ jobs:
         run: |
           python -m pip install pytest based58 typing-extensions pybip39
           python -m pip install ${{ env.name }} --no-index --find-links dist --force-reinstall
-          python tests/test_transaction.py
+          python -m tests.test_transaction
           python -c "import solders; solders.pubkey, solders.sysvar; from based58 import b58encode; import pybip39; print(12345)"
           python -m pytest -s -vv
       - name: Upload wheels
