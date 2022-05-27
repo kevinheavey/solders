@@ -77,7 +77,7 @@ jobs:
           python -m pip install ${{ env.name }} --no-index --find-links dist --force-reinstall
           python -m tests.test_transaction
           python -c "print(990);from solders.system_program import decode_create_account,create_account,CreateAccountParams;from solders.instruction import Instruction;from solders.pubkey import Pubkey;from solders.keypair import Keypair;print(991);params = CreateAccountParams(from_pubkey=Keypair().pubkey(),to_pubkey=Keypair().pubkey(),lamports=123,space=1,owner=Pubkey.default());ix = create_account(params);print(992);res = decode_create_account(ix);print(res)"
-          python -c "import solders; solders.pubkey, solders.sysvar; from solders.system_program import create_account,CreateAccountParams;from solders.instruction import Instruction;from solders.pubkey import Pubkey;from solders.keypair import Keypair;from_pubkey=Keypair().pubkey();to_pubkey=Keypair().pubkey();lamports=123;space=1;owner=Pubkey.default(); print(12345)"
+          python -c "from solders.pubkey import Pubkey;from solders.keypair import Keypair;from_pubkey=Keypair().pubkey();owner=Pubkey.default(); print(12345)"
           python -m pytest tests/test_system_program.py -vv
       - name: Upload wheels
         uses: actions/upload-artifact@v2
