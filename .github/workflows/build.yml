@@ -75,7 +75,7 @@ jobs:
         run: |
           python -m pip install ${{ env.name }} --no-index --find-links dist --force-reinstall
           python -m pip install pytest based58 typing-extensions pybip39
-          python -c "import solders; solders.pubkey, solders.sysvar"
+          python -c "import solders; solders.pubkey, solders.sysvar; print(12345)"
           python -m pytest -vv
       - name: Upload wheels
         uses: actions/upload-artifact@v2
