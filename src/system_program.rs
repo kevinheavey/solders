@@ -26,7 +26,7 @@ fn convert_instructions_from_original(ixs: Vec<InstructionOriginal>) -> Vec<Inst
 }
 
 #[pyfunction]
-pub fn noop() -> [u8; 32] {
+pub fn noop() -> [u8; 64] {
     let kp = Keypair::new();
     kp.to_bytes_array()
 }
