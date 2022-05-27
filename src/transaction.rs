@@ -126,6 +126,7 @@ impl Transaction {
     ///     Transaction: The unsigned transaction.
     ///
     /// Example:
+    ///     >>> from typing import List
     ///     >>> from solders.message import Message
     ///     >>> from solders.keypair import Keypair
     ///     >>> from solders.pubkey import Pubkey
@@ -135,7 +136,7 @@ impl Transaction {
     ///     >>> program_id = Pubkey.default()
     ///     >>> blockhash = Hash.default()  # replace with a real blockhash
     ///     >>> arbitrary_instruction_data = bytes([1])
-    ///     >>> accounts: list[AccountMeta] = []
+    ///     >>> accounts: List[AccountMeta] = []
     ///     >>> instruction = Instruction(program_id, arbitrary_instruction_data, accounts)
     ///     >>> payer = Keypair()
     ///     >>> message = Message.new_with_blockhash([instruction], payer.pubkey(), blockhash)

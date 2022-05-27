@@ -204,6 +204,7 @@ impl Message {
     ///     Message: The message object.
     ///
     /// Example:
+    ///     >>> from typing import List
     ///     >>> from solders.message import Message
     ///     >>> from solders.keypair import Keypair
     ///     >>> from solders.pubkey import Pubkey
@@ -213,7 +214,7 @@ impl Message {
     ///     >>> program_id = Pubkey.default()
     ///     >>> blockhash = Hash.default()  # replace with a real blockhash
     ///     >>> arbitrary_instruction_data = bytes([1])
-    ///     >>> accounts: list[AccountMeta] = []
+    ///     >>> accounts: List[AccountMeta] = []
     ///     >>> instruction = Instruction(program_id, arbitrary_instruction_data, accounts)
     ///     >>> payer = Keypair()
     ///     >>> message = Message.new_with_blockhash([instruction], payer.pubkey(), blockhash)
@@ -248,6 +249,7 @@ impl Message {
     /// transaction's signing and submission to the blockchain.
     ///
     /// Example:
+    ///     >>> from typing import List
     ///     >>> from solders.message import Message
     ///     >>> from solders.keypair import Keypair
     ///     >>> from solders.pubkey import Pubkey
@@ -257,7 +259,7 @@ impl Message {
     ///     >>> program_id = Pubkey.default()
     ///     >>> blockhash = Hash.default()  # replace with a real blockhash
     ///     >>> arbitrary_instruction_data = bytes([1])
-    ///     >>> accounts: list[AccountMeta] = []
+    ///     >>> accounts: List[AccountMeta] = []
     ///     >>> instruction = Instruction(program_id, arbitrary_instruction_data, accounts)
     ///     >>> payer = Keypair()
     ///     >>> nonce_account = Pubkey.default()  # replace with a real nonce account
