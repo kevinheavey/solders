@@ -1,4 +1,5 @@
-from typing import TypedDict, cast, Final
+from typing import TypedDict, cast
+from typing_extensions import Final
 from solders.pubkey import Pubkey
 from solders.instruction import Instruction
 from solders._system_program import (

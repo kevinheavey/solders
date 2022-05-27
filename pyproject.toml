@@ -7,6 +7,7 @@ license = "Apache"
 
 [tool.poetry.dependencies]
 python = "^3.7"
+typing-extensions = "^4.2.0"
 
 [tool.poetry.dev-dependencies]
 maturin = "^0.12.16"

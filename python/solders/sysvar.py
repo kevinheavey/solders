@@ -1,5 +1,5 @@
 """Synthetic accounts that allow programs to access certain network states."""
-from typing import Final
+from typing_extensions import Final
 from solders.pubkey import Pubkey
 from solders import _sysvar as sv
 
