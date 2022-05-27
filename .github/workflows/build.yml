@@ -73,7 +73,7 @@ jobs:
           args: --release --out dist --no-sdist
       - name: Install built wheel
         run: |
-          python -m pip install dist/${{ env.PACKAGE_NAME }}-*.whl --force-reinstall
+          python -m pip install dist/${{ env.name }}-*.whl --force-reinstall
           python -m pip install pytest based58 typing-extensions pybip39
           python -m pytest
       - name: Upload wheels
