@@ -77,7 +77,7 @@ jobs:
           python -m pip install ${{ env.name }} --no-index --find-links dist --force-reinstall
           python -m tests.test_transaction
           python -c "import solders; solders.pubkey, solders.sysvar; from based58 import b58encode; import pybip39; print(12345)"
-          python -m pytest -s -vv
+          python -m pytest -p no:faulthandler -s -vv
       - name: Upload wheels
         uses: actions/upload-artifact@v2
         with:
