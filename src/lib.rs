@@ -5,6 +5,7 @@ use pyo3::{
     prelude::*,
     pyclass::CompareOp,
 };
+use rand::{rngs::OsRng, Rng, RngCore};
 use solana_sdk::{
     instruction::Instruction as InstructionOriginal,
     pubkey::Pubkey as PubkeyOriginal,

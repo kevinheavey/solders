@@ -1338,6 +1338,7 @@ dependencies = [
  "borsh",
  "dict_derive",
  "pyo3",
+ "rand",
  "serde",
  "serde_json",
  "solana-sdk",

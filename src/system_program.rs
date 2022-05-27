@@ -1,5 +1,6 @@
 use dict_derive::{FromPyObject, IntoPyObject};
 use pyo3::{exceptions::PyValueError, prelude::*};
+use rand::{rngs::OsRng, RngCore};
 use solana_sdk::{
     instruction::Instruction as InstructionOriginal,
     pubkey::Pubkey as PubkeyOriginal,
@@ -22,6 +23,14 @@ use crate::{handle_py_err, Instruction, Pubkey};
 
 fn convert_instructions_from_original(ixs: Vec<InstructionOriginal>) -> Vec<Instruction> {
     ixs.into_iter().map(Instruction::from).collect()
+}
+
+#[pyfunction]
+pub fn noop() -> [u8; 32] {
+    let mut rng = OsRng::default();
+    let mut dest = [0u8; 32];
+    rng.fill_bytes(&mut dest);
+    dest
 }
 
 pub fn create_system_program_mod(py: Python<'_>) -> PyResult<&PyModule> {
@@ -53,6 +62,7 @@ pub fn create_system_program_mod(py: Python<'_>) -> PyResult<&PyModule> {
         wrap_pyfunction!(decode_advance_nonce_account, system_program_mod)?,
         wrap_pyfunction!(withdraw_nonce_account, system_program_mod)?,
         wrap_pyfunction!(decode_withdraw_nonce_account, system_program_mod)?,
+        wrap_pyfunction!(noop, system_program_mod)?,
     ];
     for func in funcs {
         system_program_mod.add_function(func)?;
