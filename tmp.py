@@ -19,6 +19,6 @@ params = CreateAccountParams(
 )
 ix = create_account(params)
 print("running decode_create_account")
-# res = decode_create_account(ix)
+res = decode_create_account(ix)
 print("ran decode_create_account")
 print(f"res: {res}")
