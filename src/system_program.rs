@@ -24,19 +24,6 @@ fn convert_instructions_from_original(ixs: Vec<InstructionOriginal>) -> Vec<Inst
     ixs.into_iter().map(Instruction::from).collect()
 }
 
-fn mangle_scalar_bits_and_multiply_by_basepoint_to_produce_public_key(
-    bits: &mut [u8; 32],
-) -> PublicKey {
-    bits[0] &= 248;
-    bits[31] &= 127;
-    bits[31] |= 64;
-
-    let point = &Scalar::from_bits(*bits) * &constants::ED25519_BASEPOINT_TABLE;
-    let compressed = point.compress();
-
-    ed25519_dalek::PublicKey(compressed, point)
-}
-
 pub fn create_system_program_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let system_program_mod = PyModule::new(py, "_system_program")?;
     system_program_mod.add("ID", Pubkey(system_program::ID))?;
