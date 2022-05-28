@@ -43,7 +43,7 @@ def test_create_nonce_account() -> None:
     assert nonce_pubkey in pubkeys
 
 
-def test_create_account():
+def test_create_account() -> None:
     """Test creating a transaction for create account."""
     params = sp.CreateAccountParams(
         from_pubkey=Keypair().pubkey(),
@@ -55,7 +55,7 @@ def test_create_account():
     assert sp.decode_create_account(sp.create_account(params)) == params
 
 
-def test_transfer():
+def test_transfer() -> None:
     """Test creating a transaction for transfer."""
     params = sp.TransferParams(
         from_pubkey=Keypair().pubkey(), to_pubkey=Keypair().pubkey(), lamports=123
@@ -63,7 +63,7 @@ def test_transfer():
     assert sp.decode_transfer(sp.transfer(params)) == params
 
 
-def test_transfer_many():
+def test_transfer_many() -> None:
     from_pubkey = Pubkey.new_unique()
     params = [
         sp.TransferParams(
@@ -77,7 +77,7 @@ def test_transfer_many():
     assert decoded == params
 
 
-def test_assign():
+def test_assign() -> None:
     """Test creating a transaction for assign."""
     params = sp.AssignParams(
         pubkey=Keypair().pubkey(),
@@ -86,7 +86,7 @@ def test_assign():
     assert sp.decode_assign(sp.assign(params)) == params
 
 
-def test_assign_with_seed():
+def test_assign_with_seed() -> None:
     params = sp.AssignWithSeedParams(
         address=Pubkey.new_unique(),
         base=Pubkey.new_unique(),
@@ -96,7 +96,7 @@ def test_assign_with_seed():
     assert sp.decode_assign_with_seed(sp.assign_with_seed(params)) == params
 
 
-def test_allocate():
+def test_allocate() -> None:
     """Test creating a transaction for allocate."""
     params = sp.AllocateParams(
         pubkey=Keypair().pubkey(),
@@ -105,7 +105,7 @@ def test_allocate():
     assert sp.decode_allocate(sp.allocate(params)) == params
 
 
-def test_allocate_with_seed():
+def test_allocate_with_seed() -> None:
     """Test creating a transaction for allocate with seed."""
     params = sp.AllocateWithSeedParams(
         address=Keypair().pubkey(),
@@ -117,7 +117,7 @@ def test_allocate_with_seed():
     assert sp.decode_allocate_with_seed(sp.allocate_with_seed(params)) == params
 
 
-def test_create_account_with_seed():
+def test_create_account_with_seed() -> None:
     """Test creating a an account with seed."""
     params = sp.CreateAccountWithSeedParams(
         from_pubkey=Keypair().pubkey(),
@@ -134,7 +134,7 @@ def test_create_account_with_seed():
     )
 
 
-def test_initialize_nonce_account():
+def test_initialize_nonce_account() -> None:
     params = sp.InitializeNonceAccountParams(
         nonce_pubkey=Keypair().pubkey(), authority=Keypair().pubkey()
     )
@@ -144,14 +144,14 @@ def test_initialize_nonce_account():
     )
 
 
-def test_advance_nonce_account():
+def test_advance_nonce_account() -> None:
     params = sp.AdvanceNonceAccountParams(
         nonce_pubkey=Keypair().pubkey(), authorized_pubkey=Keypair().pubkey()
     )
     assert sp.decode_advance_nonce_account(sp.advance_nonce_account(params)) == params
 
 
-def test_withdraw_nonce_account():
+def test_withdraw_nonce_account() -> None:
     params = sp.WithdrawNonceAccountParams(
         nonce_pubkey=Keypair().pubkey(),
         authorized_pubkey=Keypair().pubkey(),
@@ -161,7 +161,7 @@ def test_withdraw_nonce_account():
     assert sp.decode_withdraw_nonce_account(sp.withdraw_nonce_account(params)) == params
 
 
-def test_create_nonce_account2():
+def test_create_nonce_account2() -> None:
     from_keypair = Keypair.from_bytes(
         bytes(
             [
@@ -352,7 +352,7 @@ def test_create_nonce_account2():
     # assert create_account_txn == cli_expected_txn
 
 
-def test_create_nonce_account_with_seed():
+def test_create_nonce_account_with_seed() -> None:
     from_pubkey = Keypair().pubkey()
     nonce_pubkey = Pubkey(bytes([3]).rjust(Pubkey.LENGTH, b"\0"))
     base = Pubkey(bytes([1]).rjust(Pubkey.LENGTH, b"\0"))
@@ -378,7 +378,7 @@ def test_create_nonce_account_with_seed():
     assert sp.decode_initialize_nonce_account(ixs[1]) == initialize_nonce_account_params
 
 
-def test_advance_nonce_and_transfer():
+def test_advance_nonce_and_transfer() -> None:
     from_keypair = Keypair.from_bytes(
         bytes(
             [

@@ -188,7 +188,7 @@ def test_message_hash() -> None:
     )
 
 
-def test_new_with_nonce():
+def test_new_with_nonce() -> None:
     program_id = Pubkey.default()
     arbitrary_instruction_data = bytes([1])
     accounts: List[AccountMeta] = []

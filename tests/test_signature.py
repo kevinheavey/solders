@@ -15,48 +15,48 @@ def signature_base58_str(signature: Signature) -> str:
     return str(signature)
 
 
-def test_to_str(signature_base58_str: str, signature: Signature):
+def test_to_str(signature_base58_str: str, signature: Signature) -> None:
     assert signature_base58_str == b58encode(bytes(signature)).decode()
 
 
-def test_from_string(signature: Signature, signature_base58_str: str):
+def test_from_string(signature: Signature, signature_base58_str: str) -> None:
     assert Signature.from_string(signature_base58_str) == signature
 
 
-def test_from_string_too_long(signature_base58_str: str):
+def test_from_string_too_long(signature_base58_str: str) -> None:
     signature_base58_str_doubled = signature_base58_str * 2
     with raises(ValueError) as excinfo:
         Signature.from_string(signature_base58_str_doubled)
     assert excinfo.value.args[0] == "string decoded to wrong size for signature"
 
 
-def test_from_string_too_short(signature_base58_str: str):
+def test_from_string_too_short(signature_base58_str: str) -> None:
     with raises(ValueError) as excinfo:
         Signature.from_string(signature_base58_str[:4])
     assert excinfo.value.args[0] == "string decoded to wrong size for signature"
 
 
-def test_from_string_non_base58(signature_base58_str: str):
+def test_from_string_non_base58(signature_base58_str: str) -> None:
     bad_str = "I" + signature_base58_str[1:]
     with raises(ValueError) as excinfo:
         Signature.from_string(bad_str)
     assert excinfo.value.args[0] == "failed to decode string to signature"
 
 
-def test_verify_valid():
+def test_verify_valid() -> None:
     kp = Keypair()
     message = b"macaroni"
     sig = kp.sign_message(message)
     assert sig.verify(kp.pubkey(), message)
 
 
-def test_verify_invalid():
+def test_verify_invalid() -> None:
     kp = Keypair()
     message = b"macaroni"
     assert not Signature.default().verify(kp.pubkey(), message)
 
 
-def test_off_curve_pubkey_verify_fails():
+def test_off_curve_pubkey_verify_fails() -> None:
     # Golden point off the ed25519 curve
     off_curve_bytes = b58decode(b"9z5nJyQar1FUxVJxpBXzon6kHehbomeYiDaLi9WAMhCq")
     pubkey = Pubkey(off_curve_bytes)
@@ -64,11 +64,11 @@ def test_off_curve_pubkey_verify_fails():
     assert not signature.verify(pubkey, bytes([0]))
 
 
-def test_to_bytes_array(signature: Signature):
+def test_to_bytes_array(signature: Signature) -> None:
     assert bytes(signature.to_bytes_array()) == bytes(signature)
 
 
-def test_hash():
+def test_hash() -> None:
     msg = bytes([0])
     keypair = Keypair()
     sig = keypair.sign_message(msg)

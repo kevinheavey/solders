@@ -1000,7 +1000,7 @@ def test_tx_keypair_pubkey_mismatch() -> None:
 # The below tests are ported from solana-py tests.
 
 
-def test_dedup_signatures():
+def test_dedup_signatures() -> None:
     """Test signature deduplication."""
     kp1, kp2 = Keypair(), Keypair()
     transfer1 = system_program.transfer(

@@ -1,12 +1,12 @@
 from operator import ge, gt, le, lt
-from typing import Callable
+from typing import Callable, Any
 from pytest import raises, mark
 
 from pybip39 import Mnemonic, Seed
 from solders.keypair import Keypair
 
 
-def test_from_bytes():
+def test_from_bytes() -> None:
     raw_bytes = (
         b"\x99\xda\x95Y\xe1^\x91>\xe9\xab.S\xe3\xdf\xadW]\xa3;I\xbe\x11%\xbb\x92.3IOI"
         b'\x88(\x1b/I\tn>]\xbd\x0f\xcf\xa9\xc0\xc0\xcd\x92\xd9\xab;!TK4\xd5\xddJe\xd9\x8b\x87\x8b\x99"'
@@ -15,12 +15,12 @@ def test_from_bytes():
     assert bytes(kp) == raw_bytes
 
 
-def test_to_bytes_array():
+def test_to_bytes_array() -> None:
     kp = Keypair()
     assert kp.to_bytes_array() == list(bytes(kp))
 
 
-def test_str():
+def test_str() -> None:
     expected = (
         "2AXDGYSE4f2sz7tvMMzyHvUfcoJmxudvdhBcmiUSo6ij"
         "wfYmfZYsKRxboQMPh3R4kUhXRVdtSXFXMheka4Rc4P2"
@@ -30,7 +30,7 @@ def test_str():
     assert Keypair.from_base58_string(expected) == kp
 
 
-def test_sign_message():
+def test_sign_message() -> None:
     seed = bytes([1] * 32)
     keypair = Keypair.from_seed(seed)
     msg = b"hello"
@@ -44,7 +44,7 @@ def test_sign_message():
 
 
 @mark.parametrize("test_input", [bytes(0), bytes(1), bytes(65)])
-def test_from_bytes_wrong_size(test_input: bytes):
+def test_from_bytes_wrong_size(test_input: bytes) -> None:
     with raises(ValueError) as excinfo:
         Keypair.from_bytes(test_input)
     test_input_len = len(test_input)
@@ -54,7 +54,7 @@ def test_from_bytes_wrong_size(test_input: bytes):
     )
 
 
-def test_from_bytes_invalid_input():
+def test_from_bytes_invalid_input() -> None:
     with raises(ValueError) as excinfo:
         Keypair.from_bytes(b"a" * 64)
     assert excinfo.value.args[0] == "signature error: Cannot decompress Edwards point"
@@ -80,7 +80,7 @@ def test_not_equal() -> None:
 
 
 @mark.parametrize("op", [ge, gt, le, lt])
-def test_ordering_raises(op: Callable) -> None:
+def test_ordering_raises(op: Callable[[Any, Any], bool]) -> None:
     kp1 = Keypair()
     kp2 = Keypair()
     with raises(TypeError):

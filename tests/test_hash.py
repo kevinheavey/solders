@@ -7,7 +7,7 @@ HASHED = Hash.hash(bytes([1]))
 HASH_BASE58_STR = b58encode(bytes(HASHED)).decode()
 
 
-def test_new_unique():
+def test_new_unique() -> None:
     assert Hash.new_unique() != Hash.new_unique()
 
 

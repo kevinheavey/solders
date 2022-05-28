@@ -20,7 +20,7 @@ on_curve_data = [
 ]
 
 
-def test_wrong_size():
+def test_wrong_size() -> None:
     with raises(ValueError) as excinfo:
         Pubkey(bytes([0] * 33))
     msg = "expected a sequence of length 32 (got 33)"
@@ -28,17 +28,17 @@ def test_wrong_size():
 
 
 @mark.parametrize("test_input,expected", on_curve_data)
-def test_is_on_curve_method(test_input, expected):
+def test_is_on_curve_method(test_input: bytes, expected: bool) -> None:
     pubkey = Pubkey(test_input)
     result = pubkey.is_on_curve()
     assert result is expected
 
 
-def test_length_classattr():
+def test_length_classattr() -> None:
     assert Pubkey.LENGTH == 32
 
 
-def test_bytes_representation():
+def test_bytes_representation() -> None:
     data = (
         b"6\x8d-\x96\xcf\xe7\x93G~\xe0\x17r\\\x9c%\x9a\xab\xa6"
         b"\xa9\xede\x02\xbf\x83=\x10,P\xfbh\x8ev"
@@ -47,11 +47,11 @@ def test_bytes_representation():
     assert bytes(pubkey) == data
 
 
-def test_equality():
+def test_equality() -> None:
     assert Pubkey.default() == Pubkey.default()
 
 
-def test_create_with_seed():
+def test_create_with_seed() -> None:
     """Test create with seed"""
     default_public_key = Pubkey.default()
     derived_key = Pubkey.create_with_seed(
@@ -61,7 +61,7 @@ def test_create_with_seed():
     assert derived_key == expected
 
 
-def test_create_program_address():
+def test_create_program_address() -> None:
     """Test create program address."""
     program_id = Pubkey.from_string("BPFLoader1111111111111111111111111111111111")
     program_address = Pubkey.create_program_address([b"", bytes([1])], program_id)
@@ -111,7 +111,7 @@ def to_uint8_bytes(val: int) -> bytes:
     return val.to_bytes(1, byteorder="little")
 
 
-def test_find_program_address():
+def test_find_program_address() -> None:
     """Test create associated_token_address."""
     program_id = Pubkey.from_string("BPFLoader1111111111111111111111111111111111")
     program_address, nonce = Pubkey.find_program_address([b""], program_id)
