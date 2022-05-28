@@ -1,5 +1,5 @@
 <div align="center">
-    <img src="https://raw.githubusercontent.com/kevinheavey/solders/main/docs/logo.jpeg" width="25%" height="25%">
+    <img src="https://raw.githubusercontent.com/kevinheavey/solders/main/docs/logo.jpeg" width="50%" height="50%">
 </div>
 
 ---
