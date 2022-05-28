@@ -1337,6 +1337,7 @@ dependencies = [
  "bincode",
  "borsh",
  "dict_derive",
+ "ed25519-dalek",
  "pyo3",
  "rand",
  "serde",
