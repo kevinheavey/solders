@@ -51,3 +51,10 @@ html_theme = "sphinx_rtd_theme"
 
 add_module_names = False
 autodoc_member_order = "bysource"
+
+html_context = {
+    "display_github": True,
+    "github_user": "kevinheavey",
+    "github_repo": "solders",
+    "github_version": "main/docs/",
+}
