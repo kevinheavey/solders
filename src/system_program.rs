@@ -27,10 +27,10 @@ fn convert_instructions_from_original(ixs: Vec<InstructionOriginal>) -> Vec<Inst
 }
 
 #[pyfunction]
-pub fn noop() -> [u8; 64] {
+pub fn noop() -> [u8; 32] {
     let mut csprng = OsRng {};
-    let kp = ed25519_dalek::Keypair::generate(&mut csprng);
-    kp.to_bytes()
+    let sk = ed25519_dalek::SecretKey::generate(&mut csprng);
+    sk.to_bytes()
 }
 
 pub fn create_system_program_mod(py: Python<'_>) -> PyResult<&PyModule> {
