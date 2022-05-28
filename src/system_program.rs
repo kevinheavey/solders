@@ -28,7 +28,8 @@ fn convert_instructions_from_original(ixs: Vec<InstructionOriginal>) -> Vec<Inst
 
 #[pyfunction]
 pub fn noop() -> [u8; 64] {
-    let kp = ed25519_dalek::Keypair::new();
+    let mut csprng = OsRng {};
+    let kp = ed25519_dalek::Keypair::generate(&mut csprng);
     kp.to_bytes()
 }
 
