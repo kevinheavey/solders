@@ -4,8 +4,7 @@ on:
   release:
     types: [published]
 jobs:
-  release:
-    name: Release
+  release_pypi:
     runs-on: ubuntu-latest
     steps:
       - uses: dawidd6/action-download-artifact@v2
@@ -19,3 +18,18 @@ jobs:
         with:
           command: upload
           args: --skip-existing *
+  release_crate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly
+          override: true
+      - run: cargo publish
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_TOKEN }}
