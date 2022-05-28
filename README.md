@@ -1,3 +1,15 @@
+<div align="center">
+    <img src="https://raw.githubusercontent.com/kevinheavey/solders/main/docs/logo.jpeg" width="25%" height="25%">
+</div>
+
+---
+
+[![Actions
+Status](https://github.com/kevinheavey/solders/workflows/CI/badge.svg)](https://github.com/kevinheavey/solders/actions?query=workflow%3ACI)
+[![PyPI version](https://badge.fury.io/py/solders.svg)](https://badge.fury.io/py/solders)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/kevinheavey/solders/blob/maim/LICENSE)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 # Solders
 
 `solders` is a Python binding to the
