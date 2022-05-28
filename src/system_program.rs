@@ -4,6 +4,7 @@ use rand::{rngs::OsRng, RngCore};
 use solana_sdk::{
     instruction::Instruction as InstructionOriginal,
     pubkey::Pubkey as PubkeyOriginal,
+    signature::Keypair,
     system_instruction::{
         advance_nonce_account as advance_nonce_account_original, allocate as allocate_original,
         allocate_with_seed as allocate_with_seed_original, assign as assign_original,
@@ -19,7 +20,7 @@ use solana_sdk::{
     system_program,
 };
 
-use crate::{handle_py_err, Instruction, Keypair, Pubkey};
+use crate::{handle_py_err, Instruction, Pubkey};
 
 fn convert_instructions_from_original(ixs: Vec<InstructionOriginal>) -> Vec<Instruction> {
     ixs.into_iter().map(Instruction::from).collect()
@@ -27,9 +28,8 @@ fn convert_instructions_from_original(ixs: Vec<InstructionOriginal>) -> Vec<Inst
 
 #[pyfunction]
 pub fn noop() -> [u8; 64] {
-    [0u8; 64]
-    // let kp = Keypair::new();
-    // kp.to_bytes_array()
+    let kp = Keypair::new();
+    kp.to_bytes()
 }
 
 pub fn create_system_program_mod(py: Python<'_>) -> PyResult<&PyModule> {
