@@ -29,7 +29,6 @@ from solders._system_program import (
     withdraw_nonce_account as _withdraw_nonce_account,
     decode_withdraw_nonce_account as _decode_withdraw_nonce_account,
     ID as _ID,
-    noop,
 )
 
 ID: Final[Pubkey] = _ID
@@ -535,5 +534,4 @@ __all__ = [
     "WithdrawNonceAccountParams",
     "withdraw_nonce_account",
     "decode_withdraw_nonce_account",
-    "noop",
 ]

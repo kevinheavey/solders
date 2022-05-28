@@ -1,4 +1,6 @@
+use curve25519_dalek::constants;
 use dict_derive::{FromPyObject, IntoPyObject};
+use ed25519_dalek::Digest;
 use pyo3::{exceptions::PyValueError, prelude::*};
 use rand::{rngs::OsRng, RngCore};
 use solana_sdk::{
@@ -26,11 +28,17 @@ fn convert_instructions_from_original(ixs: Vec<InstructionOriginal>) -> Vec<Inst
     ixs.into_iter().map(Instruction::from).collect()
 }
 
-#[pyfunction]
-pub fn noop() -> [u8; 32] {
-    let mut csprng = OsRng {};
-    let sk = ed25519_dalek::SecretKey::generate(&mut csprng);
-    ed25519_dalek::PublicKey::from(&sk).to_bytes()
+fn mangle_scalar_bits_and_multiply_by_basepoint_to_produce_public_key(
+    bits: &mut [u8; 32],
+) -> PublicKey {
+    bits[0] &= 248;
+    bits[31] &= 127;
+    bits[31] |= 64;
+
+    let point = &Scalar::from_bits(*bits) * &constants::ED25519_BASEPOINT_TABLE;
+    let compressed = point.compress();
+
+    ed25519_dalek::PublicKey(compressed, point)
 }
 
 pub fn create_system_program_mod(py: Python<'_>) -> PyResult<&PyModule> {
@@ -62,7 +70,6 @@ pub fn create_system_program_mod(py: Python<'_>) -> PyResult<&PyModule> {
         wrap_pyfunction!(decode_advance_nonce_account, system_program_mod)?,
         wrap_pyfunction!(withdraw_nonce_account, system_program_mod)?,
         wrap_pyfunction!(decode_withdraw_nonce_account, system_program_mod)?,
-        wrap_pyfunction!(noop, system_program_mod)?,
     ];
     for func in funcs {
         system_program_mod.add_function(func)?;
