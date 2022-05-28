@@ -53,7 +53,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        target: [x64, x86]
+        target: [x64]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -75,10 +75,7 @@ jobs:
         run: |
           python -m pip install pytest based58 typing-extensions pybip39
           python -m pip install ${{ env.name }} --no-index --find-links dist --force-reinstall
-          python -m tests.test_transaction
-          python -c "print(990);from solders.system_program import decode_create_account,create_account,CreateAccountParams;from solders.instruction import Instruction;from solders.pubkey import Pubkey;from solders.keypair import Keypair;print(991);params = CreateAccountParams(from_pubkey=Keypair().pubkey(),to_pubkey=Keypair().pubkey(),lamports=123,space=1,owner=Pubkey.default());ix = create_account(params);print(992);res = decode_create_account(ix);print(res)"
-          python -c "from solders.system_program import noop; noop();print(12345)"
-          python -m pytest tests/test_system_program.py -vv
+          python -m pytest tests/test_system_program.py
       - name: Upload wheels
         uses: actions/upload-artifact@v2
         with:
