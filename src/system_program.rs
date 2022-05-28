@@ -30,7 +30,7 @@ fn convert_instructions_from_original(ixs: Vec<InstructionOriginal>) -> Vec<Inst
 pub fn noop() -> [u8; 32] {
     let mut csprng = OsRng {};
     let sk = ed25519_dalek::SecretKey::generate(&mut csprng);
-    sk.to_bytes()
+    ed25519_dalek::PublicKey::from(&sk).to_bytes()
 }
 
 pub fn create_system_program_mod(py: Python<'_>) -> PyResult<&PyModule> {
