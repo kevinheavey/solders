@@ -32,4 +32,4 @@ jobs:
           override: true
       - run: cargo publish
         env:
-          CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_TOKEN }}
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
