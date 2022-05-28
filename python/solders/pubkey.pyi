@@ -14,7 +14,9 @@ class Pubkey:
         base: "Pubkey", seed: str, program_id: "Pubkey"
     ) -> "Pubkey": ...
     @staticmethod
-    def create_program_address(seeds: Sequence[bytes], program_id: "Pubkey") -> "Pubkey": ...
+    def create_program_address(
+        seeds: Sequence[bytes], program_id: "Pubkey"
+    ) -> "Pubkey": ...
     @staticmethod
     def find_program_address(
         seeds: Sequence[bytes], program_id: "Pubkey"

@@ -141,13 +141,17 @@ def test_solpy_tx_from_bytes(example_signed_tx: Transaction, benchmark: Any) -> 
     benchmark(SolpyTransaction.deserialize, raw)
 
 
-def test_solders_sign_tx(example_unsigned_tx: Tuple[Transaction, Keypair], benchmark: Any) -> None:
+def test_solders_sign_tx(
+    example_unsigned_tx: Tuple[Transaction, Keypair], benchmark: Any
+) -> None:
     tx, payer = example_unsigned_tx
     blockhash = tx.message.recent_blockhash
     benchmark(tx.sign, [payer], blockhash)
 
 
-def test_solpy_sign_tx(example_unsigned_tx: Tuple[Transaction, Keypair], benchmark: Any) -> None:
+def test_solpy_sign_tx(
+    example_unsigned_tx: Tuple[Transaction, Keypair], benchmark: Any
+) -> None:
     tx, payer = example_unsigned_tx
     tx_solpy = SolpyTransaction.deserialize(bytes(tx))
     payer_solpy = SolpyKeypair.from_secret_key(bytes(payer))
