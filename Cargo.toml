@@ -2,7 +2,7 @@
 name = "solders"
 version = "0.1.0"
 edition = "2021"
-include = ["src/*.rs", "./LICENSE", "pyproject.toml"]
+include = ["src/*.rs", "./LICENSE", "./pyproject.toml"]
 description = "Python binding to the Solana Rust SDK"
 license = "MIT"
 repository = "https://github.com/kevinheavey/solders"
