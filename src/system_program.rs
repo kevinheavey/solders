@@ -1,12 +1,8 @@
-use curve25519_dalek::constants;
 use dict_derive::{FromPyObject, IntoPyObject};
-use ed25519_dalek::Digest;
 use pyo3::{exceptions::PyValueError, prelude::*};
-use rand::{rngs::OsRng, RngCore};
 use solana_sdk::{
     instruction::Instruction as InstructionOriginal,
     pubkey::Pubkey as PubkeyOriginal,
-    signature::Keypair,
     system_instruction::{
         advance_nonce_account as advance_nonce_account_original, allocate as allocate_original,
         allocate_with_seed as allocate_with_seed_original, assign as assign_original,
