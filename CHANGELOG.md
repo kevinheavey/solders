@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.2] - 2022-05-29
+
+### Added
+
+- Added docstrings to some error classes.
+
 ## [0.1.1] - 2022-05-28
 
 ### Fixed
