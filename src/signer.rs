@@ -8,7 +8,12 @@ use solana_sdk::{
 
 use crate::{Keypair, NullSigner, Presigner, PyErrWrapper, SignerTraitWrapper, ToSignerOriginal};
 
-create_exception!(solders, SignerError, PyException);
+create_exception!(
+    solders,
+    SignerError,
+    PyException,
+    "Raised when an error is encountered during transaction signing."
+);
 
 impl From<SignerErrorOriginal> for PyErrWrapper {
     fn from(e: SignerErrorOriginal) -> Self {

@@ -67,7 +67,12 @@ fn handle_py_value_err<T: Into<P>, E: ToString, P>(res: Result<T, E>) -> PyResul
     res.map_or_else(|e| Err(to_py_value_err(&e)), |v| Ok(v.into()))
 }
 
-create_exception!(solders, BincodeError, PyException);
+create_exception!(
+    solders,
+    BincodeError,
+    PyException,
+    "Raised when the Rust bincode library returns an error during (de)serialization."
+);
 
 impl From<Box<ErrorKind>> for PyErrWrapper {
     fn from(e: Box<ErrorKind>) -> Self {

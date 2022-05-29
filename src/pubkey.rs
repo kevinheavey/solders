@@ -6,7 +6,12 @@ use solana_sdk::pubkey::{
     Pubkey as PubkeyOriginal, PubkeyError as PubkeyErrorOriginal, PUBKEY_BYTES,
 };
 
-create_exception!(solders, PubkeyError, PyException);
+create_exception!(
+    solders,
+    PubkeyError,
+    PyException,
+    "Umbrella error for the ``Pubkey`` object."
+);
 
 impl From<PubkeyErrorOriginal> for PyErrWrapper {
     fn from(e: PubkeyErrorOriginal) -> Self {

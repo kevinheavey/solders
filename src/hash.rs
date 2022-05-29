@@ -7,7 +7,12 @@ use solana_sdk::hash::{
 
 use crate::{calculate_hash, handle_py_err, PyErrWrapper, RichcmpFull};
 
-create_exception!(solders, ParseHashError, PyException);
+create_exception!(
+    solders,
+    ParseHashError,
+    PyException,
+    "Raised when an error is encountered converting a string into a ``Hash``."
+);
 
 impl From<ParseHashErrorOriginal> for PyErrWrapper {
     fn from(e: ParseHashErrorOriginal) -> Self {

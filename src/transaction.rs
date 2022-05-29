@@ -19,7 +19,12 @@ use crate::{
     Signature, Signer, SolderHash,
 };
 
-create_exception!(solders, TransactionError, PyException);
+create_exception!(
+    solders,
+    TransactionError,
+    PyException,
+    "Umbrella error for the ``Transaction`` object."
+);
 
 impl From<TransactionErrorOriginal> for PyErrWrapper {
     fn from(e: TransactionErrorOriginal) -> Self {
@@ -27,7 +32,12 @@ impl From<TransactionErrorOriginal> for PyErrWrapper {
     }
 }
 
-create_exception!(solders, SanitizeError, PyException);
+create_exception!(
+    solders,
+    SanitizeError,
+    PyException,
+    "Raised when an error is encountered during transaction sanitization."
+);
 
 impl From<SanitizeErrorOriginal> for PyErrWrapper {
     fn from(e: SanitizeErrorOriginal) -> Self {
