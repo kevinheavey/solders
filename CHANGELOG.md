@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.3] - 2022-05-30
+
+### Fixed
+
+- Added missing `TransactionError` export
+
 ## [0.1.2] - 2022-05-29
 
 ### Added

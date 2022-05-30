@@ -2,7 +2,7 @@ from typing import Tuple, Optional, List, Union
 from base64 import b64decode, b64encode
 from based58 import b58encode
 from pytest import raises
-from solders.transaction import Transaction, SanitizeError
+from solders.transaction import Transaction, SanitizeError, TransactionError
 from solders.pubkey import Pubkey
 from solders.keypair import Keypair
 from solders.instruction import CompiledInstruction, Instruction, AccountMeta
@@ -752,9 +752,12 @@ def test_transaction_correct_key() -> None:
     ix = Instruction(program_id, ZERO_BYTES, [AccountMeta(id0, True, True)])
     message = Message([ix], id0)
     tx = Transaction.new_unsigned(message)
+    with raises(TransactionError):
+        tx.verify()
     tx.sign([keypair0], Hash.default())
     assert tx.message.instructions[0] == CompiledInstruction(1, ZERO_BYTES, bytes([0]))
     assert tx.is_signed()
+    tx.verify()
 
 
 def test_transaction_instruction_with_duplicate_keys() -> None:

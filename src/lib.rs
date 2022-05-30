@@ -32,7 +32,7 @@ pub use hash::{Hash as SolderHash, ParseHashError};
 mod message;
 pub use message::{Message, MessageHeader};
 mod transaction;
-pub use transaction::{SanitizeError, Transaction};
+pub use transaction::{SanitizeError, Transaction, TransactionError};
 mod presigner;
 pub use presigner::Presigner;
 mod null_signer;
@@ -188,6 +188,7 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
     let transaction_mod = PyModule::new(py, "transaction")?;
     transaction_mod.add_class::<Transaction>()?;
     transaction_mod.add("SanitizeError", py.get_type::<SanitizeError>())?;
+    transaction_mod.add("TransactionError", py.get_type::<TransactionError>())?;
     let system_program_mod = create_system_program_mod(py)?;
     let sysvar_mod = create_sysvar_mod(py)?;
     let presigner_mod = PyModule::new(py, "presigner")?;
