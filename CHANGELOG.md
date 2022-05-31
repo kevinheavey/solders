@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.4] - 2022-05-31
+
+### Fixed
+
+- Added missing `__richcmp__` for `MessageHeader`.
+
 ## [0.1.3] - 2022-05-30
 
 ### Fixed

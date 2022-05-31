@@ -158,6 +158,10 @@ def test_message_header_len_constant() -> None:
     assert MessageHeader.LENGTH == 3
 
 
+def test_message_header_eq() -> None:
+    assert MessageHeader.default() == MessageHeader.default()
+
+
 def test_message_hash() -> None:
     # when this test fails, it's most likely due to a new serialized format of a message.
     # in this case, the domain prefix `solana-tx-message-v1` should be updated.

@@ -106,6 +106,10 @@ impl MessageHeader {
     pub fn __str__(&self) -> String {
         format!("{:?}", self)
     }
+
+    pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
+        self.richcmp(other, op)
+    }
 }
 
 impl From<MessageHeaderOriginal> for MessageHeader {
@@ -113,6 +117,8 @@ impl From<MessageHeaderOriginal> for MessageHeader {
         Self(h)
     }
 }
+
+impl RichcmpEqualityOnly for MessageHeader {}
 
 #[pyclass(module = "solders.message", subclass)]
 #[derive(PartialEq, Eq, Debug, Clone, Default)]
