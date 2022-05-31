@@ -709,6 +709,7 @@ def test_partial_sign() -> None:
         ],
     )
     message = Message([ix], keypair0.pubkey())
+    assert message.header.num_required_signatures == 3
     tx = Transaction.new_unsigned(message)
 
     tx.partial_sign([keypair0, keypair2], Hash.default())
