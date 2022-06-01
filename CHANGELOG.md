@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.5] - 2022-06-01
+
+### Fixed
+
+- Added missing `authorize_nonce_account` to `system_program`.
+
 ## [0.1.4] - 2022-05-31
 
 ### Fixed

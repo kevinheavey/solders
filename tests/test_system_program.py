@@ -161,6 +161,17 @@ def test_withdraw_nonce_account() -> None:
     assert sp.decode_withdraw_nonce_account(sp.withdraw_nonce_account(params)) == params
 
 
+def test_authorize_nonce_account() -> None:
+    params = sp.AuthorizeNonceAccountParams(
+        nonce_pubkey=Keypair().pubkey(),
+        authorized_pubkey=Keypair().pubkey(),
+        new_authority=Keypair().pubkey(),
+    )
+    assert (
+        sp.decode_authorize_nonce_account(sp.authorize_nonce_account(params)) == params
+    )
+
+
 def test_create_nonce_account2() -> None:
     from_keypair = Keypair.from_bytes(
         bytes(

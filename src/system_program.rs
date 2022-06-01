@@ -6,7 +6,9 @@ use solana_sdk::{
     system_instruction::{
         advance_nonce_account as advance_nonce_account_original, allocate as allocate_original,
         allocate_with_seed as allocate_with_seed_original, assign as assign_original,
-        assign_with_seed as assign_with_seed_original, create_account as create_account_original,
+        assign_with_seed as assign_with_seed_original,
+        authorize_nonce_account as authorize_nonce_account_original,
+        create_account as create_account_original,
         create_account_with_seed as create_account_with_seed_original,
         create_nonce_account as create_nonce_account_original,
         create_nonce_account_with_seed as create_nonce_account_with_seed_original,
@@ -53,6 +55,8 @@ pub fn create_system_program_mod(py: Python<'_>) -> PyResult<&PyModule> {
         wrap_pyfunction!(decode_advance_nonce_account, system_program_mod)?,
         wrap_pyfunction!(withdraw_nonce_account, system_program_mod)?,
         wrap_pyfunction!(decode_withdraw_nonce_account, system_program_mod)?,
+        wrap_pyfunction!(authorize_nonce_account, system_program_mod)?,
+        wrap_pyfunction!(decode_authorize_nonce_account, system_program_mod)?,
     ];
     for func in funcs {
         system_program_mod.add_function(func)?;
@@ -584,6 +588,47 @@ pub fn decode_withdraw_nonce_account(
         }
         _ => Err(PyValueError::new_err(
             "Not a WithdrawNonceAccount instruction",
+        )),
+    }
+}
+
+#[derive(FromPyObject, IntoPyObject)]
+pub struct AuthorizeNonceAccountParams {
+    nonce_pubkey: Pubkey,
+    authorized_pubkey: Pubkey,
+    new_authority: Pubkey,
+}
+
+#[pyfunction]
+pub fn authorize_nonce_account(params: AuthorizeNonceAccountParams) -> Instruction {
+    authorize_nonce_account_original(
+        params.nonce_pubkey.as_ref(),
+        params.authorized_pubkey.as_ref(),
+        params.new_authority.as_ref(),
+    )
+    .into()
+}
+
+#[pyfunction]
+pub fn decode_authorize_nonce_account(
+    instruction: Instruction,
+) -> PyResult<AuthorizeNonceAccountParams> {
+    let keys = instruction.0.accounts;
+    let nonce_pubkey = keys[0].pubkey;
+    let authorized_pubkey = keys[1].pubkey;
+    let parsed_data = handle_py_err(bincode::deserialize::<SystemInstructionOriginal>(
+        instruction.0.data.as_slice(),
+    ))?;
+    match parsed_data {
+        SystemInstructionOriginal::AuthorizeNonceAccount(new_authority) => {
+            Ok(AuthorizeNonceAccountParams {
+                nonce_pubkey: nonce_pubkey.into(),
+                authorized_pubkey: authorized_pubkey.into(),
+                new_authority: new_authority.into(),
+            })
+        }
+        _ => Err(PyValueError::new_err(
+            "Not an AuthorizeNonceAccount instruction",
         )),
     }
 }

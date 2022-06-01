@@ -28,6 +28,8 @@ from solders._system_program import (
     decode_advance_nonce_account as _decode_advance_nonce_account,
     withdraw_nonce_account as _withdraw_nonce_account,
     decode_withdraw_nonce_account as _decode_withdraw_nonce_account,
+    authorize_nonce_account as _authorize_nonce_account,
+    decode_authorize_nonce_account as _decode_authorize_nonce_account,
     ID as _ID,
 )
 
@@ -110,7 +112,7 @@ class CreateAccountWithSeedParams(TypedDict):
 
 
 def create_account_with_seed(params: CreateAccountWithSeedParams) -> Instruction:
-    """Generate a transaction instruction that creates a new account at an address
+    """Generate an instruction that creates a new account at an address
     generated with ``from``, a seed, and program_id.
 
     Args:
@@ -471,7 +473,7 @@ class WithdrawNonceAccountParams(TypedDict):
 
 
 def withdraw_nonce_account(params: WithdrawNonceAccountParams) -> Instruction:
-    """Generate a transaction instruction that withdraws lamports from a Nonce account.
+    """Generate an instruction that withdraws lamports from a Nonce account.
 
     Args:
         params (WithdrawNonceAccountParams): The WithdrawNonceAccount params.
@@ -494,6 +496,45 @@ def decode_withdraw_nonce_account(
         WithdrawNonceAccountParams: The params used to create the instruction.
     """
     return cast(WithdrawNonceAccountParams, _decode_withdraw_nonce_account(instruction))
+
+
+class AuthorizeNonceAccountParams(TypedDict):
+    """Authorize nonce account system transaction params."""
+
+    nonce_pubkey: Pubkey
+    """Nonce account."""
+    authorized_pubkey: Pubkey
+    """Pubkey of the current nonce authority."""
+    new_authority: Pubkey
+    """Pubkey of the new nonce authority."""
+
+
+def authorize_nonce_account(params: AuthorizeNonceAccountParams) -> Instruction:
+    """Generate an instruction that authorizes a new Pubkey as the nonce authority.
+
+    Args:
+        params (AuthorizeNonceAccountParams): The AuthorizeNonceAccount params.
+
+    Returns:
+        Instruction: The AuthorizeNonceAccount instruction.
+    """
+    return _authorize_nonce_account(dict(params))
+
+
+def decode_authorize_nonce_account(
+    instruction: Instruction,
+) -> AuthorizeNonceAccountParams:
+    """Decode an authorize nonce account instruction and retrieve the instruction params.
+
+    Args:
+        instruction (Instruction): The AuthorizeNonceAccount instruction.
+
+    Returns:
+        AuthorizeNonceAccountParams: The params used to create the instruction.
+    """
+    return cast(
+        AuthorizeNonceAccountParams, _decode_authorize_nonce_account(instruction)
+    )
 
 
 __all__ = [
@@ -534,4 +575,7 @@ __all__ = [
     "WithdrawNonceAccountParams",
     "withdraw_nonce_account",
     "decode_withdraw_nonce_account",
+    "AuthorizeNonceAccountParams",
+    "authorize_nonce_account",
+    "decode_authorize_nonce_account",
 ]
