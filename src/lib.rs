@@ -1,4 +1,5 @@
 use bincode::ErrorKind;
+use commitment_config::{CommitmentConfig, CommitmentLevel};
 use pyo3::{
     create_exception,
     exceptions::{PyException, PyTypeError, PyValueError},
@@ -38,6 +39,7 @@ mod presigner;
 pub use presigner::Presigner;
 mod null_signer;
 pub use null_signer::NullSigner;
+pub mod commitment_config;
 pub mod rpc;
 mod system_program;
 mod sysvar;
@@ -199,6 +201,9 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
     errors_mod.add("BincodeError", py.get_type::<BincodeError>())?;
     errors_mod.add("SignerError", py.get_type::<SignerError>())?;
     let rpc_mod = create_rpc_mod(py)?;
+    let commitment_config_mod = PyModule::new(py, "commitment_config")?;
+    commitment_config_mod.add_class::<CommitmentConfig>()?;
+    commitment_config_mod.add_class::<CommitmentLevel>()?;
     let submodules = [
         errors_mod,
         hash_mod,
@@ -213,6 +218,7 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
         system_program_mod,
         sysvar_mod,
         rpc_mod,
+        commitment_config_mod,
     ];
     let modules: HashMap<String, &PyModule> = submodules
         .iter()
