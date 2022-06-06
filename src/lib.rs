@@ -5,6 +5,7 @@ use pyo3::{
     prelude::*,
     pyclass::CompareOp,
 };
+use rpc::create_rpc_mod;
 use solana_sdk::{
     instruction::Instruction as InstructionOriginal,
     pubkey::Pubkey as PubkeyOriginal,
@@ -37,6 +38,7 @@ mod presigner;
 pub use presigner::Presigner;
 mod null_signer;
 pub use null_signer::NullSigner;
+pub mod rpc;
 mod system_program;
 mod sysvar;
 
@@ -196,6 +198,7 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
     let errors_mod = PyModule::new(py, "errors")?;
     errors_mod.add("BincodeError", py.get_type::<BincodeError>())?;
     errors_mod.add("SignerError", py.get_type::<SignerError>())?;
+    let rpc_mod = create_rpc_mod(py)?;
     let submodules = [
         errors_mod,
         hash_mod,
@@ -209,6 +212,7 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
         transaction_mod,
         system_program_mod,
         sysvar_mod,
+        rpc_mod,
     ];
     let modules: HashMap<String, &PyModule> = submodules
         .iter()
