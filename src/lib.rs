@@ -19,6 +19,7 @@ use std::{
 };
 use system_program::create_system_program_mod;
 use sysvar::create_sysvar_mod;
+use transaction_status::UiTransactionEncoding;
 mod pubkey;
 pub use pubkey::Pubkey;
 mod signer;
@@ -43,6 +44,7 @@ pub mod commitment_config;
 pub mod rpc;
 mod system_program;
 mod sysvar;
+pub mod transaction_status;
 
 struct PyErrWrapper(PyErr);
 
@@ -204,6 +206,8 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
     let commitment_config_mod = PyModule::new(py, "commitment_config")?;
     commitment_config_mod.add_class::<CommitmentConfig>()?;
     commitment_config_mod.add_class::<CommitmentLevel>()?;
+    let transaction_status_mod = PyModule::new(py, "transaction_status")?;
+    transaction_status_mod.add_class::<UiTransactionEncoding>()?;
     let submodules = [
         errors_mod,
         hash_mod,
@@ -219,6 +223,7 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
         sysvar_mod,
         rpc_mod,
         commitment_config_mod,
+        transaction_status_mod,
     ];
     let modules: HashMap<String, &PyModule> = submodules
         .iter()

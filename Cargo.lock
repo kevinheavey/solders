@@ -3292,6 +3292,7 @@ dependencies = [
  "serde_json",
  "solana-client",
  "solana-sdk",
+ "solana-transaction-status",
 ]
 
 [[package]]

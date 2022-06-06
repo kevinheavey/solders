@@ -22,7 +22,7 @@ impl From<ParseCommitmentLevelErrorOriginal> for PyErrWrapper {
     }
 }
 
-#[pyclass]
+#[pyclass(module = "solders.commitment_config")]
 #[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum CommitmentLevel {
     /// The highest slot of the heaviest fork processed by the node. Ledger state at this slot is
@@ -76,7 +76,7 @@ impl From<CommitmentLevel> for CommitmentLevelOriginal {
     }
 }
 
-#[pyclass]
+#[pyclass(module = "solders.commitment_config", subclass)]
 #[derive(Serialize, Deserialize, Default, Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub struct CommitmentConfig(CommitmentConfigOriginal);
 
