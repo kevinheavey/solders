@@ -22,6 +22,7 @@ borsh = "^0.9.3"
 dict_derive = "0.4.0"
 solana-client = "1.10.23"
 solana-transaction-status = "1.10.23"
+solders-macros = { path = "../solders-macros" }
 
 [package.metadata.maturin]
 python-source = "python"

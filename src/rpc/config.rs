@@ -3,13 +3,19 @@ use serde::{Deserialize, Serialize};
 use solana_client::rpc_config;
 use solana_sdk::commitment_config::CommitmentLevel as CommitmentLevelOriginal;
 use solana_transaction_status::UiTransactionEncoding as UiTransactionEncodingOriginal;
+use solders_macros::pyrepr;
 
 use crate::{commitment_config::CommitmentLevel, transaction_status::UiTransactionEncoding};
+
+fn to_json(obj: &impl Serialize) -> String {
+    serde_json::to_string(obj).unwrap()
+}
 
 #[pyclass(module = "solders.rpc.config", subclass)]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RpcSignatureStatusConfig(rpc_config::RpcSignatureStatusConfig);
 
+#[pyrepr]
 #[pymethods]
 impl RpcSignatureStatusConfig {
     #[new]
@@ -24,10 +30,6 @@ impl RpcSignatureStatusConfig {
         self.0.search_transaction_history
     }
 
-    fn __repr__(&self) -> String {
-        format!("{:#?}", self)
-    }
-
     /// Serialize as a JSON string.
     ///
     /// Example:
@@ -36,7 +38,7 @@ impl RpcSignatureStatusConfig {
     ///     >>> RpcSignatureStatusConfig(True).to_json()
     ///     '{"searchTransactionHistory":true}'
     pub fn to_json(&self) -> String {
-        serde_json::to_string(self).unwrap()
+        to_json(self)
     }
 }
 
