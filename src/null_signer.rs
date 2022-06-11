@@ -2,8 +2,8 @@ use pyo3::{prelude::*, pyclass::CompareOp, types::PyBytes};
 use solana_sdk::signer::{null_signer::NullSigner as NullSignerOriginal, Signer as SignerTrait};
 
 use crate::{
-    impl_display, impl_signer_hash, CommonMethods, Pubkey, PyBytesGeneral, RichcmpSigner,
-    Signature, Signer, SignerTraitWrapper, ToSignerOriginal,
+    impl_display, impl_signer_hash, CommonMethods, Pubkey, PyBytesGeneral, PyFromBytesGeneral,
+    RichcmpSigner, Signature, Signer, SignerTraitWrapper, ToSignerOriginal,
 };
 
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -70,6 +70,18 @@ impl NullSigner {
     fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
         self.pybytes(py)
     }
+
+    #[staticmethod]
+    /// Deserialize a serialized ``NullSigner`` object.
+    ///
+    /// Args:
+    ///     data (bytes): The serialized ``NullSigner``.
+    ///
+    /// Returns:
+    ///     NullSigner: The deserialized ``NullSigner``.
+    fn from_bytes(data: [u8; Pubkey::LENGTH]) -> Self {
+        Self::py_from_bytes(&data)
+    }
 }
 
 impl_display!(NullSigner);
@@ -78,6 +90,12 @@ impl_signer_hash!(NullSigner);
 impl PyBytesGeneral for NullSigner {
     fn pybytes_general<'a>(&self, py: Python<'a>) -> &'a PyBytes {
         self.py_pubkey().pybytes(py)
+    }
+}
+
+impl PyFromBytesGeneral for NullSigner {
+    fn py_from_bytes_general(raw: &[u8]) -> PyResult<Self> {
+        Ok(Self::new(&Pubkey::from_bytes(raw)?))
     }
 }
 
