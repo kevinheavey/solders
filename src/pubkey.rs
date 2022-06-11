@@ -1,6 +1,8 @@
-use std::{fmt, hash::Hash, str::FromStr};
+use std::{hash::Hash, str::FromStr};
 
-use crate::{calculate_hash, handle_py_err, handle_py_value_err, PyErrWrapper, RichcmpFull};
+use crate::{
+    calculate_hash, handle_py_err, handle_py_value_err, impl_display, PyErrWrapper, RichcmpFull,
+};
 use pyo3::{basic::CompareOp, create_exception, exceptions::PyException, prelude::*};
 use solana_sdk::pubkey::{
     Pubkey as PubkeyOriginal, PubkeyError as PubkeyErrorOriginal, PUBKEY_BYTES,
@@ -256,11 +258,7 @@ impl From<Pubkey> for PubkeyOriginal {
     }
 }
 
-impl fmt::Display for Pubkey {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.0)
-    }
-}
+impl_display!(Pubkey);
 
 impl AsRef<[u8]> for Pubkey {
     fn as_ref(&self) -> &[u8] {

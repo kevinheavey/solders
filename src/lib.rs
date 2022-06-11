@@ -4,7 +4,9 @@ use pyo3::{
     exceptions::{PyException, PyTypeError, PyValueError},
     prelude::*,
     pyclass::CompareOp,
+    types::PyBytes,
 };
+use serde::Serialize;
 use solana_sdk::{
     instruction::Instruction as InstructionOriginal,
     pubkey::Pubkey as PubkeyOriginal,
@@ -13,6 +15,7 @@ use solana_sdk::{
 };
 use std::{
     collections::{hash_map::DefaultHasher, HashMap},
+    fmt,
     hash::{Hash, Hasher},
 };
 use system_program::create_system_program_mod;
@@ -96,7 +99,10 @@ fn richcmp_type_error(op: &str) -> PyErr {
     PyTypeError::new_err(msg)
 }
 
-fn calculate_hash(t: &impl Hash) -> u64 {
+fn calculate_hash<T>(t: &T) -> u64
+where
+    T: Hash + ?Sized,
+{
     let mut s = DefaultHasher::new();
     t.hash(&mut s);
     s.finish()
@@ -161,6 +167,77 @@ pub trait RichcmpFull: PartialEq + PartialOrd {
             CompareOp::Le => self <= other,
             CompareOp::Ge => self >= other,
         }
+    }
+}
+
+macro_rules! impl_display {
+    ($ident:ident) => {
+        impl std::fmt::Display for $ident {
+            fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+                write!(f, "{:?}", self.0)
+            }
+        }
+    };
+}
+
+pub(crate) use impl_display;
+
+pub trait PyHash: Hash {
+    fn pyhash(&self) -> u64 {
+        calculate_hash(self)
+    }
+}
+
+pub trait PyBytesSlice: AsRef<[u8]> {
+    fn pybytes_slice<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+        PyBytes::new(py, self.as_ref())
+    }
+}
+
+macro_rules! pybytes_general_for_pybytes_slice {
+    ($ident:ident) => {
+        impl crate::PyBytesGeneral for $ident {
+            fn pybytes_general<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+                self.pybytes_slice(py)
+            }
+        }
+    };
+}
+
+pub(crate) use pybytes_general_for_pybytes_slice;
+
+macro_rules! pybytes_general_for_pybytes_bincode {
+    ($ident:ident) => {
+        impl crate::PyBytesGeneral for $ident {
+            fn pybytes_general<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+                self.pybytes_bincode(py)
+            }
+        }
+    };
+}
+
+pub(crate) use pybytes_general_for_pybytes_bincode;
+
+pub trait PyBytesBincode: Serialize {
+    fn pybytes_bincode<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+        PyBytes::new(py, &bincode::serialize(self).unwrap())
+    }
+}
+
+pub trait PyBytesGeneral {
+    fn pybytes_general<'a>(&self, py: Python<'a>) -> &'a PyBytes;
+}
+
+pub trait CommonMethods: fmt::Display + fmt::Debug + PyBytesGeneral {
+    fn pybytes<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+        self.pybytes_general(py)
+    }
+
+    fn pystr(&self) -> String {
+        self.to_string()
+    }
+    fn pyrepr(&self) -> String {
+        format!("{:#?}", self)
     }
 }
 

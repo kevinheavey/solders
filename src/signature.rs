@@ -1,9 +1,9 @@
-use std::{fmt, str::FromStr};
+use std::str::FromStr;
 
 use pyo3::{basic::CompareOp, prelude::*};
 use solana_sdk::signature::{Signature as SignatureOriginal, SIGNATURE_BYTES};
 
-use crate::{calculate_hash, handle_py_value_err, Pubkey, RichcmpFull};
+use crate::{calculate_hash, handle_py_value_err, impl_display, Pubkey, RichcmpFull};
 
 #[pyclass(module = "solders.signature", subclass)]
 #[derive(Clone, Copy, Default, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
@@ -143,11 +143,7 @@ impl From<Signature> for SignatureOriginal {
     }
 }
 
-impl fmt::Display for Signature {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.0)
-    }
-}
+impl_display!(Signature);
 
 impl AsRef<[u8]> for Signature {
     fn as_ref(&self) -> &[u8] {

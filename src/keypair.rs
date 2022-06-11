@@ -7,8 +7,8 @@ use solana_sdk::signer::{
 };
 
 use crate::{
-    calculate_hash, handle_py_value_err, pubkey::Pubkey, signature::Signature, RichcmpSigner,
-    Signer, SignerTraitWrapper, ToSignerOriginal,
+    calculate_hash, handle_py_value_err, impl_display, pubkey::Pubkey, signature::Signature,
+    CommonMethods, PyBytesGeneral, RichcmpSigner, Signer, SignerTraitWrapper, ToSignerOriginal,
 };
 
 #[pyclass(module = "solders.keypair", subclass)]
@@ -67,7 +67,7 @@ impl Keypair {
     }
 
     pub fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        PyBytes::new(py, self.to_bytes_array().as_slice())
+        self.pybytes(py)
     }
 
     #[staticmethod]
@@ -215,7 +215,16 @@ impl Keypair {
     }
 }
 
+impl PyBytesGeneral for Keypair {
+    fn pybytes_general<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+        PyBytes::new(py, &self.to_bytes_array())
+    }
+}
+impl CommonMethods for Keypair {}
+
 impl RichcmpSigner for Keypair {}
+
+impl_display!(Keypair);
 
 impl Default for Keypair {
     fn default() -> Self {

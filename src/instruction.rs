@@ -1,3 +1,5 @@
+use std::hash::Hasher;
+
 use pyo3::{basic::CompareOp, prelude::*, types::PyBytes};
 use serde::{Deserialize, Serialize};
 use solana_sdk::{
@@ -8,7 +10,10 @@ use solana_sdk::{
     pubkey::Pubkey as PubkeyOriginal,
 };
 
-use crate::{handle_py_err, pubkey::Pubkey, RichcmpEqualityOnly};
+use crate::{
+    handle_py_err, impl_display, pubkey::Pubkey, pybytes_general_for_pybytes_bincode,
+    CommonMethods, PyBytesBincode, PyBytesGeneral, PyHash, RichcmpEqualityOnly,
+};
 
 /// Describes a single account read or written by a program during instruction
 /// execution.
@@ -39,7 +44,7 @@ use crate::{handle_py_err, pubkey::Pubkey, RichcmpEqualityOnly};
 ///     >>> instruction = Instruction(program_id, instruction_data, accs)
 ///
 #[pyclass(module = "solders.instruction", subclass)]
-#[derive(PartialEq, Debug, Clone)]
+#[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
 pub struct AccountMeta(AccountMetaOriginal);
 #[pymethods]
 impl AccountMeta {
@@ -70,19 +75,28 @@ impl AccountMeta {
     }
 
     pub fn __repr__(&self) -> String {
-        format!("{:#?}", self)
+        self.pyrepr()
     }
 
     pub fn __str__(&self) -> String {
-        format!("{:?}", self)
+        self.pystr()
     }
 
     pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
         self.richcmp(other, op)
     }
-}
 
+    pub fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+        self.pybytes(py)
+    }
+}
+pybytes_general_for_pybytes_bincode!(AccountMeta);
 impl RichcmpEqualityOnly for AccountMeta {}
+impl PyBytesBincode for AccountMeta {}
+
+impl CommonMethods for AccountMeta {}
+
+impl PyHash for AccountMeta {}
 
 impl From<AccountMetaOriginal> for AccountMeta {
     fn from(am: AccountMetaOriginal) -> Self {
@@ -93,6 +107,17 @@ impl From<AccountMetaOriginal> for AccountMeta {
 impl From<AccountMeta> for AccountMetaOriginal {
     fn from(am: AccountMeta) -> Self {
         am.0
+    }
+}
+
+impl_display!(AccountMeta);
+
+#[allow(clippy::derive_hash_xor_eq)]
+impl std::hash::Hash for AccountMeta {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.0.pubkey.hash(state);
+        self.0.is_signer.hash(state);
+        self.0.is_writable.hash(state);
     }
 }
 
@@ -201,11 +226,11 @@ impl Instruction {
     }
 
     pub fn __repr__(&self) -> String {
-        format!("{:#?}", self)
+        self.pyrepr()
     }
 
     pub fn __str__(&self) -> String {
-        format!("{:?}", self)
+        self.pystr()
     }
 
     pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
@@ -213,8 +238,7 @@ impl Instruction {
     }
 
     pub fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        let ser = bincode::serialize(&self).unwrap();
-        PyBytes::new(py, &ser)
+        self.pybytes(py)
     }
 
     #[staticmethod]
@@ -243,8 +267,13 @@ impl Instruction {
         handle_py_err(deser)
     }
 }
-
+pybytes_general_for_pybytes_bincode!(Instruction);
 impl RichcmpEqualityOnly for Instruction {}
+impl PyBytesBincode for Instruction {}
+
+impl CommonMethods for Instruction {}
+
+impl_display!(Instruction);
 
 impl From<InstructionOriginal> for Instruction {
     fn from(ix: InstructionOriginal) -> Self {
@@ -326,11 +355,11 @@ impl CompiledInstruction {
     }
 
     pub fn __repr__(&self) -> String {
-        format!("{:#?}", self)
+        self.pyrepr()
     }
 
     pub fn __str__(&self) -> String {
-        format!("{:?}", self)
+        self.pystr()
     }
 
     pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
@@ -338,8 +367,7 @@ impl CompiledInstruction {
     }
 
     pub fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        let ser = bincode::serialize(&self).unwrap();
-        PyBytes::new(py, &ser)
+        self.pybytes(py)
     }
 
     #[staticmethod]
@@ -356,8 +384,13 @@ impl CompiledInstruction {
         handle_py_err(deser)
     }
 }
-
+pybytes_general_for_pybytes_bincode!(CompiledInstruction);
 impl RichcmpEqualityOnly for CompiledInstruction {}
+
+impl CommonMethods for CompiledInstruction {}
+impl PyBytesBincode for CompiledInstruction {}
+
+impl_display!(CompiledInstruction);
 
 impl From<CompiledInstructionOriginal> for CompiledInstruction {
     fn from(ix: CompiledInstructionOriginal) -> Self {

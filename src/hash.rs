@@ -1,11 +1,16 @@
-use std::{fmt, str::FromStr};
+use std::str::FromStr;
 
-use pyo3::{basic::CompareOp, create_exception, exceptions::PyException, prelude::*};
+use pyo3::{
+    basic::CompareOp, create_exception, exceptions::PyException, prelude::*, types::PyBytes,
+};
 use solana_sdk::hash::{
     hash, Hash as HashOriginal, ParseHashError as ParseHashErrorOriginal, HASH_BYTES,
 };
 
-use crate::{calculate_hash, handle_py_err, PyErrWrapper, RichcmpFull};
+use crate::{
+    handle_py_err, impl_display, pybytes_general_for_pybytes_slice, CommonMethods, PyBytesGeneral,
+    PyBytesSlice, PyErrWrapper, PyHash, RichcmpFull,
+};
 
 create_exception!(
     solders,
@@ -37,11 +42,11 @@ impl Hash {
     }
 
     pub fn __str__(&self) -> String {
-        self.to_string()
+        self.pystr()
     }
 
     pub fn __repr__(&self) -> String {
-        format!("{:#?}", self)
+        self.pyrepr()
     }
 
     #[staticmethod]
@@ -91,8 +96,8 @@ impl Hash {
         Self::default()
     }
 
-    pub fn __bytes__(&self) -> &[u8] {
-        self.as_ref()
+    pub fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+        self.pybytes(py)
     }
 
     pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> bool {
@@ -120,11 +125,17 @@ impl Hash {
     }
 
     pub fn __hash__(&self) -> u64 {
-        calculate_hash(self)
+        self.pyhash()
     }
 }
+pybytes_general_for_pybytes_slice!(Hash);
+impl CommonMethods for Hash {}
 
 impl RichcmpFull for Hash {}
+
+impl PyHash for Hash {}
+
+impl PyBytesSlice for Hash {}
 
 impl From<HashOriginal> for Hash {
     fn from(h: HashOriginal) -> Self {
@@ -150,8 +161,4 @@ impl AsRef<[u8]> for Hash {
     }
 }
 
-impl fmt::Display for Hash {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.0)
-    }
-}
+impl_display!(Hash);
