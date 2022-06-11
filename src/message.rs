@@ -11,8 +11,9 @@ use solana_sdk::{
 
 use crate::{
     convert_instructions, convert_optional_pubkey, handle_py_err, impl_display,
-    pybytes_general_for_pybytes_bincode, CommonMethods, CompiledInstruction, Instruction, Pubkey,
-    PyBytesBincode, PyBytesGeneral, RichcmpEqualityOnly, SolderHash,
+    py_from_bytes_general_for_py_from_bytes_bincode, pybytes_general_for_pybytes_bincode,
+    CommonMethods, CompiledInstruction, Instruction, Pubkey, PyBytesBincode, PyBytesGeneral,
+    PyFromBytesBincode, RichcmpEqualityOnly, SolderHash,
 };
 
 #[pyclass(module = "solders.message", subclass)]
@@ -116,6 +117,18 @@ impl MessageHeader {
     pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
         self.richcmp(other, op)
     }
+
+    #[staticmethod]
+    /// Deserialize a serialized ``Message`` object.
+    ///
+    /// Args:
+    ///     data (bytes): The serialized ``Message``.
+    ///
+    /// Returns:
+    ///     Message: The deserialized ``Message``.
+    fn from_bytes(data: &[u8]) -> Self {
+        Self::py_from_bytes(data)
+    }
 }
 
 impl From<MessageHeaderOriginal> for MessageHeader {
@@ -128,10 +141,12 @@ impl RichcmpEqualityOnly for MessageHeader {}
 impl PyBytesBincode for MessageHeader {}
 pybytes_general_for_pybytes_bincode!(MessageHeader);
 impl_display!(MessageHeader);
+impl PyFromBytesBincode<'_> for MessageHeader {}
+py_from_bytes_general_for_py_from_bytes_bincode!(MessageHeader);
 impl CommonMethods for MessageHeader {}
 
 #[pyclass(module = "solders.message", subclass)]
-#[derive(PartialEq, Eq, Debug, Clone, Default)]
+#[derive(PartialEq, Eq, Debug, Clone, Default, Serialize, Deserialize)]
 /// A Solana transaction message.
 ///
 /// Some constructors accept an optional `payer`, the account responsible for
@@ -517,7 +532,7 @@ impl Message {
     ///     >>> assert Message.from_bytes(serialized) == message
     ///
     pub fn from_bytes(data: &[u8]) -> PyResult<Self> {
-        handle_py_err(bincode::deserialize::<MessageOriginal>(data))
+        Self::py_from_bytes(data)
     }
 
     pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
@@ -540,6 +555,8 @@ impl PyBytesGeneral for Message {
     }
 }
 impl_display!(Message);
+impl PyFromBytesBincode<'_> for Message {}
+py_from_bytes_general_for_py_from_bytes_bincode!(Message);
 impl CommonMethods for Message {}
 
 impl From<MessageOriginal> for Message {
