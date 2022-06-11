@@ -1,9 +1,12 @@
 use std::str::FromStr;
 
-use pyo3::{basic::CompareOp, prelude::*};
+use pyo3::{basic::CompareOp, prelude::*, types::PyBytes};
 use solana_sdk::signature::{Signature as SignatureOriginal, SIGNATURE_BYTES};
 
-use crate::{calculate_hash, handle_py_value_err, impl_display, Pubkey, RichcmpFull};
+use crate::{
+    handle_py_value_err, impl_display, pybytes_general_for_pybytes_slice, CommonMethods, Pubkey,
+    PyBytesSlice, PyHash, RichcmpFull,
+};
 
 #[pyclass(module = "solders.signature", subclass)]
 #[derive(Clone, Copy, Default, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
@@ -108,8 +111,8 @@ impl Signature {
         self.0.into()
     }
 
-    pub fn __bytes__(&self) -> &[u8] {
-        self.as_ref()
+    pub fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+        self.pybytes(py)
     }
 
     pub fn __str__(&self) -> String {
@@ -117,7 +120,7 @@ impl Signature {
     }
 
     pub fn __repr__(&self) -> String {
-        format!("{:#?}", self)
+        self.pyrepr()
     }
 
     pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> bool {
@@ -125,11 +128,15 @@ impl Signature {
     }
 
     pub fn __hash__(&self) -> u64 {
-        calculate_hash(self)
+        self.pyhash()
     }
 }
 
+impl PyHash for Signature {}
+impl CommonMethods for Signature {}
 impl RichcmpFull for Signature {}
+impl PyBytesSlice for Signature {}
+pybytes_general_for_pybytes_slice!(Signature);
 
 impl From<SignatureOriginal> for Signature {
     fn from(sig: SignatureOriginal) -> Self {

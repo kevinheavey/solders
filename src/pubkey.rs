@@ -1,8 +1,8 @@
 use std::{hash::Hash, str::FromStr};
 
 use crate::{
-    calculate_hash, handle_py_err, handle_py_value_err, impl_display,
-    pybytes_general_for_pybytes_slice, CommonMethods, PyBytesSlice, PyErrWrapper, RichcmpFull,
+    handle_py_err, handle_py_value_err, impl_display, pybytes_general_for_pybytes_slice,
+    CommonMethods, PyBytesSlice, PyErrWrapper, PyHash, RichcmpFull,
 };
 use pyo3::{
     basic::CompareOp, create_exception, exceptions::PyException, prelude::*, types::PyBytes,
@@ -215,11 +215,11 @@ impl Pubkey {
     }
 
     fn __str__(&self) -> String {
-        self.to_string()
+        self.pystr()
     }
 
     fn __repr__(&self) -> String {
-        format!("{:#?}", self)
+        self.pyrepr()
     }
 
     fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
@@ -231,11 +231,12 @@ impl Pubkey {
     }
 
     pub fn __hash__(&self) -> u64 {
-        calculate_hash(self)
+        self.pyhash()
     }
 }
 
 impl RichcmpFull for Pubkey {}
+impl PyHash for Pubkey {}
 
 impl From<PubkeyOriginal> for Pubkey {
     fn from(pubkey: PubkeyOriginal) -> Self {
