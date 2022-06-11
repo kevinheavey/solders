@@ -43,7 +43,7 @@ pub struct Pubkey(pub PubkeyOriginal);
 #[pymethods]
 impl Pubkey {
     #[classattr]
-    const LENGTH: usize = PUBKEY_BYTES;
+    pub const LENGTH: usize = PUBKEY_BYTES;
 
     #[new]
     pub fn new(pubkey_bytes: [u8; PUBKEY_BYTES]) -> Self {
@@ -235,7 +235,7 @@ impl Pubkey {
     /// Returns:
     ///     Pubkey: a ``Pubkey`` object.
     ///
-    fn from_bytes(raw: &[u8]) -> Self {
+    fn from_bytes(raw: &[u8]) -> PyResult<Self> {
         Self::py_from_bytes(raw)
     }
 
