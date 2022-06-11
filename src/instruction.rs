@@ -11,8 +11,9 @@ use solana_sdk::{
 };
 
 use crate::{
-    handle_py_err, impl_display, pubkey::Pubkey, pybytes_general_for_pybytes_bincode,
-    CommonMethods, PyBytesBincode, PyHash, RichcmpEqualityOnly,
+    impl_display, pubkey::Pubkey, py_from_bytes_general_for_py_from_bytes_bincode,
+    pybytes_general_for_pybytes_bincode, CommonMethods, PyBytesBincode, PyFromBytesBincode, PyHash,
+    RichcmpEqualityOnly,
 };
 
 /// Describes a single account read or written by a program during instruction
@@ -97,6 +98,8 @@ impl AccountMeta {
 pybytes_general_for_pybytes_bincode!(AccountMeta);
 impl RichcmpEqualityOnly for AccountMeta {}
 impl PyBytesBincode for AccountMeta {}
+impl PyFromBytesBincode<'_> for AccountMeta {}
+py_from_bytes_general_for_py_from_bytes_bincode!(AccountMeta);
 
 impl CommonMethods for AccountMeta {}
 
@@ -267,13 +270,14 @@ impl Instruction {
     ///     >>> assert Instruction.from_bytes(serialized) == instruction
     ///
     pub fn from_bytes(data: &[u8]) -> PyResult<Self> {
-        let deser = bincode::deserialize::<Self>(data);
-        handle_py_err(deser)
+        Self::py_from_bytes(data)
     }
 }
 pybytes_general_for_pybytes_bincode!(Instruction);
 impl RichcmpEqualityOnly for Instruction {}
 impl PyBytesBincode for Instruction {}
+impl PyFromBytesBincode<'_> for Instruction {}
+py_from_bytes_general_for_py_from_bytes_bincode!(Instruction);
 
 impl CommonMethods for Instruction {}
 
@@ -384,12 +388,13 @@ impl CompiledInstruction {
     ///     CompiledInstruction: The deserialized ``CompiledInstruction``.
     ///
     pub fn from_bytes(data: &[u8]) -> PyResult<Self> {
-        let deser = bincode::deserialize::<Self>(data);
-        handle_py_err(deser)
+        Self::py_from_bytes(data)
     }
 }
 pybytes_general_for_pybytes_bincode!(CompiledInstruction);
 impl RichcmpEqualityOnly for CompiledInstruction {}
+impl PyFromBytesBincode<'_> for CompiledInstruction {}
+py_from_bytes_general_for_py_from_bytes_bincode!(CompiledInstruction);
 
 impl CommonMethods for CompiledInstruction {}
 impl PyBytesBincode for CompiledInstruction {}

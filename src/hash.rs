@@ -3,13 +3,14 @@ use std::str::FromStr;
 use pyo3::{
     basic::CompareOp, create_exception, exceptions::PyException, prelude::*, types::PyBytes,
 };
+use serde::Deserialize;
 use solana_sdk::hash::{
     hash, Hash as HashOriginal, ParseHashError as ParseHashErrorOriginal, HASH_BYTES,
 };
 
 use crate::{
     handle_py_err, impl_display, pybytes_general_for_pybytes_slice, CommonMethods, PyBytesSlice,
-    PyErrWrapper, PyHash, RichcmpFull,
+    PyErrWrapper, PyFromBytesGeneral, PyHash, RichcmpFull,
 };
 
 create_exception!(
@@ -31,7 +32,7 @@ impl From<ParseHashErrorOriginal> for PyErrWrapper {
 /// Args:
 ///     hash_bytes (bytes): the hashed bytes.
 ///
-#[derive(Clone, Copy, Default, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
+#[derive(Clone, Copy, Default, Eq, PartialEq, Ord, PartialOrd, Hash, Debug, Deserialize)]
 pub struct Hash(HashOriginal);
 
 #[pymethods]
@@ -127,7 +128,27 @@ impl Hash {
     pub fn __hash__(&self) -> u64 {
         self.pyhash()
     }
+
+    #[staticmethod]
+    /// Construct from ``bytes``. Equivalent to ``Hash.__init__`` but included for the sake of consistency.
+    ///
+    /// Args:
+    ///     raw_bytes (bytes): the hashed bytes.
+    ///
+    /// Returns:
+    ///     Hash: a ``Hash`` object.
+    ///
+    pub fn from_bytes(raw_bytes: [u8; HASH_BYTES]) -> PyResult<Self> {
+        Self::py_from_bytes(&raw_bytes)
+    }
 }
+
+impl PyFromBytesGeneral for Hash {
+    fn py_from_bytes_general(raw: &[u8]) -> PyResult<Self> {
+        Ok(HashOriginal::new(raw).into())
+    }
+}
+
 pybytes_general_for_pybytes_slice!(Hash);
 impl CommonMethods for Hash {}
 

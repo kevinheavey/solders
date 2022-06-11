@@ -6,7 +6,7 @@ use pyo3::{
     pyclass::CompareOp,
     types::PyBytes,
 };
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use solana_sdk::{
     instruction::Instruction as InstructionOriginal,
     pubkey::Pubkey as PubkeyOriginal,
@@ -243,7 +243,30 @@ pub trait PyBytesGeneral {
     fn pybytes_general<'a>(&self, py: Python<'a>) -> &'a PyBytes;
 }
 
-pub trait CommonMethods: fmt::Display + fmt::Debug + PyBytesGeneral {
+macro_rules! py_from_bytes_general_for_py_from_bytes_bincode {
+    ($ident:ident) => {
+        impl crate::PyFromBytesGeneral for $ident {
+            fn py_from_bytes_general(raw: &[u8]) -> PyResult<Self> {
+                Self::py_from_bytes_bincode(raw)
+            }
+        }
+    };
+}
+
+pub(crate) use py_from_bytes_general_for_py_from_bytes_bincode;
+
+pub trait PyFromBytesBincode<'b>: Deserialize<'b> {
+    fn py_from_bytes_bincode(raw: &'b [u8]) -> PyResult<Self> {
+        let deser = bincode::deserialize::<Self>(raw);
+        handle_py_err(deser)
+    }
+}
+
+pub trait PyFromBytesGeneral: Sized {
+    fn py_from_bytes_general(raw: &[u8]) -> PyResult<Self>;
+}
+
+pub trait CommonMethods: fmt::Display + fmt::Debug + PyBytesGeneral + PyFromBytesGeneral {
     fn pybytes<'a>(&self, py: Python<'a>) -> &'a PyBytes {
         self.pybytes_general(py)
     }
@@ -253,6 +276,10 @@ pub trait CommonMethods: fmt::Display + fmt::Debug + PyBytesGeneral {
     }
     fn pyrepr(&self) -> String {
         format!("{:#?}", self)
+    }
+
+    fn py_from_bytes(raw: &[u8]) -> PyResult<Self> {
+        Self::py_from_bytes_general(raw)
     }
 }
 
