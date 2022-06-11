@@ -36,7 +36,7 @@ def test_from_string_error(test_input: str, expected_err: str) -> None:
 
 
 def test_from_bytes() -> None:
-    raw = b"123"
+    raw = b"123".rjust(Hash.LENGTH)
     assert Hash.from_bytes(raw) == Hash(raw)
 
 

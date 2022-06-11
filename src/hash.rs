@@ -37,6 +37,9 @@ pub struct Hash(HashOriginal);
 
 #[pymethods]
 impl Hash {
+    #[classattr]
+    pub const LENGTH: usize = HASH_BYTES;
+
     #[new]
     pub fn new(hash_bytes: [u8; HASH_BYTES]) -> Self {
         HashOriginal::new_from_array(hash_bytes).into()
