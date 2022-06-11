@@ -1,5 +1,3 @@
-use std::hash::Hasher;
-
 use pyo3::{prelude::*, pyclass::CompareOp, types::PyBytes};
 use solana_sdk::signer::{
     keypair::{
@@ -9,8 +7,9 @@ use solana_sdk::signer::{
 };
 
 use crate::{
-    handle_py_value_err, impl_display, pubkey::Pubkey, signature::Signature, CommonMethods,
-    PyBytesGeneral, PyHash, RichcmpSigner, Signer, SignerTraitWrapper, ToSignerOriginal,
+    handle_py_value_err, impl_display, impl_signer_hash, pubkey::Pubkey, signature::Signature,
+    CommonMethods, PyBytesGeneral, PyHash, RichcmpSigner, Signer, SignerTraitWrapper,
+    ToSignerOriginal,
 };
 
 #[pyclass(module = "solders.keypair", subclass)]
@@ -216,13 +215,8 @@ impl Keypair {
         self.pyrepr()
     }
 }
-#[allow(clippy::derive_hash_xor_eq)]
-impl std::hash::Hash for Keypair {
-    fn hash<H: Hasher>(&self, state: &mut H) {
-        "Keypair".hash(state);
-        self.pubkey().hash(state);
-    }
-}
+
+impl_signer_hash!(Keypair);
 impl PyBytesGeneral for Keypair {
     fn pybytes_general<'a>(&self, py: Python<'a>) -> &'a PyBytes {
         PyBytes::new(py, &self.to_bytes_array())

@@ -182,6 +182,18 @@ macro_rules! impl_display {
 
 pub(crate) use impl_display;
 
+macro_rules! impl_signer_hash {
+    ($ident:ident) => {
+        #[allow(clippy::derive_hash_xor_eq)]
+        impl std::hash::Hash for $ident {
+            fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+                self.pubkey().hash(state);
+            }
+        }
+    };
+}
+
+pub(crate) use impl_signer_hash;
 pub trait PyHash: Hash {
     fn pyhash(&self) -> u64 {
         calculate_hash(self)
@@ -197,7 +209,10 @@ pub trait PyBytesSlice: AsRef<[u8]> {
 macro_rules! pybytes_general_for_pybytes_slice {
     ($ident:ident) => {
         impl crate::PyBytesGeneral for $ident {
-            fn pybytes_general<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+            fn pybytes_general<'a>(
+                &self,
+                py: pyo3::prelude::Python<'a>,
+            ) -> &'a pyo3::types::PyBytes {
                 self.pybytes_slice(py)
             }
         }
@@ -209,7 +224,7 @@ pub(crate) use pybytes_general_for_pybytes_slice;
 macro_rules! pybytes_general_for_pybytes_bincode {
     ($ident:ident) => {
         impl crate::PyBytesGeneral for $ident {
-            fn pybytes_general<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+            fn pybytes_general<'a>(&self, py: pyo3::prelude::Python<'a>) -> &'a PyBytes {
                 self.pybytes_bincode(py)
             }
         }

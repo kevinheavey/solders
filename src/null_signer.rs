@@ -1,7 +1,10 @@
-use pyo3::{prelude::*, pyclass::CompareOp};
+use pyo3::{prelude::*, pyclass::CompareOp, types::PyBytes};
 use solana_sdk::signer::{null_signer::NullSigner as NullSignerOriginal, Signer as SignerTrait};
 
-use crate::{Pubkey, RichcmpSigner, Signature, Signer, SignerTraitWrapper, ToSignerOriginal};
+use crate::{
+    impl_display, impl_signer_hash, CommonMethods, Pubkey, PyBytesGeneral, RichcmpSigner,
+    Signature, Signer, SignerTraitWrapper, ToSignerOriginal,
+};
 
 #[derive(Clone, Debug, Default, PartialEq)]
 #[pyclass(module = "solders.null_signer", subclass)]
@@ -57,9 +60,28 @@ impl NullSigner {
     }
 
     fn __repr__(&self) -> String {
-        format!("{:#?}", self)
+        self.pyrepr()
+    }
+
+    fn __str__(&self) -> String {
+        self.pystr()
+    }
+
+    fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+        self.pybytes(py)
     }
 }
+
+impl_display!(NullSigner);
+impl_signer_hash!(NullSigner);
+
+impl PyBytesGeneral for NullSigner {
+    fn pybytes_general<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+        self.py_pubkey().pybytes(py)
+    }
+}
+
+impl CommonMethods for NullSigner {}
 
 impl From<NullSignerOriginal> for NullSigner {
     fn from(signer: NullSignerOriginal) -> Self {

@@ -1,9 +1,12 @@
 use std::{hash::Hash, str::FromStr};
 
 use crate::{
-    calculate_hash, handle_py_err, handle_py_value_err, impl_display, PyErrWrapper, RichcmpFull,
+    calculate_hash, handle_py_err, handle_py_value_err, impl_display,
+    pybytes_general_for_pybytes_slice, CommonMethods, PyBytesSlice, PyErrWrapper, RichcmpFull,
 };
-use pyo3::{basic::CompareOp, create_exception, exceptions::PyException, prelude::*};
+use pyo3::{
+    basic::CompareOp, create_exception, exceptions::PyException, prelude::*, types::PyBytes,
+};
 use solana_sdk::pubkey::{
     Pubkey as PubkeyOriginal, PubkeyError as PubkeyErrorOriginal, PUBKEY_BYTES,
 };
@@ -219,8 +222,8 @@ impl Pubkey {
         format!("{:#?}", self)
     }
 
-    pub fn __bytes__(&self) -> &[u8] {
-        self.as_ref()
+    fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+        self.pybytes(py)
     }
 
     fn __richcmp__(&self, other: &Self, op: CompareOp) -> bool {
@@ -259,6 +262,9 @@ impl From<Pubkey> for PubkeyOriginal {
 }
 
 impl_display!(Pubkey);
+pybytes_general_for_pybytes_slice!(Pubkey);
+impl PyBytesSlice for Pubkey {}
+impl CommonMethods for Pubkey {}
 
 impl AsRef<[u8]> for Pubkey {
     fn as_ref(&self) -> &[u8] {

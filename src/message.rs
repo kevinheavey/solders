@@ -1,4 +1,5 @@
 use pyo3::{prelude::*, pyclass::CompareOp, types::PyBytes};
+use serde::{Deserialize, Serialize};
 use solana_sdk::{
     instruction::CompiledInstruction as CompiledInstructionOriginal,
     message::{
@@ -9,12 +10,13 @@ use solana_sdk::{
 };
 
 use crate::{
-    convert_instructions, convert_optional_pubkey, handle_py_err, CompiledInstruction, Instruction,
-    Pubkey, RichcmpEqualityOnly, SolderHash,
+    convert_instructions, convert_optional_pubkey, handle_py_err, impl_display,
+    pybytes_general_for_pybytes_bincode, CommonMethods, CompiledInstruction, Instruction, Pubkey,
+    PyBytesBincode, PyBytesGeneral, RichcmpEqualityOnly, SolderHash,
 };
 
 #[pyclass(module = "solders.message", subclass)]
-#[derive(PartialEq, Eq, Debug, Default)]
+#[derive(PartialEq, Eq, Debug, Default, Serialize, Deserialize)]
 /// Describes the organization of a :class:`Message`'s account keys.
 ///
 /// Every :class:`~solders.instruction.Instruction` specifies which accounts it may reference, or
@@ -100,11 +102,11 @@ impl MessageHeader {
     }
 
     pub fn __repr__(&self) -> String {
-        format!("{:#?}", self)
+        self.pyrepr()
     }
 
     pub fn __str__(&self) -> String {
-        format!("{:?}", self)
+        self.pystr()
     }
 
     pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
@@ -119,6 +121,10 @@ impl From<MessageHeaderOriginal> for MessageHeader {
 }
 
 impl RichcmpEqualityOnly for MessageHeader {}
+impl PyBytesBincode for MessageHeader {}
+pybytes_general_for_pybytes_bincode!(MessageHeader);
+impl_display!(MessageHeader);
+impl CommonMethods for MessageHeader {}
 
 #[pyclass(module = "solders.message", subclass)]
 #[derive(PartialEq, Eq, Debug, Clone, Default)]
@@ -359,7 +365,7 @@ impl Message {
     }
 
     pub fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        PyBytes::new(py, &self.0.serialize())
+        self.pybytes(py)
     }
 
     /// Return the program ID of an instruction at a particular index in the message.
@@ -515,15 +521,22 @@ impl Message {
     }
 
     pub fn __repr__(&self) -> String {
-        format!("{:#?}", self)
+        self.pyrepr()
     }
 
     pub fn __str__(&self) -> String {
-        format!("{:?}", self)
+        self.pystr()
     }
 }
 
 impl RichcmpEqualityOnly for Message {}
+impl PyBytesGeneral for Message {
+    fn pybytes_general<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+        PyBytes::new(py, &self.0.serialize())
+    }
+}
+impl_display!(Message);
+impl CommonMethods for Message {}
 
 impl From<MessageOriginal> for Message {
     fn from(message: MessageOriginal) -> Self {

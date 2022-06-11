@@ -2,7 +2,8 @@ use pyo3::{prelude::*, pyclass::CompareOp};
 use solana_sdk::signer::{presigner::Presigner as PresignerOriginal, Signer as SignerTrait};
 
 use crate::{
-    handle_py_err, Pubkey, RichcmpSigner, Signature, Signer, SignerTraitWrapper, ToSignerOriginal,
+    handle_py_err, impl_display, impl_signer_hash, Pubkey, PyHash, RichcmpSigner, Signature,
+    Signer, SignerTraitWrapper, ToSignerOriginal,
 };
 
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -86,7 +87,15 @@ impl Presigner {
     fn __repr__(&self) -> String {
         format!("{:#?}", self)
     }
+
+    fn __hash__(&self) -> u64 {
+        self.pyhash()
+    }
 }
+
+impl_display!(Presigner);
+impl_signer_hash!(Presigner);
+impl PyHash for Presigner {}
 
 impl From<PresignerOriginal> for Presigner {
     fn from(signer: PresignerOriginal) -> Self {
@@ -101,5 +110,4 @@ impl ToSignerOriginal for Presigner {
 }
 
 impl SignerTraitWrapper for Presigner {}
-
 impl RichcmpSigner for Presigner {}
