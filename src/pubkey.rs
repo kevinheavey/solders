@@ -37,7 +37,7 @@ impl From<PubkeyErrorOriginal> for PyErrWrapper {
 ///     '0101010101010101010101010101010101010101010101010101010101010101'
 ///
 #[pyclass(module = "solders.pubkey", subclass)]
-#[derive(Eq, PartialEq, Ord, PartialOrd, Debug, Default, Hash, Clone)]
+#[derive(Eq, PartialEq, Ord, PartialOrd, Debug, Default, Hash, Clone, Copy)]
 pub struct Pubkey(pub PubkeyOriginal);
 
 #[pymethods]
@@ -224,6 +224,13 @@ impl Pubkey {
 
     fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
         self.pybytes(py)
+    }
+
+    pub fn __reduce__(&self) -> PyResult<(PyObject, PyObject)> {
+        let gil = Python::acquire_gil();
+        let py = gil.python();
+        let cls = self.into_py(py).getattr(py, "__class__")?;
+        Ok((cls, (self.pybytes(py).to_object(py),).to_object(py)))
     }
 
     fn __richcmp__(&self, other: &Self, op: CompareOp) -> bool {
