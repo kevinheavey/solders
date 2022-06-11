@@ -3,7 +3,7 @@ use solana_sdk::signer::{null_signer::NullSigner as NullSignerOriginal, Signer a
 
 use crate::{
     impl_display, impl_signer_hash, CommonMethods, Pubkey, PyBytesGeneral, PyFromBytesGeneral,
-    RichcmpSigner, Signature, Signer, SignerTraitWrapper, ToSignerOriginal,
+    PyHash, RichcmpSigner, Signature, Signer, SignerTraitWrapper, ToSignerOriginal,
 };
 
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -69,6 +69,10 @@ impl NullSigner {
 
     fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
         self.pybytes(py)
+    }
+
+    fn __hash__(&self) -> u64 {
+        self.pyhash()
     }
 
     #[staticmethod]
