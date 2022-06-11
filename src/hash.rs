@@ -8,8 +8,8 @@ use solana_sdk::hash::{
 };
 
 use crate::{
-    handle_py_err, impl_display, pybytes_general_for_pybytes_slice, CommonMethods, PyBytesGeneral,
-    PyBytesSlice, PyErrWrapper, PyHash, RichcmpFull,
+    handle_py_err, impl_display, pybytes_general_for_pybytes_slice, CommonMethods, PyBytesSlice,
+    PyErrWrapper, PyHash, RichcmpFull,
 };
 
 create_exception!(

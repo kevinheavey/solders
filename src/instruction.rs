@@ -12,7 +12,7 @@ use solana_sdk::{
 
 use crate::{
     handle_py_err, impl_display, pubkey::Pubkey, pybytes_general_for_pybytes_bincode,
-    CommonMethods, PyBytesBincode, PyBytesGeneral, PyHash, RichcmpEqualityOnly,
+    CommonMethods, PyBytesBincode, PyHash, RichcmpEqualityOnly,
 };
 
 /// Describes a single account read or written by a program during instruction
@@ -88,6 +88,10 @@ impl AccountMeta {
 
     pub fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
         self.pybytes(py)
+    }
+
+    pub fn __hash__(&self) -> u64 {
+        self.pyhash()
     }
 }
 pybytes_general_for_pybytes_bincode!(AccountMeta);

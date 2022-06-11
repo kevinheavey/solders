@@ -1,3 +1,5 @@
+use std::hash::Hasher;
+
 use pyo3::{prelude::*, pyclass::CompareOp, types::PyBytes};
 use solana_sdk::signer::{
     keypair::{
@@ -7,8 +9,8 @@ use solana_sdk::signer::{
 };
 
 use crate::{
-    calculate_hash, handle_py_value_err, impl_display, pubkey::Pubkey, signature::Signature,
-    CommonMethods, PyBytesGeneral, RichcmpSigner, Signer, SignerTraitWrapper, ToSignerOriginal,
+    handle_py_value_err, impl_display, pubkey::Pubkey, signature::Signature, CommonMethods,
+    PyBytesGeneral, PyHash, RichcmpSigner, Signer, SignerTraitWrapper, ToSignerOriginal,
 };
 
 #[pyclass(module = "solders.keypair", subclass)]
@@ -105,7 +107,7 @@ impl Keypair {
     }
 
     pub fn __str__(&self) -> String {
-        self.0.to_base58_string()
+        self.pystr()
     }
 
     #[pyo3(name = "pubkey")]
@@ -193,7 +195,7 @@ impl Keypair {
     }
 
     pub fn __hash__(&self) -> u64 {
-        calculate_hash(&("Keypair", self.pubkey()))
+        self.pyhash()
     }
 
     fn __richcmp__(&self, other: Signer, op: CompareOp) -> PyResult<bool> {
@@ -211,16 +213,28 @@ impl Keypair {
     }
 
     fn __repr__(&self) -> String {
-        format!("{:#?}", self)
+        self.pyrepr()
     }
 }
-
+#[allow(clippy::derive_hash_xor_eq)]
+impl std::hash::Hash for Keypair {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        "Keypair".hash(state);
+        self.pubkey().hash(state);
+    }
+}
 impl PyBytesGeneral for Keypair {
     fn pybytes_general<'a>(&self, py: Python<'a>) -> &'a PyBytes {
         PyBytes::new(py, &self.to_bytes_array())
     }
 }
-impl CommonMethods for Keypair {}
+impl PyHash for Keypair {}
+
+impl CommonMethods for Keypair {
+    fn pystr(&self) -> String {
+        self.0.to_base58_string()
+    }
+}
 
 impl RichcmpSigner for Keypair {}
 
