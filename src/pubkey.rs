@@ -1,8 +1,8 @@
 use std::{hash::Hash, str::FromStr};
 
 use crate::{
-    handle_py_err, handle_py_value_err, impl_display, pybytes_general_for_pybytes_slice,
-    CommonMethods, PyBytesSlice, PyErrWrapper, PyHash, RichcmpFull,
+    handle_py_err, handle_py_value_err, pybytes_general_for_pybytes_slice, CommonMethods,
+    PyBytesSlice, PyErrWrapper, PyHash, RichcmpFull,
 };
 use pyo3::{
     basic::CompareOp, create_exception, exceptions::PyException, prelude::*, types::PyBytes,
@@ -262,7 +262,12 @@ impl From<Pubkey> for PubkeyOriginal {
     }
 }
 
-impl_display!(Pubkey);
+impl std::fmt::Display for Pubkey {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
 pybytes_general_for_pybytes_slice!(Pubkey);
 impl PyBytesSlice for Pubkey {}
 impl CommonMethods for Pubkey {}
