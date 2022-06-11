@@ -116,7 +116,7 @@ impl Signature {
     }
 
     pub fn __str__(&self) -> String {
-        self.to_string()
+        self.pystr()
     }
 
     pub fn __repr__(&self) -> String {

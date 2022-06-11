@@ -109,6 +109,10 @@ impl MessageHeader {
         self.pystr()
     }
 
+    pub fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+        self.pybytes(py)
+    }
+
     pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
         self.richcmp(other, op)
     }
