@@ -83,13 +83,14 @@ impl NullSigner {
     ///
     /// Returns:
     ///     NullSigner: The deserialized ``NullSigner``.
-    fn from_bytes(data: [u8; Pubkey::LENGTH]) -> Self {
+    fn from_bytes(data: [u8; Pubkey::LENGTH]) -> PyResult<Self> {
         Self::py_from_bytes(&data)
     }
 }
 
 impl_display!(NullSigner);
 impl_signer_hash!(NullSigner);
+impl PyHash for NullSigner {}
 
 impl PyBytesGeneral for NullSigner {
     fn pybytes_general<'a>(&self, py: Python<'a>) -> &'a PyBytes {

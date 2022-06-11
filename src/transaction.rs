@@ -15,9 +15,10 @@ use solana_sdk::{
 
 use crate::{
     convert_instructions, convert_optional_pubkey, handle_py_err, impl_display,
-    pybytes_general_for_pybytes_bincode, signer::SignerVec, CommonMethods, CompiledInstruction,
-    Instruction, Message, Pubkey, PyBytesBincode, PyErrWrapper, RichcmpEqualityOnly, Signature,
-    Signer, SolderHash,
+    py_from_bytes_general_for_py_from_bytes_bincode, pybytes_general_for_pybytes_bincode,
+    signer::SignerVec, CommonMethods, CompiledInstruction, Instruction, Message, Pubkey,
+    PyBytesBincode, PyErrWrapper, PyFromBytesBincode, RichcmpEqualityOnly, Signature, Signer,
+    SolderHash,
 };
 
 create_exception!(
@@ -558,7 +559,7 @@ impl Transaction {
     ///     >>> assert Transaction.from_bytes(bytes(tx)) == tx
     ///
     pub fn from_bytes(data: &[u8]) -> PyResult<Self> {
-        handle_py_err(bincode::deserialize::<TransactionOriginal>(data))
+        Self::py_from_bytes(data)
     }
 
     pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
@@ -582,7 +583,9 @@ impl Transaction {
 impl PyBytesBincode for Transaction {}
 impl RichcmpEqualityOnly for Transaction {}
 pybytes_general_for_pybytes_bincode!(Transaction);
+py_from_bytes_general_for_py_from_bytes_bincode!(Transaction);
 impl_display!(Transaction);
+impl PyFromBytesBincode<'_> for Transaction {}
 impl CommonMethods for Transaction {}
 
 impl From<TransactionOriginal> for Transaction {

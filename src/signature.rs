@@ -148,7 +148,7 @@ impl Signature {
 impl PyHash for Signature {}
 impl PyFromBytesGeneral for Signature {
     fn py_from_bytes_general(raw: &[u8]) -> PyResult<Self> {
-        Ok(Self::new(raw))
+        Ok(SignatureOriginal::new(raw).into())
     }
 }
 impl CommonMethods for Signature {}

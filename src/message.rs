@@ -10,7 +10,7 @@ use solana_sdk::{
 };
 
 use crate::{
-    convert_instructions, convert_optional_pubkey, handle_py_err, impl_display,
+    convert_instructions, convert_optional_pubkey, impl_display,
     py_from_bytes_general_for_py_from_bytes_bincode, pybytes_general_for_pybytes_bincode,
     CommonMethods, CompiledInstruction, Instruction, Pubkey, PyBytesBincode, PyBytesGeneral,
     PyFromBytesBincode, RichcmpEqualityOnly, SolderHash,
@@ -119,14 +119,14 @@ impl MessageHeader {
     }
 
     #[staticmethod]
-    /// Deserialize a serialized ``Message`` object.
+    /// Deserialize a serialized ``MessageHeader`` object.
     ///
     /// Args:
-    ///     data (bytes): The serialized ``Message``.
+    ///     data (bytes): The serialized ``MessageHeader``.
     ///
     /// Returns:
-    ///     Message: The deserialized ``Message``.
-    fn from_bytes(data: &[u8]) -> Self {
+    ///     MessageHeader: The deserialized ``MessageHeader``.
+    fn from_bytes(data: &[u8]) -> PyResult<Self> {
         Self::py_from_bytes(data)
     }
 }

@@ -226,7 +226,7 @@ impl PyHash for Keypair {}
 
 impl PyFromBytesGeneral for Keypair {
     fn py_from_bytes_general(raw: &[u8]) -> PyResult<Self> {
-        handle_py_value_err(KeypairOriginal::from_bytes(&raw))
+        handle_py_value_err(KeypairOriginal::from_bytes(raw))
     }
 }
 

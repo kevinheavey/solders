@@ -235,7 +235,7 @@ impl Pubkey {
     /// Returns:
     ///     Pubkey: a ``Pubkey`` object.
     ///
-    fn from_bytes(raw: &[u8]) -> PyResult<Self> {
+    pub fn from_bytes(raw: &[u8]) -> PyResult<Self> {
         Self::py_from_bytes(raw)
     }
 
@@ -292,7 +292,7 @@ pybytes_general_for_pybytes_slice!(Pubkey);
 impl PyBytesSlice for Pubkey {}
 impl PyFromBytesGeneral for Pubkey {
     fn py_from_bytes_general(raw: &[u8]) -> PyResult<Self> {
-        PubkeyOriginal::new(raw).into()
+        Ok(PubkeyOriginal::new(raw).into())
     }
 }
 impl CommonMethods for Pubkey {}
