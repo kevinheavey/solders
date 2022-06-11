@@ -38,3 +38,7 @@ def test_from_string_error(test_input: str, expected_err: str) -> None:
 def test_from_bytes() -> None:
     raw = b"123"
     assert Hash.from_bytes(raw) == Hash(raw)
+
+
+def test_hashable() -> None:
+    assert isinstance(hash(Hash.default()), int)

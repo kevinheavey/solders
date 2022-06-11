@@ -21,6 +21,8 @@ def test_presigner() -> None:
 
     # PartialEq
     assert presigner == keypair
+    assert isinstance(hash(presigner), int)
+    assert hash(presigner) == hash(keypair)
     assert keypair == presigner
     presigner2 = Presigner(pubkey, sig)
     assert presigner == presigner2

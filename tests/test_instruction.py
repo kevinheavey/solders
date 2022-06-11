@@ -18,6 +18,10 @@ def compiled_ix() -> CompiledInstruction:
 def am() -> AccountMeta:
     return AccountMeta(Pubkey.new_unique(), True, True)
 
+def test_account_meta_hashable(am: AccountMeta) -> None:
+    assert isinstance(hash(am), int)
+
+
 def test_accounts_setter(ix: Instruction, am: AccountMeta) -> None:
     new_accounts = [am]
     ix.accounts = new_accounts

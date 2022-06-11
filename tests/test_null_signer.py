@@ -9,3 +9,4 @@ def test_null_signer() -> None:
     ns = NullSigner(pubkey)
     assert ns.sign_message(msg) == Signature.default()
     assert NullSigner.from_bytes(bytes(ns)) == ns
+    assert isinstance(hash(ns), int)
