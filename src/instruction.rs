@@ -94,6 +94,19 @@ impl AccountMeta {
     pub fn __hash__(&self) -> u64 {
         self.pyhash()
     }
+
+    #[staticmethod]
+    /// Deserialize a serialized ``AccountMeta`` object.
+    ///
+    /// Args:
+    ///     data (bytes): the serialized ``AccountMeta``.
+    ///
+    /// Returns:
+    ///     AccountMeta: the deserialized ``AccountMeta``.
+    ///
+    pub fn from_bytes(data: &[u8]) -> PyResult<Self> {
+        Self::py_from_bytes(data)
+    }
 }
 pybytes_general_for_pybytes_bincode!(AccountMeta);
 impl RichcmpEqualityOnly for AccountMeta {}
