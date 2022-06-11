@@ -5,7 +5,7 @@ use solana_sdk::signature::{Signature as SignatureOriginal, SIGNATURE_BYTES};
 
 use crate::{
     handle_py_value_err, impl_display, pybytes_general_for_pybytes_slice, CommonMethods, Pubkey,
-    PyBytesSlice, PyHash, RichcmpFull,
+    PyBytesSlice, PyFromBytesGeneral, PyHash, RichcmpFull,
 };
 
 #[pyclass(module = "solders.signature", subclass)]
@@ -24,8 +24,8 @@ impl Signature {
     pub const LENGTH: usize = SIGNATURE_BYTES;
 
     #[new]
-    pub fn new(signature_bytes: &[u8]) -> Self {
-        SignatureOriginal::new(signature_bytes).into()
+    pub fn new(signature_bytes: [u8; Self::LENGTH]) -> Self {
+        SignatureOriginal::new(&signature_bytes).into()
     }
 
     #[staticmethod]
@@ -130,9 +130,27 @@ impl Signature {
     pub fn __hash__(&self) -> u64 {
         self.pyhash()
     }
+
+    #[staticmethod]
+    /// Construct from ``bytes``. Equivalent to ``Signature.__init__`` but included for the sake of consistency.
+    ///
+    /// Args:
+    ///     raw_bytes (bytes): the signature bytes.
+    ///
+    /// Returns:
+    ///     Signature: a ``Signature`` object.
+    ///
+    pub fn from_bytes(raw_bytes: [u8; Self::LENGTH]) -> PyResult<Self> {
+        Self::py_from_bytes(&raw_bytes)
+    }
 }
 
 impl PyHash for Signature {}
+impl PyFromBytesGeneral for Signature {
+    fn py_from_bytes_general(raw: &[u8]) -> PyResult<Self> {
+        Ok(Self::new(raw))
+    }
+}
 impl CommonMethods for Signature {}
 impl RichcmpFull for Signature {}
 impl PyBytesSlice for Signature {}
