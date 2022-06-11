@@ -266,7 +266,9 @@ pub trait PyFromBytesGeneral: Sized {
     fn py_from_bytes_general(raw: &[u8]) -> PyResult<Self>;
 }
 
-pub trait CommonMethods: fmt::Display + fmt::Debug + PyBytesGeneral + PyFromBytesGeneral {
+pub trait CommonMethods:
+    fmt::Display + fmt::Debug + PyBytesGeneral + PyFromBytesGeneral + IntoPy<PyObject> + Clone
+{
     fn pybytes<'a>(&self, py: Python<'a>) -> &'a PyBytes {
         self.pybytes_general(py)
     }
@@ -280,6 +282,14 @@ pub trait CommonMethods: fmt::Display + fmt::Debug + PyBytesGeneral + PyFromByte
 
     fn py_from_bytes(raw: &[u8]) -> PyResult<Self> {
         Self::py_from_bytes_general(raw)
+    }
+
+    fn pyreduce(&self) -> PyResult<(PyObject, PyObject)> {
+        let gil = Python::acquire_gil();
+        let py = gil.python();
+        let cloned = self.clone();
+        let constructor = cloned.into_py(py).getattr(py, "from_bytes")?;
+        Ok((constructor, (self.pybytes(py).to_object(py),).to_object(py)))
     }
 }
 

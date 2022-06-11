@@ -17,7 +17,7 @@ use crate::{
 };
 
 #[pyclass(module = "solders.message", subclass)]
-#[derive(PartialEq, Eq, Debug, Default, Serialize, Deserialize)]
+#[derive(PartialEq, Eq, Debug, Default, Serialize, Deserialize, Clone)]
 /// Describes the organization of a :class:`Message`'s account keys.
 ///
 /// Every :class:`~solders.instruction.Instruction` specifies which accounts it may reference, or
