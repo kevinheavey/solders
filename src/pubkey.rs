@@ -1,8 +1,8 @@
 use std::{hash::Hash, str::FromStr};
 
 use crate::{
-    handle_py_err, handle_py_value_err, pybytes_general_for_pybytes_slice, CommonMethods,
-    PyBytesSlice, PyErrWrapper, PyFromBytesGeneral, PyHash, RichcmpFull,
+    handle_py_err, handle_py_value_err, pybytes_general_via_slice, CommonMethods, PyBytesSlice,
+    PyErrWrapper, PyFromBytesGeneral, PyHash, RichcmpFull,
 };
 use pyo3::{
     basic::CompareOp, create_exception, exceptions::PyException, prelude::*, types::PyBytes,
@@ -240,10 +240,7 @@ impl Pubkey {
     }
 
     pub fn __reduce__(&self) -> PyResult<(PyObject, PyObject)> {
-        let gil = Python::acquire_gil();
-        let py = gil.python();
-        let constructor = self.into_py(py).getattr(py, "from_bytes")?;
-        Ok((constructor, (self.pybytes(py).to_object(py),).to_object(py)))
+        self.pyreduce()
     }
 
     fn __richcmp__(&self, other: &Self, op: CompareOp) -> bool {
@@ -288,8 +285,7 @@ impl std::fmt::Display for Pubkey {
     }
 }
 
-pybytes_general_for_pybytes_slice!(Pubkey);
-impl PyBytesSlice for Pubkey {}
+pybytes_general_via_slice!(Pubkey);
 impl PyFromBytesGeneral for Pubkey {
     fn py_from_bytes_general(raw: &[u8]) -> PyResult<Self> {
         Ok(PubkeyOriginal::new(raw).into())

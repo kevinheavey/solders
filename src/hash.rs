@@ -9,7 +9,7 @@ use solana_sdk::hash::{
 };
 
 use crate::{
-    handle_py_err, impl_display, pybytes_general_for_pybytes_slice, CommonMethods, PyBytesSlice,
+    handle_py_err, impl_display, pybytes_general_via_slice, CommonMethods, PyBytesSlice,
     PyErrWrapper, PyFromBytesGeneral, PyHash, RichcmpFull,
 };
 
@@ -152,14 +152,12 @@ impl PyFromBytesGeneral for Hash {
     }
 }
 
-pybytes_general_for_pybytes_slice!(Hash);
+pybytes_general_via_slice!(Hash);
 impl CommonMethods for Hash {}
 
 impl RichcmpFull for Hash {}
 
 impl PyHash for Hash {}
-
-impl PyBytesSlice for Hash {}
 
 impl From<HashOriginal> for Hash {
     fn from(h: HashOriginal) -> Self {
