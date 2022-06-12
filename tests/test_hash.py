@@ -1,3 +1,4 @@
+import pickle
 from pytest import raises, mark
 from based58 import b58encode
 
@@ -33,3 +34,17 @@ def test_from_string_error(test_input: str, expected_err: str) -> None:
     with raises(ParseHashError) as excinfo:
         Hash.from_string(test_input)
     assert excinfo.value.args[0] == expected_err
+
+
+def test_from_bytes() -> None:
+    raw = b"123".rjust(Hash.LENGTH)
+    assert Hash.from_bytes(raw) == Hash(raw)
+
+
+def test_hashable() -> None:
+    assert isinstance(hash(Hash.default()), int)
+
+
+def test_pickle() -> None:
+    obj = Hash.default()
+    assert pickle.loads(pickle.dumps(obj)) == obj

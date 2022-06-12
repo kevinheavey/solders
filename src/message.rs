@@ -1,4 +1,5 @@
-use pyo3::{prelude::*, pyclass::CompareOp, types::PyBytes};
+use pyo3::{prelude::*, types::PyBytes};
+use serde::{Deserialize, Serialize};
 use solana_sdk::{
     instruction::CompiledInstruction as CompiledInstructionOriginal,
     message::{
@@ -7,14 +8,16 @@ use solana_sdk::{
     },
     pubkey::Pubkey as PubkeyOriginal,
 };
+use solders_macros::{common_magic_methods, richcmp_eq_only};
 
 use crate::{
-    convert_instructions, convert_optional_pubkey, handle_py_err, CompiledInstruction, Instruction,
-    Pubkey, RichcmpEqualityOnly, SolderHash,
+    convert_instructions, convert_optional_pubkey, impl_display, py_from_bytes_general_via_bincode,
+    pybytes_general_via_bincode, CommonMethods, CompiledInstruction, Instruction, Pubkey,
+    PyBytesBincode, PyBytesGeneral, PyFromBytesBincode, RichcmpEqualityOnly, SolderHash,
 };
 
 #[pyclass(module = "solders.message", subclass)]
-#[derive(PartialEq, Eq, Debug, Default)]
+#[derive(PartialEq, Eq, Debug, Default, Serialize, Deserialize, Clone)]
 /// Describes the organization of a :class:`Message`'s account keys.
 ///
 /// Every :class:`~solders.instruction.Instruction` specifies which accounts it may reference, or
@@ -55,6 +58,8 @@ use crate::{
 ///         of the unsigned keys are read-only accounts.
 pub struct MessageHeader(MessageHeaderOriginal);
 
+#[richcmp_eq_only]
+#[common_magic_methods]
 #[pymethods]
 impl MessageHeader {
     #[classattr]
@@ -99,16 +104,16 @@ impl MessageHeader {
         self.0.num_readonly_unsigned_accounts
     }
 
-    pub fn __repr__(&self) -> String {
-        format!("{:#?}", self)
-    }
-
-    pub fn __str__(&self) -> String {
-        format!("{:?}", self)
-    }
-
-    pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
-        self.richcmp(other, op)
+    #[staticmethod]
+    /// Deserialize a serialized ``MessageHeader`` object.
+    ///
+    /// Args:
+    ///     data (bytes): The serialized ``MessageHeader``.
+    ///
+    /// Returns:
+    ///     MessageHeader: The deserialized ``MessageHeader``.
+    fn from_bytes(data: &[u8]) -> PyResult<Self> {
+        Self::py_from_bytes(data)
     }
 }
 
@@ -119,9 +124,13 @@ impl From<MessageHeaderOriginal> for MessageHeader {
 }
 
 impl RichcmpEqualityOnly for MessageHeader {}
+pybytes_general_via_bincode!(MessageHeader);
+impl_display!(MessageHeader);
+py_from_bytes_general_via_bincode!(MessageHeader);
+impl CommonMethods for MessageHeader {}
 
 #[pyclass(module = "solders.message", subclass)]
-#[derive(PartialEq, Eq, Debug, Clone, Default)]
+#[derive(PartialEq, Eq, Debug, Clone, Default, Serialize, Deserialize)]
 /// A Solana transaction message.
 ///
 /// Some constructors accept an optional `payer`, the account responsible for
@@ -155,6 +164,8 @@ impl RichcmpEqualityOnly for MessageHeader {}
 ///
 pub struct Message(MessageOriginal);
 
+#[richcmp_eq_only]
+#[common_magic_methods]
 #[pymethods]
 impl Message {
     #[new]
@@ -358,10 +369,6 @@ impl Message {
         self.0.compile_instruction(ix.as_ref()).into()
     }
 
-    pub fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        PyBytes::new(py, &self.0.serialize())
-    }
-
     /// Return the program ID of an instruction at a particular index in the message.
     ///
     /// Args:
@@ -507,23 +514,19 @@ impl Message {
     ///     >>> assert Message.from_bytes(serialized) == message
     ///
     pub fn from_bytes(data: &[u8]) -> PyResult<Self> {
-        handle_py_err(bincode::deserialize::<MessageOriginal>(data))
-    }
-
-    pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
-        self.richcmp(other, op)
-    }
-
-    pub fn __repr__(&self) -> String {
-        format!("{:#?}", self)
-    }
-
-    pub fn __str__(&self) -> String {
-        format!("{:?}", self)
+        Self::py_from_bytes(data)
     }
 }
 
 impl RichcmpEqualityOnly for Message {}
+impl PyBytesGeneral for Message {
+    fn pybytes_general<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+        PyBytes::new(py, &self.0.serialize())
+    }
+}
+impl_display!(Message);
+py_from_bytes_general_via_bincode!(Message);
+impl CommonMethods for Message {}
 
 impl From<MessageOriginal> for Message {
     fn from(message: MessageOriginal) -> Self {

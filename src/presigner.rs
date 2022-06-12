@@ -1,8 +1,10 @@
-use pyo3::{prelude::*, pyclass::CompareOp};
+use pyo3::prelude::*;
 use solana_sdk::signer::{presigner::Presigner as PresignerOriginal, Signer as SignerTrait};
+use solders_macros::{pyhash, richcmp_signer};
 
 use crate::{
-    handle_py_err, Pubkey, RichcmpSigner, Signature, Signer, SignerTraitWrapper, ToSignerOriginal,
+    handle_py_err, impl_display, impl_signer_hash, Pubkey, PyHash, RichcmpSigner, Signature,
+    SignerTraitWrapper, ToSignerOriginal,
 };
 
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -18,6 +20,8 @@ use crate::{
 ///     
 pub struct Presigner(pub PresignerOriginal);
 
+#[pyhash]
+#[richcmp_signer]
 #[pymethods]
 impl Presigner {
     #[new]
@@ -68,10 +72,6 @@ impl Presigner {
         handle_py_err(self.try_sign_message(message))
     }
 
-    fn __richcmp__(&self, other: Signer, op: CompareOp) -> PyResult<bool> {
-        self.richcmp(other, op)
-    }
-
     #[staticmethod]
     #[pyo3(name = "default")]
     /// Create a new default presigner.
@@ -88,6 +88,10 @@ impl Presigner {
     }
 }
 
+impl_display!(Presigner);
+impl_signer_hash!(Presigner);
+impl PyHash for Presigner {}
+
 impl From<PresignerOriginal> for Presigner {
     fn from(signer: PresignerOriginal) -> Self {
         Self(signer)
@@ -101,5 +105,4 @@ impl ToSignerOriginal for Presigner {
 }
 
 impl SignerTraitWrapper for Presigner {}
-
 impl RichcmpSigner for Presigner {}

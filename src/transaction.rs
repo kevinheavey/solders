@@ -1,7 +1,5 @@
 #![allow(deprecated)]
-use pyo3::{
-    create_exception, exceptions::PyException, prelude::*, pyclass::CompareOp, types::PyBytes,
-};
+use pyo3::{create_exception, exceptions::PyException, prelude::*, types::PyBytes};
 use serde::{Deserialize, Serialize};
 use solana_sdk::{
     pubkey::Pubkey as PubkeyOriginal,
@@ -12,11 +10,13 @@ use solana_sdk::{
         TransactionError as TransactionErrorOriginal,
     },
 };
+use solders_macros::{common_magic_methods, richcmp_eq_only};
 
 use crate::{
-    convert_instructions, convert_optional_pubkey, handle_py_err, signer::SignerVec,
-    CompiledInstruction, Instruction, Message, Pubkey, PyErrWrapper, RichcmpEqualityOnly,
-    Signature, Signer, SolderHash,
+    convert_instructions, convert_optional_pubkey, handle_py_err, impl_display,
+    py_from_bytes_general_via_bincode, pybytes_general_via_bincode, signer::SignerVec,
+    CommonMethods, CompiledInstruction, Instruction, Message, Pubkey, PyBytesBincode, PyErrWrapper,
+    PyFromBytesBincode, RichcmpEqualityOnly, Signature, Signer, SolderHash,
 };
 
 create_exception!(
@@ -45,7 +45,7 @@ impl From<SanitizeErrorOriginal> for PyErrWrapper {
     }
 }
 
-#[pyclass(module = "solders.transactionav", subclass)]
+#[pyclass(module = "solders.transaction", subclass)]
 #[derive(Debug, PartialEq, Default, Eq, Clone, Serialize, Deserialize)]
 /// An atomically-commited sequence of instructions.
 ///
@@ -90,6 +90,8 @@ impl From<SanitizeErrorOriginal> for PyErrWrapper {
 ///
 pub struct Transaction(TransactionOriginal);
 
+#[richcmp_eq_only]
+#[common_magic_methods]
 #[pymethods]
 impl Transaction {
     #[new]
@@ -528,11 +530,6 @@ impl Transaction {
         handle_py_err(self.0.sanitize())
     }
 
-    pub fn __bytes__<'a>(&self, py: Python<'a>) -> PyResult<&'a PyBytes> {
-        let as_vec: Vec<u8> = handle_py_err(bincode::serialize(&self.0))?;
-        Ok(PyBytes::new(py, &as_vec))
-    }
-
     #[staticmethod]
     #[pyo3(name = "default")]
     /// Return a new default transaction.
@@ -558,19 +555,7 @@ impl Transaction {
     ///     >>> assert Transaction.from_bytes(bytes(tx)) == tx
     ///
     pub fn from_bytes(data: &[u8]) -> PyResult<Self> {
-        handle_py_err(bincode::deserialize::<TransactionOriginal>(data))
-    }
-
-    pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
-        self.richcmp(other, op)
-    }
-
-    pub fn __repr__(&self) -> String {
-        format!("{:#?}", self)
-    }
-
-    pub fn __str__(&self) -> String {
-        format!("{:?}", self)
+        Self::py_from_bytes(data)
     }
 
     /// Deprecated in the Solana Rust SDK, expose here only for testing.
@@ -580,6 +565,10 @@ impl Transaction {
 }
 
 impl RichcmpEqualityOnly for Transaction {}
+pybytes_general_via_bincode!(Transaction);
+py_from_bytes_general_via_bincode!(Transaction);
+impl_display!(Transaction);
+impl CommonMethods for Transaction {}
 
 impl From<TransactionOriginal> for Transaction {
     fn from(tx: TransactionOriginal) -> Self {

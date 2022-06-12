@@ -5,8 +5,10 @@ use pyo3::{
     exceptions::{PyException, PyTypeError, PyValueError},
     prelude::*,
     pyclass::CompareOp,
+    types::PyBytes,
 };
 use rpc::create_rpc_mod;
+use serde::{Deserialize, Serialize};
 use solana_sdk::{
     instruction::Instruction as InstructionOriginal,
     pubkey::Pubkey as PubkeyOriginal,
@@ -15,6 +17,7 @@ use solana_sdk::{
 };
 use std::{
     collections::{hash_map::DefaultHasher, HashMap},
+    fmt,
     hash::{Hash, Hasher},
 };
 use system_program::create_system_program_mod;
@@ -102,7 +105,10 @@ fn richcmp_type_error(op: &str) -> PyErr {
     PyTypeError::new_err(msg)
 }
 
-fn calculate_hash(t: &impl Hash) -> u64 {
+fn calculate_hash<T>(t: &T) -> u64
+where
+    T: Hash + ?Sized,
+{
     let mut s = DefaultHasher::new();
     t.hash(&mut s);
     s.finish()
@@ -167,6 +173,155 @@ pub trait RichcmpFull: PartialEq + PartialOrd {
             CompareOp::Le => self <= other,
             CompareOp::Ge => self >= other,
         }
+    }
+}
+
+macro_rules! impl_display {
+    ($ident:ident) => {
+        impl std::fmt::Display for $ident {
+            fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+                write!(f, "{:?}", self.0)
+            }
+        }
+    };
+}
+
+pub(crate) use impl_display;
+
+macro_rules! impl_signer_hash {
+    ($ident:ident) => {
+        #[allow(clippy::derive_hash_xor_eq)]
+        impl std::hash::Hash for $ident {
+            fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+                self.pubkey().hash(state);
+            }
+        }
+    };
+}
+
+pub(crate) use impl_signer_hash;
+pub trait PyHash: Hash {
+    fn pyhash(&self) -> u64 {
+        calculate_hash(self)
+    }
+}
+
+pub trait PyBytesSlice: AsRef<[u8]> {
+    fn pybytes_slice<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+        PyBytes::new(py, self.as_ref())
+    }
+}
+
+macro_rules! pybytes_general_for_pybytes_slice {
+    ($ident:ident) => {
+        impl crate::PyBytesGeneral for $ident {
+            fn pybytes_general<'a>(
+                &self,
+                py: pyo3::prelude::Python<'a>,
+            ) -> &'a pyo3::types::PyBytes {
+                self.pybytes_slice(py)
+            }
+        }
+    };
+}
+
+pub(crate) use pybytes_general_for_pybytes_slice;
+
+macro_rules! pybytes_general_for_pybytes_bincode {
+    ($ident:ident) => {
+        impl crate::PyBytesGeneral for $ident {
+            fn pybytes_general<'a>(&self, py: pyo3::prelude::Python<'a>) -> &'a PyBytes {
+                self.pybytes_bincode(py)
+            }
+        }
+    };
+}
+
+pub(crate) use pybytes_general_for_pybytes_bincode;
+
+pub trait PyBytesBincode: Serialize {
+    fn pybytes_bincode<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+        PyBytes::new(py, &bincode::serialize(self).unwrap())
+    }
+}
+
+pub trait PyBytesGeneral {
+    fn pybytes_general<'a>(&self, py: Python<'a>) -> &'a PyBytes;
+}
+
+macro_rules! pybytes_general_via_slice {
+    ($ident:ident) => {
+        impl crate::PyBytesSlice for $ident {}
+        crate::pybytes_general_for_pybytes_slice!($ident);
+    };
+}
+
+pub(crate) use pybytes_general_via_slice;
+
+macro_rules! pybytes_general_via_bincode {
+    ($ident:ident) => {
+        impl crate::PyBytesBincode for $ident {}
+        crate::pybytes_general_for_pybytes_bincode!($ident);
+    };
+}
+
+pub(crate) use pybytes_general_via_bincode;
+
+macro_rules! py_from_bytes_general_for_py_from_bytes_bincode {
+    ($ident:ident) => {
+        impl crate::PyFromBytesGeneral for $ident {
+            fn py_from_bytes_general(raw: &[u8]) -> PyResult<Self> {
+                Self::py_from_bytes_bincode(raw)
+            }
+        }
+    };
+}
+
+pub(crate) use py_from_bytes_general_for_py_from_bytes_bincode;
+
+macro_rules! py_from_bytes_general_via_bincode {
+    ($ident:ident) => {
+        impl crate::PyFromBytesBincode<'_> for $ident {}
+        crate::py_from_bytes_general_for_py_from_bytes_bincode!($ident);
+    };
+}
+
+pub(crate) use py_from_bytes_general_via_bincode;
+pub trait PyFromBytesBincode<'b>: Deserialize<'b> {
+    fn py_from_bytes_bincode(raw: &'b [u8]) -> PyResult<Self> {
+        let deser = bincode::deserialize::<Self>(raw);
+        handle_py_err(deser)
+    }
+}
+
+pub trait PyFromBytesGeneral: Sized {
+    fn py_from_bytes_general(raw: &[u8]) -> PyResult<Self>;
+}
+
+pub trait CommonMethods:
+    fmt::Display + fmt::Debug + PyBytesGeneral + PyFromBytesGeneral + IntoPy<PyObject> + Clone
+{
+    fn pybytes<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+        self.pybytes_general(py)
+    }
+
+    fn pystr(&self) -> String {
+        self.to_string()
+    }
+    fn pyrepr(&self) -> String {
+        format!("{:#?}", self)
+    }
+
+    fn py_from_bytes(raw: &[u8]) -> PyResult<Self> {
+        Self::py_from_bytes_general(raw)
+    }
+
+    fn pyreduce(&self) -> PyResult<(PyObject, PyObject)> {
+        let gil = Python::acquire_gil();
+        let py = gil.python();
+        let cloned = self.clone();
+        let constructor = cloned.into_py(py).getattr(py, "from_bytes")?;
+        Ok((constructor, (self.pybytes(py).to_object(py),).to_object(py)))
     }
 }
 

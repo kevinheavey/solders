@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0] - Unreleased
+
+### Added
+
+- Added a `from_bytes` constructor to every class that supports `__bytes__`
+- Added pickle support [(#2)](https://github.com/kevinheavey/solders/pull/2)
+
 ## [0.1.4] - 2022-06-01
 
 ### Fixed

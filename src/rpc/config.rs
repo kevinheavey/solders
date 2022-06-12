@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use solana_client::rpc_config;
 use solana_sdk::commitment_config::CommitmentLevel as CommitmentLevelOriginal;
 use solana_transaction_status::UiTransactionEncoding as UiTransactionEncodingOriginal;
-use solders_macros::pyrepr;
+use solders_macros::common_magic_methods;
 
 use crate::{commitment_config::CommitmentLevel, transaction_status::UiTransactionEncoding};
 
@@ -15,7 +15,6 @@ fn to_json(obj: &impl Serialize) -> String {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RpcSignatureStatusConfig(rpc_config::RpcSignatureStatusConfig);
 
-#[pyrepr]
 #[pymethods]
 impl RpcSignatureStatusConfig {
     #[new]

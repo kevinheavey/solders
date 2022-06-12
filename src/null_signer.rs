@@ -1,7 +1,11 @@
-use pyo3::{prelude::*, pyclass::CompareOp};
+use pyo3::{prelude::*, types::PyBytes};
 use solana_sdk::signer::{null_signer::NullSigner as NullSignerOriginal, Signer as SignerTrait};
+use solders_macros::{common_magic_methods, pyhash, richcmp_signer};
 
-use crate::{Pubkey, RichcmpSigner, Signature, Signer, SignerTraitWrapper, ToSignerOriginal};
+use crate::{
+    impl_display, impl_signer_hash, CommonMethods, Pubkey, PyBytesGeneral, PyFromBytesGeneral,
+    PyHash, RichcmpSigner, Signature, SignerTraitWrapper, ToSignerOriginal,
+};
 
 #[derive(Clone, Debug, Default, PartialEq)]
 #[pyclass(module = "solders.null_signer", subclass)]
@@ -14,6 +18,9 @@ use crate::{Pubkey, RichcmpSigner, Signature, Signer, SignerTraitWrapper, ToSign
 ///
 pub struct NullSigner(pub NullSignerOriginal);
 
+#[pyhash]
+#[richcmp_signer]
+#[common_magic_methods]
 #[pymethods]
 impl NullSigner {
     #[new]
@@ -41,10 +48,6 @@ impl NullSigner {
         self.try_sign_message(message).unwrap().into()
     }
 
-    fn __richcmp__(&self, other: Signer, op: CompareOp) -> PyResult<bool> {
-        self.richcmp(other, op)
-    }
-
     #[staticmethod]
     #[pyo3(name = "default")]
     /// Create a new default null signer.
@@ -56,10 +59,36 @@ impl NullSigner {
         Self::default()
     }
 
-    fn __repr__(&self) -> String {
-        format!("{:#?}", self)
+    #[staticmethod]
+    /// Deserialize a serialized ``NullSigner`` object.
+    ///
+    /// Args:
+    ///     data (bytes): The serialized ``NullSigner``.
+    ///
+    /// Returns:
+    ///     NullSigner: The deserialized ``NullSigner``.
+    fn from_bytes(data: [u8; Pubkey::LENGTH]) -> PyResult<Self> {
+        Self::py_from_bytes(&data)
     }
 }
+
+impl_display!(NullSigner);
+impl_signer_hash!(NullSigner);
+impl PyHash for NullSigner {}
+
+impl PyBytesGeneral for NullSigner {
+    fn pybytes_general<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+        self.py_pubkey().pybytes(py)
+    }
+}
+
+impl PyFromBytesGeneral for NullSigner {
+    fn py_from_bytes_general(raw: &[u8]) -> PyResult<Self> {
+        Ok(Self::new(&Pubkey::from_bytes(raw)?))
+    }
+}
+
+impl CommonMethods for NullSigner {}
 
 impl From<NullSignerOriginal> for NullSigner {
     fn from(signer: NullSignerOriginal) -> Self {

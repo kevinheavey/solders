@@ -1,11 +1,16 @@
-use std::{fmt, str::FromStr};
+use std::str::FromStr;
 
-use pyo3::{basic::CompareOp, create_exception, exceptions::PyException, prelude::*};
+use pyo3::{create_exception, exceptions::PyException, prelude::*};
+use serde::Deserialize;
 use solana_sdk::hash::{
     hash, Hash as HashOriginal, ParseHashError as ParseHashErrorOriginal, HASH_BYTES,
 };
+use solders_macros::{common_magic_methods, pyhash, richcmp_full};
 
-use crate::{calculate_hash, handle_py_err, PyErrWrapper, RichcmpFull};
+use crate::{
+    handle_py_err, impl_display, pybytes_general_via_slice, CommonMethods, PyBytesSlice,
+    PyErrWrapper, PyFromBytesGeneral, PyHash, RichcmpFull,
+};
 
 create_exception!(
     solders,
@@ -26,22 +31,20 @@ impl From<ParseHashErrorOriginal> for PyErrWrapper {
 /// Args:
 ///     hash_bytes (bytes): the hashed bytes.
 ///
-#[derive(Clone, Copy, Default, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
+#[derive(Clone, Copy, Default, Eq, PartialEq, Ord, PartialOrd, Hash, Debug, Deserialize)]
 pub struct Hash(HashOriginal);
 
+#[pyhash]
+#[richcmp_full]
+#[common_magic_methods]
 #[pymethods]
 impl Hash {
+    #[classattr]
+    pub const LENGTH: usize = HASH_BYTES;
+
     #[new]
     pub fn new(hash_bytes: [u8; HASH_BYTES]) -> Self {
         HashOriginal::new_from_array(hash_bytes).into()
-    }
-
-    pub fn __str__(&self) -> String {
-        self.to_string()
-    }
-
-    pub fn __repr__(&self) -> String {
-        format!("{:#?}", self)
     }
 
     #[staticmethod]
@@ -91,14 +94,6 @@ impl Hash {
         Self::default()
     }
 
-    pub fn __bytes__(&self) -> &[u8] {
-        self.as_ref()
-    }
-
-    pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> bool {
-        self.richcmp(other, op)
-    }
-
     #[staticmethod]
     #[allow(clippy::self_named_constructors)]
     /// Return a Sha256 hash for the given data.
@@ -119,12 +114,32 @@ impl Hash {
         hash(val).into()
     }
 
-    pub fn __hash__(&self) -> u64 {
-        calculate_hash(self)
+    #[staticmethod]
+    /// Construct from ``bytes``. Equivalent to ``Hash.__init__`` but included for the sake of consistency.
+    ///
+    /// Args:
+    ///     raw_bytes (bytes): the hashed bytes.
+    ///
+    /// Returns:
+    ///     Hash: a ``Hash`` object.
+    ///
+    pub fn from_bytes(raw_bytes: [u8; HASH_BYTES]) -> PyResult<Self> {
+        Self::py_from_bytes(&raw_bytes)
     }
 }
 
+impl PyFromBytesGeneral for Hash {
+    fn py_from_bytes_general(raw: &[u8]) -> PyResult<Self> {
+        Ok(HashOriginal::new(raw).into())
+    }
+}
+
+pybytes_general_via_slice!(Hash);
+impl CommonMethods for Hash {}
+
 impl RichcmpFull for Hash {}
+
+impl PyHash for Hash {}
 
 impl From<HashOriginal> for Hash {
     fn from(h: HashOriginal) -> Self {
@@ -150,8 +165,4 @@ impl AsRef<[u8]> for Hash {
     }
 }
 
-impl fmt::Display for Hash {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.0)
-    }
-}
+impl_display!(Hash);

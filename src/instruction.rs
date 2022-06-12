@@ -1,4 +1,6 @@
-use pyo3::{basic::CompareOp, prelude::*, types::PyBytes};
+use std::hash::Hasher;
+
+use pyo3::{prelude::*, types::PyBytes};
 use serde::{Deserialize, Serialize};
 use solana_sdk::{
     instruction::{
@@ -7,8 +9,12 @@ use solana_sdk::{
     },
     pubkey::Pubkey as PubkeyOriginal,
 };
+use solders_macros::{common_magic_methods, pyhash, richcmp_eq_only};
 
-use crate::{handle_py_err, pubkey::Pubkey, RichcmpEqualityOnly};
+use crate::{
+    impl_display, pubkey::Pubkey, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
+    CommonMethods, PyBytesBincode, PyFromBytesBincode, PyHash, RichcmpEqualityOnly,
+};
 
 /// Describes a single account read or written by a program during instruction
 /// execution.
@@ -39,8 +45,11 @@ use crate::{handle_py_err, pubkey::Pubkey, RichcmpEqualityOnly};
 ///     >>> instruction = Instruction(program_id, instruction_data, accs)
 ///
 #[pyclass(module = "solders.instruction", subclass)]
-#[derive(PartialEq, Debug, Clone)]
+#[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
 pub struct AccountMeta(AccountMetaOriginal);
+#[pyhash]
+#[richcmp_eq_only]
+#[common_magic_methods]
 #[pymethods]
 impl AccountMeta {
     #[new]
@@ -69,20 +78,26 @@ impl AccountMeta {
         self.0.is_writable
     }
 
-    pub fn __repr__(&self) -> String {
-        format!("{:#?}", self)
-    }
-
-    pub fn __str__(&self) -> String {
-        format!("{:?}", self)
-    }
-
-    pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
-        self.richcmp(other, op)
+    #[staticmethod]
+    /// Deserialize a serialized ``AccountMeta`` object.
+    ///
+    /// Args:
+    ///     data (bytes): the serialized ``AccountMeta``.
+    ///
+    /// Returns:
+    ///     AccountMeta: the deserialized ``AccountMeta``.
+    ///
+    pub fn from_bytes(data: &[u8]) -> PyResult<Self> {
+        Self::py_from_bytes(data)
     }
 }
-
+pybytes_general_via_bincode!(AccountMeta);
 impl RichcmpEqualityOnly for AccountMeta {}
+py_from_bytes_general_via_bincode!(AccountMeta);
+
+impl CommonMethods for AccountMeta {}
+
+impl PyHash for AccountMeta {}
 
 impl From<AccountMetaOriginal> for AccountMeta {
     fn from(am: AccountMetaOriginal) -> Self {
@@ -93,6 +108,17 @@ impl From<AccountMetaOriginal> for AccountMeta {
 impl From<AccountMeta> for AccountMetaOriginal {
     fn from(am: AccountMeta) -> Self {
         am.0
+    }
+}
+
+impl_display!(AccountMeta);
+
+#[allow(clippy::derive_hash_xor_eq)]
+impl std::hash::Hash for AccountMeta {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.0.pubkey.hash(state);
+        self.0.is_signer.hash(state);
+        self.0.is_writable.hash(state);
     }
 }
 
@@ -161,6 +187,8 @@ impl From<AccountMeta> for AccountMetaOriginal {
 #[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
 pub struct Instruction(pub InstructionOriginal);
 
+#[richcmp_eq_only]
+#[common_magic_methods]
 #[pymethods]
 impl Instruction {
     #[new]
@@ -200,23 +228,6 @@ impl Instruction {
             .collect();
     }
 
-    pub fn __repr__(&self) -> String {
-        format!("{:#?}", self)
-    }
-
-    pub fn __str__(&self) -> String {
-        format!("{:?}", self)
-    }
-
-    pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
-        self.richcmp(other, op)
-    }
-
-    pub fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        let ser = bincode::serialize(&self).unwrap();
-        PyBytes::new(py, &ser)
-    }
-
     #[staticmethod]
     /// Deserialize a serialized ``Instruction`` object.
     ///
@@ -239,12 +250,16 @@ impl Instruction {
     ///     >>> assert Instruction.from_bytes(serialized) == instruction
     ///
     pub fn from_bytes(data: &[u8]) -> PyResult<Self> {
-        let deser = bincode::deserialize::<Self>(data);
-        handle_py_err(deser)
+        Self::py_from_bytes(data)
     }
 }
-
+pybytes_general_via_bincode!(Instruction);
 impl RichcmpEqualityOnly for Instruction {}
+py_from_bytes_general_via_bincode!(Instruction);
+
+impl CommonMethods for Instruction {}
+
+impl_display!(Instruction);
 
 impl From<InstructionOriginal> for Instruction {
     fn from(ix: InstructionOriginal) -> Self {
@@ -281,6 +296,8 @@ impl AsRef<InstructionOriginal> for Instruction {
 #[derive(PartialEq, Eq, Debug, Clone, Serialize, Deserialize)]
 pub struct CompiledInstruction(CompiledInstructionOriginal);
 
+#[richcmp_eq_only]
+#[common_magic_methods]
 #[pymethods]
 impl CompiledInstruction {
     #[new]
@@ -325,23 +342,6 @@ impl CompiledInstruction {
         PyBytes::new(py, &self.0.data)
     }
 
-    pub fn __repr__(&self) -> String {
-        format!("{:#?}", self)
-    }
-
-    pub fn __str__(&self) -> String {
-        format!("{:?}", self)
-    }
-
-    pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
-        self.richcmp(other, op)
-    }
-
-    pub fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        let ser = bincode::serialize(&self).unwrap();
-        PyBytes::new(py, &ser)
-    }
-
     #[staticmethod]
     /// Deserialize a serialized ``CompiledInstruction`` object.
     ///
@@ -352,12 +352,16 @@ impl CompiledInstruction {
     ///     CompiledInstruction: The deserialized ``CompiledInstruction``.
     ///
     pub fn from_bytes(data: &[u8]) -> PyResult<Self> {
-        let deser = bincode::deserialize::<Self>(data);
-        handle_py_err(deser)
+        Self::py_from_bytes(data)
     }
 }
-
+pybytes_general_via_bincode!(CompiledInstruction);
 impl RichcmpEqualityOnly for CompiledInstruction {}
+py_from_bytes_general_via_bincode!(CompiledInstruction);
+
+impl CommonMethods for CompiledInstruction {}
+
+impl_display!(CompiledInstruction);
 
 impl From<CompiledInstructionOriginal> for CompiledInstruction {
     fn from(ix: CompiledInstructionOriginal) -> Self {

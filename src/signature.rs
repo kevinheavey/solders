@@ -1,9 +1,13 @@
-use std::{fmt, str::FromStr};
+use std::str::FromStr;
 
-use pyo3::{basic::CompareOp, prelude::*};
+use pyo3::prelude::*;
 use solana_sdk::signature::{Signature as SignatureOriginal, SIGNATURE_BYTES};
+use solders_macros::{common_magic_methods, pyhash, richcmp_full};
 
-use crate::{calculate_hash, handle_py_value_err, Pubkey, RichcmpFull};
+use crate::{
+    handle_py_value_err, impl_display, pybytes_general_via_slice, CommonMethods, Pubkey,
+    PyBytesSlice, PyFromBytesGeneral, PyHash, RichcmpFull,
+};
 
 #[pyclass(module = "solders.signature", subclass)]
 #[derive(Clone, Copy, Default, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
@@ -15,14 +19,17 @@ use crate::{calculate_hash, handle_py_value_err, Pubkey, RichcmpFull};
 ///
 pub struct Signature(SignatureOriginal);
 
+#[pyhash]
+#[richcmp_full]
+#[common_magic_methods]
 #[pymethods]
 impl Signature {
     #[classattr]
     pub const LENGTH: usize = SIGNATURE_BYTES;
 
     #[new]
-    pub fn new(signature_bytes: &[u8]) -> Self {
-        SignatureOriginal::new(signature_bytes).into()
+    pub fn new(signature_bytes: [u8; Self::LENGTH]) -> Self {
+        SignatureOriginal::new(&signature_bytes).into()
     }
 
     #[staticmethod]
@@ -108,28 +115,29 @@ impl Signature {
         self.0.into()
     }
 
-    pub fn __bytes__(&self) -> &[u8] {
-        self.as_ref()
-    }
-
-    pub fn __str__(&self) -> String {
-        self.to_string()
-    }
-
-    pub fn __repr__(&self) -> String {
-        format!("{:#?}", self)
-    }
-
-    pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> bool {
-        self.richcmp(other, op)
-    }
-
-    pub fn __hash__(&self) -> u64 {
-        calculate_hash(self)
+    #[staticmethod]
+    /// Construct from ``bytes``. Equivalent to ``Signature.__init__`` but included for the sake of consistency.
+    ///
+    /// Args:
+    ///     raw_bytes (bytes): the signature bytes.
+    ///
+    /// Returns:
+    ///     Signature: a ``Signature`` object.
+    ///
+    pub fn from_bytes(raw_bytes: [u8; Self::LENGTH]) -> PyResult<Self> {
+        Self::py_from_bytes(&raw_bytes)
     }
 }
 
+impl PyHash for Signature {}
+impl PyFromBytesGeneral for Signature {
+    fn py_from_bytes_general(raw: &[u8]) -> PyResult<Self> {
+        Ok(SignatureOriginal::new(raw).into())
+    }
+}
+impl CommonMethods for Signature {}
 impl RichcmpFull for Signature {}
+pybytes_general_via_slice!(Signature);
 
 impl From<SignatureOriginal> for Signature {
     fn from(sig: SignatureOriginal) -> Self {
@@ -143,11 +151,7 @@ impl From<Signature> for SignatureOriginal {
     }
 }
 
-impl fmt::Display for Signature {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.0)
-    }
-}
+impl_display!(Signature);
 
 impl AsRef<[u8]> for Signature {
     fn as_ref(&self) -> &[u8] {

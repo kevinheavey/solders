@@ -1,3 +1,4 @@
+import pickle
 from typing import List
 from solders.message import Message, MessageHeader
 from solders.keypair import Keypair
@@ -162,6 +163,11 @@ def test_message_header_eq() -> None:
     assert MessageHeader.default() == MessageHeader.default()
 
 
+def test_message_header_bytes() -> None:
+    msg = MessageHeader.default()
+    assert MessageHeader.from_bytes(bytes(msg)) == msg
+
+
 def test_message_hash() -> None:
     # when this test fails, it's most likely due to a new serialized format of a message.
     # in this case, the domain prefix `solana-tx-message-v1` should be updated.
@@ -204,3 +210,13 @@ def test_new_with_nonce() -> None:
     )
     Transaction.new_unsigned(message)
     # just check that no exceptions are raised
+
+
+def test_pickle_msg_header() -> None:
+    obj = MessageHeader.default()
+    assert pickle.loads(pickle.dumps(obj)) == obj
+
+
+def test_pickle_msg() -> None:
+    obj = Message.default()
+    assert pickle.loads(pickle.dumps(obj)) == obj
