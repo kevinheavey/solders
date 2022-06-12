@@ -46,6 +46,10 @@ macro_rules! rpc_config_impls {
 }
 
 #[pyclass(module = "solders.rpc.config", subclass)]
+/// Configuration object for ``getSignatureStatuses``.
+///
+/// Args:
+///     search_transaction_history:  If True, a Solana node will search its ledger cache for any signatures not found in the recent status cache
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RpcSignatureStatusConfig(rpc_config::RpcSignatureStatusConfig);
 
@@ -79,6 +83,17 @@ impl RpcSignatureStatusConfig {
 rpc_config_impls!(RpcSignatureStatusConfig);
 
 #[pyclass(module = "solders.rpc.config", subclass)]
+/// Configuration object for ``sendTransaction``.
+///
+/// Args:
+///     skip_preflight (bool):  If true, skip the preflight transaction checks.
+///     preflight_commitment (Optional[CommitmentLevel]): Commitment level to use for preflight.
+///     encoding: (Optional[UiTransactionEncoding]): Encoding used for the transaction data.
+///     max_retries: (Optional[int]): Maximum number of times for the RPC node to retry sending
+///         the transaction to the leader. If this parameter not provided, the RPC node will
+///         retry the transaction until it is finalized or until the blockhash expires.
+///     min_context_slot (Optional[int]): The minimum slot that the request can be evaluated at.
+///
 #[derive(Debug, Default, Clone, Copy, PartialEq, Serialize, Deserialize)]
 pub struct RpcSendTransactionConfig(rpc_config::RpcSendTransactionConfig);
 
@@ -127,6 +142,10 @@ impl RpcSendTransactionConfig {
         self.0.min_context_slot
     }
 
+    /// Create a new default instance of this class.
+    ///
+    /// Returns:
+    ///     RpcSendTransactionConfig: The default instance.
     #[staticmethod]
     #[pyo3(name = "default")]
     fn new_default() -> Self {
@@ -140,6 +159,7 @@ impl RpcSendTransactionConfig {
     ///     >>> from solders.rpc.config import RpcSendTransactionConfig
     ///     >>> RpcSendTransactionConfig.default().to_json()
     ///     '{"skipPreflight":false,"preflightCommitment":null,"encoding":null,"maxRetries":null,"minContextSlot":null}'
+    ///
     pub fn to_json(&self) -> String {
         to_json(self)
     }
