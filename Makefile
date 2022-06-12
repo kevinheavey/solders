@@ -2,7 +2,7 @@ test:
 	pytest && make doctest
 
 lint:
-	cargo clippy & flake8 && mypy .
+	cargo clippy && flake8 && mypy .
 
 fmt:
 	cargo fmt && black .
