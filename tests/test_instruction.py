@@ -51,7 +51,12 @@ def test_accounts_setter_compiled_ix(compiled_ix: CompiledInstruction) -> None:
 
 
 def test_compiled_accounts_eq(compiled_ix: CompiledInstruction) -> None:
-    assert compiled_ix == compiled_ix
+    assert (
+        CompiledInstruction(
+            compiled_ix.program_id_index, compiled_ix.data, compiled_ix.accounts
+        )
+        == compiled_ix
+    )
 
 
 @mark.parametrize("to_deserialize", [Instruction, CompiledInstruction])
