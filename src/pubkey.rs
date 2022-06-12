@@ -1,7 +1,12 @@
-use std::{fmt, hash::Hash, str::FromStr};
+use std::{hash::Hash, str::FromStr};
 
-use crate::{calculate_hash, handle_py_err, handle_py_value_err, PyErrWrapper, RichcmpFull};
-use pyo3::{basic::CompareOp, create_exception, exceptions::PyException, prelude::*};
+use crate::{
+    handle_py_err, handle_py_value_err, pybytes_general_for_pybytes_slice, CommonMethods,
+    PyBytesSlice, PyErrWrapper, PyFromBytesGeneral, PyHash, RichcmpFull,
+};
+use pyo3::{
+    basic::CompareOp, create_exception, exceptions::PyException, prelude::*, types::PyBytes,
+};
 use solana_sdk::pubkey::{
     Pubkey as PubkeyOriginal, PubkeyError as PubkeyErrorOriginal, PUBKEY_BYTES,
 };
@@ -32,13 +37,13 @@ impl From<PubkeyErrorOriginal> for PyErrWrapper {
 ///     '0101010101010101010101010101010101010101010101010101010101010101'
 ///
 #[pyclass(module = "solders.pubkey", subclass)]
-#[derive(Eq, PartialEq, Ord, PartialOrd, Debug, Default, Hash, Clone)]
+#[derive(Eq, PartialEq, Ord, PartialOrd, Debug, Default, Hash, Clone, Copy)]
 pub struct Pubkey(pub PubkeyOriginal);
 
 #[pymethods]
 impl Pubkey {
     #[classattr]
-    const LENGTH: usize = PUBKEY_BYTES;
+    pub const LENGTH: usize = PUBKEY_BYTES;
 
     #[new]
     pub fn new(pubkey_bytes: [u8; PUBKEY_BYTES]) -> Self {
@@ -210,15 +215,35 @@ impl Pubkey {
     }
 
     fn __str__(&self) -> String {
-        self.to_string()
+        self.pystr()
     }
 
     fn __repr__(&self) -> String {
-        format!("{:#?}", self)
+        self.pyrepr()
     }
 
-    pub fn __bytes__(&self) -> &[u8] {
-        self.as_ref()
+    fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+        self.pybytes(py)
+    }
+
+    #[staticmethod]
+    /// Construct from ``bytes``. Equivalent to ``Pubkey.__init__`` but included for the sake of consistency.
+    ///
+    /// Args:
+    ///     raw (bytes): the pubkey bytes.
+    ///
+    /// Returns:
+    ///     Pubkey: a ``Pubkey`` object.
+    ///
+    pub fn from_bytes(raw: &[u8]) -> PyResult<Self> {
+        Self::py_from_bytes(raw)
+    }
+
+    pub fn __reduce__(&self) -> PyResult<(PyObject, PyObject)> {
+        let gil = Python::acquire_gil();
+        let py = gil.python();
+        let constructor = self.into_py(py).getattr(py, "from_bytes")?;
+        Ok((constructor, (self.pybytes(py).to_object(py),).to_object(py)))
     }
 
     fn __richcmp__(&self, other: &Self, op: CompareOp) -> bool {
@@ -226,11 +251,12 @@ impl Pubkey {
     }
 
     pub fn __hash__(&self) -> u64 {
-        calculate_hash(self)
+        self.pyhash()
     }
 }
 
 impl RichcmpFull for Pubkey {}
+impl PyHash for Pubkey {}
 
 impl From<PubkeyOriginal> for Pubkey {
     fn from(pubkey: PubkeyOriginal) -> Self {
@@ -256,11 +282,20 @@ impl From<Pubkey> for PubkeyOriginal {
     }
 }
 
-impl fmt::Display for Pubkey {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+impl std::fmt::Display for Pubkey {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(f, "{}", self.0)
     }
 }
+
+pybytes_general_for_pybytes_slice!(Pubkey);
+impl PyBytesSlice for Pubkey {}
+impl PyFromBytesGeneral for Pubkey {
+    fn py_from_bytes_general(raw: &[u8]) -> PyResult<Self> {
+        Ok(PubkeyOriginal::new(raw).into())
+    }
+}
+impl CommonMethods for Pubkey {}
 
 impl AsRef<[u8]> for Pubkey {
     fn as_ref(&self) -> &[u8] {

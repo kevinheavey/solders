@@ -14,9 +14,10 @@ use solana_sdk::{
 };
 
 use crate::{
-    convert_instructions, convert_optional_pubkey, handle_py_err, signer::SignerVec,
-    CompiledInstruction, Instruction, Message, Pubkey, PyErrWrapper, RichcmpEqualityOnly,
-    Signature, Signer, SolderHash,
+    convert_instructions, convert_optional_pubkey, handle_py_err, impl_display,
+    py_from_bytes_general_via_bincode, pybytes_general_via_bincode, signer::SignerVec,
+    CommonMethods, CompiledInstruction, Instruction, Message, Pubkey, PyBytesBincode, PyErrWrapper,
+    PyFromBytesBincode, RichcmpEqualityOnly, Signature, Signer, SolderHash,
 };
 
 create_exception!(
@@ -45,7 +46,7 @@ impl From<SanitizeErrorOriginal> for PyErrWrapper {
     }
 }
 
-#[pyclass(module = "solders.transactionav", subclass)]
+#[pyclass(module = "solders.transaction", subclass)]
 #[derive(Debug, PartialEq, Default, Eq, Clone, Serialize, Deserialize)]
 /// An atomically-commited sequence of instructions.
 ///
@@ -528,9 +529,8 @@ impl Transaction {
         handle_py_err(self.0.sanitize())
     }
 
-    pub fn __bytes__<'a>(&self, py: Python<'a>) -> PyResult<&'a PyBytes> {
-        let as_vec: Vec<u8> = handle_py_err(bincode::serialize(&self.0))?;
-        Ok(PyBytes::new(py, &as_vec))
+    pub fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+        self.pybytes(py)
     }
 
     #[staticmethod]
@@ -558,7 +558,7 @@ impl Transaction {
     ///     >>> assert Transaction.from_bytes(bytes(tx)) == tx
     ///
     pub fn from_bytes(data: &[u8]) -> PyResult<Self> {
-        handle_py_err(bincode::deserialize::<TransactionOriginal>(data))
+        Self::py_from_bytes(data)
     }
 
     pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
@@ -566,11 +566,11 @@ impl Transaction {
     }
 
     pub fn __repr__(&self) -> String {
-        format!("{:#?}", self)
+        self.pyrepr()
     }
 
     pub fn __str__(&self) -> String {
-        format!("{:?}", self)
+        self.pystr()
     }
 
     /// Deprecated in the Solana Rust SDK, expose here only for testing.
@@ -580,6 +580,10 @@ impl Transaction {
 }
 
 impl RichcmpEqualityOnly for Transaction {}
+pybytes_general_via_bincode!(Transaction);
+py_from_bytes_general_via_bincode!(Transaction);
+impl_display!(Transaction);
+impl CommonMethods for Transaction {}
 
 impl From<TransactionOriginal> for Transaction {
     fn from(tx: TransactionOriginal) -> Self {

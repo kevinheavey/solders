@@ -1,4 +1,5 @@
 use pyo3::{prelude::*, pyclass::CompareOp, types::PyBytes};
+use serde::{Deserialize, Serialize};
 use solana_sdk::{
     instruction::CompiledInstruction as CompiledInstructionOriginal,
     message::{
@@ -9,12 +10,13 @@ use solana_sdk::{
 };
 
 use crate::{
-    convert_instructions, convert_optional_pubkey, handle_py_err, CompiledInstruction, Instruction,
-    Pubkey, RichcmpEqualityOnly, SolderHash,
+    convert_instructions, convert_optional_pubkey, impl_display, py_from_bytes_general_via_bincode,
+    pybytes_general_via_bincode, CommonMethods, CompiledInstruction, Instruction, Pubkey,
+    PyBytesBincode, PyBytesGeneral, PyFromBytesBincode, RichcmpEqualityOnly, SolderHash,
 };
 
 #[pyclass(module = "solders.message", subclass)]
-#[derive(PartialEq, Eq, Debug, Default)]
+#[derive(PartialEq, Eq, Debug, Default, Serialize, Deserialize, Clone)]
 /// Describes the organization of a :class:`Message`'s account keys.
 ///
 /// Every :class:`~solders.instruction.Instruction` specifies which accounts it may reference, or
@@ -100,15 +102,31 @@ impl MessageHeader {
     }
 
     pub fn __repr__(&self) -> String {
-        format!("{:#?}", self)
+        self.pyrepr()
     }
 
     pub fn __str__(&self) -> String {
-        format!("{:?}", self)
+        self.pystr()
+    }
+
+    pub fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+        self.pybytes(py)
     }
 
     pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
         self.richcmp(other, op)
+    }
+
+    #[staticmethod]
+    /// Deserialize a serialized ``MessageHeader`` object.
+    ///
+    /// Args:
+    ///     data (bytes): The serialized ``MessageHeader``.
+    ///
+    /// Returns:
+    ///     MessageHeader: The deserialized ``MessageHeader``.
+    fn from_bytes(data: &[u8]) -> PyResult<Self> {
+        Self::py_from_bytes(data)
     }
 }
 
@@ -119,9 +137,13 @@ impl From<MessageHeaderOriginal> for MessageHeader {
 }
 
 impl RichcmpEqualityOnly for MessageHeader {}
+pybytes_general_via_bincode!(MessageHeader);
+impl_display!(MessageHeader);
+py_from_bytes_general_via_bincode!(MessageHeader);
+impl CommonMethods for MessageHeader {}
 
 #[pyclass(module = "solders.message", subclass)]
-#[derive(PartialEq, Eq, Debug, Clone, Default)]
+#[derive(PartialEq, Eq, Debug, Clone, Default, Serialize, Deserialize)]
 /// A Solana transaction message.
 ///
 /// Some constructors accept an optional `payer`, the account responsible for
@@ -359,7 +381,7 @@ impl Message {
     }
 
     pub fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        PyBytes::new(py, &self.0.serialize())
+        self.pybytes(py)
     }
 
     /// Return the program ID of an instruction at a particular index in the message.
@@ -507,7 +529,7 @@ impl Message {
     ///     >>> assert Message.from_bytes(serialized) == message
     ///
     pub fn from_bytes(data: &[u8]) -> PyResult<Self> {
-        handle_py_err(bincode::deserialize::<MessageOriginal>(data))
+        Self::py_from_bytes(data)
     }
 
     pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
@@ -515,15 +537,23 @@ impl Message {
     }
 
     pub fn __repr__(&self) -> String {
-        format!("{:#?}", self)
+        self.pyrepr()
     }
 
     pub fn __str__(&self) -> String {
-        format!("{:?}", self)
+        self.pystr()
     }
 }
 
 impl RichcmpEqualityOnly for Message {}
+impl PyBytesGeneral for Message {
+    fn pybytes_general<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+        PyBytes::new(py, &self.0.serialize())
+    }
+}
+impl_display!(Message);
+py_from_bytes_general_via_bincode!(Message);
+impl CommonMethods for Message {}
 
 impl From<MessageOriginal> for Message {
     fn from(message: MessageOriginal) -> Self {

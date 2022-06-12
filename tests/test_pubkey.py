@@ -1,3 +1,4 @@
+import pickle
 from pytest import raises, mark
 from solders.pubkey import Pubkey
 
@@ -126,6 +127,14 @@ def test_set_operations() -> None:
     public_key_secondary = Pubkey(bytes([1] * 32))
     public_key_duplicate = Pubkey(bytes(public_key_secondary))
     public_key_set = {public_key_primary, public_key_secondary, public_key_duplicate}
+    assert isinstance(hash(public_key_primary), int)
     assert hash(public_key_primary) != hash(public_key_secondary)
     assert hash(public_key_secondary) == hash(public_key_duplicate)
     assert len(public_key_set) == 2
+
+
+def test_pickle() -> None:
+    key = Pubkey.new_unique()
+    ser = pickle.dumps(key)
+    deser = pickle.loads(ser)
+    assert deser == key

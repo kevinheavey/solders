@@ -7,8 +7,9 @@ use solana_sdk::signer::{
 };
 
 use crate::{
-    calculate_hash, handle_py_value_err, pubkey::Pubkey, signature::Signature, RichcmpSigner,
-    Signer, SignerTraitWrapper, ToSignerOriginal,
+    handle_py_value_err, impl_display, impl_signer_hash, pubkey::Pubkey, signature::Signature,
+    CommonMethods, PyBytesGeneral, PyFromBytesGeneral, PyHash, RichcmpSigner, Signer,
+    SignerTraitWrapper, ToSignerOriginal,
 };
 
 #[pyclass(module = "solders.keypair", subclass)]
@@ -49,7 +50,7 @@ impl Keypair {
     ///
     #[staticmethod]
     pub fn from_bytes(raw_bytes: [u8; Self::LENGTH]) -> PyResult<Self> {
-        handle_py_value_err(KeypairOriginal::from_bytes(&raw_bytes))
+        Self::py_from_bytes(&raw_bytes)
     }
 
     /// Returns this ``Keypair`` as a byte array.
@@ -67,7 +68,7 @@ impl Keypair {
     }
 
     pub fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        PyBytes::new(py, self.to_bytes_array().as_slice())
+        self.pybytes(py)
     }
 
     #[staticmethod]
@@ -105,7 +106,7 @@ impl Keypair {
     }
 
     pub fn __str__(&self) -> String {
-        self.0.to_base58_string()
+        self.pystr()
     }
 
     #[pyo3(name = "pubkey")]
@@ -193,7 +194,7 @@ impl Keypair {
     }
 
     pub fn __hash__(&self) -> u64 {
-        calculate_hash(&("Keypair", self.pubkey()))
+        self.pyhash()
     }
 
     fn __richcmp__(&self, other: Signer, op: CompareOp) -> PyResult<bool> {
@@ -211,11 +212,33 @@ impl Keypair {
     }
 
     fn __repr__(&self) -> String {
-        format!("{:#?}", self)
+        self.pyrepr()
+    }
+}
+
+impl_signer_hash!(Keypair);
+impl PyBytesGeneral for Keypair {
+    fn pybytes_general<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+        PyBytes::new(py, &self.to_bytes_array())
+    }
+}
+impl PyHash for Keypair {}
+
+impl PyFromBytesGeneral for Keypair {
+    fn py_from_bytes_general(raw: &[u8]) -> PyResult<Self> {
+        handle_py_value_err(KeypairOriginal::from_bytes(raw))
+    }
+}
+
+impl CommonMethods for Keypair {
+    fn pystr(&self) -> String {
+        self.0.to_base58_string()
     }
 }
 
 impl RichcmpSigner for Keypair {}
+
+impl_display!(Keypair);
 
 impl Default for Keypair {
     fn default() -> Self {
