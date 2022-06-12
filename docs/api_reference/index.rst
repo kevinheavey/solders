@@ -16,6 +16,7 @@ Modules:
    null_signer
    presigner
    pubkey
+   rpc/index
    signature
    system_program
    sysvar

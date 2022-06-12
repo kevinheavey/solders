@@ -135,3 +135,9 @@ impl From<CommitmentConfigOriginal> for CommitmentConfig {
         Self(c)
     }
 }
+
+impl From<CommitmentConfig> for CommitmentConfigOriginal {
+    fn from(c: CommitmentConfig) -> Self {
+        c.0
+    }
+}

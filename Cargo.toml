@@ -23,6 +23,7 @@ dict_derive = "0.4.0"
 solana-client = "1.10.23"
 solana-transaction-status = "1.10.23"
 solders-macros = "0.1.0"
+solana-account-decoder = "1.10.25"
 
 [package.metadata.maturin]
 python-source = "python"

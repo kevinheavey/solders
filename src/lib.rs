@@ -1,3 +1,4 @@
+use account_decoder::UiAccountEncoding;
 use bincode::ErrorKind;
 use commitment_config::{CommitmentConfig, CommitmentLevel};
 use pyo3::{
@@ -43,6 +44,7 @@ mod presigner;
 pub use presigner::Presigner;
 mod null_signer;
 pub use null_signer::NullSigner;
+pub mod account_decoder;
 pub mod commitment_config;
 pub mod rpc;
 mod system_program;
@@ -230,7 +232,10 @@ pub(crate) use pybytes_general_for_pybytes_slice;
 macro_rules! pybytes_general_for_pybytes_bincode {
     ($ident:ident) => {
         impl crate::PyBytesGeneral for $ident {
-            fn pybytes_general<'a>(&self, py: pyo3::prelude::Python<'a>) -> &'a PyBytes {
+            fn pybytes_general<'a>(
+                &self,
+                py: pyo3::prelude::Python<'a>,
+            ) -> &'a pyo3::types::PyBytes {
                 self.pybytes_bincode(py)
             }
         }
@@ -363,6 +368,8 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
     commitment_config_mod.add_class::<CommitmentLevel>()?;
     let transaction_status_mod = PyModule::new(py, "transaction_status")?;
     transaction_status_mod.add_class::<UiTransactionEncoding>()?;
+    let account_decoder_mod = PyModule::new(py, "account_decoder")?;
+    account_decoder_mod.add_class::<UiAccountEncoding>()?;
     let submodules = [
         errors_mod,
         hash_mod,
@@ -379,6 +386,7 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
         rpc_mod,
         commitment_config_mod,
         transaction_status_mod,
+        account_decoder_mod,
     ];
     let modules: HashMap<String, &PyModule> = submodules
         .iter()
