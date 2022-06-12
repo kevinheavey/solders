@@ -1,10 +1,10 @@
-use pyo3::{prelude::*, pyclass::CompareOp, types::PyBytes};
+use pyo3::{prelude::*, types::PyBytes};
 use solana_sdk::signer::{null_signer::NullSigner as NullSignerOriginal, Signer as SignerTrait};
-use solders_macros::pyhash;
+use solders_macros::{pyhash, richcmp_signer};
 
 use crate::{
     impl_display, impl_signer_hash, CommonMethods, Pubkey, PyBytesGeneral, PyFromBytesGeneral,
-    PyHash, RichcmpSigner, Signature, Signer, SignerTraitWrapper, ToSignerOriginal,
+    PyHash, RichcmpSigner, Signature, SignerTraitWrapper, ToSignerOriginal,
 };
 
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -19,6 +19,7 @@ use crate::{
 pub struct NullSigner(pub NullSignerOriginal);
 
 #[pyhash]
+#[richcmp_signer]
 #[pymethods]
 impl NullSigner {
     #[new]
@@ -44,10 +45,6 @@ impl NullSigner {
     ///
     pub fn py_sign_message(&self, message: &[u8]) -> Signature {
         self.try_sign_message(message).unwrap().into()
-    }
-
-    fn __richcmp__(&self, other: Signer, op: CompareOp) -> PyResult<bool> {
-        self.richcmp(other, op)
     }
 
     #[staticmethod]

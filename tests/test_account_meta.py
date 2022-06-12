@@ -7,7 +7,9 @@ PUBKEY = Pubkey.default()
 def test_eq() -> None:
     am1 = AccountMeta(PUBKEY, True, True)
     am2 = AccountMeta(PUBKEY, True, True)
+    am3 = AccountMeta(PUBKEY, True, False)
     assert am1 == am2
+    assert am1 != am3
 
 
 def test_attributes() -> None:

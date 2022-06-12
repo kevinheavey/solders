@@ -50,6 +50,10 @@ def test_accounts_setter_compiled_ix(compiled_ix: CompiledInstruction) -> None:
     assert ix.accounts == bytes(new_accounts_as_list)
 
 
+def test_compiled_accounts_eq(compiled_ix: CompiledInstruction) -> None:
+    assert compiled_ix == compiled_ix
+
+
 @mark.parametrize("to_deserialize", [Instruction, CompiledInstruction])
 def test_bincode_error(to_deserialize: Union[Instruction, CompiledInstruction]) -> None:
     with raises(BincodeError) as excinfo:

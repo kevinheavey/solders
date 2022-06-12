@@ -1,6 +1,6 @@
 use std::hash::Hasher;
 
-use pyo3::{basic::CompareOp, prelude::*, types::PyBytes};
+use pyo3::{prelude::*, types::PyBytes};
 use serde::{Deserialize, Serialize};
 use solana_sdk::{
     instruction::{
@@ -9,7 +9,7 @@ use solana_sdk::{
     },
     pubkey::Pubkey as PubkeyOriginal,
 };
-use solders_macros::pyhash;
+use solders_macros::{pyhash, richcmp_eq_only};
 
 use crate::{
     impl_display, pubkey::Pubkey, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
@@ -48,6 +48,7 @@ use crate::{
 #[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
 pub struct AccountMeta(AccountMetaOriginal);
 #[pyhash]
+#[richcmp_eq_only]
 #[pymethods]
 impl AccountMeta {
     #[new]
@@ -82,10 +83,6 @@ impl AccountMeta {
 
     pub fn __str__(&self) -> String {
         self.pystr()
-    }
-
-    pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
-        self.richcmp(other, op)
     }
 
     pub fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
@@ -201,6 +198,7 @@ impl std::hash::Hash for AccountMeta {
 #[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
 pub struct Instruction(pub InstructionOriginal);
 
+#[richcmp_eq_only]
 #[pymethods]
 impl Instruction {
     #[new]
@@ -246,10 +244,6 @@ impl Instruction {
 
     pub fn __str__(&self) -> String {
         self.pystr()
-    }
-
-    pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
-        self.richcmp(other, op)
     }
 
     pub fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
@@ -324,6 +318,7 @@ impl AsRef<InstructionOriginal> for Instruction {
 #[derive(PartialEq, Eq, Debug, Clone, Serialize, Deserialize)]
 pub struct CompiledInstruction(CompiledInstructionOriginal);
 
+#[richcmp_eq_only]
 #[pymethods]
 impl CompiledInstruction {
     #[new]
@@ -374,10 +369,6 @@ impl CompiledInstruction {
 
     pub fn __str__(&self) -> String {
         self.pystr()
-    }
-
-    pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
-        self.richcmp(other, op)
     }
 
     pub fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {

@@ -1,10 +1,10 @@
-use pyo3::{prelude::*, pyclass::CompareOp};
+use pyo3::prelude::*;
 use solana_sdk::signer::{presigner::Presigner as PresignerOriginal, Signer as SignerTrait};
-use solders_macros::pyhash;
+use solders_macros::{pyhash, richcmp_signer};
 
 use crate::{
     handle_py_err, impl_display, impl_signer_hash, Pubkey, PyHash, RichcmpSigner, Signature,
-    Signer, SignerTraitWrapper, ToSignerOriginal,
+    SignerTraitWrapper, ToSignerOriginal,
 };
 
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -21,6 +21,7 @@ use crate::{
 pub struct Presigner(pub PresignerOriginal);
 
 #[pyhash]
+#[richcmp_signer]
 #[pymethods]
 impl Presigner {
     #[new]
@@ -69,10 +70,6 @@ impl Presigner {
     ///
     pub fn py_sign_message(&self, message: &[u8]) -> PyResult<Signature> {
         handle_py_err(self.try_sign_message(message))
-    }
-
-    fn __richcmp__(&self, other: Signer, op: CompareOp) -> PyResult<bool> {
-        self.richcmp(other, op)
     }
 
     #[staticmethod]

@@ -1,13 +1,11 @@
 use std::str::FromStr;
 
-use pyo3::{
-    basic::CompareOp, create_exception, exceptions::PyException, prelude::*, types::PyBytes,
-};
+use pyo3::{create_exception, exceptions::PyException, prelude::*, types::PyBytes};
 use serde::Deserialize;
 use solana_sdk::hash::{
     hash, Hash as HashOriginal, ParseHashError as ParseHashErrorOriginal, HASH_BYTES,
 };
-use solders_macros::pyhash;
+use solders_macros::{pyhash, richcmp_full};
 
 use crate::{
     handle_py_err, impl_display, pybytes_general_via_slice, CommonMethods, PyBytesSlice,
@@ -37,6 +35,7 @@ impl From<ParseHashErrorOriginal> for PyErrWrapper {
 pub struct Hash(HashOriginal);
 
 #[pyhash]
+#[richcmp_full]
 #[pymethods]
 impl Hash {
     #[classattr]
@@ -104,10 +103,6 @@ impl Hash {
 
     pub fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
         self.pybytes(py)
-    }
-
-    pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> bool {
-        self.richcmp(other, op)
     }
 
     #[staticmethod]

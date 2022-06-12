@@ -1,16 +1,16 @@
-use pyo3::{prelude::*, pyclass::CompareOp, types::PyBytes};
+use pyo3::{prelude::*, types::PyBytes};
 use solana_sdk::signer::{
     keypair::{
         keypair_from_seed, keypair_from_seed_phrase_and_passphrase, Keypair as KeypairOriginal,
     },
     Signer as SignerTrait,
 };
-use solders_macros::pyhash;
+use solders_macros::{pyhash, richcmp_signer};
 
 use crate::{
     handle_py_value_err, impl_display, impl_signer_hash, pubkey::Pubkey, signature::Signature,
-    CommonMethods, PyBytesGeneral, PyFromBytesGeneral, PyHash, RichcmpSigner, Signer,
-    SignerTraitWrapper, ToSignerOriginal,
+    CommonMethods, PyBytesGeneral, PyFromBytesGeneral, PyHash, RichcmpSigner, SignerTraitWrapper,
+    ToSignerOriginal,
 };
 
 #[pyclass(module = "solders.keypair", subclass)]
@@ -26,6 +26,7 @@ use crate::{
 pub struct Keypair(pub KeypairOriginal);
 
 #[pyhash]
+#[richcmp_signer]
 #[pymethods]
 impl Keypair {
     #[classattr]
@@ -193,10 +194,6 @@ impl Keypair {
             seed_phrase,
             passphrase,
         ))
-    }
-
-    fn __richcmp__(&self, other: Signer, op: CompareOp) -> PyResult<bool> {
-        self.richcmp(other, op)
     }
 
     #[pyo3(name = "is_interactive")]

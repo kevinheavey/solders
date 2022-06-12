@@ -1,4 +1,4 @@
-use pyo3::{prelude::*, pyclass::CompareOp, types::PyBytes};
+use pyo3::{prelude::*, types::PyBytes};
 use serde::{Deserialize, Serialize};
 use solana_sdk::{
     instruction::CompiledInstruction as CompiledInstructionOriginal,
@@ -8,6 +8,7 @@ use solana_sdk::{
     },
     pubkey::Pubkey as PubkeyOriginal,
 };
+use solders_macros::richcmp_eq_only;
 
 use crate::{
     convert_instructions, convert_optional_pubkey, impl_display, py_from_bytes_general_via_bincode,
@@ -57,6 +58,7 @@ use crate::{
 ///         of the unsigned keys are read-only accounts.
 pub struct MessageHeader(MessageHeaderOriginal);
 
+#[richcmp_eq_only]
 #[pymethods]
 impl MessageHeader {
     #[classattr]
@@ -111,10 +113,6 @@ impl MessageHeader {
 
     pub fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
         self.pybytes(py)
-    }
-
-    pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
-        self.richcmp(other, op)
     }
 
     #[staticmethod]
@@ -177,6 +175,7 @@ impl CommonMethods for MessageHeader {}
 ///
 pub struct Message(MessageOriginal);
 
+#[richcmp_eq_only]
 #[pymethods]
 impl Message {
     #[new]
@@ -530,10 +529,6 @@ impl Message {
     ///
     pub fn from_bytes(data: &[u8]) -> PyResult<Self> {
         Self::py_from_bytes(data)
-    }
-
-    pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
-        self.richcmp(other, op)
     }
 
     pub fn __repr__(&self) -> String {

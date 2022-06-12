@@ -4,13 +4,11 @@ use crate::{
     handle_py_err, handle_py_value_err, pybytes_general_via_slice, CommonMethods, PyBytesSlice,
     PyErrWrapper, PyFromBytesGeneral, PyHash, RichcmpFull,
 };
-use pyo3::{
-    basic::CompareOp, create_exception, exceptions::PyException, prelude::*, types::PyBytes,
-};
+use pyo3::{create_exception, exceptions::PyException, prelude::*, types::PyBytes};
 use solana_sdk::pubkey::{
     Pubkey as PubkeyOriginal, PubkeyError as PubkeyErrorOriginal, PUBKEY_BYTES,
 };
-use solders_macros::pyhash;
+use solders_macros::{pyhash, richcmp_full};
 
 create_exception!(
     solders,
@@ -42,6 +40,7 @@ impl From<PubkeyErrorOriginal> for PyErrWrapper {
 pub struct Pubkey(pub PubkeyOriginal);
 
 #[pyhash]
+#[richcmp_full]
 #[pymethods]
 impl Pubkey {
     #[classattr]
@@ -243,10 +242,6 @@ impl Pubkey {
 
     pub fn __reduce__(&self) -> PyResult<(PyObject, PyObject)> {
         self.pyreduce()
-    }
-
-    fn __richcmp__(&self, other: &Self, op: CompareOp) -> bool {
-        self.richcmp(other, op)
     }
 }
 
