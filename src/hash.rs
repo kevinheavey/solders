@@ -7,6 +7,7 @@ use serde::Deserialize;
 use solana_sdk::hash::{
     hash, Hash as HashOriginal, ParseHashError as ParseHashErrorOriginal, HASH_BYTES,
 };
+use solders_macros::pyhash;
 
 use crate::{
     handle_py_err, impl_display, pybytes_general_via_slice, CommonMethods, PyBytesSlice,
@@ -35,6 +36,7 @@ impl From<ParseHashErrorOriginal> for PyErrWrapper {
 #[derive(Clone, Copy, Default, Eq, PartialEq, Ord, PartialOrd, Hash, Debug, Deserialize)]
 pub struct Hash(HashOriginal);
 
+#[pyhash]
 #[pymethods]
 impl Hash {
     #[classattr]
@@ -126,10 +128,6 @@ impl Hash {
     ///     )
     pub fn hash(val: &[u8]) -> Self {
         hash(val).into()
-    }
-
-    pub fn __hash__(&self) -> u64 {
-        self.pyhash()
     }
 
     #[staticmethod]

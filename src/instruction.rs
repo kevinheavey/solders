@@ -9,6 +9,7 @@ use solana_sdk::{
     },
     pubkey::Pubkey as PubkeyOriginal,
 };
+use solders_macros::pyhash;
 
 use crate::{
     impl_display, pubkey::Pubkey, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
@@ -46,6 +47,7 @@ use crate::{
 #[pyclass(module = "solders.instruction", subclass)]
 #[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
 pub struct AccountMeta(AccountMetaOriginal);
+#[pyhash]
 #[pymethods]
 impl AccountMeta {
     #[new]
@@ -88,10 +90,6 @@ impl AccountMeta {
 
     pub fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
         self.pybytes(py)
-    }
-
-    pub fn __hash__(&self) -> u64 {
-        self.pyhash()
     }
 
     #[staticmethod]

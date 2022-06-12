@@ -5,6 +5,7 @@ use solana_sdk::signer::{
     },
     Signer as SignerTrait,
 };
+use solders_macros::pyhash;
 
 use crate::{
     handle_py_value_err, impl_display, impl_signer_hash, pubkey::Pubkey, signature::Signature,
@@ -24,6 +25,7 @@ use crate::{
 ///
 pub struct Keypair(pub KeypairOriginal);
 
+#[pyhash]
 #[pymethods]
 impl Keypair {
     #[classattr]
@@ -191,10 +193,6 @@ impl Keypair {
             seed_phrase,
             passphrase,
         ))
-    }
-
-    pub fn __hash__(&self) -> u64 {
-        self.pyhash()
     }
 
     fn __richcmp__(&self, other: Signer, op: CompareOp) -> PyResult<bool> {

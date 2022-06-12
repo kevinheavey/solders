@@ -1,5 +1,6 @@
 use pyo3::{prelude::*, pyclass::CompareOp};
 use solana_sdk::signer::{presigner::Presigner as PresignerOriginal, Signer as SignerTrait};
+use solders_macros::pyhash;
 
 use crate::{
     handle_py_err, impl_display, impl_signer_hash, Pubkey, PyHash, RichcmpSigner, Signature,
@@ -19,6 +20,7 @@ use crate::{
 ///     
 pub struct Presigner(pub PresignerOriginal);
 
+#[pyhash]
 #[pymethods]
 impl Presigner {
     #[new]
@@ -86,10 +88,6 @@ impl Presigner {
 
     fn __repr__(&self) -> String {
         format!("{:#?}", self)
-    }
-
-    fn __hash__(&self) -> u64 {
-        self.pyhash()
     }
 }
 

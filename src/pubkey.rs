@@ -10,6 +10,7 @@ use pyo3::{
 use solana_sdk::pubkey::{
     Pubkey as PubkeyOriginal, PubkeyError as PubkeyErrorOriginal, PUBKEY_BYTES,
 };
+use solders_macros::pyhash;
 
 create_exception!(
     solders,
@@ -40,6 +41,7 @@ impl From<PubkeyErrorOriginal> for PyErrWrapper {
 #[derive(Eq, PartialEq, Ord, PartialOrd, Debug, Default, Hash, Clone, Copy)]
 pub struct Pubkey(pub PubkeyOriginal);
 
+#[pyhash]
 #[pymethods]
 impl Pubkey {
     #[classattr]
@@ -245,10 +247,6 @@ impl Pubkey {
 
     fn __richcmp__(&self, other: &Self, op: CompareOp) -> bool {
         self.richcmp(other, op)
-    }
-
-    pub fn __hash__(&self) -> u64 {
-        self.pyhash()
     }
 }
 

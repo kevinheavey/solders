@@ -2,6 +2,7 @@ use std::str::FromStr;
 
 use pyo3::{basic::CompareOp, prelude::*, types::PyBytes};
 use solana_sdk::signature::{Signature as SignatureOriginal, SIGNATURE_BYTES};
+use solders_macros::pyhash;
 
 use crate::{
     handle_py_value_err, impl_display, pybytes_general_via_slice, CommonMethods, Pubkey,
@@ -18,6 +19,7 @@ use crate::{
 ///
 pub struct Signature(SignatureOriginal);
 
+#[pyhash]
 #[pymethods]
 impl Signature {
     #[classattr]
@@ -125,10 +127,6 @@ impl Signature {
 
     pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> bool {
         self.richcmp(other, op)
-    }
-
-    pub fn __hash__(&self) -> u64 {
-        self.pyhash()
     }
 
     #[staticmethod]
