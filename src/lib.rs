@@ -1,3 +1,6 @@
+//! These docstrings are written for Python users.
+//!
+//! If you're viewing them on docs.rs, the formatting won't make much sense.
 use account_decoder::UiAccountEncoding;
 use bincode::ErrorKind;
 use commitment_config::{CommitmentConfig, CommitmentLevel};
