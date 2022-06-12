@@ -4,11 +4,11 @@ use crate::{
     handle_py_err, handle_py_value_err, pybytes_general_via_slice, CommonMethods, PyBytesSlice,
     PyErrWrapper, PyFromBytesGeneral, PyHash, RichcmpFull,
 };
-use pyo3::{create_exception, exceptions::PyException, prelude::*, types::PyBytes};
+use pyo3::{create_exception, exceptions::PyException, prelude::*};
 use solana_sdk::pubkey::{
     Pubkey as PubkeyOriginal, PubkeyError as PubkeyErrorOriginal, PUBKEY_BYTES,
 };
-use solders_macros::{pyhash, richcmp_full};
+use solders_macros::{common_magic_methods, pyhash, richcmp_full};
 
 create_exception!(
     solders,
@@ -41,6 +41,7 @@ pub struct Pubkey(pub PubkeyOriginal);
 
 #[pyhash]
 #[richcmp_full]
+#[common_magic_methods]
 #[pymethods]
 impl Pubkey {
     #[classattr]
@@ -215,18 +216,6 @@ impl Pubkey {
         self.0.is_on_curve()
     }
 
-    fn __str__(&self) -> String {
-        self.pystr()
-    }
-
-    fn __repr__(&self) -> String {
-        self.pyrepr()
-    }
-
-    fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        self.pybytes(py)
-    }
-
     #[staticmethod]
     /// Construct from ``bytes``. Equivalent to ``Pubkey.__init__`` but included for the sake of consistency.
     ///
@@ -238,10 +227,6 @@ impl Pubkey {
     ///
     pub fn from_bytes(raw: &[u8]) -> PyResult<Self> {
         Self::py_from_bytes(raw)
-    }
-
-    pub fn __reduce__(&self) -> PyResult<(PyObject, PyObject)> {
-        self.pyreduce()
     }
 }
 

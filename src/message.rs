@@ -8,7 +8,7 @@ use solana_sdk::{
     },
     pubkey::Pubkey as PubkeyOriginal,
 };
-use solders_macros::richcmp_eq_only;
+use solders_macros::{common_magic_methods, richcmp_eq_only};
 
 use crate::{
     convert_instructions, convert_optional_pubkey, impl_display, py_from_bytes_general_via_bincode,
@@ -59,6 +59,7 @@ use crate::{
 pub struct MessageHeader(MessageHeaderOriginal);
 
 #[richcmp_eq_only]
+#[common_magic_methods]
 #[pymethods]
 impl MessageHeader {
     #[classattr]
@@ -101,18 +102,6 @@ impl MessageHeader {
     #[getter]
     pub fn num_readonly_unsigned_accounts(&self) -> u8 {
         self.0.num_readonly_unsigned_accounts
-    }
-
-    pub fn __repr__(&self) -> String {
-        self.pyrepr()
-    }
-
-    pub fn __str__(&self) -> String {
-        self.pystr()
-    }
-
-    pub fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        self.pybytes(py)
     }
 
     #[staticmethod]
@@ -176,6 +165,7 @@ impl CommonMethods for MessageHeader {}
 pub struct Message(MessageOriginal);
 
 #[richcmp_eq_only]
+#[common_magic_methods]
 #[pymethods]
 impl Message {
     #[new]
@@ -379,10 +369,6 @@ impl Message {
         self.0.compile_instruction(ix.as_ref()).into()
     }
 
-    pub fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        self.pybytes(py)
-    }
-
     /// Return the program ID of an instruction at a particular index in the message.
     ///
     /// Args:
@@ -529,14 +515,6 @@ impl Message {
     ///
     pub fn from_bytes(data: &[u8]) -> PyResult<Self> {
         Self::py_from_bytes(data)
-    }
-
-    pub fn __repr__(&self) -> String {
-        self.pyrepr()
-    }
-
-    pub fn __str__(&self) -> String {
-        self.pystr()
     }
 }
 

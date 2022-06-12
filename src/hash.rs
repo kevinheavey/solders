@@ -1,11 +1,11 @@
 use std::str::FromStr;
 
-use pyo3::{create_exception, exceptions::PyException, prelude::*, types::PyBytes};
+use pyo3::{create_exception, exceptions::PyException, prelude::*};
 use serde::Deserialize;
 use solana_sdk::hash::{
     hash, Hash as HashOriginal, ParseHashError as ParseHashErrorOriginal, HASH_BYTES,
 };
-use solders_macros::{pyhash, richcmp_full};
+use solders_macros::{common_magic_methods, pyhash, richcmp_full};
 
 use crate::{
     handle_py_err, impl_display, pybytes_general_via_slice, CommonMethods, PyBytesSlice,
@@ -36,6 +36,7 @@ pub struct Hash(HashOriginal);
 
 #[pyhash]
 #[richcmp_full]
+#[common_magic_methods]
 #[pymethods]
 impl Hash {
     #[classattr]
@@ -44,14 +45,6 @@ impl Hash {
     #[new]
     pub fn new(hash_bytes: [u8; HASH_BYTES]) -> Self {
         HashOriginal::new_from_array(hash_bytes).into()
-    }
-
-    pub fn __str__(&self) -> String {
-        self.pystr()
-    }
-
-    pub fn __repr__(&self) -> String {
-        self.pyrepr()
     }
 
     #[staticmethod]
@@ -99,10 +92,6 @@ impl Hash {
     ///     )
     pub fn new_default() -> Self {
         Self::default()
-    }
-
-    pub fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        self.pybytes(py)
     }
 
     #[staticmethod]

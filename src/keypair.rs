@@ -5,7 +5,7 @@ use solana_sdk::signer::{
     },
     Signer as SignerTrait,
 };
-use solders_macros::{pyhash, richcmp_signer};
+use solders_macros::{common_magic_methods, pyhash, richcmp_signer};
 
 use crate::{
     handle_py_value_err, impl_display, impl_signer_hash, pubkey::Pubkey, signature::Signature,
@@ -27,6 +27,7 @@ pub struct Keypair(pub KeypairOriginal);
 
 #[pyhash]
 #[richcmp_signer]
+#[common_magic_methods]
 #[pymethods]
 impl Keypair {
     #[classattr]
@@ -70,10 +71,6 @@ impl Keypair {
         self.0.to_bytes()
     }
 
-    pub fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        self.pybytes(py)
-    }
-
     #[staticmethod]
     /// Recovers a ``Keypair`` from a base58-encoded string.
     ///
@@ -106,10 +103,6 @@ impl Keypair {
     ///
     pub fn secret(&self) -> &[u8] {
         self.0.secret().as_ref()
-    }
-
-    pub fn __str__(&self) -> String {
-        self.pystr()
     }
 
     #[pyo3(name = "pubkey")]
@@ -204,10 +197,6 @@ impl Keypair {
     ///
     pub fn py_is_interactive(&self) -> bool {
         self.is_interactive()
-    }
-
-    fn __repr__(&self) -> String {
-        self.pyrepr()
     }
 }
 

@@ -9,7 +9,7 @@ use solana_sdk::{
     },
     pubkey::Pubkey as PubkeyOriginal,
 };
-use solders_macros::{pyhash, richcmp_eq_only};
+use solders_macros::{common_magic_methods, pyhash, richcmp_eq_only};
 
 use crate::{
     impl_display, pubkey::Pubkey, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
@@ -49,6 +49,7 @@ use crate::{
 pub struct AccountMeta(AccountMetaOriginal);
 #[pyhash]
 #[richcmp_eq_only]
+#[common_magic_methods]
 #[pymethods]
 impl AccountMeta {
     #[new]
@@ -75,18 +76,6 @@ impl AccountMeta {
     #[getter]
     pub fn is_writable(&self) -> bool {
         self.0.is_writable
-    }
-
-    pub fn __repr__(&self) -> String {
-        self.pyrepr()
-    }
-
-    pub fn __str__(&self) -> String {
-        self.pystr()
-    }
-
-    pub fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        self.pybytes(py)
     }
 
     #[staticmethod]
@@ -199,6 +188,7 @@ impl std::hash::Hash for AccountMeta {
 pub struct Instruction(pub InstructionOriginal);
 
 #[richcmp_eq_only]
+#[common_magic_methods]
 #[pymethods]
 impl Instruction {
     #[new]
@@ -236,18 +226,6 @@ impl Instruction {
             .into_iter()
             .map(AccountMetaOriginal::from)
             .collect();
-    }
-
-    pub fn __repr__(&self) -> String {
-        self.pyrepr()
-    }
-
-    pub fn __str__(&self) -> String {
-        self.pystr()
-    }
-
-    pub fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        self.pybytes(py)
     }
 
     #[staticmethod]
@@ -319,6 +297,7 @@ impl AsRef<InstructionOriginal> for Instruction {
 pub struct CompiledInstruction(CompiledInstructionOriginal);
 
 #[richcmp_eq_only]
+#[common_magic_methods]
 #[pymethods]
 impl CompiledInstruction {
     #[new]
@@ -361,18 +340,6 @@ impl CompiledInstruction {
     #[getter]
     pub fn data<'a>(&self, py: Python<'a>) -> &'a PyBytes {
         PyBytes::new(py, &self.0.data)
-    }
-
-    pub fn __repr__(&self) -> String {
-        self.pyrepr()
-    }
-
-    pub fn __str__(&self) -> String {
-        self.pystr()
-    }
-
-    pub fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        self.pybytes(py)
     }
 
     #[staticmethod]

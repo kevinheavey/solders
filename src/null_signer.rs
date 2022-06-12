@@ -1,6 +1,6 @@
 use pyo3::{prelude::*, types::PyBytes};
 use solana_sdk::signer::{null_signer::NullSigner as NullSignerOriginal, Signer as SignerTrait};
-use solders_macros::{pyhash, richcmp_signer};
+use solders_macros::{common_magic_methods, pyhash, richcmp_signer};
 
 use crate::{
     impl_display, impl_signer_hash, CommonMethods, Pubkey, PyBytesGeneral, PyFromBytesGeneral,
@@ -20,6 +20,7 @@ pub struct NullSigner(pub NullSignerOriginal);
 
 #[pyhash]
 #[richcmp_signer]
+#[common_magic_methods]
 #[pymethods]
 impl NullSigner {
     #[new]
@@ -56,18 +57,6 @@ impl NullSigner {
     ///
     pub fn new_default() -> Self {
         Self::default()
-    }
-
-    fn __repr__(&self) -> String {
-        self.pyrepr()
-    }
-
-    fn __str__(&self) -> String {
-        self.pystr()
-    }
-
-    fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        self.pybytes(py)
     }
 
     #[staticmethod]

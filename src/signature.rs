@@ -1,8 +1,8 @@
 use std::str::FromStr;
 
-use pyo3::{prelude::*, types::PyBytes};
+use pyo3::prelude::*;
 use solana_sdk::signature::{Signature as SignatureOriginal, SIGNATURE_BYTES};
-use solders_macros::{pyhash, richcmp_full};
+use solders_macros::{common_magic_methods, pyhash, richcmp_full};
 
 use crate::{
     handle_py_value_err, impl_display, pybytes_general_via_slice, CommonMethods, Pubkey,
@@ -21,6 +21,7 @@ pub struct Signature(SignatureOriginal);
 
 #[pyhash]
 #[richcmp_full]
+#[common_magic_methods]
 #[pymethods]
 impl Signature {
     #[classattr]
@@ -112,18 +113,6 @@ impl Signature {
     ///
     pub fn to_bytes_array(&self) -> [u8; 64] {
         self.0.into()
-    }
-
-    pub fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        self.pybytes(py)
-    }
-
-    pub fn __str__(&self) -> String {
-        self.pystr()
-    }
-
-    pub fn __repr__(&self) -> String {
-        self.pyrepr()
     }
 
     #[staticmethod]

@@ -1,7 +1,5 @@
 #![allow(deprecated)]
-use pyo3::{
-    create_exception, exceptions::PyException, prelude::*, pyclass::CompareOp, types::PyBytes,
-};
+use pyo3::{create_exception, exceptions::PyException, prelude::*, types::PyBytes};
 use serde::{Deserialize, Serialize};
 use solana_sdk::{
     pubkey::Pubkey as PubkeyOriginal,
@@ -12,6 +10,7 @@ use solana_sdk::{
         TransactionError as TransactionErrorOriginal,
     },
 };
+use solders_macros::{common_magic_methods, richcmp_eq_only};
 
 use crate::{
     convert_instructions, convert_optional_pubkey, handle_py_err, impl_display,
@@ -91,6 +90,8 @@ impl From<SanitizeErrorOriginal> for PyErrWrapper {
 ///
 pub struct Transaction(TransactionOriginal);
 
+#[richcmp_eq_only]
+#[common_magic_methods]
 #[pymethods]
 impl Transaction {
     #[new]
@@ -529,10 +530,6 @@ impl Transaction {
         handle_py_err(self.0.sanitize())
     }
 
-    pub fn __bytes__<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        self.pybytes(py)
-    }
-
     #[staticmethod]
     #[pyo3(name = "default")]
     /// Return a new default transaction.
@@ -559,18 +556,6 @@ impl Transaction {
     ///
     pub fn from_bytes(data: &[u8]) -> PyResult<Self> {
         Self::py_from_bytes(data)
-    }
-
-    pub fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
-        self.richcmp(other, op)
-    }
-
-    pub fn __repr__(&self) -> String {
-        self.pyrepr()
-    }
-
-    pub fn __str__(&self) -> String {
-        self.pystr()
     }
 
     /// Deprecated in the Solana Rust SDK, expose here only for testing.
