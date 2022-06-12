@@ -11,9 +11,8 @@ use solana_sdk::{
 };
 
 use crate::{
-    impl_display, pubkey::Pubkey, py_from_bytes_general_for_py_from_bytes_bincode,
-    pybytes_general_for_pybytes_bincode, CommonMethods, PyBytesBincode, PyFromBytesBincode, PyHash,
-    RichcmpEqualityOnly,
+    impl_display, pubkey::Pubkey, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
+    CommonMethods, PyBytesBincode, PyFromBytesBincode, PyHash, RichcmpEqualityOnly,
 };
 
 /// Describes a single account read or written by a program during instruction
@@ -108,11 +107,9 @@ impl AccountMeta {
         Self::py_from_bytes(data)
     }
 }
-pybytes_general_for_pybytes_bincode!(AccountMeta);
+pybytes_general_via_bincode!(AccountMeta);
 impl RichcmpEqualityOnly for AccountMeta {}
-impl PyBytesBincode for AccountMeta {}
-impl PyFromBytesBincode<'_> for AccountMeta {}
-py_from_bytes_general_for_py_from_bytes_bincode!(AccountMeta);
+py_from_bytes_general_via_bincode!(AccountMeta);
 
 impl CommonMethods for AccountMeta {}
 
@@ -286,11 +283,9 @@ impl Instruction {
         Self::py_from_bytes(data)
     }
 }
-pybytes_general_for_pybytes_bincode!(Instruction);
+pybytes_general_via_bincode!(Instruction);
 impl RichcmpEqualityOnly for Instruction {}
-impl PyBytesBincode for Instruction {}
-impl PyFromBytesBincode<'_> for Instruction {}
-py_from_bytes_general_for_py_from_bytes_bincode!(Instruction);
+py_from_bytes_general_via_bincode!(Instruction);
 
 impl CommonMethods for Instruction {}
 
@@ -404,13 +399,11 @@ impl CompiledInstruction {
         Self::py_from_bytes(data)
     }
 }
-pybytes_general_for_pybytes_bincode!(CompiledInstruction);
+pybytes_general_via_bincode!(CompiledInstruction);
 impl RichcmpEqualityOnly for CompiledInstruction {}
-impl PyFromBytesBincode<'_> for CompiledInstruction {}
-py_from_bytes_general_for_py_from_bytes_bincode!(CompiledInstruction);
+py_from_bytes_general_via_bincode!(CompiledInstruction);
 
 impl CommonMethods for CompiledInstruction {}
-impl PyBytesBincode for CompiledInstruction {}
 
 impl_display!(CompiledInstruction);
 

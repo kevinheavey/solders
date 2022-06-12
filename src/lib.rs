@@ -243,6 +243,24 @@ pub trait PyBytesGeneral {
     fn pybytes_general<'a>(&self, py: Python<'a>) -> &'a PyBytes;
 }
 
+macro_rules! pybytes_general_via_slice {
+    ($ident:ident) => {
+        impl crate::PyBytesSlice for $ident {}
+        crate::pybytes_general_for_pybytes_slice!($ident);
+    };
+}
+
+pub(crate) use pybytes_general_via_slice;
+
+macro_rules! pybytes_general_via_bincode {
+    ($ident:ident) => {
+        impl crate::PyBytesBincode for $ident {}
+        crate::pybytes_general_for_pybytes_bincode!($ident);
+    };
+}
+
+pub(crate) use pybytes_general_via_bincode;
+
 macro_rules! py_from_bytes_general_for_py_from_bytes_bincode {
     ($ident:ident) => {
         impl crate::PyFromBytesGeneral for $ident {
@@ -255,6 +273,14 @@ macro_rules! py_from_bytes_general_for_py_from_bytes_bincode {
 
 pub(crate) use py_from_bytes_general_for_py_from_bytes_bincode;
 
+macro_rules! py_from_bytes_general_via_bincode {
+    ($ident:ident) => {
+        impl crate::PyFromBytesBincode<'_> for $ident {}
+        crate::py_from_bytes_general_for_py_from_bytes_bincode!($ident);
+    };
+}
+
+pub(crate) use py_from_bytes_general_via_bincode;
 pub trait PyFromBytesBincode<'b>: Deserialize<'b> {
     fn py_from_bytes_bincode(raw: &'b [u8]) -> PyResult<Self> {
         let deser = bincode::deserialize::<Self>(raw);

@@ -4,7 +4,7 @@ use pyo3::{basic::CompareOp, prelude::*, types::PyBytes};
 use solana_sdk::signature::{Signature as SignatureOriginal, SIGNATURE_BYTES};
 
 use crate::{
-    handle_py_value_err, impl_display, pybytes_general_for_pybytes_slice, CommonMethods, Pubkey,
+    handle_py_value_err, impl_display, pybytes_general_via_slice, CommonMethods, Pubkey,
     PyBytesSlice, PyFromBytesGeneral, PyHash, RichcmpFull,
 };
 
@@ -153,8 +153,7 @@ impl PyFromBytesGeneral for Signature {
 }
 impl CommonMethods for Signature {}
 impl RichcmpFull for Signature {}
-impl PyBytesSlice for Signature {}
-pybytes_general_for_pybytes_slice!(Signature);
+pybytes_general_via_slice!(Signature);
 
 impl From<SignatureOriginal> for Signature {
     fn from(sig: SignatureOriginal) -> Self {

@@ -10,10 +10,9 @@ use solana_sdk::{
 };
 
 use crate::{
-    convert_instructions, convert_optional_pubkey, impl_display,
-    py_from_bytes_general_for_py_from_bytes_bincode, pybytes_general_for_pybytes_bincode,
-    CommonMethods, CompiledInstruction, Instruction, Pubkey, PyBytesBincode, PyBytesGeneral,
-    PyFromBytesBincode, RichcmpEqualityOnly, SolderHash,
+    convert_instructions, convert_optional_pubkey, impl_display, py_from_bytes_general_via_bincode,
+    pybytes_general_via_bincode, CommonMethods, CompiledInstruction, Instruction, Pubkey,
+    PyBytesBincode, PyBytesGeneral, PyFromBytesBincode, RichcmpEqualityOnly, SolderHash,
 };
 
 #[pyclass(module = "solders.message", subclass)]
@@ -138,11 +137,9 @@ impl From<MessageHeaderOriginal> for MessageHeader {
 }
 
 impl RichcmpEqualityOnly for MessageHeader {}
-impl PyBytesBincode for MessageHeader {}
-pybytes_general_for_pybytes_bincode!(MessageHeader);
+pybytes_general_via_bincode!(MessageHeader);
 impl_display!(MessageHeader);
-impl PyFromBytesBincode<'_> for MessageHeader {}
-py_from_bytes_general_for_py_from_bytes_bincode!(MessageHeader);
+py_from_bytes_general_via_bincode!(MessageHeader);
 impl CommonMethods for MessageHeader {}
 
 #[pyclass(module = "solders.message", subclass)]
@@ -555,8 +552,7 @@ impl PyBytesGeneral for Message {
     }
 }
 impl_display!(Message);
-impl PyFromBytesBincode<'_> for Message {}
-py_from_bytes_general_for_py_from_bytes_bincode!(Message);
+py_from_bytes_general_via_bincode!(Message);
 impl CommonMethods for Message {}
 
 impl From<MessageOriginal> for Message {
