@@ -1,4 +1,5 @@
 from operator import ge, gt, le, lt
+import pickle
 from typing import Callable, Any
 from pytest import raises, mark
 
@@ -104,3 +105,8 @@ def test_from_seed_phrase_and_passphrase() -> None:
     expected_keypair = Keypair.from_seed(bytes(seed)[:32])
     keypair = Keypair.from_seed_phrase_and_passphrase(mnemonic.phrase, passphrase)
     assert keypair.pubkey() == expected_keypair.pubkey()
+
+
+def test_pickle() -> None:
+    obj = Keypair()
+    assert pickle.loads(pickle.dumps(obj)) == obj

@@ -1,3 +1,4 @@
+import pickle
 from solders.pubkey import Pubkey
 from solders.instruction import AccountMeta
 
@@ -17,3 +18,8 @@ def test_attributes() -> None:
     assert am.pubkey == PUBKEY
     assert am.is_signer
     assert am.is_writable
+
+
+def test_pickle() -> None:
+    obj = AccountMeta(PUBKEY, True, True)
+    assert pickle.loads(pickle.dumps(obj)) == obj

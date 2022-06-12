@@ -1,3 +1,4 @@
+import pickle
 from based58 import b58encode, b58decode
 from pytest import raises, fixture
 from solders.signature import Signature
@@ -83,3 +84,8 @@ def test_hash() -> None:
 def test_from_bytes() -> None:
     raw = b"123".rjust(Signature.LENGTH)
     assert Signature(raw) == Signature.from_bytes(raw)
+
+
+def test_pickle() -> None:
+    obj = Signature.default()
+    assert pickle.loads(pickle.dumps(obj)) == obj
