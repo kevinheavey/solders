@@ -1,3 +1,4 @@
+import pickle
 from typing import List
 from solders.message import Message, MessageHeader
 from solders.keypair import Keypair
@@ -209,3 +210,13 @@ def test_new_with_nonce() -> None:
     )
     Transaction.new_unsigned(message)
     # just check that no exceptions are raised
+
+
+def test_pickle_msg_header() -> None:
+    obj = MessageHeader.default()
+    assert pickle.loads(pickle.dumps(obj)) == obj
+
+
+def test_pickle_msg() -> None:
+    obj = Message.default()
+    assert pickle.loads(pickle.dumps(obj)) == obj

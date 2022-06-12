@@ -1,3 +1,4 @@
+import pickle
 from pytest import raises, mark
 from based58 import b58encode
 
@@ -42,3 +43,8 @@ def test_from_bytes() -> None:
 
 def test_hashable() -> None:
     assert isinstance(hash(Hash.default()), int)
+
+
+def test_pickle() -> None:
+    obj = Hash.default()
+    assert pickle.loads(pickle.dumps(obj)) == obj
