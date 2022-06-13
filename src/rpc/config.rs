@@ -92,21 +92,6 @@ impl RpcSignatureStatusConfig {
 
 rpc_config_impls!(RpcSignatureStatusConfig);
 
-// #[pyclass(module = "solders.rpc.config", subclass)]
-// /// Configuration object for ``sendTransaction``.
-// ///
-// /// Args:
-// ///     skip_preflight (bool):  If true, skip the preflight transaction checks.
-// ///     preflight_commitment (Optional[CommitmentLevel]): Commitment level to use for preflight.
-// ///     encoding: (Optional[UiTransactionEncoding]): Encoding used for the transaction data.
-// ///     max_retries: (Optional[int]): Maximum number of times for the RPC node to retry sending
-// ///         the transaction to the leader. If this parameter not provided, the RPC node will
-// ///         retry the transaction until it is finalized or until the blockhash expires.
-// ///     min_context_slot (Optional[int]): The minimum slot that the request can be evaluated at.
-// ///
-// #[derive(Debug, Default, Clone, Copy, PartialEq, Serialize, Deserialize)]
-// pub struct RpcSendTransactionConfig(rpc_config::RpcSendTransactionConfig);
-
 pyclass_boilerplate_with_default!(
     /// Configuration object for ``sendTransaction``.
     ///
@@ -192,9 +177,14 @@ impl RpcSendTransactionConfig {
 
 rpc_config_impls!(RpcSendTransactionConfig);
 
-#[pyclass(module = "solders.rpc.config", subclass)]
-#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
-pub struct RpcSimulateTransactionAccountsConfig(rpc_config::RpcSimulateTransactionAccountsConfig);
+pyclass_boilerplate_with_default!(
+    /// Accounts configuration for ``simulateTransaction``.
+    ///
+    /// Args:
+    ///     encoding (Optional[UiAccountEncoding]): Encoding for returned Account data
+    ///     addresses (Sequence[str]): An array of accounts to return, as base-58 encoded strings.
+    => RpcSimulateTransactionAccountsConfig
+);
 
 #[common_magic_methods]
 #[pymethods]
@@ -207,6 +197,10 @@ impl RpcSimulateTransactionAccountsConfig {
         })
     }
 
+    /// Create a new default instance of this class.
+    ///
+    /// Returns:
+    ///     RpcSimulateTransactionAccountsConfig: The default instance.
     #[staticmethod]
     #[pyo3(name = "default")]
     fn new_default() -> Self {
@@ -218,8 +212,9 @@ impl RpcSimulateTransactionAccountsConfig {
     /// Example:
     ///
     ///     >>> from solders.rpc.config import RpcSimulateTransactionAccountsConfig
-    ///     >>> RpcSimulateTransactionAccountsConfig.default().to_json()
-    ///     '{"encoding":null,"addresses":[]}'
+    ///     >>> from solders.account_decoder import UiAccountEncoding
+    ///     >>> RpcSimulateTransactionAccountsConfig(UiAccountEncoding.Base64, []).to_json()
+    ///     '{"encoding":"base64","addresses":[]}'
     pub fn to_json(&self) -> String {
         to_json(self)
     }
@@ -227,9 +222,21 @@ impl RpcSimulateTransactionAccountsConfig {
 
 rpc_config_impls!(RpcSimulateTransactionAccountsConfig);
 
-#[pyclass(module = "solders.rpc.config", subclass)]
-#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
-pub struct RpcSimulateTransactionConfig(rpc_config::RpcSimulateTransactionConfig);
+pyclass_boilerplate_with_default!(
+    /// Configuration object for ``simulateTransaction``.
+    ///
+    /// Args:
+    ///     sig_verify (bool): If True the transaction signatures will be verified
+    ///         (conflicts with ``replace_recent_blockhash``).
+    ///     replace_recent_blockhash (bool): If True the transaction recent blockhash
+    ///         will be replaced with the most recent blockhash
+    ///         (conflicts with ``sig_verify``).
+    ///     commitment (Optional[CommitmentConfig]): Commitment level at which to simulate the transaction.
+    ///     encoding (Optional[UiTransactionEncoding]): Encoding used for the transaction data.
+    ///     accounts (Optional[RpcSimulateTransactionAccountsConfig]): Accounts configuration object.
+    ///     min_context_slot (Optional[int]): The minimum slot that the request can be evaluated at.
+    => RpcSimulateTransactionConfig
+);
 
 #[common_magic_methods]
 #[pymethods]
@@ -251,6 +258,31 @@ impl RpcSimulateTransactionConfig {
             accounts: accounts.map(|a| a.into()),
             min_context_slot,
         })
+    }
+
+    /// Create a new default instance of this class.
+    ///
+    /// Returns:
+    ///     RpcSimulateTransactionConfig: The default instance.
+    #[staticmethod]
+    #[pyo3(name = "default")]
+    fn new_default() -> Self {
+        Self::default()
+    }
+
+    /// Serialize as a JSON string.
+    ///
+    /// Example:
+    ///
+    ///     >>> from solders.rpc.config import RpcSimulateTransactionAccountsConfig, RpcSimulateTransactionConfig
+    ///     >>> from solders.account_decoder import UiAccountEncoding
+    ///     >>> from solders.commitment_config import CommitmentLevel, CommitmentConfig
+    ///     >>> accounts_config = RpcSimulateTransactionAccountsConfig(UiAccountEncoding.Base64, [])
+    ///     >>> config = RpcSimulateTransactionConfig(sig_verify=True, replace_recent_blockhash=False, accounts=accounts_config)
+    ///     >>> config.to_json()
+    ///     '{"sigVerify":true,"replaceRecentBlockhash":false,"encoding":null,"accounts":{"encoding":"base64","addresses":[]},"minContextSlot":null}'
+    pub fn to_json(&self) -> String {
+        to_json(self)
     }
 }
 
