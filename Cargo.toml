@@ -24,6 +24,7 @@ solana-client = "1.10.23"
 solana-transaction-status = "1.10.23"
 solders-macros = "0.1.0"
 solana-account-decoder = "1.10.25"
+jsonrpc-core = {version = "18.0.0", default-features = false }
 
 [package.metadata.maturin]
 python-source = "python"

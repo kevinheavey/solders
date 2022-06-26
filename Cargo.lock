@@ -3298,6 +3298,7 @@ dependencies = [
  "bincode",
  "borsh",
  "dict_derive",
+ "jsonrpc-core",
  "pyo3",
  "serde",
  "serde_json",

@@ -1,6 +1,7 @@
 use std::str::FromStr;
 
 use pyo3::prelude::*;
+use serde::{Deserialize, Serialize};
 use solana_sdk::signature::{Signature as SignatureOriginal, SIGNATURE_BYTES};
 use solders_macros::{common_magic_methods, pyhash, richcmp_full};
 
@@ -10,7 +11,9 @@ use crate::{
 };
 
 #[pyclass(module = "solders.signature", subclass)]
-#[derive(Clone, Copy, Default, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
+#[derive(
+    Clone, Copy, Default, Eq, PartialEq, Ord, PartialOrd, Hash, Debug, Serialize, Deserialize,
+)]
 /// The ``Signature`` object is a wrapper around a raw bytes signature, typically
 /// returned by :meth:`~solders.keypair.Keypair.sign_message` or other similar methods.
 ///

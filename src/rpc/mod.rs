@@ -1,14 +1,16 @@
 use std::collections::HashMap;
 
-use self::config::create_config_mod;
+use self::{config::create_config_mod, requests::create_requests_mod};
 use pyo3::prelude::*;
 
 pub mod config;
+pub mod requests;
 
 pub fn create_rpc_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let rpc_mod = PyModule::new(py, "rpc")?;
     let config_mod = create_config_mod(py)?;
-    let submodules = [config_mod];
+    let requests_mod = create_requests_mod(py)?;
+    let submodules = [config_mod, requests_mod];
     let modules: HashMap<String, &PyModule> = submodules
         .iter()
         .map(|x| (format!("solders.rpc.{}", x.name().unwrap()), *x))
