@@ -288,11 +288,39 @@ impl RpcSimulateTransactionConfig {
 
 rpc_config_impls!(RpcSimulateTransactionConfig);
 
+pyclass_boilerplate_with_default!(/// Foo
+=> RpcRequestAirdropConfig);
+
+rpc_config_impls!(RpcRequestAirdropConfig);
+
+#[common_magic_methods]
+#[pymethods]
+impl RpcRequestAirdropConfig {
+    #[new]
+    fn new(recent_blockhash: Option<&str>, commitment: Option<CommitmentConfig>) -> Self {
+        Self(rpc_config::RpcRequestAirdropConfig {
+            recent_blockhash: recent_blockhash.map(String::from),
+            commitment: commitment.map(|c| c.into()),
+        })
+    }
+
+    /// Create a new default instance of this class.
+    ///
+    /// Returns:
+    ///     RpcRequestAirdropConfig: The default instance.
+    #[staticmethod]
+    #[pyo3(name = "default")]
+    fn new_default() -> Self {
+        Self::default()
+    }
+}
+
 pub fn create_config_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let config_mod = PyModule::new(py, "config")?;
     config_mod.add_class::<RpcSignatureStatusConfig>()?;
     config_mod.add_class::<RpcSendTransactionConfig>()?;
     config_mod.add_class::<RpcSimulateTransactionAccountsConfig>()?;
     config_mod.add_class::<RpcSimulateTransactionConfig>()?;
+    config_mod.add_class::<RpcRequestAirdropConfig>()?;
     Ok(config_mod)
 }
