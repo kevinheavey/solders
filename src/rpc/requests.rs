@@ -1,10 +1,8 @@
-use std::fmt::Display;
-
 use crate::{
-    py_from_bytes_general_via_bincode, pybytes_general_via_bincode, CommonMethods, Pubkey,
-    PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly,
+    py_from_bytes_general_via_bincode, pybytes_general_via_bincode, to_py_err, CommonMethods,
+    Pubkey, PyBytesBincode, PyErrWrapper, PyFromBytesBincode, RichcmpEqualityOnly,
 };
-use pyo3::prelude::*;
+use pyo3::{create_exception, exceptions::PyException, prelude::*};
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, DisplayFromStr};
 use solders_macros::{common_magic_methods, richcmp_eq_only};
@@ -12,6 +10,19 @@ use solders_macros::{common_magic_methods, richcmp_eq_only};
 use crate::Signature;
 
 use super::config::{RpcRequestAirdropConfig, RpcSignatureStatusConfig};
+
+create_exception!(
+    solders,
+    SerdeJSONError,
+    PyException,
+    "Raised when an error is encountered during JSON (de)serialization."
+);
+
+impl From<serde_json::Error> for PyErrWrapper {
+    fn from(e: serde_json::Error) -> Self {
+        Self(SerdeJSONError::new_err(e.to_string()))
+    }
+}
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 struct RequestBase {
@@ -60,16 +71,22 @@ impl GetSignatureStatuses {
     }
 
     #[staticmethod]
-    fn from_json(raw: &str) -> Self {
-        serde_json::from_str(raw).unwrap()
+    fn from_json(raw: &str) -> PyResult<Self> {
+        serde_json::from_str(raw).map_err(to_py_err)
     }
 }
 
-impl Display for GetSignatureStatuses {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.to_json())
-    }
+macro_rules! rpc_impl_display {
+    ($ident:ident) => {
+        impl std::fmt::Display for $ident {
+            fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+                write!(f, "{}", self.to_json())
+            }
+        }
+    };
 }
+
+rpc_impl_display!(GetSignatureStatuses);
 
 impl CommonMethods for GetSignatureStatuses {}
 impl RichcmpEqualityOnly for GetSignatureStatuses {}
@@ -129,11 +146,7 @@ impl RequestAirdrop {
     }
 }
 
-impl Display for RequestAirdrop {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.to_json())
-    }
-}
+rpc_impl_display!(RequestAirdrop);
 
 impl CommonMethods for RequestAirdrop {}
 impl RichcmpEqualityOnly for RequestAirdrop {}
