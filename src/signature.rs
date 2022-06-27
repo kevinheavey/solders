@@ -2,7 +2,7 @@ use std::str::FromStr;
 
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
-use solana_sdk::signature::{Signature as SignatureOriginal, SIGNATURE_BYTES};
+use solana_sdk::signature::{ParseSignatureError, Signature as SignatureOriginal, SIGNATURE_BYTES};
 use solders_macros::{common_magic_methods, pyhash, richcmp_full};
 
 use crate::{
@@ -79,7 +79,7 @@ impl Signature {
     ///     >>> assert Signature.from_string(str(sig)) == sig
     ///
     pub fn new_from_str(s: &str) -> PyResult<Self> {
-        handle_py_value_err(SignatureOriginal::from_str(s))
+        handle_py_value_err(Self::from_str(s))
     }
 
     /// Check if the signature is a valid signature created by the given pubkey on the given message.
@@ -165,5 +165,12 @@ impl AsRef<[u8]> for Signature {
 impl AsRef<SignatureOriginal> for Signature {
     fn as_ref(&self) -> &SignatureOriginal {
         &self.0
+    }
+}
+
+impl FromStr for Signature {
+    type Err = ParseSignatureError;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        SignatureOriginal::from_str(s).map(Signature::from)
     }
 }
