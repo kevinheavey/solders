@@ -140,9 +140,25 @@ impl RichcmpEqualityOnly for RequestAirdrop {}
 pybytes_general_via_bincode!(RequestAirdrop);
 py_from_bytes_general_via_bincode!(RequestAirdrop);
 
+#[derive(FromPyObject, Debug, Serialize)]
+#[serde(untagged)]
+pub enum Body {
+    GetSignatureStatuses(GetSignatureStatuses),
+    RequestAirdrop(RequestAirdrop),
+}
+
+#[pyfunction]
+pub fn batch(reqs: Vec<Body>) -> String {
+    serde_json::to_string(&reqs).unwrap()
+}
+
 pub fn create_requests_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let requests_mod = PyModule::new(py, "requests")?;
     requests_mod.add_class::<GetSignatureStatuses>()?;
     requests_mod.add_class::<RequestAirdrop>()?;
+    let funcs = [wrap_pyfunction!(batch, requests_mod)?];
+    for func in funcs {
+        requests_mod.add_function(func)?;
+    }
     Ok(requests_mod)
 }
