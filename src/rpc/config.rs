@@ -13,10 +13,6 @@ use crate::{
     CommonMethods, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly,
 };
 
-fn to_json(obj: &impl Serialize) -> String {
-    serde_json::to_string(obj).unwrap()
-}
-
 macro_rules! pyclass_boilerplate {
     ($(#[$attr:meta])* => $name:ident) => {
         $(#[$attr])*
@@ -76,17 +72,6 @@ impl RpcSignatureStatusConfig {
     #[getter]
     pub fn search_transaction_history(&self) -> bool {
         self.0.search_transaction_history
-    }
-
-    /// Serialize as a JSON string.
-    ///
-    /// Example:
-    ///
-    ///     >>> from solders.rpc.config import RpcSignatureStatusConfig
-    ///     >>> RpcSignatureStatusConfig(True).to_json()
-    ///     '{"searchTransactionHistory":true}'
-    pub fn to_json(&self) -> String {
-        to_json(self)
     }
 }
 
@@ -161,18 +146,6 @@ impl RpcSendTransactionConfig {
     fn new_default() -> Self {
         Self::default()
     }
-
-    /// Serialize as a JSON string.
-    ///
-    /// Example:
-    ///
-    ///     >>> from solders.rpc.config import RpcSendTransactionConfig
-    ///     >>> RpcSendTransactionConfig.default().to_json()
-    ///     '{"skipPreflight":false,"preflightCommitment":null,"encoding":null,"maxRetries":null,"minContextSlot":null}'
-    ///
-    pub fn to_json(&self) -> String {
-        to_json(self)
-    }
 }
 
 rpc_config_impls!(RpcSendTransactionConfig);
@@ -205,18 +178,6 @@ impl RpcSimulateTransactionAccountsConfig {
     #[pyo3(name = "default")]
     fn new_default() -> Self {
         Self::default()
-    }
-
-    /// Serialize as a JSON string.
-    ///
-    /// Example:
-    ///
-    ///     >>> from solders.rpc.config import RpcSimulateTransactionAccountsConfig
-    ///     >>> from solders.account_decoder import UiAccountEncoding
-    ///     >>> RpcSimulateTransactionAccountsConfig(UiAccountEncoding.Base64, []).to_json()
-    ///     '{"encoding":"base64","addresses":[]}'
-    pub fn to_json(&self) -> String {
-        to_json(self)
     }
 }
 
@@ -268,21 +229,6 @@ impl RpcSimulateTransactionConfig {
     #[pyo3(name = "default")]
     fn new_default() -> Self {
         Self::default()
-    }
-
-    /// Serialize as a JSON string.
-    ///
-    /// Example:
-    ///
-    ///     >>> from solders.rpc.config import RpcSimulateTransactionAccountsConfig, RpcSimulateTransactionConfig
-    ///     >>> from solders.account_decoder import UiAccountEncoding
-    ///     >>> from solders.commitment_config import CommitmentLevel, CommitmentConfig
-    ///     >>> accounts_config = RpcSimulateTransactionAccountsConfig(UiAccountEncoding.Base64, [])
-    ///     >>> config = RpcSimulateTransactionConfig(sig_verify=True, replace_recent_blockhash=False, accounts=accounts_config)
-    ///     >>> config.to_json()
-    ///     '{"sigVerify":true,"replaceRecentBlockhash":false,"encoding":null,"accounts":{"encoding":"base64","addresses":[]},"minContextSlot":null}'
-    pub fn to_json(&self) -> String {
-        to_json(self)
     }
 }
 
