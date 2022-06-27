@@ -6,7 +6,7 @@ use crate::{
 };
 use pyo3::{create_exception, exceptions::PyException, prelude::*};
 use solana_sdk::pubkey::{
-    Pubkey as PubkeyOriginal, PubkeyError as PubkeyErrorOriginal, PUBKEY_BYTES,
+    ParsePubkeyError, Pubkey as PubkeyOriginal, PubkeyError as PubkeyErrorOriginal, PUBKEY_BYTES,
 };
 use solders_macros::{common_magic_methods, pyhash, richcmp_full};
 
@@ -280,5 +280,12 @@ impl AsRef<[u8]> for Pubkey {
 impl AsRef<PubkeyOriginal> for Pubkey {
     fn as_ref(&self) -> &PubkeyOriginal {
         &self.0
+    }
+}
+
+impl FromStr for Pubkey {
+    type Err = ParsePubkeyError;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        PubkeyOriginal::from_str(s).map(Pubkey::from)
     }
 }
