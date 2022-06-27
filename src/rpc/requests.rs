@@ -140,23 +140,43 @@ impl RichcmpEqualityOnly for RequestAirdrop {}
 pybytes_general_via_bincode!(RequestAirdrop);
 py_from_bytes_general_via_bincode!(RequestAirdrop);
 
-#[derive(FromPyObject, Debug, Serialize)]
+#[derive(FromPyObject, Debug, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum Body {
     GetSignatureStatuses(GetSignatureStatuses),
     RequestAirdrop(RequestAirdrop),
 }
 
+impl Body {
+    fn to_object(&self, py: Python) -> PyObject {
+        match self {
+            Body::GetSignatureStatuses(x) => x.clone().into_py(py),
+            Body::RequestAirdrop(x) => x.clone().into_py(py),
+        }
+    }
+}
+
 #[pyfunction]
-pub fn batch(reqs: Vec<Body>) -> String {
+pub fn batch_to_json(reqs: Vec<Body>) -> String {
     serde_json::to_string(&reqs).unwrap()
+}
+
+#[pyfunction]
+pub fn batch_from_json(raw: &str) -> PyResult<Vec<PyObject>> {
+    let gil = Python::acquire_gil();
+    let py = gil.python();
+    let deser: Vec<Body> = serde_json::from_str(raw).unwrap();
+    Ok(deser.iter().map(|x| x.to_object(py)).collect())
 }
 
 pub fn create_requests_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let requests_mod = PyModule::new(py, "requests")?;
     requests_mod.add_class::<GetSignatureStatuses>()?;
     requests_mod.add_class::<RequestAirdrop>()?;
-    let funcs = [wrap_pyfunction!(batch, requests_mod)?];
+    let funcs = [
+        wrap_pyfunction!(batch_to_json, requests_mod)?,
+        wrap_pyfunction!(batch_from_json, requests_mod)?,
+    ];
     for func in funcs {
         requests_mod.add_function(func)?;
     }

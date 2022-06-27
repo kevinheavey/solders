@@ -1,4 +1,9 @@
-from solders.rpc.requests import GetSignatureStatuses, RequestAirdrop, batch
+from solders.rpc.requests import (
+    GetSignatureStatuses,
+    RequestAirdrop,
+    batch,
+    batch_from_json,
+)
 from solders.rpc.config import RpcSignatureStatusConfig, RpcRequestAirdropConfig
 from solders.signature import Signature
 from solders.pubkey import Pubkey
@@ -21,9 +26,11 @@ def test_batch() -> None:
         GetSignatureStatuses([Signature.default()], RpcSignatureStatusConfig(True)),
         RequestAirdrop(Pubkey.default(), 1000),
     ]
-    assert batch(reqs) == (
+    as_json = batch(reqs)
+    assert as_json == (
         '[{"jsonrpc":"2.0","id":0,"method":"getSignatureStatuses","params"'
         ':[["1111111111111111111111111111111111111111111111111111111111111111"],'
         '{"searchTransactionHistory":true}]},{"jsonrpc":"2.0","id":0,'
         '"method":"requestAirdrop","params":["11111111111111111111111111111111",1000]}]'
     )
+    assert batch_from_json(as_json) == reqs
