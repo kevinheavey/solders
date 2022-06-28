@@ -89,3 +89,8 @@ def test_from_bytes() -> None:
 def test_pickle() -> None:
     obj = Signature.default()
     assert pickle.loads(pickle.dumps(obj)) == obj
+
+
+def test_json() -> None:
+    obj = Signature.default()
+    assert Signature.from_json(obj.to_json()) == obj

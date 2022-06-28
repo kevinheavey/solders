@@ -48,3 +48,8 @@ def test_hashable() -> None:
 def test_pickle() -> None:
     obj = Hash.default()
     assert pickle.loads(pickle.dumps(obj)) == obj
+
+
+def test_json() -> None:
+    obj = Hash.default()
+    assert Hash.from_json(obj.to_json()) == obj

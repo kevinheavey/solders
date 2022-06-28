@@ -16,3 +16,8 @@ def test_null_signer() -> None:
 def test_pickle() -> None:
     obj = NullSigner.default()
     assert pickle.loads(pickle.dumps(obj)) == obj
+
+
+def test_json() -> None:
+    obj = NullSigner.default()
+    assert NullSigner.from_json(obj.to_json()) == obj

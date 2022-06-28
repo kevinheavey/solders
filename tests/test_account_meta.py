@@ -23,3 +23,8 @@ def test_attributes() -> None:
 def test_pickle() -> None:
     obj = AccountMeta(PUBKEY, True, True)
     assert pickle.loads(pickle.dumps(obj)) == obj
+
+
+def test_json() -> None:
+    obj = AccountMeta(PUBKEY, True, True)
+    assert AccountMeta.from_json(obj.to_json()) == obj
