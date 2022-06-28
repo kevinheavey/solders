@@ -593,6 +593,53 @@ impl RpcLargestAccountsConfig {
     }
 }
 
+pyclass_boilerplate_with_default!(
+    /// Configuration object for ``getSupply``.
+    ///
+    /// Args:
+    ///     commitment (Optional[CommitmentConfig]): Bank state to query.
+    ///     exclude_non_circulating_accounts_list (bool): Exclude non circulating accounts list from response.
+    ///
+    => RpcSupplyConfig
+);
+
+rpc_config_impls!(RpcSupplyConfig);
+
+#[common_methods]
+#[pymethods]
+impl RpcSupplyConfig {
+    #[new]
+    pub fn new(
+        commitment: Option<CommitmentConfig>,
+        exclude_non_circulating_accounts_list: bool,
+    ) -> Self {
+        Self(rpc_config::RpcSupplyConfig {
+            commitment: commitment.map(|c| c.into()),
+            exclude_non_circulating_accounts_list,
+        })
+    }
+
+    /// Create a new default instance of this class.
+    ///
+    /// Returns:
+    ///     RpcSupplyConfig: The default instance.
+    #[staticmethod]
+    #[pyo3(name = "default")]
+    pub fn new_default() -> Self {
+        Self::default()
+    }
+
+    #[getter]
+    pub fn commitment(&self) -> Option<CommitmentConfig> {
+        self.0.commitment.map(|c| c.into())
+    }
+
+    #[getter]
+    pub fn exclude_non_circulating_accounts_list(&self) -> bool {
+        self.0.exclude_non_circulating_accounts_list
+    }
+}
+
 pub fn create_config_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let config_mod = PyModule::new(py, "config")?;
     config_mod.add_class::<RpcSignatureStatusConfig>()?;
