@@ -150,6 +150,11 @@ impl RequestAirdrop {
     fn lamports(&self) -> u64 {
         self.params.1
     }
+
+    #[getter]
+    fn config(&self) -> Option<RpcRequestAirdropConfig> {
+        self.params.2.clone()
+    }
 }
 
 request_boilerplate!(RequestAirdrop);
