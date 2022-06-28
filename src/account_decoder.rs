@@ -1,6 +1,42 @@
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
-use solana_account_decoder::UiAccountEncoding as UiAccountEncodingOriginal;
+use solana_account_decoder::{
+    UiAccountEncoding as UiAccountEncodingOriginal, UiDataSliceConfig as UiDataSliceConfigOriginal,
+};
+
+#[pyclass(module = "solders.account_decoder")]
+#[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq, Hash)]
+pub struct UiDataSliceConfig(UiDataSliceConfigOriginal);
+
+#[pymethods]
+impl UiDataSliceConfig {
+    #[new]
+    fn new(offset: usize, length: usize) -> Self {
+        Self(UiDataSliceConfigOriginal { offset, length })
+    }
+
+    #[getter]
+    pub fn offset(&self) -> usize {
+        self.0.offset
+    }
+
+    #[getter]
+    pub fn length(&self) -> usize {
+        self.0.length
+    }
+}
+
+impl From<UiDataSliceConfigOriginal> for UiDataSliceConfig {
+    fn from(u: UiDataSliceConfigOriginal) -> Self {
+        Self(u)
+    }
+}
+
+impl From<UiDataSliceConfig> for UiDataSliceConfigOriginal {
+    fn from(u: UiDataSliceConfig) -> Self {
+        u.0
+    }
+}
 
 #[pyclass(module = "solders.account_decoder")]
 #[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq, Hash)]

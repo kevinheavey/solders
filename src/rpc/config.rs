@@ -6,7 +6,7 @@ use solana_transaction_status::UiTransactionEncoding as UiTransactionEncodingOri
 use solders_macros::common_methods;
 
 use crate::{
-    account_decoder::UiAccountEncoding,
+    account_decoder::{UiAccountEncoding, UiDataSliceConfig},
     commitment_config::{CommitmentConfig, CommitmentLevel},
     impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
     transaction_status::UiTransactionEncoding,
@@ -641,7 +641,7 @@ impl RpcSupplyConfig {
 }
 
 pyclass_boilerplate_with_default!(
-    /// Configuration object for containing epoch information.
+    /// Configuration object containing epoch information.
     ///
     /// Args:
     ///     epoch (Optional[int]): Epoch is a unit of time a given leader schedule is honored, some number of Slots.
@@ -672,7 +672,7 @@ impl RpcEpochConfig {
     /// Create a new default instance of this class.
     ///
     /// Returns:
-    ///     RpcSupplyConfig: The default instance.
+    ///     RpcEpochConfig: The default instance.
     #[staticmethod]
     #[pyo3(name = "default")]
     pub fn new_default() -> Self {
@@ -687,6 +687,69 @@ impl RpcEpochConfig {
     #[getter]
     pub fn epoch(&self) -> Option<u64> {
         self.0.epoch
+    }
+
+    #[getter]
+    pub fn min_context_slot(&self) -> Option<u64> {
+        self.0.min_context_slot
+    }
+}
+
+pyclass_boilerplate_with_default!(
+    /// Configuration object for ``getAccountInfo``.
+    ///
+    /// Args:
+    ///     encoding (Optional[UiAccountEncoding]): Encoding for returned account data.
+    ///     data_slice (Optiona;[UiDataSliceConfig]): Limit the returned account data
+    ///     commitment (Optional[CommitmentConfig]): Bank state to query.
+    ///     min_context_slot (Optional[int]): The minimum slot that the request can be evaluated at.
+    ///
+    => RpcAccountInfoConfig
+);
+
+rpc_config_impls!(RpcAccountInfoConfig);
+
+#[common_methods]
+#[pymethods]
+impl RpcAccountInfoConfig {
+    #[new]
+    pub fn new(
+        encoding: Option<UiAccountEncoding>,
+        data_slice: Option<UiDataSliceConfig>,
+        commitment: Option<CommitmentConfig>,
+        min_context_slot: Option<u64>,
+    ) -> Self {
+        Self(rpc_config::RpcAccountInfoConfig {
+            encoding: encoding.map(|e| e.into()),
+            data_slice: data_slice.map(|d| d.into()),
+            commitment: commitment.map(|c| c.into()),
+            min_context_slot,
+        })
+    }
+
+    /// Create a new default instance of this class.
+    ///
+    /// Returns:
+    ///     RpcEpochConfig: The default instance.
+    #[staticmethod]
+    #[pyo3(name = "default")]
+    pub fn new_default() -> Self {
+        Self::default()
+    }
+
+    #[getter]
+    pub fn encoding(&self) -> Option<UiAccountEncoding> {
+        self.0.encoding.map(|e| e.into())
+    }
+
+    #[getter]
+    pub fn data_slice(&self) -> Option<UiDataSliceConfig> {
+        self.0.data_slice.map(|d| d.into())
+    }
+
+    #[getter]
+    pub fn commitment(&self) -> Option<CommitmentConfig> {
+        self.0.commitment.map(|c| c.into())
     }
 
     #[getter]
