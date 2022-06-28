@@ -240,6 +240,36 @@ impl RpcSimulateTransactionConfig {
     fn new_default() -> Self {
         Self::default()
     }
+
+    #[getter]
+    pub fn sig_verify(&self) -> bool {
+        self.0.sig_verify
+    }
+
+    #[getter]
+    pub fn replace_recent_blockhash(&self) -> bool {
+        self.0.replace_recent_blockhash
+    }
+
+    #[getter]
+    pub fn commitment(&self) -> Option<CommitmentConfig> {
+        self.0.commitment.map(|c| c.into())
+    }
+
+    #[getter]
+    pub fn encoding(&self) -> Option<UiTransactionEncoding> {
+        self.0.encoding.map(|e| e.into())
+    }
+
+    #[getter]
+    pub fn accounts(&self) -> Option<RpcSimulateTransactionAccountsConfig> {
+        self.0.accounts.clone().map(|a| a.into())
+    }
+
+    #[getter]
+    pub fn min_context_slot(&self) -> Option<u64> {
+        self.0.min_context_slot
+    }
 }
 
 rpc_config_impls!(RpcSimulateTransactionConfig);
