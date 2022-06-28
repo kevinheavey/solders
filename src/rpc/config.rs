@@ -143,7 +143,7 @@ impl RpcSendTransactionConfig {
     ///     RpcSendTransactionConfig: The default instance.
     #[staticmethod]
     #[pyo3(name = "default")]
-    fn new_default() -> Self {
+    pub fn new_default() -> Self {
         Self::default()
     }
 }
@@ -176,8 +176,18 @@ impl RpcSimulateTransactionAccountsConfig {
     ///     RpcSimulateTransactionAccountsConfig: The default instance.
     #[staticmethod]
     #[pyo3(name = "default")]
-    fn new_default() -> Self {
+    pub fn new_default() -> Self {
         Self::default()
+    }
+
+    #[getter]
+    pub fn encoding(&self) -> Option<UiAccountEncoding> {
+        self.0.encoding.map(|e| e.into())
+    }
+
+    #[getter]
+    pub fn addresses(&self) -> Vec<String> {
+        self.0.addresses.clone()
     }
 }
 
