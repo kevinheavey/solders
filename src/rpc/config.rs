@@ -274,7 +274,13 @@ impl RpcSimulateTransactionConfig {
 
 rpc_config_impls!(RpcSimulateTransactionConfig);
 
-pyclass_boilerplate_with_default!(/// Foo
+pyclass_boilerplate_with_default!(
+    /// Configuration object for ``requestAirdrop``.
+    /// 
+    /// Args:
+    ///     recent_blockhash (Optional[str]): The ID of a recent ledger entry.
+    ///     commitment (Optional[CommitmentConfig]): Bank state to query.
+    /// 
 => RpcRequestAirdropConfig);
 
 rpc_config_impls!(RpcRequestAirdropConfig);
