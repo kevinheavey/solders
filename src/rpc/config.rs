@@ -383,6 +383,59 @@ impl RpcBlockProductionConfigRange {
     }
 }
 
+/// Configuration object for ``getBlockProduction``.
+///
+/// Args:
+///     identity (Optional[str]): Validator identity, as a base-58 encoded string
+///     range (Optional[RpcBlockProductionConfigRange]): Slot range to query. Current epoch if ``None``.
+///     commitment (Optional[CommitmentConfig]): Bank state to query.
+///
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[pyclass(module = "solders.rpc.config", subclass)]
+pub struct RpcBlockProductionConfig(rpc_config::RpcBlockProductionConfig);
+
+impl PartialEq for RpcBlockProductionConfig {
+    fn eq(&self, other: &Self) -> bool {
+        self.0.identity == other.0.identity
+            && self.0.range == other.0.range
+            && self.0.commitment == other.0.commitment
+    }
+}
+
+rpc_config_impls!(RpcBlockProductionConfig);
+
+#[common_methods]
+#[pymethods]
+impl RpcBlockProductionConfig {
+    #[new]
+    pub fn new(
+        identity: Option<&str>,
+        range: Option<RpcBlockProductionConfigRange>,
+        commitment: Option<CommitmentConfig>,
+    ) -> Self {
+        Self(rpc_config::RpcBlockProductionConfig {
+            identity: identity.map(String::from),
+            range: range.map(|r| r.into()),
+            commitment: commitment.map(|c| c.into()),
+        })
+    }
+
+    #[getter]
+    pub fn identity(&self) -> Option<String> {
+        self.0.identity.clone()
+    }
+
+    #[getter]
+    pub fn range(&self) -> Option<RpcBlockProductionConfigRange> {
+        self.0.range.clone().map(|r| r.into())
+    }
+
+    #[getter]
+    pub fn commitment(&self) -> Option<CommitmentConfig> {
+        self.0.commitment.map(|c| c.into())
+    }
+}
+
 pub fn create_config_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let config_mod = PyModule::new(py, "config")?;
     config_mod.add_class::<RpcSignatureStatusConfig>()?;
