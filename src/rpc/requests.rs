@@ -1,6 +1,6 @@
 use crate::{
-    py_from_bytes_general_via_bincode, pybytes_general_via_bincode, to_py_err, CommonMethods,
-    Pubkey, PyBytesBincode, PyErrWrapper, PyFromBytesBincode, RichcmpEqualityOnly,
+    py_from_bytes_general_via_bincode, pybytes_general_via_bincode, CommonMethods, Pubkey,
+    PyBytesBincode, PyErrWrapper, PyFromBytesBincode, RichcmpEqualityOnly,
 };
 use pyo3::{create_exception, exceptions::PyException, prelude::*};
 use serde::{Deserialize, Serialize};
