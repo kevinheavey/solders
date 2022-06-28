@@ -511,6 +511,88 @@ impl RpcGetVoteAccountsConfig {
     }
 }
 
+/// Filter for ``getLargestAccounts``.
+#[pyclass]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum RpcLargestAccountsFilter {
+    Circulating,
+    NonCirculating,
+}
+
+impl From<RpcLargestAccountsFilter> for rpc_config::RpcLargestAccountsFilter {
+    fn from(f: RpcLargestAccountsFilter) -> Self {
+        match f {
+            RpcLargestAccountsFilter::Circulating => {
+                rpc_config::RpcLargestAccountsFilter::Circulating
+            }
+            RpcLargestAccountsFilter::NonCirculating => {
+                rpc_config::RpcLargestAccountsFilter::NonCirculating
+            }
+        }
+    }
+}
+
+impl From<rpc_config::RpcLargestAccountsFilter> for RpcLargestAccountsFilter {
+    fn from(f: rpc_config::RpcLargestAccountsFilter) -> Self {
+        match f {
+            rpc_config::RpcLargestAccountsFilter::Circulating => {
+                RpcLargestAccountsFilter::Circulating
+            }
+            rpc_config::RpcLargestAccountsFilter::NonCirculating => {
+                RpcLargestAccountsFilter::NonCirculating
+            }
+        }
+    }
+}
+
+pyclass_boilerplate_with_default!(
+    /// Configuration object for ``getLargestAccounts``.
+    ///
+    /// Args:
+    ///     commitment (Optional[CommitmentConfig]): Bank state to query.
+    ///     filter (Optional[RpcLargestAccountsFilter]): Filter results by account type.
+    ///
+    => RpcLargestAccountsConfig
+);
+
+rpc_config_impls!(RpcLargestAccountsConfig);
+
+#[common_methods]
+#[pymethods]
+impl RpcLargestAccountsConfig {
+    #[new]
+    pub fn new(
+        commitment: Option<CommitmentConfig>,
+        filter: Option<RpcLargestAccountsFilter>,
+    ) -> Self {
+        Self(rpc_config::RpcLargestAccountsConfig {
+            commitment: commitment.map(|c| c.into()),
+            filter: filter.map(|f| f.into()),
+        })
+    }
+
+    /// Create a new default instance of this class.
+    ///
+    /// Returns:
+    ///     RpcLargestAccountsConfig: The default instance.
+    #[staticmethod]
+    #[pyo3(name = "default")]
+    pub fn new_default() -> Self {
+        Self::default()
+    }
+
+    #[getter]
+    pub fn commitment(&self) -> Option<CommitmentConfig> {
+        self.0.commitment.map(|c| c.into())
+    }
+
+    #[getter]
+    pub fn filter(&self) -> Option<RpcLargestAccountsFilter> {
+        self.0.filter.clone().map(|c| c.into())
+    }
+}
+
 pub fn create_config_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let config_mod = PyModule::new(py, "config")?;
     config_mod.add_class::<RpcSignatureStatusConfig>()?;
