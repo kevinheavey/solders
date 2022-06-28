@@ -8,7 +8,7 @@ use solana_sdk::{
     },
     pubkey::Pubkey as PubkeyOriginal,
 };
-use solders_macros::{common_magic_methods, richcmp_eq_only};
+use solders_macros::{common_methods, richcmp_eq_only};
 
 use crate::{
     convert_instructions, convert_optional_pubkey, impl_display, py_from_bytes_general_via_bincode,
@@ -59,7 +59,7 @@ use crate::{
 pub struct MessageHeader(MessageHeaderOriginal);
 
 #[richcmp_eq_only]
-#[common_magic_methods]
+#[common_methods]
 #[pymethods]
 impl MessageHeader {
     #[classattr]
@@ -165,7 +165,7 @@ impl CommonMethods<'_> for MessageHeader {}
 pub struct Message(MessageOriginal);
 
 #[richcmp_eq_only]
-#[common_magic_methods]
+#[common_methods]
 #[pymethods]
 impl Message {
     #[new]

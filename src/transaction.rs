@@ -10,7 +10,7 @@ use solana_sdk::{
         TransactionError as TransactionErrorOriginal,
     },
 };
-use solders_macros::{common_magic_methods, richcmp_eq_only};
+use solders_macros::{common_methods, richcmp_eq_only};
 
 use crate::{
     convert_instructions, convert_optional_pubkey, handle_py_err, impl_display,
@@ -91,7 +91,7 @@ impl From<SanitizeErrorOriginal> for PyErrWrapper {
 pub struct Transaction(TransactionOriginal);
 
 #[richcmp_eq_only]
-#[common_magic_methods]
+#[common_methods]
 #[pymethods]
 impl Transaction {
     #[new]

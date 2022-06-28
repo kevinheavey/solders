@@ -5,7 +5,7 @@ use crate::{
 use pyo3::{create_exception, exceptions::PyException, prelude::*};
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, DisplayFromStr};
-use solders_macros::{common_magic_methods, richcmp_eq_only};
+use solders_macros::{common_methods, richcmp_eq_only};
 
 use crate::Signature;
 
@@ -51,7 +51,7 @@ pub struct GetSignatureStatuses {
 }
 
 #[richcmp_eq_only]
-#[common_magic_methods]
+#[common_methods]
 #[pymethods]
 impl GetSignatureStatuses {
     #[new]
@@ -64,15 +64,6 @@ impl GetSignatureStatuses {
         let method = "getSignatureStatuses".to_owned();
         let base = RequestBase::new(method, id);
         Self { base, params }
-    }
-
-    fn to_json(&self) -> String {
-        serde_json::to_string(self).unwrap()
-    }
-
-    #[staticmethod]
-    fn from_json(raw: &str) -> PyResult<Self> {
-        serde_json::from_str(raw).map_err(to_py_err)
     }
 }
 
@@ -120,7 +111,7 @@ pub struct RequestAirdrop {
 }
 
 #[richcmp_eq_only]
-#[common_magic_methods]
+#[common_methods]
 #[pymethods]
 impl RequestAirdrop {
     #[new]
@@ -134,15 +125,6 @@ impl RequestAirdrop {
         let method = "requestAirdrop".to_owned();
         let base = RequestBase::new(method, id);
         Self { base, params }
-    }
-
-    fn to_json(&self) -> String {
-        serde_json::to_string(self).unwrap()
-    }
-
-    #[staticmethod]
-    fn from_json(raw: &str) -> Self {
-        serde_json::from_str(raw).unwrap()
     }
 }
 

@@ -1,7 +1,7 @@
 use pyo3::{prelude::*, types::PyBytes};
 use serde::{Deserialize, Serialize};
 use solana_sdk::signer::{null_signer::NullSigner as NullSignerOriginal, Signer as SignerTrait};
-use solders_macros::{common_magic_methods, pyhash, richcmp_signer};
+use solders_macros::{common_methods, pyhash, richcmp_signer};
 
 use crate::{
     impl_display, impl_signer_hash, CommonMethods, Pubkey, PyBytesGeneral, PyFromBytesGeneral,
@@ -45,7 +45,7 @@ pub struct NullSigner(#[serde(with = "null_signer_serde")] pub NullSignerOrigina
 
 #[pyhash]
 #[richcmp_signer]
-#[common_magic_methods]
+#[common_methods]
 #[pymethods]
 impl NullSigner {
     #[new]

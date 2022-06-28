@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use solana_sdk::hash::{
     hash, Hash as HashOriginal, ParseHashError as ParseHashErrorOriginal, HASH_BYTES,
 };
-use solders_macros::{common_magic_methods, pyhash, richcmp_full};
+use solders_macros::{common_methods, pyhash, richcmp_full};
 
 use crate::{
     handle_py_err, impl_display, pybytes_general_via_slice, CommonMethods, PyBytesSlice,
@@ -38,7 +38,7 @@ pub struct Hash(HashOriginal);
 
 #[pyhash]
 #[richcmp_full]
-#[common_magic_methods]
+#[common_methods]
 #[pymethods]
 impl Hash {
     #[classattr]

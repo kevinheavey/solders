@@ -9,7 +9,7 @@ use solana_sdk::{
     },
     pubkey::Pubkey as PubkeyOriginal,
 };
-use solders_macros::{common_magic_methods, pyhash, richcmp_eq_only};
+use solders_macros::{common_methods, pyhash, richcmp_eq_only};
 
 use crate::{
     impl_display, pubkey::Pubkey, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
@@ -49,7 +49,7 @@ use crate::{
 pub struct AccountMeta(AccountMetaOriginal);
 #[pyhash]
 #[richcmp_eq_only]
-#[common_magic_methods]
+#[common_methods]
 #[pymethods]
 impl AccountMeta {
     #[new]
@@ -188,7 +188,7 @@ impl std::hash::Hash for AccountMeta {
 pub struct Instruction(pub InstructionOriginal);
 
 #[richcmp_eq_only]
-#[common_magic_methods]
+#[common_methods]
 #[pymethods]
 impl Instruction {
     #[new]
@@ -297,7 +297,7 @@ impl AsRef<InstructionOriginal> for Instruction {
 pub struct CompiledInstruction(CompiledInstructionOriginal);
 
 #[richcmp_eq_only]
-#[common_magic_methods]
+#[common_methods]
 #[pymethods]
 impl CompiledInstruction {
     #[new]

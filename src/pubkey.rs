@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 use solana_sdk::pubkey::{
     ParsePubkeyError, Pubkey as PubkeyOriginal, PubkeyError as PubkeyErrorOriginal, PUBKEY_BYTES,
 };
-use solders_macros::{common_magic_methods, pyhash, richcmp_full};
+use solders_macros::{common_methods, pyhash, richcmp_full};
 
 create_exception!(
     solders,
@@ -44,7 +44,7 @@ pub struct Pubkey(pub PubkeyOriginal);
 
 #[pyhash]
 #[richcmp_full]
-#[common_magic_methods]
+#[common_methods]
 #[pymethods]
 impl Pubkey {
     #[classattr]

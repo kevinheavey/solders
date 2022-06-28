@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use solana_client::rpc_config;
 use solana_sdk::commitment_config::CommitmentLevel as CommitmentLevelOriginal;
 use solana_transaction_status::UiTransactionEncoding as UiTransactionEncodingOriginal;
-use solders_macros::common_magic_methods;
+use solders_macros::common_methods;
 
 use crate::{
     account_decoder::UiAccountEncoding,
@@ -59,7 +59,7 @@ pyclass_boilerplate!(
     => RpcSignatureStatusConfig
 );
 
-#[common_magic_methods]
+#[common_methods]
 #[pymethods]
 impl RpcSignatureStatusConfig {
     #[new]
@@ -92,7 +92,7 @@ pyclass_boilerplate_with_default!(
     => RpcSendTransactionConfig
 );
 
-#[common_magic_methods]
+#[common_methods]
 #[pymethods]
 impl RpcSendTransactionConfig {
     #[new]
@@ -159,7 +159,7 @@ pyclass_boilerplate_with_default!(
     => RpcSimulateTransactionAccountsConfig
 );
 
-#[common_magic_methods]
+#[common_methods]
 #[pymethods]
 impl RpcSimulateTransactionAccountsConfig {
     #[new]
@@ -199,7 +199,7 @@ pyclass_boilerplate_with_default!(
     => RpcSimulateTransactionConfig
 );
 
-#[common_magic_methods]
+#[common_methods]
 #[pymethods]
 impl RpcSimulateTransactionConfig {
     #[new]
@@ -239,7 +239,7 @@ pyclass_boilerplate_with_default!(/// Foo
 
 rpc_config_impls!(RpcRequestAirdropConfig);
 
-#[common_magic_methods]
+#[common_methods]
 #[pymethods]
 impl RpcRequestAirdropConfig {
     #[new]
