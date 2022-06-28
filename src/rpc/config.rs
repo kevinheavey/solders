@@ -283,7 +283,7 @@ rpc_config_impls!(RpcRequestAirdropConfig);
 #[pymethods]
 impl RpcRequestAirdropConfig {
     #[new]
-    fn new(recent_blockhash: Option<&str>, commitment: Option<CommitmentConfig>) -> Self {
+    pub fn new(recent_blockhash: Option<&str>, commitment: Option<CommitmentConfig>) -> Self {
         Self(rpc_config::RpcRequestAirdropConfig {
             recent_blockhash: recent_blockhash.map(String::from),
             commitment: commitment.map(|c| c.into()),
@@ -296,8 +296,18 @@ impl RpcRequestAirdropConfig {
     ///     RpcRequestAirdropConfig: The default instance.
     #[staticmethod]
     #[pyo3(name = "default")]
-    fn new_default() -> Self {
+    pub fn new_default() -> Self {
         Self::default()
+    }
+
+    #[getter]
+    pub fn recent_blockhash(&self) -> Option<String> {
+        self.0.recent_blockhash.clone()
+    }
+
+    #[getter]
+    pub fn commitment(&self) -> Option<CommitmentConfig> {
+        self.0.commitment.map(|c| c.into())
     }
 }
 
