@@ -94,7 +94,7 @@ pub struct GetSignatureStatusesParams(
 
 #[serde_as]
 #[pyclass(module = "solders.rpc.requests")]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize, Default)]
 pub struct RequestAirdropParams(
     #[serde_as(as = "DisplayFromStr")] Pubkey,
     u64,
