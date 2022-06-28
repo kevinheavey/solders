@@ -350,6 +350,39 @@ impl RpcLeaderScheduleConfig {
     }
 }
 
+pyclass_boilerplate_with_default!(
+    /// Range object for ``RpcBlockProductionConfig``.
+    /// 
+    /// Args:
+    ///     first_slot (int): First slot in the range
+    ///     last_slot (Optional[int]): Last slot in the range.
+    /// 
+=> RpcBlockProductionConfigRange);
+
+rpc_config_impls!(RpcBlockProductionConfigRange);
+
+#[common_methods]
+#[pymethods]
+impl RpcBlockProductionConfigRange {
+    #[new]
+    pub fn new(first_slot: u64, last_slot: Option<u64>) -> Self {
+        Self(rpc_config::RpcBlockProductionConfigRange {
+            first_slot,
+            last_slot,
+        })
+    }
+
+    #[getter]
+    pub fn first_slot(&self) -> u64 {
+        self.0.first_slot
+    }
+
+    #[getter]
+    pub fn last_slot(&self) -> Option<u64> {
+        self.0.last_slot
+    }
+}
+
 pub fn create_config_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let config_mod = PyModule::new(py, "config")?;
     config_mod.add_class::<RpcSignatureStatusConfig>()?;
