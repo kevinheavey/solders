@@ -434,6 +434,81 @@ impl RpcBlockProductionConfig {
     pub fn commitment(&self) -> Option<CommitmentConfig> {
         self.0.commitment.map(|c| c.into())
     }
+
+    /// Create a new default instance of this class.
+    ///
+    /// Returns:
+    ///     RpcBlockProductionConfig: The default instance.
+    #[staticmethod]
+    #[pyo3(name = "default")]
+    pub fn new_default() -> Self {
+        Self::default()
+    }
+}
+
+pyclass_boilerplate_with_default!(
+    /// Configuration object for ``getVoteAccounts``.
+    /// 
+    /// Args:
+    ///     vote_pubkey (Optional[str]): Validator vote address, as a base-58 encoded string
+    ///     commitment (Optional[CommitmentConfig]): Bank state to query.
+    ///     keep_unstaked_delinquents (Optional[bool]): Do not filter out delinquent validators with no stake.
+    ///     delinquent_slot_distance (Optional[int]): Specify the number of slots behind the tip that a validator
+    ///         must fall to be considered delinquent.
+    ///         NOTE: For the sake of consistency between ecosystem products, it is not recommended that
+    ///         this argument be specified.
+    /// 
+    => RpcGetVoteAccountsConfig);
+
+rpc_config_impls!(RpcGetVoteAccountsConfig);
+
+#[common_methods]
+#[pymethods]
+impl RpcGetVoteAccountsConfig {
+    #[new]
+    pub fn new(
+        vote_pubkey: Option<&str>,
+        commitment: Option<CommitmentConfig>,
+        keep_unstaked_delinquents: Option<bool>,
+        delinquent_slot_distance: Option<u64>,
+    ) -> Self {
+        Self(rpc_config::RpcGetVoteAccountsConfig {
+            vote_pubkey: vote_pubkey.map(String::from),
+            commitment: commitment.map(|c| c.into()),
+            keep_unstaked_delinquents,
+            delinquent_slot_distance,
+        })
+    }
+
+    #[getter]
+    pub fn vote_pubkey(&self) -> Option<String> {
+        self.0.vote_pubkey.clone()
+    }
+
+    #[getter]
+    pub fn commitment(&self) -> Option<CommitmentConfig> {
+        self.0.commitment.map(|c| c.into())
+    }
+
+    #[getter]
+    pub fn keep_unstaked_delinquents(&self) -> Option<bool> {
+        self.0.keep_unstaked_delinquents
+    }
+
+    #[getter]
+    pub fn delinquent_slot_distance(&self) -> Option<u64> {
+        self.0.delinquent_slot_distance
+    }
+
+    /// Create a new default instance of this class.
+    ///
+    /// Returns:
+    ///     RpcGetVoteAccountsConfig: The default instance.
+    #[staticmethod]
+    #[pyo3(name = "default")]
+    pub fn new_default() -> Self {
+        Self::default()
+    }
 }
 
 pub fn create_config_mod(py: Python<'_>) -> PyResult<&PyModule> {
