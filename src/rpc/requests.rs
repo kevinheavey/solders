@@ -5,7 +5,7 @@ use crate::{
 use pyo3::{create_exception, exceptions::PyException, prelude::*};
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, DisplayFromStr};
-use solders_macros::{common_methods, richcmp_eq_only};
+use solders_macros::{common_methods, richcmp_eq_only, rpc_id_getter};
 
 use crate::Signature;
 
@@ -41,17 +41,25 @@ impl RequestBase {
     }
 }
 
+#[serde_as]
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetSignatureStatusesParams(
+    #[serde_as(as = "Vec<DisplayFromStr>")] Vec<Signature>,
+    #[serde(skip_serializing_if = "Option::is_none", default)] Option<RpcSignatureStatusConfig>,
+);
+
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct GetSignatureStatuses {
     #[serde(flatten)]
     base: RequestBase,
-    #[pyo3(get)]
     params: GetSignatureStatusesParams,
 }
 
 #[richcmp_eq_only]
 #[common_methods]
+#[rpc_id_getter]
 #[pymethods]
 impl GetSignatureStatuses {
     #[new]
@@ -65,6 +73,16 @@ impl GetSignatureStatuses {
         let base = RequestBase::new(method, id);
         Self { base, params }
     }
+
+    #[getter]
+    pub fn signatures(&self) -> Vec<Signature> {
+        self.params.0.clone()
+    }
+
+    #[getter]
+    pub fn config(&self) -> Option<RpcSignatureStatusConfig> {
+        self.params.1.clone()
+    }
 }
 
 macro_rules! rpc_impl_display {
@@ -77,23 +95,19 @@ macro_rules! rpc_impl_display {
     };
 }
 
-rpc_impl_display!(GetSignatureStatuses);
+macro_rules! request_boilerplate {
+    ($name:ident) => {
+        rpc_impl_display!($name);
+        impl CommonMethods<'_> for $name {}
+        impl RichcmpEqualityOnly for $name {}
+        pybytes_general_via_bincode!($name);
+        py_from_bytes_general_via_bincode!($name);
+    };
+}
 
-impl CommonMethods<'_> for GetSignatureStatuses {}
-impl RichcmpEqualityOnly for GetSignatureStatuses {}
-pybytes_general_via_bincode!(GetSignatureStatuses);
-py_from_bytes_general_via_bincode!(GetSignatureStatuses);
-
-#[serde_as]
-#[pyclass(module = "solders.rpc.requests")]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
-pub struct GetSignatureStatusesParams(
-    #[serde_as(as = "Vec<DisplayFromStr>")] Vec<Signature>,
-    #[serde(skip_serializing_if = "Option::is_none", default)] Option<RpcSignatureStatusConfig>,
-);
+request_boilerplate!(GetSignatureStatuses);
 
 #[serde_as]
-#[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize, Default)]
 pub struct RequestAirdropParams(
     #[serde_as(as = "DisplayFromStr")] Pubkey,
@@ -106,12 +120,12 @@ pub struct RequestAirdropParams(
 pub struct RequestAirdrop {
     #[serde(flatten)]
     base: RequestBase,
-    #[pyo3(get)]
     params: RequestAirdropParams,
 }
 
 #[richcmp_eq_only]
 #[common_methods]
+#[rpc_id_getter]
 #[pymethods]
 impl RequestAirdrop {
     #[new]
@@ -126,14 +140,19 @@ impl RequestAirdrop {
         let base = RequestBase::new(method, id);
         Self { base, params }
     }
+
+    #[getter]
+    fn pubkey(&self) -> Pubkey {
+        self.params.0
+    }
+
+    #[getter]
+    fn lamports(&self) -> u64 {
+        self.params.1
+    }
 }
 
-rpc_impl_display!(RequestAirdrop);
-
-impl CommonMethods<'_> for RequestAirdrop {}
-impl RichcmpEqualityOnly for RequestAirdrop {}
-pybytes_general_via_bincode!(RequestAirdrop);
-py_from_bytes_general_via_bincode!(RequestAirdrop);
+request_boilerplate!(RequestAirdrop);
 
 #[derive(FromPyObject, Debug, Serialize, Deserialize)]
 #[serde(untagged)]
