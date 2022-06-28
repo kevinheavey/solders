@@ -317,6 +317,39 @@ impl RpcRequestAirdropConfig {
     }
 }
 
+pyclass_boilerplate_with_default!(
+    /// Configuration object for ``getLeaderSchedule``.
+    /// 
+    /// Args:
+    ///     identity (Optional[str]): Validator identity, as a base-58 encoded string
+    ///     commitment (Optional[CommitmentConfig]): Bank state to query.
+    /// 
+=> RpcLeaderScheduleConfig);
+
+rpc_config_impls!(RpcLeaderScheduleConfig);
+
+#[common_methods]
+#[pymethods]
+impl RpcLeaderScheduleConfig {
+    #[new]
+    pub fn new(identity: Option<&str>, commitment: Option<CommitmentConfig>) -> Self {
+        Self(rpc_config::RpcLeaderScheduleConfig {
+            identity: identity.map(String::from),
+            commitment: commitment.map(|c| c.into()),
+        })
+    }
+
+    #[getter]
+    pub fn identity(&self) -> Option<String> {
+        self.0.identity.clone()
+    }
+
+    #[getter]
+    pub fn commitment(&self) -> Option<CommitmentConfig> {
+        self.0.commitment.map(|c| c.into())
+    }
+}
+
 pub fn create_config_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let config_mod = PyModule::new(py, "config")?;
     config_mod.add_class::<RpcSignatureStatusConfig>()?;
