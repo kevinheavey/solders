@@ -1,4 +1,5 @@
 use pyo3::{prelude::*, types::PyBytes};
+use serde::{Deserialize, Serialize};
 use solana_sdk::signer::{
     keypair::{
         keypair_from_seed, keypair_from_seed_phrase_and_passphrase, Keypair as KeypairOriginal,
@@ -13,8 +14,28 @@ use crate::{
     ToSignerOriginal,
 };
 
+mod keypair_serde {
+    use serde::{self, Deserialize, Deserializer, Serializer};
+    use solana_sdk::signer::keypair::Keypair as KeypairOriginal;
+
+    pub fn serialize<S>(kp: &KeypairOriginal, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_bytes(&kp.to_bytes())
+    }
+
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<KeypairOriginal, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let b = Vec::deserialize(deserializer)?;
+        KeypairOriginal::from_bytes(&b).map_err(serde::de::Error::custom)
+    }
+}
+
 #[pyclass(module = "solders.keypair", subclass)]
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Serialize, Deserialize)]
 /// A vanilla Ed25519 key pair.
 ///
 /// Calling ``Keypair()`` creates a new, random ``Keypair``.
@@ -23,7 +44,7 @@ use crate::{
 ///     >>> from solders.keypair import Keypair
 ///     >>> assert Keypair() != Keypair()
 ///
-pub struct Keypair(pub KeypairOriginal);
+pub struct Keypair(#[serde(with = "keypair_serde")] pub KeypairOriginal);
 
 #[pyhash]
 #[richcmp_signer]
@@ -214,7 +235,7 @@ impl PyFromBytesGeneral for Keypair {
     }
 }
 
-impl CommonMethods for Keypair {
+impl CommonMethods<'_> for Keypair {
     fn pystr(&self) -> String {
         self.0.to_base58_string()
     }

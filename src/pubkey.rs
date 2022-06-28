@@ -5,6 +5,7 @@ use crate::{
     PyErrWrapper, PyFromBytesGeneral, PyHash, RichcmpFull,
 };
 use pyo3::{create_exception, exceptions::PyException, prelude::*};
+use serde::{Deserialize, Serialize};
 use solana_sdk::pubkey::{
     ParsePubkeyError, Pubkey as PubkeyOriginal, PubkeyError as PubkeyErrorOriginal, PUBKEY_BYTES,
 };
@@ -36,7 +37,9 @@ impl From<PubkeyErrorOriginal> for PyErrWrapper {
 ///     '0101010101010101010101010101010101010101010101010101010101010101'
 ///
 #[pyclass(module = "solders.pubkey", subclass)]
-#[derive(Eq, PartialEq, Ord, PartialOrd, Debug, Default, Hash, Clone, Copy)]
+#[derive(
+    Eq, PartialEq, Ord, PartialOrd, Debug, Default, Hash, Clone, Copy, Serialize, Deserialize,
+)]
 pub struct Pubkey(pub PubkeyOriginal);
 
 #[pyhash]
@@ -269,7 +272,7 @@ impl PyFromBytesGeneral for Pubkey {
         Ok(PubkeyOriginal::new(raw).into())
     }
 }
-impl CommonMethods for Pubkey {}
+impl CommonMethods<'_> for Pubkey {}
 
 impl AsRef<[u8]> for Pubkey {
     fn as_ref(&self) -> &[u8] {

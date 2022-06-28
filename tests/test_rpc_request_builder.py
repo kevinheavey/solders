@@ -1,7 +1,7 @@
 from solders.rpc.requests import (
     GetSignatureStatuses,
     RequestAirdrop,
-    batch,
+    batch_to_json,
     batch_from_json,
 )
 from solders.rpc.config import RpcSignatureStatusConfig, RpcRequestAirdropConfig
@@ -26,7 +26,7 @@ def test_batch() -> None:
         GetSignatureStatuses([Signature.default()], RpcSignatureStatusConfig(True)),
         RequestAirdrop(Pubkey.default(), 1000),
     ]
-    as_json = batch(reqs)
+    as_json = batch_to_json(reqs)
     assert as_json == (
         '[{"jsonrpc":"2.0","id":0,"method":"getSignatureStatuses","params"'
         ':[["1111111111111111111111111111111111111111111111111111111111111111"],'

@@ -568,7 +568,7 @@ impl RichcmpEqualityOnly for Transaction {}
 pybytes_general_via_bincode!(Transaction);
 py_from_bytes_general_via_bincode!(Transaction);
 impl_display!(Transaction);
-impl CommonMethods for Transaction {}
+impl CommonMethods<'_> for Transaction {}
 
 impl From<TransactionOriginal> for Transaction {
     fn from(tx: TransactionOriginal) -> Self {

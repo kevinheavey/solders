@@ -306,10 +306,17 @@ pub trait PyFromBytesGeneral: Sized {
     fn py_from_bytes_general(raw: &[u8]) -> PyResult<Self>;
 }
 
-pub trait CommonMethods:
-    fmt::Display + fmt::Debug + PyBytesGeneral + PyFromBytesGeneral + IntoPy<PyObject> + Clone
+pub trait CommonMethods<'a>:
+    fmt::Display
+    + fmt::Debug
+    + PyBytesGeneral
+    + PyFromBytesGeneral
+    + IntoPy<PyObject>
+    + Clone
+    + Serialize
+    + Deserialize<'a>
 {
-    fn pybytes<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+    fn pybytes<'b>(&self, py: Python<'b>) -> &'b PyBytes {
         self.pybytes_general(py)
     }
 
@@ -330,6 +337,14 @@ pub trait CommonMethods:
         let cloned = self.clone();
         let constructor = cloned.into_py(py).getattr(py, "from_bytes")?;
         Ok((constructor, (self.pybytes(py).to_object(py),).to_object(py)))
+    }
+
+    fn py_to_json(&self) -> String {
+        serde_json::to_string(self).unwrap()
+    }
+
+    fn py_from_json(raw: &'a str) -> PyResult<Self> {
+        serde_json::from_str(raw).map_err(to_py_err)
     }
 }
 

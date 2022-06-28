@@ -88,7 +88,7 @@ macro_rules! rpc_impl_display {
 
 rpc_impl_display!(GetSignatureStatuses);
 
-impl CommonMethods for GetSignatureStatuses {}
+impl CommonMethods<'_> for GetSignatureStatuses {}
 impl RichcmpEqualityOnly for GetSignatureStatuses {}
 pybytes_general_via_bincode!(GetSignatureStatuses);
 py_from_bytes_general_via_bincode!(GetSignatureStatuses);
@@ -148,7 +148,7 @@ impl RequestAirdrop {
 
 rpc_impl_display!(RequestAirdrop);
 
-impl CommonMethods for RequestAirdrop {}
+impl CommonMethods<'_> for RequestAirdrop {}
 impl RichcmpEqualityOnly for RequestAirdrop {}
 pybytes_general_via_bincode!(RequestAirdrop);
 py_from_bytes_general_via_bincode!(RequestAirdrop);

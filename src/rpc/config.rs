@@ -37,7 +37,7 @@ macro_rules! rpc_config_impls {
         py_from_bytes_general_via_bincode!($ident);
         impl_display!($ident);
         impl RichcmpEqualityOnly for $ident {}
-        impl CommonMethods for $ident {}
+        impl CommonMethods<'_> for $ident {}
         impl From<rpc_config::$ident> for $ident {
             fn from(c: rpc_config::$ident) -> Self {
                 Self(c)

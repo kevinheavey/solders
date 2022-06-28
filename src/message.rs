@@ -127,7 +127,7 @@ impl RichcmpEqualityOnly for MessageHeader {}
 pybytes_general_via_bincode!(MessageHeader);
 impl_display!(MessageHeader);
 py_from_bytes_general_via_bincode!(MessageHeader);
-impl CommonMethods for MessageHeader {}
+impl CommonMethods<'_> for MessageHeader {}
 
 #[pyclass(module = "solders.message", subclass)]
 #[derive(PartialEq, Eq, Debug, Clone, Default, Serialize, Deserialize)]
@@ -526,7 +526,7 @@ impl PyBytesGeneral for Message {
 }
 impl_display!(Message);
 py_from_bytes_general_via_bincode!(Message);
-impl CommonMethods for Message {}
+impl CommonMethods<'_> for Message {}
 
 impl From<MessageOriginal> for Message {
     fn from(message: MessageOriginal) -> Self {

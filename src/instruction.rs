@@ -95,7 +95,7 @@ pybytes_general_via_bincode!(AccountMeta);
 impl RichcmpEqualityOnly for AccountMeta {}
 py_from_bytes_general_via_bincode!(AccountMeta);
 
-impl CommonMethods for AccountMeta {}
+impl CommonMethods<'_> for AccountMeta {}
 
 impl PyHash for AccountMeta {}
 
@@ -257,7 +257,7 @@ pybytes_general_via_bincode!(Instruction);
 impl RichcmpEqualityOnly for Instruction {}
 py_from_bytes_general_via_bincode!(Instruction);
 
-impl CommonMethods for Instruction {}
+impl CommonMethods<'_> for Instruction {}
 
 impl_display!(Instruction);
 
@@ -359,7 +359,7 @@ pybytes_general_via_bincode!(CompiledInstruction);
 impl RichcmpEqualityOnly for CompiledInstruction {}
 py_from_bytes_general_via_bincode!(CompiledInstruction);
 
-impl CommonMethods for CompiledInstruction {}
+impl CommonMethods<'_> for CompiledInstruction {}
 
 impl_display!(CompiledInstruction);
 

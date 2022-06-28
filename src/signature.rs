@@ -138,7 +138,7 @@ impl PyFromBytesGeneral for Signature {
         Ok(SignatureOriginal::new(raw).into())
     }
 }
-impl CommonMethods for Signature {}
+impl CommonMethods<'_> for Signature {}
 impl RichcmpFull for Signature {}
 pybytes_general_via_slice!(Signature);
 
