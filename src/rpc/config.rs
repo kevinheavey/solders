@@ -640,6 +640,61 @@ impl RpcSupplyConfig {
     }
 }
 
+pyclass_boilerplate_with_default!(
+    /// Configuration object for containing epoch information.
+    ///
+    /// Args:
+    ///     epoch (Optional[int]): Epoch is a unit of time a given leader schedule is honored, some number of Slots.
+    ///     commitment (Optional[CommitmentConfig]): Bank state to query.
+    ///     min_context_slot (Optional[int]): The minimum slot that the request can be evaluated at.
+    ///
+    => RpcEpochConfig
+);
+
+rpc_config_impls!(RpcEpochConfig);
+
+#[common_methods]
+#[pymethods]
+impl RpcEpochConfig {
+    #[new]
+    pub fn new(
+        epoch: Option<u64>,
+        commitment: Option<CommitmentConfig>,
+        min_context_slot: Option<u64>,
+    ) -> Self {
+        Self(rpc_config::RpcEpochConfig {
+            epoch,
+            commitment: commitment.map(|c| c.into()),
+            min_context_slot,
+        })
+    }
+
+    /// Create a new default instance of this class.
+    ///
+    /// Returns:
+    ///     RpcSupplyConfig: The default instance.
+    #[staticmethod]
+    #[pyo3(name = "default")]
+    pub fn new_default() -> Self {
+        Self::default()
+    }
+
+    #[getter]
+    pub fn commitment(&self) -> Option<CommitmentConfig> {
+        self.0.commitment.map(|c| c.into())
+    }
+
+    #[getter]
+    pub fn epoch(&self) -> Option<u64> {
+        self.0.epoch
+    }
+
+    #[getter]
+    pub fn min_context_slot(&self) -> Option<u64> {
+        self.0.min_context_slot
+    }
+}
+
 pub fn create_config_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let config_mod = PyModule::new(py, "config")?;
     config_mod.add_class::<RpcSignatureStatusConfig>()?;
