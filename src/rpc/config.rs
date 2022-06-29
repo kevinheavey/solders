@@ -1291,6 +1291,18 @@ impl RpcBlockConfig {
     pub fn new_default() -> Self {
         Self::default()
     }
+
+    /// Create a new instance for only showing rewards.
+    #[staticmethod]
+    pub fn rewards_only() -> Self {
+        rpc_config::RpcBlockConfig::rewards_only().into()
+    }
+
+    /// Create a new instance for only showing rewards, with a specified commitment level.
+    #[staticmethod]
+    pub fn rewards_with_commitment(commitment: Option<CommitmentConfig>) -> Self {
+        rpc_config::RpcBlockConfig::rewards_with_commitment(commitment.map(|c| c.into())).into()
+    }
 }
 
 pub fn create_config_mod(py: Python<'_>) -> PyResult<&PyModule> {
