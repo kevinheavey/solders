@@ -871,6 +871,103 @@ impl RpcTransactionLogsConfig {
     }
 }
 
+/// ``mint`` filter for ``getTokenAccountsBy*`` methods.
+///
+/// Args:
+///     mint (str):  Pubkey of the specific token Mint to limit accounts to, as base-58 encoded string.
+///
+#[derive(Debug, Clone, PartialEq)]
+#[pyclass]
+pub struct RpcTokenAccountsFilterMint(String);
+
+#[richcmp_eq_only]
+#[pymethods]
+impl RpcTokenAccountsFilterMint {
+    #[new]
+    pub fn new(mint: &str) -> Self {
+        Self(mint.to_string())
+    }
+
+    pub fn __repr__(&self) -> String {
+        format!("{:#?}", self)
+    }
+
+    #[getter]
+    pub fn mint(&self) -> String {
+        self.0.clone()
+    }
+}
+
+impl RichcmpEqualityOnly for RpcTokenAccountsFilterMint {}
+
+/// ``programId`` filter for ``getTokenAccountsBy*`` methods.
+///
+/// Args:
+///     program_id (str):   Pubkey of the Token program that owns the accounts, as base-58 encoded string.
+///
+#[derive(Debug, Clone, PartialEq)]
+#[pyclass]
+pub struct RpcTokenAccountsFilterProgramId(String);
+
+#[richcmp_eq_only]
+#[pymethods]
+impl RpcTokenAccountsFilterProgramId {
+    #[new]
+    pub fn new(program_id: &str) -> Self {
+        Self(program_id.to_string())
+    }
+
+    pub fn __repr__(&self) -> String {
+        format!("{:#?}", self)
+    }
+
+    #[getter]
+    pub fn program_id(&self) -> String {
+        self.0.clone()
+    }
+}
+
+impl RichcmpEqualityOnly for RpcTokenAccountsFilterProgramId {}
+
+#[derive(FromPyObject)]
+pub enum RpcTokenAccountsFilterWrapper {
+    Mint(RpcTokenAccountsFilterMint),
+    ProgramId(RpcTokenAccountsFilterProgramId),
+}
+
+impl From<RpcTokenAccountsFilterWrapper> for rpc_config::RpcTokenAccountsFilter {
+    fn from(w: RpcTokenAccountsFilterWrapper) -> Self {
+        match w {
+            RpcTokenAccountsFilterWrapper::Mint(m) => rpc_config::RpcTokenAccountsFilter::Mint(m.0),
+            RpcTokenAccountsFilterWrapper::ProgramId(p) => {
+                rpc_config::RpcTokenAccountsFilter::ProgramId(p.0)
+            }
+        }
+    }
+}
+
+impl From<rpc_config::RpcTokenAccountsFilter> for RpcTokenAccountsFilterWrapper {
+    fn from(f: rpc_config::RpcTokenAccountsFilter) -> Self {
+        match f {
+            rpc_config::RpcTokenAccountsFilter::Mint(s) => {
+                RpcTokenAccountsFilterWrapper::Mint(RpcTokenAccountsFilterMint(s))
+            }
+            rpc_config::RpcTokenAccountsFilter::ProgramId(s) => {
+                RpcTokenAccountsFilterWrapper::ProgramId(RpcTokenAccountsFilterProgramId(s))
+            }
+        }
+    }
+}
+
+impl RpcTokenAccountsFilterWrapper {
+    pub fn to_object(&self, py: Python) -> PyObject {
+        match self {
+            RpcTokenAccountsFilterWrapper::Mint(m) => m.0.clone().into_py(py),
+            RpcTokenAccountsFilterWrapper::ProgramId(m) => m.0.clone().into_py(py),
+        }
+    }
+}
+
 pub fn create_config_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let config_mod = PyModule::new(py, "config")?;
     config_mod.add_class::<RpcSignatureStatusConfig>()?;
