@@ -9,7 +9,7 @@ use crate::{
     account_decoder::{UiAccountEncoding, UiDataSliceConfig},
     commitment_config::{CommitmentConfig, CommitmentLevel},
     impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
-    transaction_status::UiTransactionEncoding,
+    transaction_status::{TransactionDetails, UiTransactionEncoding},
     CommonMethods, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly,
 };
 
@@ -1091,6 +1091,66 @@ impl IntoPy<PyObject> for RpcBlockSubscribeFilterWrapper {
     }
 }
 
+pyclass_boilerplate_with_default!(
+    /// Configuration object for ``blockSubscribe``.
+    ///
+    /// Args:
+    ///     commitment (Optional[CommitmentConfig]): Bank state to query.
+    ///     encoding (Optional[UiTransactionEncoding]): Encoding used for the transaction data.
+    ///     transaction_details (Optional[TransactionDetails]): Level of transaction detail to return.
+    ///     show_rewards (Optional[bool]): Whether to populate the ``rewards`` array.
+    ///     max_supported_transaction_version (Optional[int]): Set the max transaction version to return in responses.
+    ///
+    => RpcBlockSubscribeConfig
+);
+
+#[common_methods]
+#[pymethods]
+impl RpcBlockSubscribeConfig {
+    #[new]
+    fn new(
+        commitment: Option<CommitmentConfig>,
+        encoding: Option<UiTransactionEncoding>,
+        transaction_details: Option<TransactionDetails>,
+        show_rewards: Option<bool>,
+        max_supported_transaction_version: Option<u8>,
+    ) -> Self {
+        rpc_config::RpcBlockSubscribeConfig {
+            commitment: commitment.map(|c| c.into()),
+            encoding: encoding.map(|e| e.into()),
+            transaction_details: transaction_details.map(|t| t.into()),
+            show_rewards,
+            max_supported_transaction_version,
+        }
+        .into()
+    }
+
+    #[getter]
+    pub fn commitment(&self) -> Option<CommitmentConfig> {
+        self.0.commitment.map(|c| c.into())
+    }
+
+    #[getter]
+    pub fn encoding(&self) -> Option<UiTransactionEncoding> {
+        self.0.encoding.map(|e| e.into())
+    }
+
+    #[getter]
+    pub fn transaction_details(&self) -> Option<TransactionDetails> {
+        self.0.transaction_details.map(|t| t.into())
+    }
+
+    #[getter]
+    pub fn show_rewards(&self) -> Option<bool> {
+        self.0.show_rewards
+    }
+
+    #[getter]
+    pub fn max_supported_transaction_version(&self) -> Option<u8> {
+        self.0.max_supported_transaction_version
+    }
+}
+
 pub fn create_config_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let config_mod = PyModule::new(py, "config")?;
     config_mod.add_class::<RpcSignatureStatusConfig>()?;
@@ -1114,5 +1174,6 @@ pub fn create_config_mod(py: Python<'_>) -> PyResult<&PyModule> {
     config_mod.add_class::<RpcSignatureSubscribeConfig>()?;
     config_mod.add_class::<RpcBlockSubscribeFilter>()?;
     config_mod.add_class::<RpcBlockSubscribeFilterMentions>()?;
+    config_mod.add_class::<RpcBlockSubscribeConfig>()?;
     Ok(config_mod)
 }
