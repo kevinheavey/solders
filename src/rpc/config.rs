@@ -13,6 +13,8 @@ use crate::{
     CommonMethods, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly,
 };
 
+use super::filter::RpcFilterType;
+
 macro_rules! pyclass_boilerplate {
     ($(#[$attr:meta])* => $name:ident) => {
         $(#[$attr])*
@@ -755,6 +757,62 @@ impl RpcAccountInfoConfig {
     #[getter]
     pub fn min_context_slot(&self) -> Option<u64> {
         self.0.min_context_slot
+    }
+}
+
+pyclass_boilerplate_with_default!(
+    /// Configuration object for ``getProgramAccounts``.
+    ///
+    /// Args:
+    ///     filters (Optional[Sequence[int | Memcmp]]): Filter results using various filter objects; account must meet all filter criteria to be included in results.
+    ///     account_config (RpcAccountInfoConfig): Account info config.
+    ///     with_context (Optional[bool]): Wrap the result in an RpcResponse JSON object.
+    ///
+    => RpcProgramAccountsConfig
+);
+
+rpc_config_impls!(RpcProgramAccountsConfig);
+
+#[common_methods]
+#[pymethods]
+impl RpcProgramAccountsConfig {
+    #[new]
+    pub fn new(
+        filters: Option<Vec<RpcFilterType>>,
+        account_config: RpcAccountInfoConfig,
+        with_context: Option<bool>,
+    ) -> Self {
+        Self(rpc_config::RpcProgramAccountsConfig {
+            filters: filters.map(|v| v.into_iter().map(|f| f.into()).collect()),
+            account_config: account_config.into(),
+            with_context,
+        })
+    }
+
+    /// Create a new default instance of this class.
+    ///
+    /// Returns:
+    ///     RpcEpochConfig: The default instance.
+    #[staticmethod]
+    #[pyo3(name = "default")]
+    pub fn new_default() -> Self {
+        Self::default()
+    }
+
+    #[getter]
+    pub fn filters(&self) -> Option<Vec<PyObject>> {
+        let gil = Python::acquire_gil();
+        let py = gil.python();
+        self.0.filters.clone().map(|v| {
+            v.into_iter()
+                .map(|f| RpcFilterType::from(f).to_object(py))
+                .collect()
+        })
+    }
+
+    #[getter]
+    pub fn with_context(&self) -> Option<bool> {
+        self.0.with_context
     }
 }
 

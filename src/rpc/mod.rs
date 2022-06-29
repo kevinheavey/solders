@@ -4,6 +4,7 @@ use self::{config::create_config_mod, requests::create_requests_mod};
 use pyo3::prelude::*;
 
 pub mod config;
+pub mod filter;
 pub mod requests;
 
 pub fn create_rpc_mod(py: Python<'_>) -> PyResult<&PyModule> {
