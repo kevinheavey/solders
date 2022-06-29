@@ -1151,6 +1151,66 @@ impl RpcBlockSubscribeConfig {
     }
 }
 
+pyclass_boilerplate_with_default!(
+    /// Configuration object for ``getSignaturesForAddress``.
+    ///
+    /// Args:
+    ///     before (Optional[str]): Start searching backwards from this transaction signature (base58-encoded).
+    ///     until (Optional[str]): Search until this transaction signature (base58-encoded).
+    ///     limit (Optional[int]): Maximum transaction signatures to return (between 1 and 1,000, default: 1,000).
+    ///     commitment (Optional[CommitmentConfig]): Bank state to query.
+    ///     min_context_slot (Optional[int]): The minimum slot that the request can be evaluated at.
+    ///
+    => RpcSignaturesForAddressConfig
+);
+
+#[common_methods]
+#[pymethods]
+impl RpcSignaturesForAddressConfig {
+    #[new]
+    fn new(
+        before: Option<String>,
+        until: Option<String>,
+        limit: Option<usize>,
+        commitment: Option<CommitmentConfig>,
+        min_context_slot: Option<u64>,
+    ) -> Self {
+        rpc_config::RpcSignaturesForAddressConfig {
+            before,
+            until,
+            limit,
+            commitment: commitment.map(|c| c.into()),
+            min_context_slot,
+        }
+        .into()
+    }
+
+    #[getter]
+    pub fn before(&self) -> Option<String> {
+        self.0.before.clone()
+    }
+
+    #[getter]
+    pub fn until(&self) -> Option<String> {
+        self.0.until.clone()
+    }
+
+    #[getter]
+    pub fn limit(&self) -> Option<usize> {
+        self.0.limit
+    }
+
+    #[getter]
+    pub fn commitment(&self) -> Option<CommitmentConfig> {
+        self.0.commitment.map(|c| c.into())
+    }
+
+    #[getter]
+    pub fn min_context_slot(&self) -> Option<u64> {
+        self.0.min_context_slot
+    }
+}
+
 pub fn create_config_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let config_mod = PyModule::new(py, "config")?;
     config_mod.add_class::<RpcSignatureStatusConfig>()?;
@@ -1175,5 +1235,6 @@ pub fn create_config_mod(py: Python<'_>) -> PyResult<&PyModule> {
     config_mod.add_class::<RpcBlockSubscribeFilter>()?;
     config_mod.add_class::<RpcBlockSubscribeFilterMentions>()?;
     config_mod.add_class::<RpcBlockSubscribeConfig>()?;
+    config_mod.add_class::<RpcSignaturesForAddressConfig>()?;
     Ok(config_mod)
 }
