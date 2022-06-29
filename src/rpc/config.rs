@@ -781,7 +781,7 @@ impl RpcProgramAccountsConfig {
         let py = gil.python();
         self.0.filters.clone().map(|v| {
             v.into_iter()
-                .map(|f| RpcFilterType::from(f).to_object(py))
+                .map(|f| RpcFilterType::from(f).into_py(py))
                 .collect()
         })
     }
@@ -846,6 +846,20 @@ impl From<TransactionLogsFilterWrapper> for rpc_config::RpcTransactionLogsFilter
             },
             TransactionLogsFilterWrapper::Mentions(m) => {
                 rpc_config::RpcTransactionLogsFilter::Mentions(m.0)
+            }
+        }
+    }
+}
+
+impl From<rpc_config::RpcTransactionLogsFilter> for TransactionLogsFilterWrapper {
+    fn from(f: rpc_config::RpcTransactionLogsFilter) -> Self {
+        match f {
+            rpc_config::RpcTransactionLogsFilter::All => Self::Plain(RpcTransactionLogsFilter::All),
+            rpc_config::RpcTransactionLogsFilter::AllWithVotes => {
+                Self::Plain(RpcTransactionLogsFilter::AllWithVotes)
+            }
+            rpc_config::RpcTransactionLogsFilter::Mentions(v) => {
+                Self::Mentions(RpcTransactionLogsFilterMentions(v))
             }
         }
     }
@@ -959,11 +973,11 @@ impl From<rpc_config::RpcTokenAccountsFilter> for RpcTokenAccountsFilterWrapper 
     }
 }
 
-impl RpcTokenAccountsFilterWrapper {
-    pub fn to_object(&self, py: Python) -> PyObject {
+impl IntoPy<PyObject> for RpcTokenAccountsFilterWrapper {
+    fn into_py(self, py: Python<'_>) -> PyObject {
         match self {
-            RpcTokenAccountsFilterWrapper::Mint(m) => m.0.clone().into_py(py),
-            RpcTokenAccountsFilterWrapper::ProgramId(m) => m.0.clone().into_py(py),
+            RpcTokenAccountsFilterWrapper::Mint(m) => m.0.into_py(py),
+            RpcTokenAccountsFilterWrapper::ProgramId(m) => m.0.into_py(py),
         }
     }
 }

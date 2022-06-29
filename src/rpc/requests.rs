@@ -166,11 +166,11 @@ pub enum Body {
     RequestAirdrop(RequestAirdrop),
 }
 
-impl Body {
-    fn to_object(&self, py: Python) -> PyObject {
+impl IntoPy<PyObject> for Body {
+    fn into_py(self, py: Python<'_>) -> PyObject {
         match self {
-            Body::GetSignatureStatuses(x) => x.clone().into_py(py),
-            Body::RequestAirdrop(x) => x.clone().into_py(py),
+            Body::GetSignatureStatuses(x) => x.into_py(py),
+            Body::RequestAirdrop(x) => x.into_py(py),
         }
     }
 }
@@ -185,7 +185,7 @@ pub fn batch_from_json(raw: &str) -> PyResult<Vec<PyObject>> {
     let gil = Python::acquire_gil();
     let py = gil.python();
     let deser: Vec<Body> = serde_json::from_str(raw).unwrap();
-    Ok(deser.iter().map(|x| x.to_object(py)).collect())
+    Ok(deser.into_iter().map(|x| x.into_py(py)).collect())
 }
 
 pub fn create_requests_mod(py: Python<'_>) -> PyResult<&PyModule> {

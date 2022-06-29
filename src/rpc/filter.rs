@@ -76,11 +76,11 @@ pub enum RpcFilterType {
     Memcmp(Memcmp),
 }
 
-impl RpcFilterType {
-    pub fn to_object(&self, py: Python) -> PyObject {
+impl IntoPy<PyObject> for RpcFilterType {
+    fn into_py(self, py: Python<'_>) -> PyObject {
         match self {
             RpcFilterType::DataSize(num) => num.into_py(py),
-            RpcFilterType::Memcmp(mem) => mem.clone().into_py(py),
+            RpcFilterType::Memcmp(mem) => mem.into_py(py),
         }
     }
 }
