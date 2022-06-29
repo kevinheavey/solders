@@ -41,6 +41,7 @@ impl From<UiTransactionEncoding> for UiTransactionEncodingOriginal {
 
 #[derive(Debug, Clone, Copy, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+#[pyclass]
 pub enum TransactionDetails {
     Full,
     Signatures,
