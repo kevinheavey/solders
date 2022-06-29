@@ -1017,6 +1017,80 @@ impl RpcSignatureSubscribeConfig {
     }
 }
 
+/// Filter for ``blockSubscribe``.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+#[pyclass]
+pub enum RpcBlockSubscribeFilter {
+    All,
+}
+
+/// ``mentions`` filter for ``blockSubscribe``.
+///
+/// Args:
+///     pubkey (str): Return only transactions that mention the provided public key (as base-58 encoded string)
+///
+#[derive(Debug, Clone, PartialEq)]
+#[pyclass]
+pub struct RpcBlockSubscribeFilterMentions(String);
+
+#[richcmp_eq_only]
+#[pymethods]
+impl RpcBlockSubscribeFilterMentions {
+    #[new]
+    pub fn new(pubkey: &str) -> Self {
+        Self(pubkey.to_string())
+    }
+
+    pub fn __repr__(&self) -> String {
+        format!("{:#?}", self)
+    }
+
+    #[getter]
+    pub fn pubkey(&self) -> String {
+        self.0.clone()
+    }
+}
+
+impl RichcmpEqualityOnly for RpcBlockSubscribeFilterMentions {}
+
+#[derive(FromPyObject)]
+pub enum RpcBlockSubscribeFilterWrapper {
+    All(RpcBlockSubscribeFilter),
+    MentionsAccountOrProgram(RpcBlockSubscribeFilterMentions),
+}
+
+impl From<RpcBlockSubscribeFilterWrapper> for rpc_config::RpcBlockSubscribeFilter {
+    fn from(w: RpcBlockSubscribeFilterWrapper) -> Self {
+        match w {
+            RpcBlockSubscribeFilterWrapper::All(_) => Self::All,
+            RpcBlockSubscribeFilterWrapper::MentionsAccountOrProgram(p) => {
+                Self::MentionsAccountOrProgram(p.0)
+            }
+        }
+    }
+}
+
+impl From<rpc_config::RpcBlockSubscribeFilter> for RpcBlockSubscribeFilterWrapper {
+    fn from(f: rpc_config::RpcBlockSubscribeFilter) -> Self {
+        match f {
+            rpc_config::RpcBlockSubscribeFilter::All => Self::All(RpcBlockSubscribeFilter::All),
+            rpc_config::RpcBlockSubscribeFilter::MentionsAccountOrProgram(p) => {
+                Self::MentionsAccountOrProgram(RpcBlockSubscribeFilterMentions(p))
+            }
+        }
+    }
+}
+
+impl IntoPy<PyObject> for RpcBlockSubscribeFilterWrapper {
+    fn into_py(self, py: Python<'_>) -> PyObject {
+        match self {
+            Self::All(m) => m.into_py(py),
+            Self::MentionsAccountOrProgram(m) => m.into_py(py),
+        }
+    }
+}
+
 pub fn create_config_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let config_mod = PyModule::new(py, "config")?;
     config_mod.add_class::<RpcSignatureStatusConfig>()?;
@@ -1038,5 +1112,7 @@ pub fn create_config_mod(py: Python<'_>) -> PyResult<&PyModule> {
     config_mod.add_class::<RpcTokenAccountsFilterMint>()?;
     config_mod.add_class::<RpcTokenAccountsFilterProgramId>()?;
     config_mod.add_class::<RpcSignatureSubscribeConfig>()?;
+    config_mod.add_class::<RpcBlockSubscribeFilter>()?;
+    config_mod.add_class::<RpcBlockSubscribeFilterMentions>()?;
     Ok(config_mod)
 }
