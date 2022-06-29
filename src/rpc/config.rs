@@ -823,5 +823,13 @@ pub fn create_config_mod(py: Python<'_>) -> PyResult<&PyModule> {
     config_mod.add_class::<RpcSimulateTransactionAccountsConfig>()?;
     config_mod.add_class::<RpcSimulateTransactionConfig>()?;
     config_mod.add_class::<RpcRequestAirdropConfig>()?;
+    config_mod.add_class::<RpcLeaderScheduleConfig>()?;
+    config_mod.add_class::<RpcBlockProductionConfigRange>()?;
+    config_mod.add_class::<RpcGetVoteAccountsConfig>()?;
+    config_mod.add_class::<RpcLargestAccountsFilter>()?;
+    config_mod.add_class::<RpcSupplyConfig>()?;
+    config_mod.add_class::<RpcEpochConfig>()?;
+    config_mod.add_class::<RpcAccountInfoConfig>()?;
+    config_mod.add_class::<RpcProgramAccountsConfig>()?;
     Ok(config_mod)
 }
