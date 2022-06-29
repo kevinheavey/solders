@@ -1385,6 +1385,49 @@ impl RpcTransactionConfig {
     }
 }
 
+pyclass_boilerplate_with_default!(
+    /// General context configuration.
+    ///
+    /// Args:
+    ///     commitment (Optional[CommitmentConfig]): Bank state to query.
+    ///     min_context_slot (Optional[int]): The minimum slot that the request can be evaluated at.
+    => RpcContextConfig
+);
+
+#[common_methods]
+#[pymethods]
+impl RpcContextConfig {
+    #[new]
+    pub fn new(commitment: Option<CommitmentConfig>, min_context_slot: Option<u64>) -> Self {
+        rpc_config::RpcContextConfig {
+            commitment: commitment.map(|c| c.into()),
+            min_context_slot,
+        }
+        .into()
+    }
+
+    /// Create a new default instance of this class.
+    ///
+    /// Returns:
+    ///     RpcContextConfig: The default instance.
+    ///
+    #[staticmethod]
+    #[pyo3(name = "default")]
+    pub fn new_default() -> Self {
+        Self::default()
+    }
+
+    #[getter]
+    pub fn commitment(&self) -> Option<CommitmentConfig> {
+        self.0.commitment.map(|c| c.into())
+    }
+
+    #[getter]
+    pub fn min_context_slot(&self) -> Option<u64> {
+        self.0.min_context_slot
+    }
+}
+
 pub fn create_config_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let config_mod = PyModule::new(py, "config")?;
     config_mod.add_class::<RpcSignatureStatusConfig>()?;
@@ -1412,5 +1455,6 @@ pub fn create_config_mod(py: Python<'_>) -> PyResult<&PyModule> {
     config_mod.add_class::<RpcSignaturesForAddressConfig>()?;
     config_mod.add_class::<RpcBlockConfig>()?;
     config_mod.add_class::<RpcTransactionConfig>()?;
+    config_mod.add_class::<RpcContextConfig>()?;
     Ok(config_mod)
 }
