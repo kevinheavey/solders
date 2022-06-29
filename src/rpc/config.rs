@@ -1281,6 +1281,31 @@ impl RpcBlockConfig {
         .into()
     }
 
+    #[getter]
+    pub fn encoding(&self) -> Option<UiTransactionEncoding> {
+        self.0.encoding.map(|e| e.into())
+    }
+
+    #[getter]
+    pub fn transaction_details(&self) -> Option<TransactionDetails> {
+        self.0.transaction_details.map(|t| t.into())
+    }
+
+    #[getter]
+    pub fn rewards(&self) -> Option<bool> {
+        self.0.rewards
+    }
+
+    #[getter]
+    pub fn commitment(&self) -> Option<CommitmentConfig> {
+        self.0.commitment.map(|c| c.into())
+    }
+
+    #[getter]
+    pub fn max_supported_transaction_version(&self) -> Option<u8> {
+        self.0.max_supported_transaction_version
+    }
+
     /// Create a new default instance of this class.
     ///
     /// Returns:
@@ -1302,6 +1327,61 @@ impl RpcBlockConfig {
     #[staticmethod]
     pub fn rewards_with_commitment(commitment: Option<CommitmentConfig>) -> Self {
         rpc_config::RpcBlockConfig::rewards_with_commitment(commitment.map(|c| c.into())).into()
+    }
+}
+
+pyclass_boilerplate_with_default!(
+    /// Configuration object for ``getTransaction``.
+    ///
+    /// Args:
+    ///     encoding (Optional[UiTransactionEncoding]): Encoding used for the transaction data.
+    ///     commitment (Optional[CommitmentConfig]): Bank state to query.
+    ///     max_supported_transaction_version (Optional[int]): Set the max transaction version to return in responses.
+    ///
+    => RpcTransactionConfig
+);
+
+#[common_methods]
+#[pymethods]
+impl RpcTransactionConfig {
+    #[new]
+    pub fn new(
+        encoding: Option<UiTransactionEncoding>,
+        commitment: Option<CommitmentConfig>,
+        max_supported_transaction_version: Option<u8>,
+    ) -> Self {
+        rpc_config::RpcTransactionConfig {
+            encoding: encoding.map(|e| e.into()),
+            commitment: commitment.map(|c| c.into()),
+            max_supported_transaction_version,
+        }
+        .into()
+    }
+
+    /// Create a new default instance of this class.
+    ///
+    /// Returns:
+    ///     RpcTransactionConfig: The default instance.
+    ///
+    #[staticmethod]
+    #[pyo3(name = "default")]
+    pub fn new_default() -> Self {
+        Self::default()
+    }
+
+    #[getter]
+    pub fn encoding(&self) -> Option<UiTransactionEncoding> {
+        self.0.encoding.map(|e| e.into())
+    }
+
+    #[getter]
+    pub fn commitment(&self) -> Option<CommitmentConfig> {
+        self.0.commitment.map(|c| c.into())
+    }
+
+    #[getter]
+    pub fn max_supported_transaction_version(&self) -> Option<u8> {
+        self.0.max_supported_transaction_version
     }
 }
 
@@ -1331,5 +1411,6 @@ pub fn create_config_mod(py: Python<'_>) -> PyResult<&PyModule> {
     config_mod.add_class::<RpcBlockSubscribeConfig>()?;
     config_mod.add_class::<RpcSignaturesForAddressConfig>()?;
     config_mod.add_class::<RpcBlockConfig>()?;
+    config_mod.add_class::<RpcTransactionConfig>()?;
     Ok(config_mod)
 }
