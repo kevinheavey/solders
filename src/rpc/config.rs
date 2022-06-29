@@ -883,6 +883,11 @@ impl RpcTransactionLogsConfig {
             commitment: commitment.map(|c| c.into()),
         })
     }
+
+    #[getter]
+    pub fn commitment(&self) -> Option<CommitmentConfig> {
+        self.0.commitment.map(|c| c.into())
+    }
 }
 
 /// ``mint`` filter for ``getTokenAccountsBy*`` methods.
@@ -1014,6 +1019,17 @@ impl RpcSignatureSubscribeConfig {
     #[getter]
     pub fn enable_received_notification(&self) -> Option<bool> {
         self.0.enable_received_notification
+    }
+
+    /// Create a new default instance of this class.
+    ///
+    /// Returns:
+    ///     RpcSignatureSubscribeConfig: The default instance.
+    ///
+    #[staticmethod]
+    #[pyo3(name = "default")]
+    pub fn new_default() -> Self {
+        Self::default()
     }
 }
 
@@ -1149,6 +1165,16 @@ impl RpcBlockSubscribeConfig {
     pub fn max_supported_transaction_version(&self) -> Option<u8> {
         self.0.max_supported_transaction_version
     }
+
+    /// Create a new default instance of this class.
+    ///
+    /// Returns:
+    ///     RpcBlockSubscribeConfig: The default instance.
+    #[staticmethod]
+    #[pyo3(name = "default")]
+    pub fn new_default() -> Self {
+        Self::default()
+    }
 }
 
 pyclass_boilerplate_with_default!(
@@ -1209,6 +1235,62 @@ impl RpcSignaturesForAddressConfig {
     pub fn min_context_slot(&self) -> Option<u64> {
         self.0.min_context_slot
     }
+
+    /// Create a new default instance of this class.
+    ///
+    /// Returns:
+    ///     RpcSignaturesForAddressConfig: The default instance.
+    #[staticmethod]
+    #[pyo3(name = "default")]
+    pub fn new_default() -> Self {
+        Self::default()
+    }
+}
+
+pyclass_boilerplate_with_default!(
+    /// Configuration object for ``getBlock``.
+    ///
+    /// Args:
+    ///     encoding (Optional[UiTransactionEncoding]): Encoding used for the transaction data.
+    ///     transaction_details (Optional[TransactionDetails]): Level of transaction detail to return.
+    ///     rewards (Optional[bool]): Whether to populate the ``rewards`` array.
+    ///     commitment (Optional[CommitmentConfig]): Bank state to query.
+    ///     max_supported_transaction_version (Optional[int]): Set the max transaction version to return in responses.
+    ///
+    => RpcBlockConfig
+);
+
+#[common_methods]
+#[pymethods]
+impl RpcBlockConfig {
+    #[new]
+    pub fn new(
+        encoding: Option<UiTransactionEncoding>,
+        transaction_details: Option<TransactionDetails>,
+        rewards: Option<bool>,
+        commitment: Option<CommitmentConfig>,
+        max_supported_transaction_version: Option<u8>,
+    ) -> Self {
+        rpc_config::RpcBlockConfig {
+            encoding: encoding.map(|e| e.into()),
+            transaction_details: transaction_details.map(|t| t.into()),
+            rewards,
+            commitment: commitment.map(|c| c.into()),
+            max_supported_transaction_version,
+        }
+        .into()
+    }
+
+    /// Create a new default instance of this class.
+    ///
+    /// Returns:
+    ///     RpcBlockConfig: The default instance.
+    ///
+    #[staticmethod]
+    #[pyo3(name = "default")]
+    pub fn new_default() -> Self {
+        Self::default()
+    }
 }
 
 pub fn create_config_mod(py: Python<'_>) -> PyResult<&PyModule> {
@@ -1236,5 +1318,6 @@ pub fn create_config_mod(py: Python<'_>) -> PyResult<&PyModule> {
     config_mod.add_class::<RpcBlockSubscribeFilterMentions>()?;
     config_mod.add_class::<RpcBlockSubscribeConfig>()?;
     config_mod.add_class::<RpcSignaturesForAddressConfig>()?;
+    config_mod.add_class::<RpcBlockConfig>()?;
     Ok(config_mod)
 }
