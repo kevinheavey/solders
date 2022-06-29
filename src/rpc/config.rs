@@ -816,6 +816,53 @@ impl RpcProgramAccountsConfig {
     }
 }
 
+/// Fieldless filters for ``logsSubscribe``.
+#[derive(Debug, Clone, PartialEq)]
+#[pyclass]
+pub enum RpcTransactionLogsFilter {
+    All,
+    AllWithVotes,
+}
+
+/// ``mentions`` filter for ``logsSubscribe``.
+///
+/// Args:
+///     pubkey (str): Subscribe to all transactions that mention the provided Pubkey (as base-58 encoded string).
+///
+#[derive(Debug, Clone, PartialEq)]
+#[pyclass]
+pub struct RpcTransactionLogsFilterMentions(Vec<String>);
+
+#[pymethods]
+impl RpcTransactionLogsFilterMentions {
+    #[new]
+    pub fn new(pubkey: &str) -> Self {
+        Self(vec![pubkey.to_string()])
+    }
+}
+
+#[derive(FromPyObject)]
+pub enum TransactionLogsFilterWrapper {
+    Plain(RpcTransactionLogsFilter),
+    Mentions(RpcTransactionLogsFilterMentions),
+}
+
+impl From<TransactionLogsFilterWrapper> for rpc_config::RpcTransactionLogsFilter {
+    fn from(w: TransactionLogsFilterWrapper) -> Self {
+        match w {
+            TransactionLogsFilterWrapper::Plain(f) => match f {
+                RpcTransactionLogsFilter::All => rpc_config::RpcTransactionLogsFilter::All,
+                RpcTransactionLogsFilter::AllWithVotes => {
+                    rpc_config::RpcTransactionLogsFilter::AllWithVotes
+                }
+            },
+            TransactionLogsFilterWrapper::Mentions(m) => {
+                rpc_config::RpcTransactionLogsFilter::Mentions(m.0)
+            }
+        }
+    }
+}
+
 pub fn create_config_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let config_mod = PyModule::new(py, "config")?;
     config_mod.add_class::<RpcSignatureStatusConfig>()?;
@@ -831,5 +878,7 @@ pub fn create_config_mod(py: Python<'_>) -> PyResult<&PyModule> {
     config_mod.add_class::<RpcEpochConfig>()?;
     config_mod.add_class::<RpcAccountInfoConfig>()?;
     config_mod.add_class::<RpcProgramAccountsConfig>()?;
+    config_mod.add_class::<RpcTransactionLogsFilter>()?;
+    config_mod.add_class::<RpcTransactionLogsFilterMentions>()?;
     Ok(config_mod)
 }
