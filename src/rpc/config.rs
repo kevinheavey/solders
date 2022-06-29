@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use solana_client::rpc_config;
 use solana_sdk::commitment_config::CommitmentLevel as CommitmentLevelOriginal;
 use solana_transaction_status::UiTransactionEncoding as UiTransactionEncodingOriginal;
-use solders_macros::common_methods;
+use solders_macros::{common_methods, richcmp_eq_only};
 
 use crate::{
     account_decoder::{UiAccountEncoding, UiDataSliceConfig},
@@ -14,24 +14,6 @@ use crate::{
 };
 
 use super::filter::RpcFilterType;
-
-macro_rules! pyclass_boilerplate {
-    ($(#[$attr:meta])* => $name:ident) => {
-        $(#[$attr])*
-        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-        #[pyclass(module = "solders.rpc.config", subclass)]
-        pub struct $name(rpc_config::$name);
-    };
-}
-
-macro_rules! pyclass_boilerplate_with_default {
-    ($(#[$attr:meta])* => $name:ident) => {
-        $(#[$attr])*
-        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
-        #[pyclass(module = "solders.rpc.config", subclass)]
-        pub struct $name(rpc_config::$name);
-    };
-}
 
 macro_rules! rpc_config_impls {
     ($ident:ident) => {
@@ -50,6 +32,26 @@ macro_rules! rpc_config_impls {
                 c.0
             }
         }
+    };
+}
+
+macro_rules! pyclass_boilerplate {
+    ($(#[$attr:meta])* => $name:ident) => {
+        $(#[$attr])*
+        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+        #[pyclass(module = "solders.rpc.config", subclass)]
+        pub struct $name(rpc_config::$name);
+        rpc_config_impls!($name);
+    };
+}
+
+macro_rules! pyclass_boilerplate_with_default {
+    ($(#[$attr:meta])* => $name:ident) => {
+        $(#[$attr])*
+        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+        #[pyclass(module = "solders.rpc.config", subclass)]
+        pub struct $name(rpc_config::$name);
+        rpc_config_impls!($name);
     };
 }
 
@@ -76,8 +78,6 @@ impl RpcSignatureStatusConfig {
         self.0.search_transaction_history
     }
 }
-
-rpc_config_impls!(RpcSignatureStatusConfig);
 
 pyclass_boilerplate_with_default!(
     /// Configuration object for ``sendTransaction``.
@@ -150,8 +150,6 @@ impl RpcSendTransactionConfig {
     }
 }
 
-rpc_config_impls!(RpcSendTransactionConfig);
-
 pyclass_boilerplate_with_default!(
     /// Accounts configuration for ``simulateTransaction``.
     ///
@@ -192,8 +190,6 @@ impl RpcSimulateTransactionAccountsConfig {
         self.0.addresses.clone()
     }
 }
-
-rpc_config_impls!(RpcSimulateTransactionAccountsConfig);
 
 pyclass_boilerplate_with_default!(
     /// Configuration object for ``simulateTransaction``.
@@ -274,8 +270,6 @@ impl RpcSimulateTransactionConfig {
     }
 }
 
-rpc_config_impls!(RpcSimulateTransactionConfig);
-
 pyclass_boilerplate_with_default!(
     /// Configuration object for ``requestAirdrop``.
     /// 
@@ -284,8 +278,6 @@ pyclass_boilerplate_with_default!(
     ///     commitment (Optional[CommitmentConfig]): Bank state to query.
     /// 
 => RpcRequestAirdropConfig);
-
-rpc_config_impls!(RpcRequestAirdropConfig);
 
 #[common_methods]
 #[pymethods]
@@ -328,8 +320,6 @@ pyclass_boilerplate_with_default!(
     /// 
 => RpcLeaderScheduleConfig);
 
-rpc_config_impls!(RpcLeaderScheduleConfig);
-
 #[common_methods]
 #[pymethods]
 impl RpcLeaderScheduleConfig {
@@ -360,8 +350,6 @@ pyclass_boilerplate_with_default!(
     ///     last_slot (Optional[int]): Last slot in the range.
     /// 
 => RpcBlockProductionConfigRange);
-
-rpc_config_impls!(RpcBlockProductionConfigRange);
 
 #[common_methods]
 #[pymethods]
@@ -462,8 +450,6 @@ pyclass_boilerplate_with_default!(
     /// 
     => RpcGetVoteAccountsConfig);
 
-rpc_config_impls!(RpcGetVoteAccountsConfig);
-
 #[common_methods]
 #[pymethods]
 impl RpcGetVoteAccountsConfig {
@@ -558,8 +544,6 @@ pyclass_boilerplate_with_default!(
     => RpcLargestAccountsConfig
 );
 
-rpc_config_impls!(RpcLargestAccountsConfig);
-
 #[common_methods]
 #[pymethods]
 impl RpcLargestAccountsConfig {
@@ -604,8 +588,6 @@ pyclass_boilerplate_with_default!(
     ///
     => RpcSupplyConfig
 );
-
-rpc_config_impls!(RpcSupplyConfig);
 
 #[common_methods]
 #[pymethods]
@@ -652,8 +634,6 @@ pyclass_boilerplate_with_default!(
     ///
     => RpcEpochConfig
 );
-
-rpc_config_impls!(RpcEpochConfig);
 
 #[common_methods]
 #[pymethods]
@@ -708,8 +688,6 @@ pyclass_boilerplate_with_default!(
     ///
     => RpcAccountInfoConfig
 );
-
-rpc_config_impls!(RpcAccountInfoConfig);
 
 #[common_methods]
 #[pymethods]
@@ -771,8 +749,6 @@ pyclass_boilerplate_with_default!(
     => RpcProgramAccountsConfig
 );
 
-rpc_config_impls!(RpcProgramAccountsConfig);
-
 #[common_methods]
 #[pymethods]
 impl RpcProgramAccountsConfig {
@@ -833,13 +809,25 @@ pub enum RpcTransactionLogsFilter {
 #[pyclass]
 pub struct RpcTransactionLogsFilterMentions(Vec<String>);
 
+#[richcmp_eq_only]
 #[pymethods]
 impl RpcTransactionLogsFilterMentions {
     #[new]
     pub fn new(pubkey: &str) -> Self {
         Self(vec![pubkey.to_string()])
     }
+
+    pub fn __repr__(&self) -> String {
+        format!("{:#?}", self)
+    }
+
+    #[getter]
+    pub fn pubkey(&self) -> String {
+        self.0[0].clone()
+    }
 }
+
+impl RichcmpEqualityOnly for RpcTransactionLogsFilterMentions {}
 
 #[derive(FromPyObject)]
 pub enum TransactionLogsFilterWrapper {
@@ -860,6 +848,26 @@ impl From<TransactionLogsFilterWrapper> for rpc_config::RpcTransactionLogsFilter
                 rpc_config::RpcTransactionLogsFilter::Mentions(m.0)
             }
         }
+    }
+}
+
+pyclass_boilerplate!(
+    /// Configuration object for ``logsSubscribe``.
+    ///
+    /// Args:
+    ///     commitment (Optional[CommitmentConfig]): Bank state to query.
+    ///
+    => RpcTransactionLogsConfig
+);
+
+#[common_methods]
+#[pymethods]
+impl RpcTransactionLogsConfig {
+    #[new]
+    pub fn new(commitment: Option<CommitmentConfig>) -> Self {
+        Self(rpc_config::RpcTransactionLogsConfig {
+            commitment: commitment.map(|c| c.into()),
+        })
     }
 }
 
