@@ -982,6 +982,41 @@ impl IntoPy<PyObject> for RpcTokenAccountsFilterWrapper {
     }
 }
 
+pyclass_boilerplate_with_default!(
+    /// Configuration object for ``signatureSubscribe``.
+    ///
+    /// Args:
+    ///     commitment (Optional[CommitmentConfig]): Bank state to query.
+    ///     enable_received_notification (Optional[bool]): Enable received notification.
+    => RpcSignatureSubscribeConfig
+);
+
+#[common_methods]
+#[pymethods]
+impl RpcSignatureSubscribeConfig {
+    #[new]
+    fn new(
+        commitment: Option<CommitmentConfig>,
+        enable_received_notification: Option<bool>,
+    ) -> Self {
+        rpc_config::RpcSignatureSubscribeConfig {
+            commitment: commitment.map(|c| c.into()),
+            enable_received_notification,
+        }
+        .into()
+    }
+
+    #[getter]
+    pub fn commitment(&self) -> Option<CommitmentConfig> {
+        self.0.commitment.map(|c| c.into())
+    }
+
+    #[getter]
+    pub fn enable_received_notification(&self) -> Option<bool> {
+        self.0.enable_received_notification
+    }
+}
+
 pub fn create_config_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let config_mod = PyModule::new(py, "config")?;
     config_mod.add_class::<RpcSignatureStatusConfig>()?;
@@ -999,5 +1034,9 @@ pub fn create_config_mod(py: Python<'_>) -> PyResult<&PyModule> {
     config_mod.add_class::<RpcProgramAccountsConfig>()?;
     config_mod.add_class::<RpcTransactionLogsFilter>()?;
     config_mod.add_class::<RpcTransactionLogsFilterMentions>()?;
+    config_mod.add_class::<RpcTransactionLogsConfig>()?;
+    config_mod.add_class::<RpcTokenAccountsFilterMint>()?;
+    config_mod.add_class::<RpcTokenAccountsFilterProgramId>()?;
+    config_mod.add_class::<RpcSignatureSubscribeConfig>()?;
     Ok(config_mod)
 }
