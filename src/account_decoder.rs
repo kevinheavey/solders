@@ -71,3 +71,10 @@ impl From<UiAccountEncoding> for UiAccountEncodingOriginal {
         }
     }
 }
+
+pub fn create_account_decoder_mod(py: Python<'_>) -> PyResult<&PyModule> {
+    let m = PyModule::new(py, "account_decoder")?;
+    m.add_class::<UiDataSliceConfig>()?;
+    m.add_class::<UiAccountEncoding>()?;
+    Ok(m)
+}
