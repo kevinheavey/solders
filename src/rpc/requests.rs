@@ -1148,6 +1148,16 @@ pub fn create_requests_mod(py: Python<'_>) -> PyResult<&PyModule> {
     requests_mod.add_class::<GetBlockCommitment>()?;
     requests_mod.add_class::<GetBlocks>()?;
     requests_mod.add_class::<GetBlocksWithLimit>()?;
+    requests_mod.add_class::<GetBlockTime>()?;
+    requests_mod.add_class::<GetClusterNodes>()?;
+    requests_mod.add_class::<GetEpochInfo>()?;
+    requests_mod.add_class::<GetEpochSchedule>()?;
+    requests_mod.add_class::<GetFeeForMessage>()?;
+    requests_mod.add_class::<GetFirstAvailableBlock>()?;
+    requests_mod.add_class::<GetGenesisHash>()?;
+    requests_mod.add_class::<GetHealth>()?;
+    requests_mod.add_class::<GetHighestSnapshotSlot>()?;
+    requests_mod.add_class::<GetIdentity>()?;
     requests_mod.add_class::<GetSignatureStatuses>()?;
     requests_mod.add_class::<RequestAirdrop>()?;
     let funcs = [
