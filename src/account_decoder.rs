@@ -7,7 +7,7 @@ use solders_macros::richcmp_eq_only;
 
 use crate::RichcmpEqualityOnly;
 
-/// COnfiguration object for limiting returned account data.
+/// Configuration object for limiting returned account data.
 ///
 /// Args:
 ///     offset (int): Skip this many bytes at the beginning of the data.
