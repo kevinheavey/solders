@@ -167,4 +167,11 @@ impl AsRef<[u8]> for Hash {
     }
 }
 
+impl FromStr for Hash {
+    type Err = ParseHashErrorOriginal;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        HashOriginal::from_str(s).map(Hash::from)
+    }
+}
+
 impl_display!(Hash);
