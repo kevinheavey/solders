@@ -11,7 +11,7 @@ use solders_macros::{common_methods, enum_original_mapping, richcmp_eq_only, rpc
 
 use crate::Signature;
 
-use super::config::{RpcRequestAirdropConfig, RpcSignatureStatusConfig};
+use super::config::{RpcAccountInfoConfig, RpcRequestAirdropConfig, RpcSignatureStatusConfig};
 
 create_exception!(
     solders,
@@ -19,6 +19,26 @@ create_exception!(
     PyException,
     "Raised when an error is encountered during JSON (de)serialization."
 );
+
+macro_rules! rpc_impl_display {
+    ($ident:ident) => {
+        impl std::fmt::Display for $ident {
+            fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+                write!(f, "{}", self.to_json())
+            }
+        }
+    };
+}
+
+macro_rules! request_boilerplate {
+    ($name:ident) => {
+        rpc_impl_display!($name);
+        impl CommonMethods<'_> for $name {}
+        impl RichcmpEqualityOnly for $name {}
+        pybytes_general_via_bincode!($name);
+        py_from_bytes_general_via_bincode!($name);
+    };
+}
 
 impl From<serde_json::Error> for PyErrWrapper {
     fn from(e: serde_json::Error) -> Self {
@@ -151,7 +171,63 @@ impl RequestBase {
 }
 
 #[serde_as]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetAccountInfoParams(
+    #[serde_as(as = "DisplayFromStr")] Pubkey,
+    #[serde(skip_serializing_if = "Option::is_none", default)] Option<RpcAccountInfoConfig>,
+);
+
+/// A ``getAccountInfo`` request.
+///
+/// Args:
+///     pubkey (Pubkey): Pubkey of account to query.
+///     config (Optional[RpcAccountInfoConfig]): Extra configuration.
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///     >>> from solders.rpc.requests import GetAccountInfo
+///     >>> from solders.rpc.config import RpcAccountInfoConfig
+///     >>> from solders.pubkey import Pubkey
+///     >>> from solders.account_decoder import UiAccountEncoding
+///     >>> config = RpcAccountInfoConfig(UiAccountEncoding.Base64)
+///     >>> req = GetAccountInfo(Pubkey.default(), config)
+///     >>> req.to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"getAccountInfo","params":["11111111111111111111111111111111",{"encoding":"base64","dataSlice":null,"minContextSlot":null}]}'
+///
 #[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetAccountInfo {
+    #[serde(flatten)]
+    base: RequestBase,
+    params: GetAccountInfoParams,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl GetAccountInfo {
+    #[new]
+    fn new(pubkey: Pubkey, config: Option<RpcAccountInfoConfig>, id: Option<u64>) -> Self {
+        let params = GetAccountInfoParams(pubkey, config);
+        let base = RequestBase::new(RpcRequest::GetAccountInfo, id);
+        Self { base, params }
+    }
+
+    #[getter]
+    pub fn pubkey(&self) -> Pubkey {
+        self.params.0
+    }
+
+    #[getter]
+    pub fn config(&self) -> Option<RpcAccountInfoConfig> {
+        self.params.1.clone()
+    }
+}
+
+request_boilerplate!(GetAccountInfo);
+
+#[serde_as]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct GetSignatureStatusesParams(
     #[serde_as(as = "Vec<DisplayFromStr>")] Vec<Signature>,
@@ -191,26 +267,6 @@ impl GetSignatureStatuses {
     pub fn config(&self) -> Option<RpcSignatureStatusConfig> {
         self.params.1.clone()
     }
-}
-
-macro_rules! rpc_impl_display {
-    ($ident:ident) => {
-        impl std::fmt::Display for $ident {
-            fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-                write!(f, "{}", self.to_json())
-            }
-        }
-    };
-}
-
-macro_rules! request_boilerplate {
-    ($name:ident) => {
-        rpc_impl_display!($name);
-        impl CommonMethods<'_> for $name {}
-        impl RichcmpEqualityOnly for $name {}
-        pybytes_general_via_bincode!($name);
-        py_from_bytes_general_via_bincode!($name);
-    };
 }
 
 request_boilerplate!(GetSignatureStatuses);
@@ -315,6 +371,7 @@ pub fn batch_from_json(raw: &str) -> PyResult<Vec<PyObject>> {
 
 pub fn create_requests_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let requests_mod = PyModule::new(py, "requests")?;
+    requests_mod.add_class::<GetAccountInfo>()?;
     requests_mod.add_class::<GetSignatureStatuses>()?;
     requests_mod.add_class::<RequestAirdrop>()?;
     let funcs = [
