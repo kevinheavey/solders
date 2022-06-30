@@ -169,7 +169,7 @@ pyclass_boilerplate_with_default!(
 #[pymethods]
 impl RpcSimulateTransactionAccountsConfig {
     #[new]
-    pub fn new(encoding: Option<UiAccountEncoding>, addresses: Vec<Pubkey>) -> Self {
+    pub fn new(addresses: Vec<Pubkey>, encoding: Option<UiAccountEncoding>) -> Self {
         Self(rpc_config::RpcSimulateTransactionAccountsConfig {
             encoding: encoding.map(|x| x.into()),
             addresses: addresses.iter().map(|a| a.to_string()).collect(),
