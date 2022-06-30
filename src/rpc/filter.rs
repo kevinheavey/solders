@@ -5,6 +5,13 @@ use solana_client::rpc_filter::{
     MemcmpEncoding as MemcmpEncodingOriginal, RpcFilterType as RpcFilterTypeOriginal,
 };
 
+use solders_macros::{common_methods, richcmp_eq_only};
+
+use crate::{
+    impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode, CommonMethods,
+    PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly,
+};
+
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, FromPyObject)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum MemcmpEncodedBytes {
@@ -42,9 +49,15 @@ impl From<MemcmpEncoding> for MemcmpEncodingOriginal {
 ///     encoding (Optional[MemcmpEncoding]): Optional encoding specification.
 ///
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[pyclass]
+#[pyclass(module = "solders.rpc.filter", subclass)]
 pub struct Memcmp(MemcmpOriginal);
 
+pybytes_general_via_bincode!(Memcmp);
+py_from_bytes_general_via_bincode!(Memcmp);
+impl_display!(Memcmp);
+
+#[richcmp_eq_only]
+#[common_methods]
 #[pymethods]
 impl Memcmp {
     #[new]
@@ -56,6 +69,9 @@ impl Memcmp {
         })
     }
 }
+
+impl RichcmpEqualityOnly for Memcmp {}
+impl CommonMethods<'_> for Memcmp {}
 
 impl From<Memcmp> for MemcmpOriginal {
     fn from(m: Memcmp) -> Self {
