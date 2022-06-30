@@ -12,7 +12,8 @@ use solders_macros::{common_methods, enum_original_mapping, richcmp_eq_only, rpc
 use crate::Signature;
 
 use super::config::{
-    RpcAccountInfoConfig, RpcContextConfig, RpcRequestAirdropConfig, RpcSignatureStatusConfig,
+    RpcAccountInfoConfig, RpcBlockConfig, RpcContextConfig, RpcRequestAirdropConfig,
+    RpcSignatureStatusConfig,
 };
 
 create_exception!(
@@ -287,6 +288,62 @@ request_boilerplate!(GetBalance);
 
 #[serde_as]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetBlockParams(
+    u64,
+    #[serde(skip_serializing_if = "Option::is_none", default)] Option<RpcBlockConfig>,
+);
+
+/// A ``getBlock`` request.
+///
+/// Args:
+///     slot (int): The slot to query.
+///     config (Optional[RpcBlockConfig]): Extra configuration.
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///     >>> from solders.rpc.requests import GetBlock
+///     >>> from solders.rpc.config import RpcBlockConfig
+///     >>> from solders.transaction_status import TransactionDetails, UiTransactionEncoding
+///     >>> config = RpcBlockConfig(encoding=UiTransactionEncoding.Base58, transaction_details=TransactionDetails.None_)
+///     >>> req = GetBlock(123, config)
+///     >>> req.to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"getBlock","params":[123,{"encoding":"base58","transactionDetails":"none","rewards":null,"maxSupportedTransactionVersion":null}]}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetBlock {
+    #[serde(flatten)]
+    base: RequestBase,
+    params: GetBlockParams,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl GetBlock {
+    #[new]
+    fn new(slot: u64, config: Option<RpcBlockConfig>, id: Option<u64>) -> Self {
+        let params = GetBlockParams(slot, config);
+        let base = RequestBase::new(RpcRequest::GetBlock, id);
+        Self { base, params }
+    }
+
+    #[getter]
+    pub fn slot(&self) -> u64 {
+        self.params.0
+    }
+
+    #[getter]
+    pub fn config(&self) -> Option<RpcBlockConfig> {
+        self.params.1.clone()
+    }
+}
+
+request_boilerplate!(GetBlock);
+
+#[serde_as]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct GetSignatureStatusesParams(
     #[serde_as(as = "Vec<DisplayFromStr>")] Vec<Signature>,
     #[serde(skip_serializing_if = "Option::is_none", default)] Option<RpcSignatureStatusConfig>,
@@ -431,6 +488,7 @@ pub fn create_requests_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let requests_mod = PyModule::new(py, "requests")?;
     requests_mod.add_class::<GetAccountInfo>()?;
     requests_mod.add_class::<GetBalance>()?;
+    requests_mod.add_class::<GetBlock>()?;
     requests_mod.add_class::<GetSignatureStatuses>()?;
     requests_mod.add_class::<RequestAirdrop>()?;
     let funcs = [
