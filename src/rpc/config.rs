@@ -625,8 +625,8 @@ pyclass_boilerplate_with_default!(
 impl RpcSupplyConfig {
     #[new]
     pub fn new(
-        commitment: Option<CommitmentLevel>,
         exclude_non_circulating_accounts_list: bool,
+        commitment: Option<CommitmentLevel>,
     ) -> Self {
         Self(rpc_config::RpcSupplyConfig {
             commitment: commitment.map(|c| c.into()),
@@ -645,13 +645,13 @@ impl RpcSupplyConfig {
     }
 
     #[getter]
-    pub fn commitment(&self) -> Option<CommitmentLevel> {
-        self.0.commitment.map(|c| c.into())
+    pub fn exclude_non_circulating_accounts_list(&self) -> bool {
+        self.0.exclude_non_circulating_accounts_list
     }
 
     #[getter]
-    pub fn exclude_non_circulating_accounts_list(&self) -> bool {
-        self.0.exclude_non_circulating_accounts_list
+    pub fn commitment(&self) -> Option<CommitmentLevel> {
+        self.0.commitment.map(|c| c.into())
     }
 }
 
@@ -714,7 +714,7 @@ pyclass_boilerplate_with_default!(
     ///
     /// Args:
     ///     encoding (Optional[UiAccountEncoding]): Encoding for returned account data.
-    ///     data_slice (Optiona;[UiDataSliceConfig]): Limit the returned account data
+    ///     data_slice (Optiona;[UiDataSliceConfig]): Limit the returned account data.
     ///     commitment (Optional[CommitmentLevel]): Bank state to query.
     ///     min_context_slot (Optional[int]): The minimum slot that the request can be evaluated at.
     ///
@@ -788,8 +788,8 @@ pyclass_boilerplate_with_default!(
 impl RpcProgramAccountsConfig {
     #[new]
     pub fn new(
-        filters: Option<Vec<RpcFilterType>>,
         account_config: RpcAccountInfoConfig,
+        filters: Option<Vec<RpcFilterType>>,
         with_context: Option<bool>,
     ) -> Self {
         Self(rpc_config::RpcProgramAccountsConfig {
@@ -807,6 +807,11 @@ impl RpcProgramAccountsConfig {
     #[pyo3(name = "default")]
     pub fn new_default() -> Self {
         Self::default()
+    }
+
+    #[getter]
+    pub fn account_config(&self) -> RpcAccountInfoConfig {
+        self.0.account_config.clone().into()
     }
 
     #[getter]
