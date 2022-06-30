@@ -200,7 +200,7 @@ pyclass_boilerplate_with_default!(
     ///     replace_recent_blockhash (bool): If True the transaction recent blockhash
     ///         will be replaced with the most recent blockhash
     ///         (conflicts with ``sig_verify``).
-    ///     commitment (Optional[CommitmentConfig]): Commitment level at which to simulate the transaction.
+    ///     commitment (Optional[CommitmentLevel]): Commitment level at which to simulate the transaction.
     ///     encoding (Optional[UiTransactionEncoding]): Encoding used for the transaction data.
     ///     accounts (Optional[RpcSimulateTransactionAccountsConfig]): Accounts configuration object.
     ///     min_context_slot (Optional[int]): The minimum slot that the request can be evaluated at.
@@ -214,7 +214,7 @@ impl RpcSimulateTransactionConfig {
     fn new(
         sig_verify: bool,
         replace_recent_blockhash: bool,
-        commitment: Option<CommitmentConfig>,
+        commitment: Option<CommitmentLevel>,
         encoding: Option<UiTransactionEncoding>,
         accounts: Option<RpcSimulateTransactionAccountsConfig>,
         min_context_slot: Option<u64>,
@@ -250,7 +250,7 @@ impl RpcSimulateTransactionConfig {
     }
 
     #[getter]
-    pub fn commitment(&self) -> Option<CommitmentConfig> {
+    pub fn commitment(&self) -> Option<CommitmentLevel> {
         self.0.commitment.map(|c| c.into())
     }
 
@@ -275,7 +275,7 @@ pyclass_boilerplate_with_default!(
     /// 
     /// Args:
     ///     recent_blockhash (Optional[str]): The ID of a recent ledger entry.
-    ///     commitment (Optional[CommitmentConfig]): Bank state to query.
+    ///     commitment (Optional[CommitmentLevel]): Bank state to query.
     /// 
 => RpcRequestAirdropConfig);
 
@@ -283,7 +283,7 @@ pyclass_boilerplate_with_default!(
 #[pymethods]
 impl RpcRequestAirdropConfig {
     #[new]
-    pub fn new(recent_blockhash: Option<&str>, commitment: Option<CommitmentConfig>) -> Self {
+    pub fn new(recent_blockhash: Option<&str>, commitment: Option<CommitmentLevel>) -> Self {
         Self(rpc_config::RpcRequestAirdropConfig {
             recent_blockhash: recent_blockhash.map(String::from),
             commitment: commitment.map(|c| c.into()),
@@ -306,7 +306,7 @@ impl RpcRequestAirdropConfig {
     }
 
     #[getter]
-    pub fn commitment(&self) -> Option<CommitmentConfig> {
+    pub fn commitment(&self) -> Option<CommitmentLevel> {
         self.0.commitment.map(|c| c.into())
     }
 }
@@ -316,7 +316,7 @@ pyclass_boilerplate_with_default!(
     /// 
     /// Args:
     ///     identity (Optional[str]): Validator identity, as a base-58 encoded string
-    ///     commitment (Optional[CommitmentConfig]): Bank state to query.
+    ///     commitment (Optional[CommitmentLevel]): Bank state to query.
     /// 
 => RpcLeaderScheduleConfig);
 
@@ -324,7 +324,7 @@ pyclass_boilerplate_with_default!(
 #[pymethods]
 impl RpcLeaderScheduleConfig {
     #[new]
-    pub fn new(identity: Option<&str>, commitment: Option<CommitmentConfig>) -> Self {
+    pub fn new(identity: Option<&str>, commitment: Option<CommitmentLevel>) -> Self {
         Self(rpc_config::RpcLeaderScheduleConfig {
             identity: identity.map(String::from),
             commitment: commitment.map(|c| c.into()),
@@ -337,7 +337,7 @@ impl RpcLeaderScheduleConfig {
     }
 
     #[getter]
-    pub fn commitment(&self) -> Option<CommitmentConfig> {
+    pub fn commitment(&self) -> Option<CommitmentLevel> {
         self.0.commitment.map(|c| c.into())
     }
 }
@@ -378,7 +378,7 @@ impl RpcBlockProductionConfigRange {
 /// Args:
 ///     identity (Optional[str]): Validator identity, as a base-58 encoded string
 ///     range (Optional[RpcBlockProductionConfigRange]): Slot range to query. Current epoch if ``None``.
-///     commitment (Optional[CommitmentConfig]): Bank state to query.
+///     commitment (Optional[CommitmentLevel]): Bank state to query.
 ///
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[pyclass(module = "solders.rpc.config", subclass)]
@@ -401,7 +401,7 @@ impl RpcBlockProductionConfig {
     pub fn new(
         identity: Option<&str>,
         range: Option<RpcBlockProductionConfigRange>,
-        commitment: Option<CommitmentConfig>,
+        commitment: Option<CommitmentLevel>,
     ) -> Self {
         Self(rpc_config::RpcBlockProductionConfig {
             identity: identity.map(String::from),
@@ -421,7 +421,7 @@ impl RpcBlockProductionConfig {
     }
 
     #[getter]
-    pub fn commitment(&self) -> Option<CommitmentConfig> {
+    pub fn commitment(&self) -> Option<CommitmentLevel> {
         self.0.commitment.map(|c| c.into())
     }
 
@@ -441,7 +441,7 @@ pyclass_boilerplate_with_default!(
     /// 
     /// Args:
     ///     vote_pubkey (Optional[str]): Validator vote address, as a base-58 encoded string
-    ///     commitment (Optional[CommitmentConfig]): Bank state to query.
+    ///     commitment (Optional[CommitmentLevel]): Bank state to query.
     ///     keep_unstaked_delinquents (Optional[bool]): Do not filter out delinquent validators with no stake.
     ///     delinquent_slot_distance (Optional[int]): Specify the number of slots behind the tip that a validator
     ///         must fall to be considered delinquent.
@@ -456,7 +456,7 @@ impl RpcGetVoteAccountsConfig {
     #[new]
     pub fn new(
         vote_pubkey: Option<&str>,
-        commitment: Option<CommitmentConfig>,
+        commitment: Option<CommitmentLevel>,
         keep_unstaked_delinquents: Option<bool>,
         delinquent_slot_distance: Option<u64>,
     ) -> Self {
@@ -474,7 +474,7 @@ impl RpcGetVoteAccountsConfig {
     }
 
     #[getter]
-    pub fn commitment(&self) -> Option<CommitmentConfig> {
+    pub fn commitment(&self) -> Option<CommitmentLevel> {
         self.0.commitment.map(|c| c.into())
     }
 
@@ -538,7 +538,7 @@ pyclass_boilerplate_with_default!(
     /// Configuration object for ``getLargestAccounts``.
     ///
     /// Args:
-    ///     commitment (Optional[CommitmentConfig]): Bank state to query.
+    ///     commitment (Optional[CommitmentLevel]): Bank state to query.
     ///     filter (Optional[RpcLargestAccountsFilter]): Filter results by account type.
     ///
     => RpcLargestAccountsConfig
@@ -549,7 +549,7 @@ pyclass_boilerplate_with_default!(
 impl RpcLargestAccountsConfig {
     #[new]
     pub fn new(
-        commitment: Option<CommitmentConfig>,
+        commitment: Option<CommitmentLevel>,
         filter: Option<RpcLargestAccountsFilter>,
     ) -> Self {
         Self(rpc_config::RpcLargestAccountsConfig {
@@ -569,7 +569,7 @@ impl RpcLargestAccountsConfig {
     }
 
     #[getter]
-    pub fn commitment(&self) -> Option<CommitmentConfig> {
+    pub fn commitment(&self) -> Option<CommitmentLevel> {
         self.0.commitment.map(|c| c.into())
     }
 
@@ -583,7 +583,7 @@ pyclass_boilerplate_with_default!(
     /// Configuration object for ``getSupply``.
     ///
     /// Args:
-    ///     commitment (Optional[CommitmentConfig]): Bank state to query.
+    ///     commitment (Optional[CommitmentLevel]): Bank state to query.
     ///     exclude_non_circulating_accounts_list (bool): Exclude non circulating accounts list from response.
     ///
     => RpcSupplyConfig
@@ -594,7 +594,7 @@ pyclass_boilerplate_with_default!(
 impl RpcSupplyConfig {
     #[new]
     pub fn new(
-        commitment: Option<CommitmentConfig>,
+        commitment: Option<CommitmentLevel>,
         exclude_non_circulating_accounts_list: bool,
     ) -> Self {
         Self(rpc_config::RpcSupplyConfig {
@@ -614,7 +614,7 @@ impl RpcSupplyConfig {
     }
 
     #[getter]
-    pub fn commitment(&self) -> Option<CommitmentConfig> {
+    pub fn commitment(&self) -> Option<CommitmentLevel> {
         self.0.commitment.map(|c| c.into())
     }
 
@@ -629,7 +629,7 @@ pyclass_boilerplate_with_default!(
     ///
     /// Args:
     ///     epoch (Optional[int]): Epoch is a unit of time a given leader schedule is honored, some number of Slots.
-    ///     commitment (Optional[CommitmentConfig]): Bank state to query.
+    ///     commitment (Optional[CommitmentLevel]): Bank state to query.
     ///     min_context_slot (Optional[int]): The minimum slot that the request can be evaluated at.
     ///
     => RpcEpochConfig
@@ -641,7 +641,7 @@ impl RpcEpochConfig {
     #[new]
     pub fn new(
         epoch: Option<u64>,
-        commitment: Option<CommitmentConfig>,
+        commitment: Option<CommitmentLevel>,
         min_context_slot: Option<u64>,
     ) -> Self {
         Self(rpc_config::RpcEpochConfig {
@@ -662,7 +662,7 @@ impl RpcEpochConfig {
     }
 
     #[getter]
-    pub fn commitment(&self) -> Option<CommitmentConfig> {
+    pub fn commitment(&self) -> Option<CommitmentLevel> {
         self.0.commitment.map(|c| c.into())
     }
 
@@ -683,7 +683,7 @@ pyclass_boilerplate_with_default!(
     /// Args:
     ///     encoding (Optional[UiAccountEncoding]): Encoding for returned account data.
     ///     data_slice (Optiona;[UiDataSliceConfig]): Limit the returned account data
-    ///     commitment (Optional[CommitmentConfig]): Bank state to query.
+    ///     commitment (Optional[CommitmentLevel]): Bank state to query.
     ///     min_context_slot (Optional[int]): The minimum slot that the request can be evaluated at.
     ///
     => RpcAccountInfoConfig
@@ -696,7 +696,7 @@ impl RpcAccountInfoConfig {
     pub fn new(
         encoding: Option<UiAccountEncoding>,
         data_slice: Option<UiDataSliceConfig>,
-        commitment: Option<CommitmentConfig>,
+        commitment: Option<CommitmentLevel>,
         min_context_slot: Option<u64>,
     ) -> Self {
         Self(rpc_config::RpcAccountInfoConfig {
@@ -728,7 +728,7 @@ impl RpcAccountInfoConfig {
     }
 
     #[getter]
-    pub fn commitment(&self) -> Option<CommitmentConfig> {
+    pub fn commitment(&self) -> Option<CommitmentLevel> {
         self.0.commitment.map(|c| c.into())
     }
 
@@ -869,7 +869,7 @@ pyclass_boilerplate!(
     /// Configuration object for ``logsSubscribe``.
     ///
     /// Args:
-    ///     commitment (Optional[CommitmentConfig]): Bank state to query.
+    ///     commitment (Optional[CommitmentLevel]): Bank state to query.
     ///
     => RpcTransactionLogsConfig
 );
@@ -878,14 +878,14 @@ pyclass_boilerplate!(
 #[pymethods]
 impl RpcTransactionLogsConfig {
     #[new]
-    pub fn new(commitment: Option<CommitmentConfig>) -> Self {
+    pub fn new(commitment: Option<CommitmentLevel>) -> Self {
         Self(rpc_config::RpcTransactionLogsConfig {
             commitment: commitment.map(|c| c.into()),
         })
     }
 
     #[getter]
-    pub fn commitment(&self) -> Option<CommitmentConfig> {
+    pub fn commitment(&self) -> Option<CommitmentLevel> {
         self.0.commitment.map(|c| c.into())
     }
 }
@@ -991,7 +991,7 @@ pyclass_boilerplate_with_default!(
     /// Configuration object for ``signatureSubscribe``.
     ///
     /// Args:
-    ///     commitment (Optional[CommitmentConfig]): Bank state to query.
+    ///     commitment (Optional[CommitmentLevel]): Bank state to query.
     ///     enable_received_notification (Optional[bool]): Enable received notification.
     => RpcSignatureSubscribeConfig
 );
@@ -1001,7 +1001,7 @@ pyclass_boilerplate_with_default!(
 impl RpcSignatureSubscribeConfig {
     #[new]
     fn new(
-        commitment: Option<CommitmentConfig>,
+        commitment: Option<CommitmentLevel>,
         enable_received_notification: Option<bool>,
     ) -> Self {
         rpc_config::RpcSignatureSubscribeConfig {
@@ -1012,7 +1012,7 @@ impl RpcSignatureSubscribeConfig {
     }
 
     #[getter]
-    pub fn commitment(&self) -> Option<CommitmentConfig> {
+    pub fn commitment(&self) -> Option<CommitmentLevel> {
         self.0.commitment.map(|c| c.into())
     }
 
@@ -1111,7 +1111,7 @@ pyclass_boilerplate_with_default!(
     /// Configuration object for ``blockSubscribe``.
     ///
     /// Args:
-    ///     commitment (Optional[CommitmentConfig]): Bank state to query.
+    ///     commitment (Optional[CommitmentLevel]): Bank state to query.
     ///     encoding (Optional[UiTransactionEncoding]): Encoding used for the transaction data.
     ///     transaction_details (Optional[TransactionDetails]): Level of transaction detail to return.
     ///     show_rewards (Optional[bool]): Whether to populate the ``rewards`` array.
@@ -1125,7 +1125,7 @@ pyclass_boilerplate_with_default!(
 impl RpcBlockSubscribeConfig {
     #[new]
     fn new(
-        commitment: Option<CommitmentConfig>,
+        commitment: Option<CommitmentLevel>,
         encoding: Option<UiTransactionEncoding>,
         transaction_details: Option<TransactionDetails>,
         show_rewards: Option<bool>,
@@ -1142,7 +1142,7 @@ impl RpcBlockSubscribeConfig {
     }
 
     #[getter]
-    pub fn commitment(&self) -> Option<CommitmentConfig> {
+    pub fn commitment(&self) -> Option<CommitmentLevel> {
         self.0.commitment.map(|c| c.into())
     }
 
@@ -1184,7 +1184,7 @@ pyclass_boilerplate_with_default!(
     ///     before (Optional[str]): Start searching backwards from this transaction signature (base58-encoded).
     ///     until (Optional[str]): Search until this transaction signature (base58-encoded).
     ///     limit (Optional[int]): Maximum transaction signatures to return (between 1 and 1,000, default: 1,000).
-    ///     commitment (Optional[CommitmentConfig]): Bank state to query.
+    ///     commitment (Optional[CommitmentLevel]): Bank state to query.
     ///     min_context_slot (Optional[int]): The minimum slot that the request can be evaluated at.
     ///
     => RpcSignaturesForAddressConfig
@@ -1198,7 +1198,7 @@ impl RpcSignaturesForAddressConfig {
         before: Option<String>,
         until: Option<String>,
         limit: Option<usize>,
-        commitment: Option<CommitmentConfig>,
+        commitment: Option<CommitmentLevel>,
         min_context_slot: Option<u64>,
     ) -> Self {
         rpc_config::RpcSignaturesForAddressConfig {
@@ -1227,7 +1227,7 @@ impl RpcSignaturesForAddressConfig {
     }
 
     #[getter]
-    pub fn commitment(&self) -> Option<CommitmentConfig> {
+    pub fn commitment(&self) -> Option<CommitmentLevel> {
         self.0.commitment.map(|c| c.into())
     }
 
@@ -1254,7 +1254,7 @@ pyclass_boilerplate_with_default!(
     ///     encoding (Optional[UiTransactionEncoding]): Encoding used for the transaction data.
     ///     transaction_details (Optional[TransactionDetails]): Level of transaction detail to return.
     ///     rewards (Optional[bool]): Whether to populate the ``rewards`` array.
-    ///     commitment (Optional[CommitmentConfig]): Bank state to query.
+    ///     commitment (Optional[CommitmentLevel]): Bank state to query.
     ///     max_supported_transaction_version (Optional[int]): Set the max transaction version to return in responses.
     ///
     => RpcBlockConfig
@@ -1268,7 +1268,7 @@ impl RpcBlockConfig {
         encoding: Option<UiTransactionEncoding>,
         transaction_details: Option<TransactionDetails>,
         rewards: Option<bool>,
-        commitment: Option<CommitmentConfig>,
+        commitment: Option<CommitmentLevel>,
         max_supported_transaction_version: Option<u8>,
     ) -> Self {
         rpc_config::RpcBlockConfig {
@@ -1297,7 +1297,7 @@ impl RpcBlockConfig {
     }
 
     #[getter]
-    pub fn commitment(&self) -> Option<CommitmentConfig> {
+    pub fn commitment(&self) -> Option<CommitmentLevel> {
         self.0.commitment.map(|c| c.into())
     }
 
@@ -1325,7 +1325,7 @@ impl RpcBlockConfig {
 
     /// Create a new instance for only showing rewards, with a specified commitment level.
     #[staticmethod]
-    pub fn rewards_with_commitment(commitment: Option<CommitmentConfig>) -> Self {
+    pub fn rewards_with_commitment(commitment: Option<CommitmentLevel>) -> Self {
         rpc_config::RpcBlockConfig::rewards_with_commitment(commitment.map(|c| c.into())).into()
     }
 }
@@ -1335,7 +1335,7 @@ pyclass_boilerplate_with_default!(
     ///
     /// Args:
     ///     encoding (Optional[UiTransactionEncoding]): Encoding used for the transaction data.
-    ///     commitment (Optional[CommitmentConfig]): Bank state to query.
+    ///     commitment (Optional[CommitmentLevel]): Bank state to query.
     ///     max_supported_transaction_version (Optional[int]): Set the max transaction version to return in responses.
     ///
     => RpcTransactionConfig
@@ -1347,7 +1347,7 @@ impl RpcTransactionConfig {
     #[new]
     pub fn new(
         encoding: Option<UiTransactionEncoding>,
-        commitment: Option<CommitmentConfig>,
+        commitment: Option<CommitmentLevel>,
         max_supported_transaction_version: Option<u8>,
     ) -> Self {
         rpc_config::RpcTransactionConfig {
@@ -1375,7 +1375,7 @@ impl RpcTransactionConfig {
     }
 
     #[getter]
-    pub fn commitment(&self) -> Option<CommitmentConfig> {
+    pub fn commitment(&self) -> Option<CommitmentLevel> {
         self.0.commitment.map(|c| c.into())
     }
 
@@ -1389,7 +1389,7 @@ pyclass_boilerplate_with_default!(
     /// General context configuration.
     ///
     /// Args:
-    ///     commitment (Optional[CommitmentConfig]): Bank state to query.
+    ///     commitment (Optional[CommitmentLevel]): Bank state to query.
     ///     min_context_slot (Optional[int]): The minimum slot that the request can be evaluated at.
     => RpcContextConfig
 );
@@ -1398,7 +1398,7 @@ pyclass_boilerplate_with_default!(
 #[pymethods]
 impl RpcContextConfig {
     #[new]
-    pub fn new(commitment: Option<CommitmentConfig>, min_context_slot: Option<u64>) -> Self {
+    pub fn new(commitment: Option<CommitmentLevel>, min_context_slot: Option<u64>) -> Self {
         rpc_config::RpcContextConfig {
             commitment: commitment.map(|c| c.into()),
             min_context_slot,
@@ -1418,7 +1418,7 @@ impl RpcContextConfig {
     }
 
     #[getter]
-    pub fn commitment(&self) -> Option<CommitmentConfig> {
+    pub fn commitment(&self) -> Option<CommitmentLevel> {
         self.0.commitment.map(|c| c.into())
     }
 

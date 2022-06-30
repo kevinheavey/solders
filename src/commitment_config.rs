@@ -76,6 +76,7 @@ impl From<CommitmentLevel> for CommitmentLevelOriginal {
     }
 }
 
+/// Wrapper object for ``CommitmentLevel``.
 #[pyclass(module = "solders.commitment_config", subclass)]
 #[derive(Serialize, Deserialize, Default, Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub struct CommitmentConfig(CommitmentConfigOriginal);
@@ -88,6 +89,11 @@ impl CommitmentConfig {
             commitment: commitment.into(),
         }
         .into()
+    }
+
+    #[getter]
+    pub fn commitment(&self) -> CommitmentLevel {
+        self.0.commitment.into()
     }
 
     #[staticmethod]
@@ -139,5 +145,35 @@ impl From<CommitmentConfigOriginal> for CommitmentConfig {
 impl From<CommitmentConfig> for CommitmentConfigOriginal {
     fn from(c: CommitmentConfig) -> Self {
         c.0
+    }
+}
+
+impl From<CommitmentLevel> for CommitmentConfig {
+    fn from(c: CommitmentLevel) -> Self {
+        CommitmentConfig::new(c)
+    }
+}
+
+impl From<CommitmentLevel> for CommitmentConfigOriginal {
+    fn from(c: CommitmentLevel) -> Self {
+        CommitmentConfig::from(c).into()
+    }
+}
+
+impl From<CommitmentConfig> for CommitmentLevel {
+    fn from(c: CommitmentConfig) -> Self {
+        c.commitment()
+    }
+}
+
+impl From<CommitmentLevelOriginal> for CommitmentConfig {
+    fn from(c: CommitmentLevelOriginal) -> Self {
+        CommitmentLevel::from(c).into()
+    }
+}
+
+impl From<CommitmentConfigOriginal> for CommitmentLevel {
+    fn from(c: CommitmentConfigOriginal) -> Self {
+        CommitmentConfig::from(c).into()
     }
 }
