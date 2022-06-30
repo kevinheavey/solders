@@ -1,19 +1,19 @@
 #![allow(deprecated)]
 use crate::{
+    commitment_config::{CommitmentConfig, CommitmentLevel},
     py_from_bytes_general_via_bincode, pybytes_general_via_bincode, CommonMethods, Pubkey,
     PyBytesBincode, PyErrWrapper, PyFromBytesBincode, RichcmpEqualityOnly,
 };
 use pyo3::{create_exception, exceptions::PyException, prelude::*};
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, DisplayFromStr};
-use solana_client::rpc_request::RpcRequest as RpcRequestOriginal;
-use solders_macros::{common_methods, enum_original_mapping, richcmp_eq_only, rpc_id_getter};
+use solders_macros::{common_methods, richcmp_eq_only, rpc_id_getter};
 
 use crate::Signature;
 
 use super::config::{
-    RpcAccountInfoConfig, RpcBlockConfig, RpcContextConfig, RpcRequestAirdropConfig,
-    RpcSignatureStatusConfig,
+    RpcAccountInfoConfig, RpcBlockConfig, RpcBlockProductionConfig, RpcContextConfig,
+    RpcRequestAirdropConfig, RpcSignatureStatusConfig,
 };
 
 create_exception!(
@@ -51,13 +51,13 @@ impl From<serde_json::Error> for PyErrWrapper {
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-#[enum_original_mapping(RpcRequestOriginal)]
 #[pyclass]
 pub enum RpcRequest {
     DeregisterNode,
     GetAccountInfo,
     GetBalance,
     GetBlock,
+    GetBlockCommitment,
     GetBlockHeight,
     GetBlockProduction,
     GetBlocks,
@@ -193,8 +193,7 @@ pub struct GetAccountInfoParams(
 ///     >>> from solders.pubkey import Pubkey
 ///     >>> from solders.account_decoder import UiAccountEncoding
 ///     >>> config = RpcAccountInfoConfig(UiAccountEncoding.Base64)
-///     >>> req = GetAccountInfo(Pubkey.default(), config)
-///     >>> req.to_json()
+///     >>> GetAccountInfo(Pubkey.default(), config).to_json()
 ///     '{"jsonrpc":"2.0","id":0,"method":"getAccountInfo","params":["11111111111111111111111111111111",{"encoding":"base64","dataSlice":null,"minContextSlot":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
@@ -249,8 +248,7 @@ pub struct GetBalanceParams(
 ///     >>> from solders.rpc.config import RpcContextConfig
 ///     >>> from solders.pubkey import Pubkey
 ///     >>> config = RpcContextConfig(min_context_slot=1)
-///     >>> req = GetBalance(Pubkey.default(), config)
-///     >>> req.to_json()
+///     >>> GetBalance(Pubkey.default(), config).to_json()
 ///     '{"jsonrpc":"2.0","id":0,"method":"getBalance","params":["11111111111111111111111111111111",{"minContextSlot":1}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
@@ -286,7 +284,6 @@ impl GetBalance {
 
 request_boilerplate!(GetBalance);
 
-#[serde_as]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct GetBlockParams(
     u64,
@@ -305,8 +302,7 @@ pub struct GetBlockParams(
 ///     >>> from solders.rpc.config import RpcBlockConfig
 ///     >>> from solders.transaction_status import TransactionDetails, UiTransactionEncoding
 ///     >>> config = RpcBlockConfig(encoding=UiTransactionEncoding.Base58, transaction_details=TransactionDetails.None_)
-///     >>> req = GetBlock(123, config)
-///     >>> req.to_json()
+///     >>> GetBlock(123, config).to_json()
 ///     '{"jsonrpc":"2.0","id":0,"method":"getBlock","params":[123,{"encoding":"base58","transactionDetails":"none","rewards":null,"maxSupportedTransactionVersion":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
@@ -342,6 +338,270 @@ impl GetBlock {
 
 request_boilerplate!(GetBlock);
 
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetBlockHeightParams(
+    #[serde(skip_serializing_if = "Option::is_none", default)] Option<RpcContextConfig>,
+);
+
+/// A ``getBlockHeight`` request.
+///
+/// Args:
+///     config (Optional[RpcContextConfig]): Extra configuration.
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///     >>> from solders.rpc.requests import GetBlockHeight
+///     >>> from solders.rpc.config import RpcContextConfig
+///     >>> config = RpcContextConfig(min_context_slot=123)
+///     >>> GetBlockHeight(config).to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"getBlockHeight","params":{"minContextSlot":123}}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetBlockHeight {
+    #[serde(flatten)]
+    base: RequestBase,
+    params: GetBlockHeightParams,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl GetBlockHeight {
+    #[new]
+    fn new(config: Option<RpcContextConfig>, id: Option<u64>) -> Self {
+        let params = GetBlockHeightParams(config);
+        let base = RequestBase::new(RpcRequest::GetBlockHeight, id);
+        Self { base, params }
+    }
+
+    #[getter]
+    pub fn config(&self) -> Option<RpcContextConfig> {
+        self.params.0.clone()
+    }
+}
+
+request_boilerplate!(GetBlockHeight);
+
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetBlockProductionParams(
+    #[serde(skip_serializing_if = "Option::is_none", default)] Option<RpcBlockProductionConfig>,
+);
+
+/// A ``getBlockProduction`` request.
+///
+/// Args:
+///     config (Optional[RpcBlockProductionConfig]): Extra configuration.
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///     >>> from solders.rpc.requests import GetBlockProduction
+///     >>> from solders.rpc.config import RpcBlockProductionConfig, RpcBlockProductionConfigRange
+///     >>> from solders.pubkey import Pubkey
+///     >>> slot_range = RpcBlockProductionConfigRange(first_slot=10, last_slot=15)
+///     >>> config = RpcBlockProductionConfig(identity=Pubkey.default(), range=slot_range)
+///     >>> GetBlockProduction(config).to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"getBlockProduction","params":{"identity":"11111111111111111111111111111111","range":{"firstSlot":10,"lastSlot":15}}}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetBlockProduction {
+    #[serde(flatten)]
+    base: RequestBase,
+    params: GetBlockProductionParams,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl GetBlockProduction {
+    #[new]
+    fn new(config: Option<RpcBlockProductionConfig>, id: Option<u64>) -> Self {
+        let params = GetBlockProductionParams(config);
+        let base = RequestBase::new(RpcRequest::GetBlockProduction, id);
+        Self { base, params }
+    }
+
+    #[getter]
+    pub fn config(&self) -> Option<RpcBlockProductionConfig> {
+        self.params.0.clone()
+    }
+}
+
+request_boilerplate!(GetBlockProduction);
+
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetBlockCommitmentParams(u64);
+
+/// A ``getBlockCommitment`` request.
+///
+/// Args:
+///     slot (int): The slot to query.
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///     >>> from solders.rpc.requests import GetBlockCommitment
+///     >>> GetBlockCommitment(123).to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"getBlockCommitment","params":123}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetBlockCommitment {
+    #[serde(flatten)]
+    base: RequestBase,
+    params: GetBlockCommitmentParams,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl GetBlockCommitment {
+    #[new]
+    fn new(slot: u64, id: Option<u64>) -> Self {
+        let params = GetBlockCommitmentParams(slot);
+        let base = RequestBase::new(RpcRequest::GetBlockCommitment, id);
+        Self { base, params }
+    }
+
+    #[getter]
+    pub fn slot(&self) -> u64 {
+        self.params.0
+    }
+}
+
+request_boilerplate!(GetBlockCommitment);
+
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetBlocksParams(
+    u64,
+    #[serde(skip_serializing_if = "Option::is_none", default)] Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none", default)] Option<CommitmentConfig>,
+);
+
+/// A ``getBlocks`` request.
+///
+/// Args:
+///     start (int): The start slot.
+///     end (Optional[int]): The end slot.
+///     commitment (Optional[CommitmentConfig]): Bank state to query.
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///     >>> from solders.rpc.requests import GetBlocks
+///     >>> from solders.commitment_config import CommitmentLevel
+///     >>> GetBlocks(123, commitment=CommitmentLevel.Processed).to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"getBlocks","params":[123,{"commitment":"processed"}]}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetBlocks {
+    #[serde(flatten)]
+    base: RequestBase,
+    params: GetBlocksParams,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl GetBlocks {
+    #[new]
+    fn new(
+        start: u64,
+        end: Option<u64>,
+        commitment: Option<CommitmentLevel>,
+        id: Option<u64>,
+    ) -> Self {
+        let params = GetBlocksParams(start, end, commitment.map(|c| c.into()));
+        let base = RequestBase::new(RpcRequest::GetBlocks, id);
+        Self { base, params }
+    }
+
+    #[getter]
+    pub fn start(&self) -> u64 {
+        self.params.0
+    }
+
+    #[getter]
+    pub fn end(&self) -> Option<u64> {
+        self.params.1
+    }
+
+    #[getter]
+    pub fn commitment(&self) -> Option<CommitmentLevel> {
+        self.params.2.map(|c| c.into())
+    }
+}
+
+request_boilerplate!(GetBlocks);
+
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetBlocksWithLimitParams(
+    u64,
+    #[serde(skip_serializing_if = "Option::is_none", default)] Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none", default)] Option<CommitmentConfig>,
+);
+
+/// A ``getBlocksWithLimit`` request.
+///
+/// Args:
+///     start (int): The start slot.
+///     limit (Optional[int]): Maximum number of blocks.
+///     commitment (Optional[CommitmentConfig]): Bank state to query.
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///     >>> from solders.rpc.requests import GetBlocksWithLimit
+///     >>> from solders.commitment_config import CommitmentLevel
+///     >>> GetBlocksWithLimit(123, 5, commitment=CommitmentLevel.Processed).to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"getBlocks","params":[123,5,{"commitment":"processed"}]}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetBlocksWithLimit {
+    #[serde(flatten)]
+    base: RequestBase,
+    params: GetBlocksWithLimitParams,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl GetBlocksWithLimit {
+    #[new]
+    fn new(
+        start: u64,
+        limit: Option<u64>,
+        commitment: Option<CommitmentLevel>,
+        id: Option<u64>,
+    ) -> Self {
+        let params = GetBlocksWithLimitParams(start, limit, commitment.map(|c| c.into()));
+        let base = RequestBase::new(RpcRequest::GetBlocks, id);
+        Self { base, params }
+    }
+
+    #[getter]
+    pub fn start(&self) -> u64 {
+        self.params.0
+    }
+
+    #[getter]
+    pub fn limit(&self) -> Option<u64> {
+        self.params.1
+    }
+
+    #[getter]
+    pub fn commitment(&self) -> Option<CommitmentLevel> {
+        self.params.2.map(|c| c.into())
+    }
+}
+
+request_boilerplate!(GetBlocksWithLimit);
+
 #[serde_as]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct GetSignatureStatusesParams(
@@ -361,8 +621,7 @@ pub struct GetSignatureStatusesParams(
 ///     >>> from solders.signature import Signature
 ///     >>> from solders.rpc.config import RpcSignatureStatusConfig
 ///     >>> config = RpcSignatureStatusConfig(search_transaction_history=True)
-///     >>> req = GetSignatureStatuses([Signature.default()], config)
-///     >>> req.to_json()
+///     >>> GetSignatureStatuses([Signature.default()], config).to_json()
 ///     '{"jsonrpc":"2.0","id":0,"method":"getSignatureStatuses","params":[["1111111111111111111111111111111111111111111111111111111111111111"],{"searchTransactionHistory":true}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
@@ -424,8 +683,7 @@ pub struct RequestAirdropParams(
 ///      >>> from solders.pubkey import Pubkey
 ///      >>> from solders.commitment_config import CommitmentLevel
 ///      >>> config = RpcRequestAirdropConfig(commitment=CommitmentLevel.Confirmed)
-///      >>> req = RequestAirdrop(Pubkey.default(), 1000, config)
-///      >>> req.to_json()
+///      >>> RequestAirdrop(Pubkey.default(), 1000, config).to_json()
 ///      '{"jsonrpc":"2.0","id":0,"method":"requestAirdrop","params":["11111111111111111111111111111111",1000,{"recentBlockhash":null,"commitment":"confirmed"}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
@@ -505,6 +763,11 @@ pub fn create_requests_mod(py: Python<'_>) -> PyResult<&PyModule> {
     requests_mod.add_class::<GetAccountInfo>()?;
     requests_mod.add_class::<GetBalance>()?;
     requests_mod.add_class::<GetBlock>()?;
+    requests_mod.add_class::<GetBlockHeight>()?;
+    requests_mod.add_class::<GetBlockProduction>()?;
+    requests_mod.add_class::<GetBlockCommitment>()?;
+    requests_mod.add_class::<GetBlocks>()?;
+    requests_mod.add_class::<GetBlocksWithLimit>()?;
     requests_mod.add_class::<GetSignatureStatuses>()?;
     requests_mod.add_class::<RequestAirdrop>()?;
     let funcs = [
