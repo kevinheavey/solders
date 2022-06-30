@@ -232,7 +232,15 @@ pub struct RequestAirdropParams(
 ///     id (Optional[int]): Request ID.
 ///
 /// Example:
-///      
+///      >>> from solders.rpc.requests import RequestAirdrop
+///      >>> from solders.rpc.config import RpcRequestAirdropConfig
+///      >>> from solders.pubkey import Pubkey
+///      >>> from solders.commitment_config import CommitmentLevel
+///      >>> config = RpcRequestAirdropConfig(commitment=CommitmentLevel.Confirmed)
+///      >>> req = RequestAirdrop(Pubkey.default(), 1000, config)
+///      >>> req.to_json()
+///      '{"jsonrpc":"2.0","id":0,"method":"requestAirdrop","params":["11111111111111111111111111111111",1000,{"recentBlockhash":null,"commitment":"confirmed"}]}'
+///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct RequestAirdrop {
