@@ -5,6 +5,7 @@ use solana_transaction_status::{
     UiTransactionEncoding as UiTransactionEncodingOriginal,
 };
 
+/// Encoding options for transaction data.
 #[pyclass(module = "solders.transaction_status")]
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub enum UiTransactionEncoding {
@@ -39,13 +40,14 @@ impl From<UiTransactionEncoding> for UiTransactionEncodingOriginal {
     }
 }
 
+/// Levels of transaction detail to return in RPC requests.
 #[derive(Debug, Clone, Copy, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 #[pyclass]
 pub enum TransactionDetails {
     Full,
     Signatures,
-    None,
+    None_,
 }
 
 impl Default for TransactionDetails {
@@ -59,7 +61,7 @@ impl From<TransactionDetailsOriginal> for TransactionDetails {
         match d {
             TransactionDetailsOriginal::Full => Self::Full,
             TransactionDetailsOriginal::Signatures => Self::Signatures,
-            TransactionDetailsOriginal::None => Self::None,
+            TransactionDetailsOriginal::None => Self::None_,
         }
     }
 }
@@ -69,7 +71,14 @@ impl From<TransactionDetails> for TransactionDetailsOriginal {
         match d {
             TransactionDetails::Full => Self::Full,
             TransactionDetails::Signatures => Self::Signatures,
-            TransactionDetails::None => Self::None,
+            TransactionDetails::None_ => Self::None,
         }
     }
+}
+
+pub fn create_transaction_status_mod(py: Python<'_>) -> PyResult<&PyModule> {
+    let m = PyModule::new(py, "transaction_status")?;
+    m.add_class::<TransactionDetails>()?;
+    m.add_class::<UiTransactionEncoding>()?;
+    Ok(m)
 }

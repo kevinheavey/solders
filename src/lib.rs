@@ -25,7 +25,7 @@ use std::{
 };
 use system_program::create_system_program_mod;
 use sysvar::create_sysvar_mod;
-use transaction_status::UiTransactionEncoding;
+use transaction_status::create_transaction_status_mod;
 mod pubkey;
 pub use pubkey::Pubkey;
 mod signer;
@@ -384,8 +384,7 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
     let commitment_config_mod = PyModule::new(py, "commitment_config")?;
     commitment_config_mod.add_class::<CommitmentConfig>()?;
     commitment_config_mod.add_class::<CommitmentLevel>()?;
-    let transaction_status_mod = PyModule::new(py, "transaction_status")?;
-    transaction_status_mod.add_class::<UiTransactionEncoding>()?;
+    let transaction_status_mod = create_transaction_status_mod(py)?;
     let account_decoder_mod = create_account_decoder_mod(py)?;
     let submodules = [
         errors_mod,
