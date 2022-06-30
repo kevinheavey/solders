@@ -349,6 +349,22 @@ pub struct GetSignatureStatusesParams(
     #[serde(skip_serializing_if = "Option::is_none", default)] Option<RpcSignatureStatusConfig>,
 );
 
+/// A ``getSignatureStatuses`` request.
+///
+/// Args:
+///     signatures (Sequence[Signature]): The signatures to query.
+///     config (Optional[RpcSignatureStatusConfig]): Extra configuration.
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///     >>> from solders.rpc.requests import GetSignatureStatuses
+///     >>> from solders.signature import Signature
+///     >>> from solders.rpc.config import RpcSignatureStatusConfig
+///     >>> config = RpcSignatureStatusConfig(search_transaction_history=True)
+///     >>> req = GetSignatureStatuses([Signature.default()], config)
+///     >>> req.to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"getSignatureStatuses","params":[["1111111111111111111111111111111111111111111111111111111111111111"],{"searchTransactionHistory":true}]}'
+///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct GetSignatureStatuses {
