@@ -1489,6 +1489,7 @@ pub fn create_config_mod(py: Python<'_>) -> PyResult<&PyModule> {
     config_mod.add_class::<RpcRequestAirdropConfig>()?;
     config_mod.add_class::<RpcLeaderScheduleConfig>()?;
     config_mod.add_class::<RpcBlockProductionConfigRange>()?;
+    config_mod.add_class::<RpcBlockProductionConfig>()?;
     config_mod.add_class::<RpcGetVoteAccountsConfig>()?;
     config_mod.add_class::<RpcLargestAccountsFilter>()?;
     config_mod.add_class::<RpcSupplyConfig>()?;
