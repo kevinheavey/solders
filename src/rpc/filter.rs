@@ -50,7 +50,7 @@ impl From<MemcmpEncodedBytesOriginal> for MemcmpEncodedBytes {
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 #[enum_original_mapping(MemcmpEncodingOriginal)]
-#[pyclass]
+#[pyclass(module = "solders.rpc.filter")]
 pub enum MemcmpEncoding {
     Binary,
 }
@@ -150,4 +150,11 @@ impl From<RpcFilterTypeOriginal> for RpcFilterType {
             RpcFilterTypeOriginal::Memcmp(mem) => RpcFilterType::Memcmp(mem.into()),
         }
     }
+}
+
+pub fn create_filter_mod(py: Python<'_>) -> PyResult<&PyModule> {
+    let m = PyModule::new(py, "filter")?;
+    m.add_class::<MemcmpEncoding>()?;
+    m.add_class::<Memcmp>()?;
+    Ok(m)
 }
