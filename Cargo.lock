@@ -3358,6 +3358,7 @@ dependencies = [
 name = "solders"
 version = "0.2.0"
 dependencies = [
+ "base64 0.13.0",
  "bincode",
  "borsh",
  "dict_derive",

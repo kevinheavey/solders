@@ -25,6 +25,7 @@ solana-transaction-status = "^1.10.23"
 solders-macros = "^0.4.2"
 solana-account-decoder = "^1.10.25"
 serde_with = "^1.14.0"
+base64 = "0.13.0"
 
 [package.metadata.maturin]
 python-source = "python"

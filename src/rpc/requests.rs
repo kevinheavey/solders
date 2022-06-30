@@ -1,12 +1,14 @@
 #![allow(deprecated)]
 use crate::{
     commitment_config::{CommitmentConfig, CommitmentLevel},
-    py_from_bytes_general_via_bincode, pybytes_general_via_bincode, CommonMethods, Pubkey,
+    py_from_bytes_general_via_bincode, pybytes_general_via_bincode, CommonMethods, Message, Pubkey,
     PyBytesBincode, PyErrWrapper, PyFromBytesBincode, RichcmpEqualityOnly,
 };
 use pyo3::{create_exception, exceptions::PyException, prelude::*};
+extern crate base64;
 use serde::{Deserialize, Serialize};
-use serde_with::{serde_as, DisplayFromStr};
+use serde_with::{serde_as, DisplayFromStr, FromInto};
+use solana_sdk::message::Message as MessageOriginal;
 use solders_macros::{common_methods, richcmp_eq_only, rpc_id_getter};
 
 use crate::Signature;
@@ -486,7 +488,7 @@ pub struct GetBlocksParams(
 /// Args:
 ///     start (int): The start slot.
 ///     end (Optional[int]): The end slot.
-///     commitment (Optional[CommitmentConfig]): Bank state to query.
+///     commitment (Optional[CommitmentLevel]): Bank state to query.
 ///     id (Optional[int]): Request ID.
 ///
 /// Example:
@@ -550,7 +552,7 @@ pub struct GetBlocksWithLimitParams(
 /// Args:
 ///     start (int): The start slot.
 ///     limit (Optional[int]): Maximum number of blocks.
-///     commitment (Optional[CommitmentConfig]): Bank state to query.
+///     commitment (Optional[CommitmentLevel]): Bank state to query.
 ///     id (Optional[int]): Request ID.
 ///
 /// Example:
@@ -601,6 +603,384 @@ impl GetBlocksWithLimit {
 }
 
 request_boilerplate!(GetBlocksWithLimit);
+
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetBlockTimeParams(u64);
+
+/// A ``getBlockTime`` request.
+///
+/// Args:
+///     slot (int): The slot to query.
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///     >>> from solders.rpc.requests import GetBlockTime
+///     >>> GetBlockTime(123).to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"getBlocks","params":[123,5,{"commitment":"processed"}]}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetBlockTime {
+    #[serde(flatten)]
+    base: RequestBase,
+    params: GetBlockTimeParams,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl GetBlockTime {
+    #[new]
+    fn new(slot: u64, id: Option<u64>) -> Self {
+        let params = GetBlockTimeParams(slot);
+        let base = RequestBase::new(RpcRequest::GetBlockTime, id);
+        Self { base, params }
+    }
+
+    #[getter]
+    pub fn slot(&self) -> u64 {
+        self.params.0
+    }
+}
+
+request_boilerplate!(GetBlockTime);
+
+/// A ``getClusterNodes`` request.
+///
+/// Args:
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///     >>> from solders.rpc.requests import GetClusterNodes
+///     >>> GetClusterNodes().to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"getBlocks","params":[123,5,{"commitment":"processed"}]}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetClusterNodes {
+    #[serde(flatten)]
+    base: RequestBase,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl GetClusterNodes {
+    #[new]
+    fn new(id: Option<u64>) -> Self {
+        let base = RequestBase::new(RpcRequest::GetClusterNodes, id);
+        Self { base }
+    }
+}
+
+request_boilerplate!(GetClusterNodes);
+
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetEpochInfoParams(
+    #[serde(skip_serializing_if = "Option::is_none", default)] Option<RpcContextConfig>,
+);
+
+/// A ``getEpochInfo`` request.
+///
+/// Args:
+///     config (Optional[RpcContextConfig]): Extra configuration.
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///     >>> from solders.rpc.requests import GetEpochInfo
+///     >>> from solders.rpc.config import RpcContextConfig
+///     >>> from solders.commitment_config import CommitmentLevel
+///     >>> config = RpcContextConfig(commitment=CommitmentLevel.Processed)
+///     >>> GetEpochInfo(config).to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"getBlocks","params":[123,5,{"commitment":"processed"}]}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetEpochInfo {
+    #[serde(flatten)]
+    base: RequestBase,
+    params: GetEpochInfoParams,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl GetEpochInfo {
+    #[new]
+    fn new(config: Option<RpcContextConfig>, id: Option<u64>) -> Self {
+        let params = GetEpochInfoParams(config);
+        let base = RequestBase::new(RpcRequest::GetEpochInfo, id);
+        Self { base, params }
+    }
+
+    #[getter]
+    pub fn config(&self) -> Option<RpcContextConfig> {
+        self.params.0.clone()
+    }
+}
+
+request_boilerplate!(GetEpochInfo);
+
+/// A ``getEpochSchedule`` request.
+///
+/// Args:
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///     >>> from solders.rpc.requests import GetEpochSchedule
+///     >>> GetEpochSchedule(3).to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"getBlocks","params":[123,5,{"commitment":"processed"}]}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetEpochSchedule {
+    #[serde(flatten)]
+    base: RequestBase,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl GetEpochSchedule {
+    #[new]
+    fn new(id: Option<u64>) -> Self {
+        let base = RequestBase::new(RpcRequest::GetEpochSchedule, id);
+        Self { base }
+    }
+}
+
+request_boilerplate!(GetEpochSchedule);
+
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+struct MessageBase64(pub String);
+
+impl From<Message> for MessageBase64 {
+    fn from(m: Message) -> Self {
+        Self(base64::encode(m.0.serialize()))
+    }
+}
+
+impl From<MessageBase64> for Message {
+    fn from(m: MessageBase64) -> Self {
+        let bytes = base64::decode(&m.0).unwrap();
+        bincode::deserialize::<MessageOriginal>(&bytes)
+            .unwrap()
+            .into()
+    }
+}
+
+#[serde_as]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetFeeForMessageParams(
+    #[serde_as(as = "FromInto<MessageBase64>")] Message,
+    #[serde(skip_serializing_if = "Option::is_none", default)] Option<CommitmentConfig>,
+);
+
+/// A ``getFeeForMessage`` request.
+///
+/// Args:
+///     message (Message): The message for which to calculate the fee.
+///     commitment (Optional[CommitmentLevel]): Bank state to query.
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///     >>> from solders.rpc.requests import GetFeeForMessage
+///     >>> from solders.commitment_config import CommitmentLevel
+///     >>> from solders.message import Message
+///     >>> GetFeeForMessage(Message.default(), commitment=CommitmentLevel.Processed).to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"getBlocks","params":[123,5,{"commitment":"processed"}]}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetFeeForMessage {
+    #[serde(flatten)]
+    base: RequestBase,
+    params: GetFeeForMessageParams,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl GetFeeForMessage {
+    #[new]
+    fn new(message: Message, commitment: Option<CommitmentLevel>, id: Option<u64>) -> Self {
+        let params = GetFeeForMessageParams(message, commitment.map(|c| c.into()));
+        let base = RequestBase::new(RpcRequest::GetFeeForMessage, id);
+        Self { base, params }
+    }
+
+    #[getter]
+    pub fn message(&self) -> Message {
+        self.params.0.clone()
+    }
+
+    #[getter]
+    pub fn commitment(&self) -> Option<CommitmentLevel> {
+        self.params.1.map(|c| c.into())
+    }
+}
+
+request_boilerplate!(GetFeeForMessage);
+
+/// A ``getFirstAvailableBlock`` request.
+///
+/// Args:
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///     >>> from solders.rpc.requests import GetFirstAvailableBlock
+///     >>> GetFirstAvailableBlock(id=123).to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"getBlocks","params":[123,5,{"commitment":"processed"}]}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetFirstAvailableBlock {
+    #[serde(flatten)]
+    base: RequestBase,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl GetFirstAvailableBlock {
+    #[new]
+    fn new(id: Option<u64>) -> Self {
+        let base = RequestBase::new(RpcRequest::GetFirstAvailableBlock, id);
+        Self { base }
+    }
+}
+
+request_boilerplate!(GetFirstAvailableBlock);
+
+/// A ``getGenesisHash`` request.
+///
+/// Args:
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///     >>> from solders.rpc.requests import GetGenesisHash
+///     >>> GetGenesisHash().to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"getBlocks","params":[123,5,{"commitment":"processed"}]}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetGenesisHash {
+    #[serde(flatten)]
+    base: RequestBase,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl GetGenesisHash {
+    #[new]
+    fn new(id: Option<u64>) -> Self {
+        let base = RequestBase::new(RpcRequest::GetGenesisHash, id);
+        Self { base }
+    }
+}
+
+request_boilerplate!(GetGenesisHash);
+
+/// A ``getHealth`` request.
+///
+/// Args:
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///     >>> from solders.rpc.requests import GetHealth
+///     >>> GetHealth().to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"getBlocks","params":[123,5,{"commitment":"processed"}]}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetHealth {
+    #[serde(flatten)]
+    base: RequestBase,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl GetHealth {
+    #[new]
+    fn new(id: Option<u64>) -> Self {
+        let base = RequestBase::new(RpcRequest::GetHealth, id);
+        Self { base }
+    }
+}
+
+request_boilerplate!(GetHealth);
+
+/// A ``getHighestSnapshotSlot`` request.
+///
+/// Args:
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///     >>> from solders.rpc.requests import GetHighestSnapshotSlot
+///     >>> getHighestSnapshotSlot().to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"getBlocks","params":[123,5,{"commitment":"processed"}]}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetHighestSnapshotSlot {
+    #[serde(flatten)]
+    base: RequestBase,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl GetHighestSnapshotSlot {
+    #[new]
+    fn new(id: Option<u64>) -> Self {
+        let base = RequestBase::new(RpcRequest::GetHighestSnapshotSlot, id);
+        Self { base }
+    }
+}
+
+request_boilerplate!(GetHighestSnapshotSlot);
+
+/// A ``getIdentity`` request.
+///
+/// Args:
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///     >>> from solders.rpc.requests import GetIdentity
+///     >>> GetIdentity().to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"getBlocks","params":[123,5,{"commitment":"processed"}]}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetIdentity {
+    #[serde(flatten)]
+    base: RequestBase,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl GetIdentity {
+    #[new]
+    fn new(id: Option<u64>) -> Self {
+        let base = RequestBase::new(RpcRequest::GetIdentity, id);
+        Self { base }
+    }
+}
+
+request_boilerplate!(GetIdentity);
 
 #[serde_as]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]

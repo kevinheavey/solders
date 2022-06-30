@@ -162,7 +162,7 @@ impl CommonMethods<'_> for MessageHeader {}
 ///     >>> blockhash = Hash.default()  # replace with a real blockhash
 ///     >>> tx = Transaction([payer], message, blockhash)
 ///
-pub struct Message(MessageOriginal);
+pub struct Message(pub MessageOriginal);
 
 #[richcmp_eq_only]
 #[common_methods]
