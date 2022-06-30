@@ -66,6 +66,7 @@ pyclass_boilerplate!(
     => RpcSignatureStatusConfig
 );
 
+#[richcmp_eq_only]
 #[common_methods]
 #[pymethods]
 impl RpcSignatureStatusConfig {
@@ -97,6 +98,7 @@ pyclass_boilerplate_with_default!(
     => RpcSendTransactionConfig
 );
 
+#[richcmp_eq_only]
 #[common_methods]
 #[pymethods]
 impl RpcSendTransactionConfig {
@@ -162,6 +164,7 @@ pyclass_boilerplate_with_default!(
     => RpcSimulateTransactionAccountsConfig
 );
 
+#[richcmp_eq_only]
 #[common_methods]
 #[pymethods]
 impl RpcSimulateTransactionAccountsConfig {
@@ -215,6 +218,7 @@ pyclass_boilerplate_with_default!(
     => RpcSimulateTransactionConfig
 );
 
+#[richcmp_eq_only]
 #[common_methods]
 #[pymethods]
 impl RpcSimulateTransactionConfig {
@@ -287,6 +291,7 @@ pyclass_boilerplate_with_default!(
     /// 
 => RpcRequestAirdropConfig);
 
+#[richcmp_eq_only]
 #[common_methods]
 #[pymethods]
 impl RpcRequestAirdropConfig {
@@ -331,6 +336,7 @@ pyclass_boilerplate_with_default!(
     /// 
 => RpcLeaderScheduleConfig);
 
+#[richcmp_eq_only]
 #[common_methods]
 #[pymethods]
 impl RpcLeaderScheduleConfig {
@@ -365,6 +371,7 @@ pyclass_boilerplate_with_default!(
     /// 
 => RpcBlockProductionConfigRange);
 
+#[richcmp_eq_only]
 #[common_methods]
 #[pymethods]
 impl RpcBlockProductionConfigRange {
@@ -408,6 +415,7 @@ impl PartialEq for RpcBlockProductionConfig {
 
 rpc_config_impls!(RpcBlockProductionConfig);
 
+#[richcmp_eq_only]
 #[common_methods]
 #[pymethods]
 impl RpcBlockProductionConfig {
@@ -467,6 +475,7 @@ pyclass_boilerplate_with_default!(
     /// 
     => RpcGetVoteAccountsConfig);
 
+#[richcmp_eq_only]
 #[common_methods]
 #[pymethods]
 impl RpcGetVoteAccountsConfig {
@@ -564,6 +573,7 @@ pyclass_boilerplate_with_default!(
     => RpcLargestAccountsConfig
 );
 
+#[richcmp_eq_only]
 #[common_methods]
 #[pymethods]
 impl RpcLargestAccountsConfig {
@@ -609,6 +619,7 @@ pyclass_boilerplate_with_default!(
     => RpcSupplyConfig
 );
 
+#[richcmp_eq_only]
 #[common_methods]
 #[pymethods]
 impl RpcSupplyConfig {
@@ -655,6 +666,7 @@ pyclass_boilerplate_with_default!(
     => RpcEpochConfig
 );
 
+#[richcmp_eq_only]
 #[common_methods]
 #[pymethods]
 impl RpcEpochConfig {
@@ -709,6 +721,7 @@ pyclass_boilerplate_with_default!(
     => RpcAccountInfoConfig
 );
 
+#[richcmp_eq_only]
 #[common_methods]
 #[pymethods]
 impl RpcAccountInfoConfig {
@@ -769,6 +782,7 @@ pyclass_boilerplate_with_default!(
     => RpcProgramAccountsConfig
 );
 
+#[richcmp_eq_only]
 #[common_methods]
 #[pymethods]
 impl RpcProgramAccountsConfig {
@@ -894,6 +908,7 @@ pyclass_boilerplate!(
     => RpcTransactionLogsConfig
 );
 
+#[richcmp_eq_only]
 #[common_methods]
 #[pymethods]
 impl RpcTransactionLogsConfig {
@@ -1016,6 +1031,7 @@ pyclass_boilerplate_with_default!(
     => RpcSignatureSubscribeConfig
 );
 
+#[richcmp_eq_only]
 #[common_methods]
 #[pymethods]
 impl RpcSignatureSubscribeConfig {
@@ -1140,6 +1156,7 @@ pyclass_boilerplate_with_default!(
     => RpcBlockSubscribeConfig
 );
 
+#[richcmp_eq_only]
 #[common_methods]
 #[pymethods]
 impl RpcBlockSubscribeConfig {
@@ -1210,6 +1227,7 @@ pyclass_boilerplate_with_default!(
     => RpcSignaturesForAddressConfig
 );
 
+#[richcmp_eq_only]
 #[common_methods]
 #[pymethods]
 impl RpcSignaturesForAddressConfig {
@@ -1286,6 +1304,7 @@ pyclass_boilerplate_with_default!(
     => RpcBlockConfig
 );
 
+#[richcmp_eq_only]
 #[common_methods]
 #[pymethods]
 impl RpcBlockConfig {
@@ -1367,6 +1386,7 @@ pyclass_boilerplate_with_default!(
     => RpcTransactionConfig
 );
 
+#[richcmp_eq_only]
 #[common_methods]
 #[pymethods]
 impl RpcTransactionConfig {
@@ -1420,6 +1440,7 @@ pyclass_boilerplate_with_default!(
     => RpcContextConfig
 );
 
+#[richcmp_eq_only]
 #[common_methods]
 #[pymethods]
 impl RpcContextConfig {
