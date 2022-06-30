@@ -187,11 +187,6 @@ impl RpcSimulateTransactionAccountsConfig {
     }
 
     #[getter]
-    pub fn encoding(&self) -> Option<UiAccountEncoding> {
-        self.0.encoding.map(|e| e.into())
-    }
-
-    #[getter]
     pub fn addresses(&self) -> Vec<Pubkey> {
         self.0
             .addresses
@@ -199,6 +194,11 @@ impl RpcSimulateTransactionAccountsConfig {
             .iter()
             .map(|s| Pubkey::from_str(s).unwrap())
             .collect()
+    }
+
+    #[getter]
+    pub fn encoding(&self) -> Option<UiAccountEncoding> {
+        self.0.encoding.map(|e| e.into())
     }
 }
 
