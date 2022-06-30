@@ -8,6 +8,8 @@ Modules:
 .. toctree::
    :maxdepth: 2
 
+   account_decoder
+   commitment_config
    errors
    hash
    instruction
@@ -20,4 +22,5 @@ Modules:
    signature
    system_program
    sysvar
+   transaction_status
    transaction
