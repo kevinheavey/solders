@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use solana_client::rpc_config;
@@ -8,9 +10,10 @@ use solders_macros::{common_methods, richcmp_eq_only};
 use crate::{
     account_decoder::{UiAccountEncoding, UiDataSliceConfig},
     commitment_config::CommitmentLevel,
+    hash::Hash as SolderHash,
     impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
     transaction_status::{TransactionDetails, UiTransactionEncoding},
-    CommonMethods, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly,
+    CommonMethods, Pubkey, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly, Signature,
 };
 
 use super::filter::RpcFilterType;
@@ -155,7 +158,7 @@ pyclass_boilerplate_with_default!(
     ///
     /// Args:
     ///     encoding (Optional[UiAccountEncoding]): Encoding for returned Account data
-    ///     addresses (Sequence[str]): An array of accounts to return, as base-58 encoded strings.
+    ///     addresses (Sequence[Pubkey]): An array of accounts to return.
     => RpcSimulateTransactionAccountsConfig
 );
 
@@ -163,10 +166,10 @@ pyclass_boilerplate_with_default!(
 #[pymethods]
 impl RpcSimulateTransactionAccountsConfig {
     #[new]
-    pub fn new(encoding: Option<UiAccountEncoding>, addresses: Vec<String>) -> Self {
+    pub fn new(encoding: Option<UiAccountEncoding>, addresses: Vec<Pubkey>) -> Self {
         Self(rpc_config::RpcSimulateTransactionAccountsConfig {
             encoding: encoding.map(|x| x.into()),
-            addresses,
+            addresses: addresses.iter().map(|a| a.to_string()).collect(),
         })
     }
 
@@ -186,8 +189,13 @@ impl RpcSimulateTransactionAccountsConfig {
     }
 
     #[getter]
-    pub fn addresses(&self) -> Vec<String> {
-        self.0.addresses.clone()
+    pub fn addresses(&self) -> Vec<Pubkey> {
+        self.0
+            .addresses
+            .clone()
+            .iter()
+            .map(|s| Pubkey::from_str(s).unwrap())
+            .collect()
     }
 }
 
@@ -274,7 +282,7 @@ pyclass_boilerplate_with_default!(
     /// Configuration object for ``requestAirdrop``.
     /// 
     /// Args:
-    ///     recent_blockhash (Optional[str]): The ID of a recent ledger entry.
+    ///     recent_blockhash (Optional[Hash]): The ID of a recent ledger entry.
     ///     commitment (Optional[CommitmentLevel]): Bank state to query.
     /// 
 => RpcRequestAirdropConfig);
@@ -283,9 +291,9 @@ pyclass_boilerplate_with_default!(
 #[pymethods]
 impl RpcRequestAirdropConfig {
     #[new]
-    pub fn new(recent_blockhash: Option<&str>, commitment: Option<CommitmentLevel>) -> Self {
+    pub fn new(recent_blockhash: Option<SolderHash>, commitment: Option<CommitmentLevel>) -> Self {
         Self(rpc_config::RpcRequestAirdropConfig {
-            recent_blockhash: recent_blockhash.map(String::from),
+            recent_blockhash: recent_blockhash.map(|h| h.to_string()),
             commitment: commitment.map(|c| c.into()),
         })
     }
@@ -301,8 +309,11 @@ impl RpcRequestAirdropConfig {
     }
 
     #[getter]
-    pub fn recent_blockhash(&self) -> Option<String> {
-        self.0.recent_blockhash.clone()
+    pub fn recent_blockhash(&self) -> Option<SolderHash> {
+        self.0
+            .recent_blockhash
+            .clone()
+            .map(|s| SolderHash::from_str(&s).unwrap())
     }
 
     #[getter]
@@ -315,7 +326,7 @@ pyclass_boilerplate_with_default!(
     /// Configuration object for ``getLeaderSchedule``.
     /// 
     /// Args:
-    ///     identity (Optional[str]): Validator identity, as a base-58 encoded string
+    ///     identity (Optional[Pubkey]): Validator identity.
     ///     commitment (Optional[CommitmentLevel]): Bank state to query.
     /// 
 => RpcLeaderScheduleConfig);
@@ -324,16 +335,19 @@ pyclass_boilerplate_with_default!(
 #[pymethods]
 impl RpcLeaderScheduleConfig {
     #[new]
-    pub fn new(identity: Option<&str>, commitment: Option<CommitmentLevel>) -> Self {
+    pub fn new(identity: Option<&Pubkey>, commitment: Option<CommitmentLevel>) -> Self {
         Self(rpc_config::RpcLeaderScheduleConfig {
-            identity: identity.map(String::from),
+            identity: identity.map(|p| p.to_string()),
             commitment: commitment.map(|c| c.into()),
         })
     }
 
     #[getter]
-    pub fn identity(&self) -> Option<String> {
-        self.0.identity.clone()
+    pub fn identity(&self) -> Option<Pubkey> {
+        self.0
+            .identity
+            .clone()
+            .map(|s| Pubkey::from_str(&s).unwrap())
     }
 
     #[getter]
@@ -376,7 +390,7 @@ impl RpcBlockProductionConfigRange {
 /// Configuration object for ``getBlockProduction``.
 ///
 /// Args:
-///     identity (Optional[str]): Validator identity, as a base-58 encoded string
+///     identity (Optional[Pubkey]): Validator identity.
 ///     range (Optional[RpcBlockProductionConfigRange]): Slot range to query. Current epoch if ``None``.
 ///     commitment (Optional[CommitmentLevel]): Bank state to query.
 ///
@@ -399,20 +413,23 @@ rpc_config_impls!(RpcBlockProductionConfig);
 impl RpcBlockProductionConfig {
     #[new]
     pub fn new(
-        identity: Option<&str>,
+        identity: Option<&Pubkey>,
         range: Option<RpcBlockProductionConfigRange>,
         commitment: Option<CommitmentLevel>,
     ) -> Self {
         Self(rpc_config::RpcBlockProductionConfig {
-            identity: identity.map(String::from),
+            identity: identity.map(|p| p.to_string()),
             range: range.map(|r| r.into()),
             commitment: commitment.map(|c| c.into()),
         })
     }
 
     #[getter]
-    pub fn identity(&self) -> Option<String> {
-        self.0.identity.clone()
+    pub fn identity(&self) -> Option<Pubkey> {
+        self.0
+            .identity
+            .clone()
+            .map(|s| Pubkey::from_str(&s).unwrap())
     }
 
     #[getter]
@@ -440,7 +457,7 @@ pyclass_boilerplate_with_default!(
     /// Configuration object for ``getVoteAccounts``.
     /// 
     /// Args:
-    ///     vote_pubkey (Optional[str]): Validator vote address, as a base-58 encoded string
+    ///     vote_pubkey (Optional[Pubkey]): Validator vote address.
     ///     commitment (Optional[CommitmentLevel]): Bank state to query.
     ///     keep_unstaked_delinquents (Optional[bool]): Do not filter out delinquent validators with no stake.
     ///     delinquent_slot_distance (Optional[int]): Specify the number of slots behind the tip that a validator
@@ -455,13 +472,13 @@ pyclass_boilerplate_with_default!(
 impl RpcGetVoteAccountsConfig {
     #[new]
     pub fn new(
-        vote_pubkey: Option<&str>,
+        vote_pubkey: Option<&Pubkey>,
         commitment: Option<CommitmentLevel>,
         keep_unstaked_delinquents: Option<bool>,
         delinquent_slot_distance: Option<u64>,
     ) -> Self {
         Self(rpc_config::RpcGetVoteAccountsConfig {
-            vote_pubkey: vote_pubkey.map(String::from),
+            vote_pubkey: vote_pubkey.map(|p| p.to_string()),
             commitment: commitment.map(|c| c.into()),
             keep_unstaked_delinquents,
             delinquent_slot_distance,
@@ -469,8 +486,11 @@ impl RpcGetVoteAccountsConfig {
     }
 
     #[getter]
-    pub fn vote_pubkey(&self) -> Option<String> {
-        self.0.vote_pubkey.clone()
+    pub fn vote_pubkey(&self) -> Option<Pubkey> {
+        self.0
+            .vote_pubkey
+            .clone()
+            .map(|s| Pubkey::from_str(&s).unwrap())
     }
 
     #[getter]
@@ -803,7 +823,7 @@ pub enum RpcTransactionLogsFilter {
 /// ``mentions`` filter for ``logsSubscribe``.
 ///
 /// Args:
-///     pubkey (str): Subscribe to all transactions that mention the provided Pubkey (as base-58 encoded string).
+///     pubkey (Pubkey): Subscribe to all transactions that mention the provided Pubkey.
 ///
 #[derive(Debug, Clone, PartialEq)]
 #[pyclass]
@@ -813,7 +833,7 @@ pub struct RpcTransactionLogsFilterMentions(Vec<String>);
 #[pymethods]
 impl RpcTransactionLogsFilterMentions {
     #[new]
-    pub fn new(pubkey: &str) -> Self {
+    pub fn new(pubkey: &Pubkey) -> Self {
         Self(vec![pubkey.to_string()])
     }
 
@@ -822,8 +842,8 @@ impl RpcTransactionLogsFilterMentions {
     }
 
     #[getter]
-    pub fn pubkey(&self) -> String {
-        self.0[0].clone()
+    pub fn pubkey(&self) -> Pubkey {
+        Pubkey::from_str(&self.0[0]).unwrap()
     }
 }
 
@@ -893,7 +913,7 @@ impl RpcTransactionLogsConfig {
 /// ``mint`` filter for ``getTokenAccountsBy*`` methods.
 ///
 /// Args:
-///     mint (str):  Pubkey of the specific token Mint to limit accounts to, as base-58 encoded string.
+///     mint (Pubkey):  Pubkey of the specific token Mint to limit accounts to.
 ///
 #[derive(Debug, Clone, PartialEq)]
 #[pyclass]
@@ -903,7 +923,7 @@ pub struct RpcTokenAccountsFilterMint(String);
 #[pymethods]
 impl RpcTokenAccountsFilterMint {
     #[new]
-    pub fn new(mint: &str) -> Self {
+    pub fn new(mint: &Pubkey) -> Self {
         Self(mint.to_string())
     }
 
@@ -912,8 +932,8 @@ impl RpcTokenAccountsFilterMint {
     }
 
     #[getter]
-    pub fn mint(&self) -> String {
-        self.0.clone()
+    pub fn mint(&self) -> Pubkey {
+        Pubkey::from_str(&self.0).unwrap()
     }
 }
 
@@ -922,7 +942,7 @@ impl RichcmpEqualityOnly for RpcTokenAccountsFilterMint {}
 /// ``programId`` filter for ``getTokenAccountsBy*`` methods.
 ///
 /// Args:
-///     program_id (str):   Pubkey of the Token program that owns the accounts, as base-58 encoded string.
+///     program_id (Pubkey):   Pubkey of the Token program that owns the accounts.
 ///
 #[derive(Debug, Clone, PartialEq)]
 #[pyclass]
@@ -932,7 +952,7 @@ pub struct RpcTokenAccountsFilterProgramId(String);
 #[pymethods]
 impl RpcTokenAccountsFilterProgramId {
     #[new]
-    pub fn new(program_id: &str) -> Self {
+    pub fn new(program_id: &Pubkey) -> Self {
         Self(program_id.to_string())
     }
 
@@ -941,8 +961,8 @@ impl RpcTokenAccountsFilterProgramId {
     }
 
     #[getter]
-    pub fn program_id(&self) -> String {
-        self.0.clone()
+    pub fn program_id(&self) -> Pubkey {
+        Pubkey::from_str(&self.0).unwrap()
     }
 }
 
@@ -1044,7 +1064,7 @@ pub enum RpcBlockSubscribeFilter {
 /// ``mentions`` filter for ``blockSubscribe``.
 ///
 /// Args:
-///     pubkey (str): Return only transactions that mention the provided public key (as base-58 encoded string)
+///     pubkey (Pubkey): Return only transactions that mention the provided pubkey.
 ///
 #[derive(Debug, Clone, PartialEq)]
 #[pyclass]
@@ -1054,7 +1074,7 @@ pub struct RpcBlockSubscribeFilterMentions(String);
 #[pymethods]
 impl RpcBlockSubscribeFilterMentions {
     #[new]
-    pub fn new(pubkey: &str) -> Self {
+    pub fn new(pubkey: &Pubkey) -> Self {
         Self(pubkey.to_string())
     }
 
@@ -1063,8 +1083,8 @@ impl RpcBlockSubscribeFilterMentions {
     }
 
     #[getter]
-    pub fn pubkey(&self) -> String {
-        self.0.clone()
+    pub fn pubkey(&self) -> Pubkey {
+        Pubkey::from_str(&self.0).unwrap()
     }
 }
 
@@ -1181,8 +1201,8 @@ pyclass_boilerplate_with_default!(
     /// Configuration object for ``getSignaturesForAddress``.
     ///
     /// Args:
-    ///     before (Optional[str]): Start searching backwards from this transaction signature (base58-encoded).
-    ///     until (Optional[str]): Search until this transaction signature (base58-encoded).
+    ///     before (Optional[Signature]): Start searching backwards from this transaction signature.
+    ///     until (Optional[Signature]): Search until this transaction signature.
     ///     limit (Optional[int]): Maximum transaction signatures to return (between 1 and 1,000, default: 1,000).
     ///     commitment (Optional[CommitmentLevel]): Bank state to query.
     ///     min_context_slot (Optional[int]): The minimum slot that the request can be evaluated at.
@@ -1195,15 +1215,15 @@ pyclass_boilerplate_with_default!(
 impl RpcSignaturesForAddressConfig {
     #[new]
     fn new(
-        before: Option<String>,
-        until: Option<String>,
+        before: Option<&Signature>,
+        until: Option<&Signature>,
         limit: Option<usize>,
         commitment: Option<CommitmentLevel>,
         min_context_slot: Option<u64>,
     ) -> Self {
         rpc_config::RpcSignaturesForAddressConfig {
-            before,
-            until,
+            before: before.map(|sig| sig.to_string()),
+            until: until.map(|sig| sig.to_string()),
             limit,
             commitment: commitment.map(|c| c.into()),
             min_context_slot,
@@ -1212,13 +1232,19 @@ impl RpcSignaturesForAddressConfig {
     }
 
     #[getter]
-    pub fn before(&self) -> Option<String> {
-        self.0.before.clone()
+    pub fn before(&self) -> Option<Signature> {
+        self.0
+            .before
+            .clone()
+            .map(|s| Signature::from_str(&s).unwrap())
     }
 
     #[getter]
-    pub fn until(&self) -> Option<String> {
-        self.0.until.clone()
+    pub fn until(&self) -> Option<Signature> {
+        self.0
+            .until
+            .clone()
+            .map(|s| Signature::from_str(&s).unwrap())
     }
 
     #[getter]
