@@ -3,11 +3,21 @@ use serde::{Deserialize, Serialize};
 use solana_account_decoder::{
     UiAccountEncoding as UiAccountEncodingOriginal, UiDataSliceConfig as UiDataSliceConfigOriginal,
 };
+use solders_macros::richcmp_eq_only;
 
+use crate::RichcmpEqualityOnly;
+
+/// COnfiguration object for limiting returned account data.
+///
+/// Args:
+///     offset (int): Skip this many bytes at the beginning of the data.
+///     length (int): Return only this many bytes.
+///
 #[pyclass(module = "solders.account_decoder")]
 #[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub struct UiDataSliceConfig(UiDataSliceConfigOriginal);
 
+#[richcmp_eq_only]
 #[pymethods]
 impl UiDataSliceConfig {
     #[new]
@@ -24,6 +34,10 @@ impl UiDataSliceConfig {
     pub fn length(&self) -> usize {
         self.0.length
     }
+
+    pub fn __repr__(&self) -> String {
+        format!("{:#?}", self)
+    }
 }
 
 impl From<UiDataSliceConfigOriginal> for UiDataSliceConfig {
@@ -38,6 +52,9 @@ impl From<UiDataSliceConfig> for UiDataSliceConfigOriginal {
     }
 }
 
+impl RichcmpEqualityOnly for UiDataSliceConfig {}
+
+/// Encoding options for account data.
 #[pyclass(module = "solders.account_decoder")]
 #[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum UiAccountEncoding {
