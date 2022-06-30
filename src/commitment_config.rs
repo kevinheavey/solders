@@ -41,12 +41,25 @@ pub enum CommitmentLevel {
     Finalized,
 }
 
+impl Default for CommitmentLevel {
+    fn default() -> Self {
+        CommitmentLevelOriginal::default().into()
+    }
+}
+
 #[pymethods]
 impl CommitmentLevel {
     #[staticmethod]
     #[pyo3(name = "from_string")]
     pub fn new_from_str(s: &str) -> PyResult<Self> {
         handle_py_err(CommitmentLevelOriginal::from_str(s))
+    }
+
+    /// Create a new default instance.
+    #[staticmethod]
+    #[pyo3(name = "default")]
+    pub fn new_default() -> Self {
+        Self::default()
     }
 }
 
@@ -77,6 +90,9 @@ impl From<CommitmentLevel> for CommitmentLevelOriginal {
 }
 
 /// Wrapper object for ``CommitmentLevel``.
+///
+/// Args:
+///     commitment (CommitmentLevel): Bank state to query.
 #[pyclass(module = "solders.commitment_config", subclass)]
 #[derive(Serialize, Deserialize, Default, Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub struct CommitmentConfig(CommitmentConfigOriginal);
@@ -96,41 +112,49 @@ impl CommitmentConfig {
         self.0.commitment.into()
     }
 
+    /// Create from a string.
     #[staticmethod]
     #[pyo3(name = "from_string")]
     pub fn new_from_str(s: &str) -> PyResult<Self> {
         handle_py_err(CommitmentConfigOriginal::from_str(s))
     }
 
+    /// Create a new instance with ``processed`` commitment.
     #[staticmethod]
     pub fn processed() -> Self {
         CommitmentConfigOriginal::processed().into()
     }
 
+    /// Create a new instance with ``confirmed`` commitment.
     #[staticmethod]
     pub fn confirmed() -> Self {
         CommitmentConfigOriginal::confirmed().into()
     }
 
+    /// Create a new instance with ``finalized`` commitment.
     #[staticmethod]
     pub fn finalized() -> Self {
         CommitmentConfigOriginal::finalized().into()
     }
 
+    /// Create a new default instance.
     #[staticmethod]
     #[pyo3(name = "default")]
     pub fn new_default() -> Self {
         Self::default()
     }
 
+    /// Check if using ``finalized`` commitment.
     pub fn is_finalized(&self) -> bool {
         self.0.is_finalized()
     }
 
+    /// Check if using ``confirmed`` commitment.
     pub fn is_confirmed(&self) -> bool {
         self.0.is_confirmed()
     }
 
+    /// Check if using at least ``confirmed`` commitment.
     pub fn is_at_least_confirmed(&self) -> bool {
         self.0.is_at_least_confirmed()
     }
