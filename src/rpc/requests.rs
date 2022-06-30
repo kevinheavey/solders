@@ -223,6 +223,16 @@ pub struct RequestAirdropParams(
     #[serde(skip_serializing_if = "Option::is_none", default)] Option<RpcRequestAirdropConfig>,
 );
 
+/// A ``requestAirdrop`` request.
+///
+/// Args:
+///     pubkey (Pubkey): Pubkey of account to receive lamports.
+///     lamports (int): How many lamports to airdrop.
+///     config (Optional[RpcRequestAirdropConfig]): Extra configuration.
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///      
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct RequestAirdrop {
