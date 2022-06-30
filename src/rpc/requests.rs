@@ -1,3 +1,4 @@
+#![allow(deprecated)]
 use crate::{
     py_from_bytes_general_via_bincode, pybytes_general_via_bincode, CommonMethods, Pubkey,
     PyBytesBincode, PyErrWrapper, PyFromBytesBincode, RichcmpEqualityOnly,
@@ -5,7 +6,8 @@ use crate::{
 use pyo3::{create_exception, exceptions::PyException, prelude::*};
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, DisplayFromStr};
-use solders_macros::{common_methods, richcmp_eq_only, rpc_id_getter};
+use solana_client::rpc_request::RpcRequest as RpcRequestOriginal;
+use solders_macros::{common_methods, enum_original_mapping, richcmp_eq_only, rpc_id_getter};
 
 use crate::Signature;
 
@@ -24,15 +26,122 @@ impl From<serde_json::Error> for PyErrWrapper {
     }
 }
 
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+#[enum_original_mapping(RpcRequestOriginal)]
+#[pyclass]
+pub enum RpcRequest {
+    DeregisterNode,
+    GetAccountInfo,
+    GetBalance,
+    GetBlock,
+    GetBlockHeight,
+    GetBlockProduction,
+    GetBlocks,
+    GetBlocksWithLimit,
+    GetBlockTime,
+    GetClusterNodes,
+    #[deprecated(since = "1.7.0", note = "Please use RpcRequest::GetBlock instead")]
+    GetConfirmedBlock,
+    #[deprecated(since = "1.7.0", note = "Please use RpcRequest::GetBlocks instead")]
+    GetConfirmedBlocks,
+    #[deprecated(
+        since = "1.7.0",
+        note = "Please use RpcRequest::GetBlocksWithLimit instead"
+    )]
+    GetConfirmedBlocksWithLimit,
+    #[deprecated(
+        since = "1.7.0",
+        note = "Please use RpcRequest::GetSignaturesForAddress instead"
+    )]
+    GetConfirmedSignaturesForAddress2,
+    #[deprecated(
+        since = "1.7.0",
+        note = "Please use RpcRequest::GetTransaction instead"
+    )]
+    GetConfirmedTransaction,
+    GetEpochInfo,
+    GetEpochSchedule,
+    #[deprecated(
+        since = "1.9.0",
+        note = "Please use RpcRequest::GetFeeForMessage instead"
+    )]
+    GetFeeCalculatorForBlockhash,
+    GetFeeForMessage,
+    #[deprecated(
+        since = "1.9.0",
+        note = "Please do not use, will no longer be available in the future"
+    )]
+    GetFeeRateGovernor,
+    #[deprecated(
+        since = "1.9.0",
+        note = "Please use RpcRequest::GetFeeForMessage instead"
+    )]
+    GetFees,
+    GetFirstAvailableBlock,
+    GetGenesisHash,
+    GetHealth,
+    GetIdentity,
+    GetInflationGovernor,
+    GetInflationRate,
+    GetInflationReward,
+    GetLargestAccounts,
+    GetLatestBlockhash,
+    GetLeaderSchedule,
+    GetMaxRetransmitSlot,
+    GetMaxShredInsertSlot,
+    GetMinimumBalanceForRentExemption,
+    GetMultipleAccounts,
+    GetProgramAccounts,
+    #[deprecated(
+        since = "1.9.0",
+        note = "Please use RpcRequest::GetLatestBlockhash instead"
+    )]
+    GetRecentBlockhash,
+    GetRecentPerformanceSamples,
+    GetHighestSnapshotSlot,
+    #[deprecated(
+        since = "1.9.0",
+        note = "Please use RpcRequest::GetHighestSnapshotSlot instead"
+    )]
+    GetSnapshotSlot,
+    GetSignaturesForAddress,
+    GetSignatureStatuses,
+    GetSlot,
+    GetSlotLeader,
+    GetSlotLeaders,
+    GetStorageTurn,
+    GetStorageTurnRate,
+    GetSlotsPerSegment,
+    GetStakeActivation,
+    GetStoragePubkeysForSlot,
+    GetSupply,
+    GetTokenAccountBalance,
+    GetTokenAccountsByDelegate,
+    GetTokenAccountsByOwner,
+    GetTokenSupply,
+    GetTransaction,
+    GetTransactionCount,
+    GetVersion,
+    GetVoteAccounts,
+    IsBlockhashValid,
+    MinimumLedgerSlot,
+    RegisterNode,
+    RequestAirdrop,
+    SendTransaction,
+    SimulateTransaction,
+    SignVote,
+}
+
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 struct RequestBase {
     jsonrpc: String,
     id: u64,
-    method: String,
+    method: RpcRequest,
 }
 
 impl RequestBase {
-    fn new(method: String, id: Option<u64>) -> Self {
+    fn new(method: RpcRequest, id: Option<u64>) -> Self {
         Self {
             jsonrpc: "2.0".into(),
             id: id.unwrap_or(0),
@@ -69,8 +178,7 @@ impl GetSignatureStatuses {
         id: Option<u64>,
     ) -> Self {
         let params = GetSignatureStatusesParams(signatures, config);
-        let method = "getSignatureStatuses".to_owned();
-        let base = RequestBase::new(method, id);
+        let base = RequestBase::new(RpcRequest::GetSignatureStatuses, id);
         Self { base, params }
     }
 
@@ -136,8 +244,7 @@ impl RequestAirdrop {
         id: Option<u64>,
     ) -> Self {
         let params = RequestAirdropParams(pubkey, lamports, config);
-        let method = "requestAirdrop".to_owned();
-        let base = RequestBase::new(method, id);
+        let base = RequestBase::new(RpcRequest::RequestAirdrop, id);
         Self { base, params }
     }
 
