@@ -775,8 +775,8 @@ pyclass_boilerplate_with_default!(
     /// Configuration object for ``getProgramAccounts``.
     ///
     /// Args:
-    ///     filters (Optional[Sequence[int | Memcmp]]): Filter results using various filter objects; account must meet all filter criteria to be included in results.
     ///     account_config (RpcAccountInfoConfig): Account info config.
+    ///     filters (Optional[Sequence[int | Memcmp]]): Filter results using various filter objects; account must meet all filter criteria to be included in results.
     ///     with_context (Optional[bool]): Wrap the result in an RpcResponse JSON object.
     ///
     => RpcProgramAccountsConfig
