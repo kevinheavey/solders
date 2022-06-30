@@ -7,7 +7,7 @@ use solders_macros::{common_methods, richcmp_eq_only};
 
 use crate::{
     account_decoder::{UiAccountEncoding, UiDataSliceConfig},
-    commitment_config::{CommitmentConfig, CommitmentLevel},
+    commitment_config::CommitmentLevel,
     impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
     transaction_status::{TransactionDetails, UiTransactionEncoding},
     CommonMethods, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly,
