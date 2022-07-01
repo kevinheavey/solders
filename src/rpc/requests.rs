@@ -549,7 +549,7 @@ pub struct GetBlocksWithLimitParams(
 ///     >>> from solders.rpc.requests import GetBlocksWithLimit
 ///     >>> from solders.commitment_config import CommitmentLevel
 ///     >>> GetBlocksWithLimit(123, 5, commitment=CommitmentLevel.Processed).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getBlocks","params":[123,5,{"commitment":"processed"}]}'
+///     '{"jsonrpc":"2.0","id":0,"method":"getBlocksWithLimit","params":[123,5,{"commitment":"processed"}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -572,7 +572,7 @@ impl GetBlocksWithLimit {
         id: Option<u64>,
     ) -> Self {
         let params = GetBlocksWithLimitParams(start, limit, commitment.map(|c| c.into()));
-        let base = RequestBase::new(RpcRequest::GetBlocks, id);
+        let base = RequestBase::new(RpcRequest::GetBlocksWithLimit, id);
         Self { base, params }
     }
 
@@ -603,7 +603,7 @@ request_boilerplate!(GetBlocksWithLimit);
 /// Example:
 ///     >>> from solders.rpc.requests import GetBlockTime
 ///     >>> GetBlockTime(123).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getBlocks","params":[123,5,{"commitment":"processed"}]}'
+///     '{"jsonrpc":"2.0","id":0,"method":"getBlockTime","params":[123]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -641,7 +641,7 @@ request_boilerplate!(GetBlockTime);
 /// Example:
 ///     >>> from solders.rpc.requests import GetClusterNodes
 ///     >>> GetClusterNodes().to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getBlocks","params":[123,5,{"commitment":"processed"}]}'
+///     '{"jsonrpc":"2.0","id":0,"method":"getClusterNodes"}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -676,7 +676,7 @@ request_boilerplate!(GetClusterNodes);
 ///     >>> from solders.commitment_config import CommitmentLevel
 ///     >>> config = RpcContextConfig(commitment=CommitmentLevel.Processed)
 ///     >>> GetEpochInfo(config).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getBlocks","params":[123,5,{"commitment":"processed"}]}'
+///     '{"jsonrpc":"2.0","id":0,"method":"getEpochInfo","params":[{"commitment":"processed","minContextSlot":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -715,7 +715,7 @@ request_boilerplate!(GetEpochInfo);
 /// Example:
 ///     >>> from solders.rpc.requests import GetEpochSchedule
 ///     >>> GetEpochSchedule(3).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getBlocks","params":[123,5,{"commitment":"processed"}]}'
+///     '{"jsonrpc":"2.0","id":3,"method":"getEpochSchedule"}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -775,7 +775,7 @@ pub struct GetFeeForMessageParams(
 ///     >>> from solders.commitment_config import CommitmentLevel
 ///     >>> from solders.message import Message
 ///     >>> GetFeeForMessage(Message.default(), commitment=CommitmentLevel.Processed).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getBlocks","params":[123,5,{"commitment":"processed"}]}'
+///     '{"jsonrpc":"2.0","id":0,"method":"getFeeForMessage","params":["AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",{"commitment":"processed"}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -818,7 +818,7 @@ request_boilerplate!(GetFeeForMessage);
 /// Example:
 ///     >>> from solders.rpc.requests import GetFirstAvailableBlock
 ///     >>> GetFirstAvailableBlock(id=123).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getBlocks","params":[123,5,{"commitment":"processed"}]}'
+///     '{"jsonrpc":"2.0","id":123,"method":"getFirstAvailableBlock"}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -849,7 +849,7 @@ request_boilerplate!(GetFirstAvailableBlock);
 /// Example:
 ///     >>> from solders.rpc.requests import GetGenesisHash
 ///     >>> GetGenesisHash().to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getBlocks","params":[123,5,{"commitment":"processed"}]}'
+///     '{"jsonrpc":"2.0","id":0,"method":"getGenesisHash"}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -880,7 +880,7 @@ request_boilerplate!(GetGenesisHash);
 /// Example:
 ///     >>> from solders.rpc.requests import GetHealth
 ///     >>> GetHealth().to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getBlocks","params":[123,5,{"commitment":"processed"}]}'
+///     '{"jsonrpc":"2.0","id":0,"method":"getHealth"}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -910,8 +910,8 @@ request_boilerplate!(GetHealth);
 ///
 /// Example:
 ///     >>> from solders.rpc.requests import GetHighestSnapshotSlot
-///     >>> getHighestSnapshotSlot().to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getBlocks","params":[123,5,{"commitment":"processed"}]}'
+///     >>> GetHighestSnapshotSlot().to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"getHighestSnapshotSlot"}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -942,7 +942,7 @@ request_boilerplate!(GetHighestSnapshotSlot);
 /// Example:
 ///     >>> from solders.rpc.requests import GetIdentity
 ///     >>> GetIdentity().to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getBlocks","params":[123,5,{"commitment":"processed"}]}'
+///     '{"jsonrpc":"2.0","id":0,"method":"getIdentity"}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -974,8 +974,8 @@ request_boilerplate!(GetIdentity);
 /// Example:
 ///     >>> from solders.rpc.requests import GetInflationGovernor
 ///     >>> from solders.commitment_config import CommitmentLevel
-///     >>> GetEpochInfo(CommitmentLevel.Finalized).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getBlocks","params":[123,5,{"commitment":"processed"}]}'
+///     >>> GetInflationGovernor(CommitmentLevel.Finalized).to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"getInflationGovernor","params":[{"commitment":"finalized"}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -1014,7 +1014,7 @@ request_boilerplate!(GetInflationGovernor);
 /// Example:
 ///     >>> from solders.rpc.requests import GetInflationRate
 ///     >>> GetInflationRate(id=123).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getBlocks","params":[123,5,{"commitment":"processed"}]}'
+///     '{"jsonrpc":"2.0","id":123,"method":"getInflationRate"}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -1054,9 +1054,11 @@ pub struct GetInflationRewardParams(
 /// Example:
 ///     >>> from solders.rpc.requests import GetInflationReward
 ///     >>> from solders.rpc.config import RpcEpochConfig
+///     >>> from solders.pubkey import Pubkey
 ///     >>> config = RpcEpochConfig(epoch=1234)
-///     >>> GetInflationReward(config).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getBlocks","params":[123,5,{"commitment":"processed"}]}'
+///     >>> addresses = [Pubkey.default(), Pubkey.default()]
+///     >>> GetInflationReward(addresses, config).to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"getInflationReward","params":[["11111111111111111111111111111111","11111111111111111111111111111111"],{"epoch":1234,"minContextSlot":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -1109,8 +1111,8 @@ pub struct GetLargestAccountsParams(
 ///     >>> from solders.commitment_config import CommitmentLevel
 ///     >>> commitment = CommitmentLevel.Processed
 ///     >>> filter_ = RpcLargestAccountsFilter.Circulating
-///     >>> GetLargestAccounts(commitment=commitment. filter=filter_).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getBlocks","params":[123,5,{"commitment":"processed"}]}'
+///     >>> GetLargestAccounts(commitment=commitment, filter=filter_).to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"getLargestAccounts","params":[{"commitment":"processed"},"circulating"]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -1172,7 +1174,7 @@ request_boilerplate!(GetLargestAccounts);
 ///     >>> from solders.commitment_config import CommitmentLevel
 ///     >>> config = RpcContextConfig(commitment=CommitmentLevel.Processed)
 ///     >>> GetLatestBlockhash(config).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getBlocks","params":[123,5,{"commitment":"processed"}]}'
+///     '{"jsonrpc":"2.0","id":0,"method":"getLatestBlockhash","params":[{"commitment":"processed","minContextSlot":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -1221,8 +1223,8 @@ pub struct GetLeaderScheduleParams(
 ///     >>> from solders.rpc.config import RpcLeaderScheduleConfig
 ///     >>> from solders.pubkey import Pubkey
 ///     >>> config = RpcLeaderScheduleConfig(identity=Pubkey.default())
-///     >>> GetLeaderSchedule(config).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getBlocks","params":[123,5,{"commitment":"processed"}]}'
+///     >>> GetLeaderSchedule(123, config).to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"getLeaderSchedule","params":[123,{"identity":"11111111111111111111111111111111"}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -1270,7 +1272,7 @@ request_boilerplate!(GetLeaderSchedule);
 /// Example:
 ///     >>> from solders.rpc.requests import GetMaxRetransmitSlot
 ///     >>> GetMaxRetransmitSlot().to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getBlocks","params":[123,5,{"commitment":"processed"}]}'
+///     '{"jsonrpc":"2.0","id":0,"method":"getMaxRetransmitSlot"}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -1301,7 +1303,7 @@ request_boilerplate!(GetMaxRetransmitSlot);
 /// Example:
 ///     >>> from solders.rpc.requests import GetMaxShredInsertSlot
 ///     >>> GetMaxShredInsertSlot().to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getBlocks","params":[123,5,{"commitment":"processed"}]}'
+///     '{"jsonrpc":"2.0","id":0,"method":"getMaxShredInsertSlot"}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -1340,7 +1342,7 @@ pub struct GetMinimumBalanceForRentExemptionParams(
 /// Example:
 ///     >>> from solders.rpc.requests import GetMinimumBalanceForRentExemption
 ///     >>> GetMinimumBalanceForRentExemption(50).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getBlocks","params":[123,5,{"commitment":"processed"}]}'
+///     '{"jsonrpc":"2.0","id":0,"method":"getMinimumBalanceForRentExemption","params":[50]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -1400,7 +1402,7 @@ pub struct GetMultipleAccountsParams(
 ///     >>> config = RpcAccountInfoConfig(encoding=encoding, data_slice=data_slice)
 ///     >>> accounts = [Pubkey.default(), Pubkey.default()]
 ///     >>> GetMultipleAccounts(accounts, config).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getBlocks","params":[123,5,{"commitment":"processed"}]}'
+///     '{"jsonrpc":"2.0","id":0,"method":"getMultipleAccounts","params":[["11111111111111111111111111111111","11111111111111111111111111111111"],{"encoding":"base64+zstd","dataSlice":{"offset":10,"length":8},"minContextSlot":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -1613,6 +1615,7 @@ pub fn create_requests_mod(py: Python<'_>) -> PyResult<&PyModule> {
     requests_mod.add_class::<GetIdentity>()?;
     requests_mod.add_class::<GetInflationGovernor>()?;
     requests_mod.add_class::<GetInflationRate>()?;
+    requests_mod.add_class::<GetInflationReward>()?;
     requests_mod.add_class::<GetLargestAccounts>()?;
     requests_mod.add_class::<GetLatestBlockhash>()?;
     requests_mod.add_class::<GetLeaderSchedule>()?;
