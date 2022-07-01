@@ -15,8 +15,8 @@ use crate::Signature;
 
 use super::config::{
     RpcAccountInfoConfig, RpcBlockConfig, RpcBlockProductionConfig, RpcContextConfig,
-    RpcEpochConfig, RpcLargestAccountsFilter, RpcLeaderScheduleConfig, RpcRequestAirdropConfig,
-    RpcSignatureStatusConfig,
+    RpcEpochConfig, RpcLargestAccountsFilter, RpcLeaderScheduleConfig, RpcProgramAccountsConfig,
+    RpcRequestAirdropConfig, RpcSignatureStatusConfig, RpcSignaturesForAddressConfig,
 };
 
 create_exception!(
@@ -1471,6 +1471,167 @@ request_boilerplate!(GetMultipleAccounts);
 
 #[serde_as]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetProgramAccountsParams(
+    #[serde_as(as = "DisplayFromStr")] Pubkey,
+    #[serde(skip_serializing_if = "Option::is_none")] Option<RpcProgramAccountsConfig>,
+);
+
+/// A ``getProgramAccounts`` request.
+///
+/// Args:
+///     program (Pubkey): The program that owns the accounts
+///     config (Optional[RpcProgramAccountsConfig]): Extra configuration.
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///     >>> from solders.rpc.requests import GetProgramAccounts
+///     >>> from solders.rpc.config import RpcProgramAccountsConfig, RpcAccountInfoConfig
+///     >>> from solders.rpc.filter import Memcmp
+///     >>> from solders.pubkey import Pubkey
+///     >>> acc_info_config = RpcAccountInfoConfig.default()
+///     >>> filters = [10, Memcmp(offset=10, bytes_=b"123")]
+///     >>> config = RpcProgramAccountsConfig(acc_info_config, filters)
+///     >>> GetProgramAccounts(Pubkey.default(), config).to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"getProgramAccounts","params":["11111111111111111111111111111111",{"filters":[{"dataSize":10},{"memcmp":{"offset":10,"bytes":[49,50,51],"encoding":null}}],"encoding":null,"dataSlice":null,"minContextSlot":null,"withContext":null}]}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetProgramAccounts {
+    #[serde(flatten)]
+    base: RequestBase,
+    params: GetProgramAccountsParams,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl GetProgramAccounts {
+    #[new]
+    fn new(program: Pubkey, config: Option<RpcProgramAccountsConfig>, id: Option<u64>) -> Self {
+        let params = GetProgramAccountsParams(program, config);
+        let base = RequestBase::new(RpcRequest::GetProgramAccounts, id);
+        Self { base, params }
+    }
+
+    /// Pubkey: The program that owns the accounts
+    #[getter]
+    pub fn program(&self) -> Pubkey {
+        self.params.0
+    }
+
+    /// Optional[RpcProgramAccountsConfig]: Extra configuration.
+    #[getter]
+    pub fn config(&self) -> Option<RpcProgramAccountsConfig> {
+        self.params.1.clone()
+    }
+}
+
+request_boilerplate!(GetProgramAccounts);
+
+/// A ``getRecentPerformanceSamples`` request.
+///
+/// Args:
+///     limit (int): Number of samples to return (maximum 720).
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///     >>> from solders.rpc.requests import GetRecentPerformanceSamples
+///     >>> GetRecentPerformanceSamples(5).to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"getRecentPerformanceSamples","params":[5]}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetRecentPerformanceSamples {
+    #[serde(flatten)]
+    base: RequestBase,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    params: Option<(usize,)>,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl GetRecentPerformanceSamples {
+    #[new]
+    fn new(limit: Option<usize>, id: Option<u64>) -> Self {
+        let params = limit.map(|x| (x,));
+        let base = RequestBase::new(RpcRequest::GetRecentPerformanceSamples, id);
+        Self { base, params }
+    }
+
+    /// int: Number of samples to return.
+    #[getter]
+    pub fn limit(&self) -> Option<usize> {
+        self.params.map(|x| x.0)
+    }
+}
+
+request_boilerplate!(GetRecentPerformanceSamples);
+
+#[serde_as]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetSignaturesForAddressParams(
+    #[serde_as(as = "DisplayFromStr")] Pubkey,
+    #[serde(skip_serializing_if = "Option::is_none")] Option<RpcSignaturesForAddressConfig>,
+);
+
+/// A ``getSignaturesForAddress`` request.
+///
+/// Args:
+///     address (Pubkey): The address by which to filter transactions.
+///     config (Optional[RpcSignaturesForAddressConfig]): Extra configuration.
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///     >>> from solders.rpc.requests import GetSignaturesForAddress
+///     >>> from solders.rpc.config import RpcSignaturesForAddressConfig
+///     >>> config = RpcSignaturesForAddressConfig(limit=10)
+///     >>> GetSignaturesForAddress(Pubkey.default(), config).to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"getSignaturesForAddress","params":["11111111111111111111111111111111",{"before":null,"until":null,"limit":10,"minContextSlot":null}]}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetSignaturesForAddress {
+    #[serde(flatten)]
+    base: RequestBase,
+    params: GetSignaturesForAddressParams,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl GetSignaturesForAddress {
+    #[new]
+    fn new(
+        address: Pubkey,
+        config: Option<RpcSignaturesForAddressConfig>,
+        id: Option<u64>,
+    ) -> Self {
+        let params = GetSignaturesForAddressParams(address, config);
+        let base = RequestBase::new(RpcRequest::GetSignaturesForAddress, id);
+        Self { base, params }
+    }
+
+    /// Pubkey: The address by which to filter transactions.
+    #[getter]
+    pub fn address(&self) -> Pubkey {
+        self.params.0
+    }
+
+    /// Optional[RpcSignaturesForAddressConfig]: Extra configuration
+    #[getter]
+    pub fn config(&self) -> Option<RpcSignaturesForAddressConfig> {
+        self.params.1.clone()
+    }
+}
+
+request_boilerplate!(GetSignaturesForAddress);
+
+#[serde_as]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct GetSignatureStatusesParams(
     #[serde_as(as = "Vec<DisplayFromStr>")] Vec<Signature>,
     #[serde(skip_serializing_if = "Option::is_none")] Option<RpcSignatureStatusConfig>,
@@ -1660,6 +1821,9 @@ pub fn create_requests_mod(py: Python<'_>) -> PyResult<&PyModule> {
     requests_mod.add_class::<GetMaxShredInsertSlot>()?;
     requests_mod.add_class::<GetMinimumBalanceForRentExemption>()?;
     requests_mod.add_class::<GetMultipleAccounts>()?;
+    requests_mod.add_class::<GetProgramAccounts>()?;
+    requests_mod.add_class::<GetRecentPerformanceSamples>()?;
+    requests_mod.add_class::<GetSignaturesForAddress>()?;
     requests_mod.add_class::<GetSignatureStatuses>()?;
     requests_mod.add_class::<RequestAirdrop>()?;
     let funcs = [
