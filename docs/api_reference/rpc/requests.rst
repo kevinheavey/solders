@@ -1,6 +1,7 @@
-======
-Config
-======
+========
+Requests
+========
+
 
 .. automodule:: solders.rpc.requests
     :members:
