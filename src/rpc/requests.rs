@@ -352,7 +352,7 @@ request_boilerplate!(GetBlock);
 ///     >>> from solders.rpc.config import RpcContextConfig
 ///     >>> config = RpcContextConfig(min_context_slot=123)
 ///     >>> GetBlockHeight(config).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getBlockHeight","params":{"minContextSlot":123}}'
+///     '{"jsonrpc":"2.0","id":0,"method":"getBlockHeight","params":[{"minContextSlot":123}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -396,7 +396,7 @@ request_boilerplate!(GetBlockHeight);
 ///     >>> slot_range = RpcBlockProductionConfigRange(first_slot=10, last_slot=15)
 ///     >>> config = RpcBlockProductionConfig(identity=Pubkey.default(), range=slot_range)
 ///     >>> GetBlockProduction(config).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getBlockProduction","params":{"identity":"11111111111111111111111111111111","range":{"firstSlot":10,"lastSlot":15}}}'
+///     '{"jsonrpc":"2.0","id":0,"method":"getBlockProduction","params":[{"identity":"11111111111111111111111111111111","range":{"firstSlot":10,"lastSlot":15}}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -436,7 +436,7 @@ request_boilerplate!(GetBlockProduction);
 /// Example:
 ///     >>> from solders.rpc.requests import GetBlockCommitment
 ///     >>> GetBlockCommitment(123).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getBlockCommitment","params":123}'
+///     '{"jsonrpc":"2.0","id":0,"method":"getBlockCommitment","params":[123]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
