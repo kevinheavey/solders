@@ -17,6 +17,7 @@ use super::config::{
     RpcAccountInfoConfig, RpcBlockConfig, RpcBlockProductionConfig, RpcContextConfig,
     RpcEpochConfig, RpcLargestAccountsFilter, RpcLeaderScheduleConfig, RpcProgramAccountsConfig,
     RpcRequestAirdropConfig, RpcSignatureStatusConfig, RpcSignaturesForAddressConfig,
+    RpcSupplyConfig,
 };
 
 create_exception!(
@@ -1691,6 +1692,239 @@ impl GetSignatureStatuses {
 
 request_boilerplate!(GetSignatureStatuses);
 
+/// A ``getSlot`` request.
+///
+/// Args:
+///     config (Optional[RpcContextConfig]): Extra configuration.
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///     >>> from solders.rpc.requests import GetSlot
+///     >>> from solders.rpc.config import RpcContextConfig
+///     >>> config = RpcContextConfig(min_context_slot=123)
+///     >>> GetSlot(config).to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"getSlot","params":[{"minContextSlot":123}]}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetSlot {
+    #[serde(flatten)]
+    base: RequestBase,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    params: Option<(RpcContextConfig,)>,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl GetSlot {
+    #[new]
+    fn new(config: Option<RpcContextConfig>, id: Option<u64>) -> Self {
+        let params = config.map(|c| (c,));
+        let base = RequestBase::new(RpcRequest::GetSlot, id);
+        Self { base, params }
+    }
+
+    /// Optional[RpcContextConfig]: Extra configuration.
+    #[getter]
+    pub fn config(&self) -> Option<RpcContextConfig> {
+        self.params.clone().map(|p| p.0)
+    }
+}
+
+request_boilerplate!(GetSlot);
+
+/// A ``getSlotLeader`` request.
+///
+/// Args:
+///     config (Optional[RpcContextConfig]): Extra configuration.
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///     >>> from solders.rpc.requests import GetSlotLeader
+///     >>> from solders.rpc.config import RpcContextConfig
+///     >>> config = RpcContextConfig(min_context_slot=123)
+///     >>> GetSlot(config).to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"getSlot","params":[{"minContextSlot":123}]}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetSlotLeader {
+    #[serde(flatten)]
+    base: RequestBase,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    params: Option<(RpcContextConfig,)>,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl GetSlotLeader {
+    #[new]
+    fn new(config: Option<RpcContextConfig>, id: Option<u64>) -> Self {
+        let params = config.map(|c| (c,));
+        let base = RequestBase::new(RpcRequest::GetSlotLeader, id);
+        Self { base, params }
+    }
+
+    /// Optional[RpcContextConfig]: Extra configuration.
+    #[getter]
+    pub fn config(&self) -> Option<RpcContextConfig> {
+        self.params.clone().map(|p| p.0)
+    }
+}
+
+request_boilerplate!(GetSlotLeader);
+
+/// A ``getSlotLeaders`` request.
+///
+/// Args:
+///     start (int): The start slot.
+///     limit (int): The number of leaders to return.
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///     >>> from solders.rpc.requests import GetSlotLeaders
+///     >>> GetSlotLeaders(100, 10).to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"getSlotLeaders","params":[100,10]}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetSlotLeaders {
+    #[serde(flatten)]
+    base: RequestBase,
+    params: (u64, u64),
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl GetSlotLeaders {
+    #[new]
+    fn new(start: u64, limit: u64, id: Option<u64>) -> Self {
+        let params = (start, limit);
+        let base = RequestBase::new(RpcRequest::GetSlotLeaders, id);
+        Self { base, params }
+    }
+
+    /// int: The start slot.
+    #[getter]
+    pub fn start(&self) -> u64 {
+        self.params.0
+    }
+
+    /// int: The number of leaders to return.
+    #[getter]
+    pub fn limit(&self) -> u64 {
+        self.params.1
+    }
+}
+
+request_boilerplate!(GetSlotLeaders);
+
+#[serde_as]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetStakeActivationParams(
+    #[serde_as(as = "DisplayFromStr")] Pubkey,
+    #[serde(skip_serializing_if = "Option::is_none")] Option<RpcEpochConfig>,
+);
+
+/// A ``getStakeActivation`` request.
+///
+/// Args:
+///     account (Pubkey): The stake account to query.
+///     config (Optional[RpcEpochConfig]): Extra configuration.
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///     >>> from solders.rpc.requests import GetStakeActivation
+///     >>> from solders.rpc.config import RpcEpochConfig
+///     >>> from solders.pubkey import Pubkey
+///     >>> config = RpcEpochConfig(epoch=1234)
+///     >>> GetStakeActivation(Pubkey.default(), config).to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"getStakeActivation","params":["11111111111111111111111111111111",{"epoch":1234,"minContextSlot":null}]}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetStakeActivation {
+    #[serde(flatten)]
+    base: RequestBase,
+    params: GetStakeActivationParams,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl GetStakeActivation {
+    #[new]
+    fn new(account: Pubkey, config: Option<RpcEpochConfig>, id: Option<u64>) -> Self {
+        let params = GetStakeActivationParams(account, config);
+        let base = RequestBase::new(RpcRequest::GetStakeActivation, id);
+        Self { base, params }
+    }
+
+    /// Pubkey: The stake account to query.
+    #[getter]
+    pub fn account(&self) -> Pubkey {
+        self.params.0
+    }
+
+    /// Optional[RpcEpochConfig]: Extra configuration.
+    #[getter]
+    pub fn config(&self) -> Option<RpcEpochConfig> {
+        self.params.1.clone()
+    }
+}
+
+request_boilerplate!(GetStakeActivation);
+
+/// A ``getSupply`` request.
+///
+/// Args:
+///     config (Optional[RpcSupplyConfig]): Extra configuration.
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///     >>> from solders.rpc.requests import GetSupply
+///     >>> from solders.rpc.config import RpcSupplyConfig
+///     >>> config = RpcSupplyConfig(exclude_non_circulating_accounts_list=True)
+///     >>> GetSupply(config).to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"getSupply","params":[{"excludeNonCirculatingAccountsList":true}]}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetSupply {
+    #[serde(flatten)]
+    base: RequestBase,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    params: Option<(RpcSupplyConfig,)>,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl GetSupply {
+    #[new]
+    fn new(config: Option<RpcSupplyConfig>, id: Option<u64>) -> Self {
+        let params = config.map(|c| (c,));
+        let base = RequestBase::new(RpcRequest::GetSupply, id);
+        Self { base, params }
+    }
+
+    /// Optional[RpcSupplyConfig]: Extra configuration.
+    #[getter]
+    pub fn config(&self) -> Option<RpcSupplyConfig> {
+        self.params.clone().map(|p| p.0)
+    }
+}
+
+request_boilerplate!(GetSupply);
+
 #[serde_as]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize, Default)]
 pub struct RequestAirdropParams(
@@ -1825,6 +2059,11 @@ pub fn create_requests_mod(py: Python<'_>) -> PyResult<&PyModule> {
     requests_mod.add_class::<GetRecentPerformanceSamples>()?;
     requests_mod.add_class::<GetSignaturesForAddress>()?;
     requests_mod.add_class::<GetSignatureStatuses>()?;
+    requests_mod.add_class::<GetSlot>()?;
+    requests_mod.add_class::<GetSlotLeader>()?;
+    requests_mod.add_class::<GetSlotLeaders>()?;
+    requests_mod.add_class::<GetStakeActivation>()?;
+    requests_mod.add_class::<GetSupply>()?;
     requests_mod.add_class::<RequestAirdrop>()?;
     let funcs = [
         wrap_pyfunction!(batch_to_json, requests_mod)?,
