@@ -219,11 +219,13 @@ impl GetAccountInfo {
         Self { base, params }
     }
 
+    /// Pubkey: Pubkey of account to query.
     #[getter]
     pub fn pubkey(&self) -> Pubkey {
         self.params.0
     }
 
+    /// Optional[RpcAccountInfoConfig]: Extra configuration.
     #[getter]
     pub fn config(&self) -> Option<RpcAccountInfoConfig> {
         self.params.1.clone()
@@ -274,11 +276,13 @@ impl GetBalance {
         Self { base, params }
     }
 
+    /// Pubkey: Pubkey of account to query.
     #[getter]
     pub fn pubkey(&self) -> Pubkey {
         self.params.0
     }
 
+    /// Optional[RpcContextConfig]: Extra configuration.
     #[getter]
     pub fn config(&self) -> Option<RpcContextConfig> {
         self.params.1.clone()
@@ -328,11 +332,13 @@ impl GetBlock {
         Self { base, params }
     }
 
+    /// int: The slot to query.
     #[getter]
     pub fn slot(&self) -> u64 {
         self.params.0
     }
 
+    /// Optional[RpcBlockConfig]: Extra configuration.
     #[getter]
     pub fn config(&self) -> Option<RpcBlockConfig> {
         self.params.1.clone()
@@ -375,6 +381,7 @@ impl GetBlockHeight {
         Self { base, params }
     }
 
+    /// Optional[RpcContextConfig]: Extra configuration.
     #[getter]
     pub fn config(&self) -> Option<RpcContextConfig> {
         self.params.clone().map(|p| p.0)
@@ -419,6 +426,7 @@ impl GetBlockProduction {
         Self { base, params }
     }
 
+    /// Optional[RpcBlockProductionConfig]: Extra configuration.
     #[getter]
     pub fn config(&self) -> Option<RpcBlockProductionConfig> {
         self.params.clone().map(|p| p.0)
@@ -458,6 +466,7 @@ impl GetBlockCommitment {
         Self { base, params }
     }
 
+    /// int: The slot to query.
     #[getter]
     pub fn slot(&self) -> u64 {
         self.params.0
@@ -512,16 +521,19 @@ impl GetBlocks {
         Self { base, params }
     }
 
+    /// int: The start slot.
     #[getter]
     pub fn start(&self) -> u64 {
         self.params.0
     }
 
+    /// Optional[int]: The end slot.
     #[getter]
     pub fn end(&self) -> Option<u64> {
         self.params.1
     }
 
+    /// Optional[CommitmentLevel]: Bank state to query.
     #[getter]
     pub fn commitment(&self) -> Option<CommitmentLevel> {
         self.params.2.map(|c| c.into())
@@ -576,16 +588,19 @@ impl GetBlocksWithLimit {
         Self { base, params }
     }
 
+    /// int: The start slot.
     #[getter]
     pub fn start(&self) -> u64 {
         self.params.0
     }
 
+    /// Optional[int]: Maximum number of blocks.
     #[getter]
     pub fn limit(&self) -> Option<u64> {
         self.params.1
     }
 
+    /// Optional[CommitmentLevel]: Bank state to query.
     #[getter]
     pub fn commitment(&self) -> Option<CommitmentLevel> {
         self.params.2.map(|c| c.into())
@@ -625,6 +640,7 @@ impl GetBlockTime {
         Self { base, params }
     }
 
+    /// int: The slot to query.
     #[getter]
     pub fn slot(&self) -> u64 {
         self.params.0
@@ -699,6 +715,7 @@ impl GetEpochInfo {
         Self { base, params }
     }
 
+    /// Optional[RpcContextConfig]: Extra configuration.
     #[getter]
     pub fn config(&self) -> Option<RpcContextConfig> {
         self.params.clone().map(|p| p.0)
@@ -797,11 +814,13 @@ impl GetFeeForMessage {
         Self { base, params }
     }
 
+    /// Message: The message for which to calculate the fee.
     #[getter]
     pub fn message(&self) -> Message {
         self.params.0.clone()
     }
 
+    /// Optional[CommitmentLevel]: Bank state to query.
     #[getter]
     pub fn commitment(&self) -> Option<CommitmentLevel> {
         self.params.1.map(|c| c.into())
@@ -998,6 +1017,7 @@ impl GetInflationGovernor {
         Self { base, params }
     }
 
+    /// Optional[CommitmentLevel]: Bank state to query.
     #[getter]
     pub fn commitment(&self) -> Option<CommitmentLevel> {
         self.params.map(|p| p.0.into())
@@ -1080,11 +1100,13 @@ impl GetInflationReward {
         Self { base, params }
     }
 
+    /// Optional[Sequence[Pubkey]]: Addresses to query.
     #[getter]
     pub fn addresses(&self) -> Vec<Pubkey> {
         self.params.0.clone()
     }
 
+    /// Optional[RpcEpochConfig]: Extra configuration.
     #[getter]
     pub fn config(&self) -> Option<RpcEpochConfig> {
         self.params.1.clone()
@@ -1102,7 +1124,8 @@ pub struct GetLargestAccountsParams(
 /// A ``getLargestAccounts`` request.
 ///
 /// Args:
-///     config (Optional[RpcContextConfig]): Extra configuration.
+///     commitment (Optional[CommitmentLevel]): Bank state to query.
+///     filter (Optional[RpcLargestAccountsFilter]): Filter results by account type.
 ///     id (Optional[int]): Request ID.
 ///
 /// Example:
@@ -1146,6 +1169,7 @@ impl GetLargestAccounts {
         Self { base, params }
     }
 
+    /// Optional[CommitmentLevel]: Bank state to query.
     #[getter]
     pub fn commitment(&self) -> Option<CommitmentLevel> {
         self.params
@@ -1154,6 +1178,7 @@ impl GetLargestAccounts {
             .map(CommitmentLevel::from)
     }
 
+    /// Optional[RpcLargestAccountsFilter]: Filter results by account type.
     #[getter]
     pub fn filter(&self) -> Option<RpcLargestAccountsFilter> {
         self.params.clone().and_then(|p| p.1)
@@ -1197,6 +1222,7 @@ impl GetLatestBlockhash {
         Self { base, params }
     }
 
+    /// Optional[RpcContextConfig]: Extra configuration.
     #[getter]
     pub fn config(&self) -> Option<RpcContextConfig> {
         self.params.clone().map(|p| p.0)
@@ -1251,11 +1277,13 @@ impl GetLeaderSchedule {
         Self { base, params }
     }
 
+    /// Optional[int]: The slot to query.
     #[getter]
     pub fn slot(&self) -> Option<u64> {
         self.params.clone().and_then(|p| p.0)
     }
 
+    /// Optional[RpcLeaderScheduleConfig]: Extra configuration.
     #[getter]
     pub fn config(&self) -> Option<RpcLeaderScheduleConfig> {
         self.params.clone().and_then(|p| p.1)
@@ -1364,11 +1392,13 @@ impl GetMinimumBalanceForRentExemption {
         Self { base, params }
     }
 
+    /// int: Acccount data length
     #[getter]
     pub fn length(&self) -> usize {
         self.params.0
     }
 
+    /// Optional[CommitmentLevel]: Bank state to query.
     #[getter]
     pub fn commitment(&self) -> Option<CommitmentLevel> {
         self.params.1.map(|c| c.into())
@@ -1424,11 +1454,13 @@ impl GetMultipleAccounts {
         Self { base, params }
     }
 
+    /// Sequence[Pubkey]: Accounts to query.
     #[getter]
     pub fn accounts(&self) -> Vec<Pubkey> {
         self.params.0.clone()
     }
 
+    /// Optional[RpcAccountInfoConfig]: Extra configuration.
     #[getter]
     pub fn config(&self) -> Option<RpcAccountInfoConfig> {
         self.params.1.clone()
@@ -1483,11 +1515,13 @@ impl GetSignatureStatuses {
         Self { base, params }
     }
 
+    /// Sequence[Signature]: The signatures to query.
     #[getter]
     pub fn signatures(&self) -> Vec<Signature> {
         self.params.0.clone()
     }
 
+    /// Optional[RpcSignatureStatusConfig]: Extra configuration.
     #[getter]
     pub fn config(&self) -> Option<RpcSignatureStatusConfig> {
         self.params.1.clone()
@@ -1546,16 +1580,19 @@ impl RequestAirdrop {
         Self { base, params }
     }
 
+    /// Pubkey: Pubkey of account to receive lamports.
     #[getter]
     fn pubkey(&self) -> Pubkey {
         self.params.0
     }
 
+    /// int: How many lamports to airdrop.
     #[getter]
     fn lamports(&self) -> u64 {
         self.params.1
     }
 
+    /// Optional[RpcRequestAirdropConfig]: Extra configuration.
     #[getter]
     fn config(&self) -> Option<RpcRequestAirdropConfig> {
         self.params.2.clone()
