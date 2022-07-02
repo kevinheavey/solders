@@ -2616,14 +2616,15 @@ pub struct SendTransactionParams(
 ///      >>> arbitrary_instruction_data = b"abc"
 ///      >>> accounts = []
 ///      >>> instruction = Instruction(program_id, arbitrary_instruction_data, accounts)
-///      >>> payer = Keypair()
+///      >>> seed = bytes([1] * 32)
+///      >>> payer = Keypair.from_seed(seed)
 ///      >>> message = Message([instruction], payer.pubkey())
 ///      >>> blockhash = Hash.default()  # replace with a real blockhash
 ///      >>> tx = Transaction([payer], message, blockhash)
 ///      >>> commitment = CommitmentLevel.Confirmed
 ///      >>> config = RpcSendTransactionConfig(preflight_commitment=commitment)
 ///      >>> SendTransaction(tx, config).to_json()
-///      '{"jsonrpc":"2.0","id":0,"method":"sendTransaction","params":["AW+Hy6fNJCICr2xnjk0DvmsJwfXo1CMPj/VCAkVWiEPSfmWDObuilvbAUI1GAclfPDlaeAzSxQ3mbQyDNxpwyAYBAAECqSVnJkhlb6E1tlGysqcjeH1eZ0s0tRBy3fcrUERncZkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEAA2FiYw==",{"skipPreflight":false,"preflightCommitment":"confirmed","encoding":"base64","maxRetries":null,"minContextSlot":null}]}'
+///      {"jsonrpc":"2.0","id":0,"method":"sendTransaction","params":["AaVkKDb3UlpidO/ucBnOcmS+1dY8ZAC4vHxTxiccV8zPBlupuozppRjwrILZJaoKggAcVSD1XlAKstDVEPFOVgwBAAECiojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEAA2FiYw==",{"skipPreflight":false,"preflightCommitment":"confirmed","encoding":"base64","maxRetries":null,"minContextSlot":null}]}
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -2689,7 +2690,8 @@ pub struct SimulateTransactionParams(
 ///      >>> arbitrary_instruction_data = b"abc"
 ///      >>> accounts = []
 ///      >>> instruction = Instruction(program_id, arbitrary_instruction_data, accounts)
-///      >>> payer = Keypair()
+///      >>> seed = bytes([1] * 32)
+///      >>> payer = Keypair.from_seed(seed)
 ///      >>> message = Message([instruction], payer.pubkey())
 ///      >>> blockhash = Hash.default()  # replace with a real blockhash
 ///      >>> tx = Transaction([payer], message, blockhash)
@@ -2698,7 +2700,7 @@ pub struct SimulateTransactionParams(
 ///      >>> commitment = CommitmentLevel.Confirmed
 ///      >>> config = RpcSimulateTransactionConfig(commitment=commitment, accounts=accounts_config)
 ///      >>> SimulateTransaction(tx, config).to_json()
-///      {"jsonrpc":"2.0","id":0,"method":"simulateTransaction","params":["ATmQClBmeLRAu0Pei2acv7bTpFsGUFkzNuXhTEPwHKZau0QmQBqkXSVJl+R0XF7lh7z/Q80zGnvGS8YwZW3UVQkBAAECxDoGJPxSPU4pq3UGjlHBKFzykvEYnSdzjAc4WtsfLa8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEAA2FiYw==",{"sigVerify":false,"replaceRecentBlockhash":false,"commitment":"confirmed","encoding":"base64","accounts":{"encoding":"base64+zstd","addresses":["11111111111111111111111111111111"]},"minContextSlot":null}]}
+///      {"jsonrpc":"2.0","id":0,"method":"simulateTransaction","params":["AaVkKDb3UlpidO/ucBnOcmS+1dY8ZAC4vHxTxiccV8zPBlupuozppRjwrILZJaoKggAcVSD1XlAKstDVEPFOVgwBAAECiojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEAA2FiYw==",{"sigVerify":false,"replaceRecentBlockhash":false,"commitment":"confirmed","encoding":"base64","accounts":{"encoding":"base64+zstd","addresses":["11111111111111111111111111111111"]},"minContextSlot":null}]}
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
