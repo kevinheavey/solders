@@ -937,14 +937,14 @@ impl RpcTransactionLogsConfig {
 ///
 #[derive(Debug, Clone, PartialEq)]
 #[pyclass]
-pub struct RpcTokenAccountsFilterMint(String);
+pub struct RpcTokenAccountsFilterMint(Pubkey);
 
 #[richcmp_eq_only]
 #[pymethods]
 impl RpcTokenAccountsFilterMint {
     #[new]
-    pub fn new(mint: &Pubkey) -> Self {
-        Self(mint.to_string())
+    pub fn new(mint: Pubkey) -> Self {
+        Self(mint)
     }
 
     pub fn __repr__(&self) -> String {
@@ -953,7 +953,7 @@ impl RpcTokenAccountsFilterMint {
 
     #[getter]
     pub fn mint(&self) -> Pubkey {
-        Pubkey::from_str(&self.0).unwrap()
+        self.0
     }
 }
 
@@ -966,14 +966,14 @@ impl RichcmpEqualityOnly for RpcTokenAccountsFilterMint {}
 ///
 #[derive(Debug, Clone, PartialEq)]
 #[pyclass]
-pub struct RpcTokenAccountsFilterProgramId(String);
+pub struct RpcTokenAccountsFilterProgramId(Pubkey);
 
 #[richcmp_eq_only]
 #[pymethods]
 impl RpcTokenAccountsFilterProgramId {
     #[new]
-    pub fn new(program_id: &Pubkey) -> Self {
-        Self(program_id.to_string())
+    pub fn new(program_id: Pubkey) -> Self {
+        Self(program_id)
     }
 
     pub fn __repr__(&self) -> String {
@@ -982,7 +982,7 @@ impl RpcTokenAccountsFilterProgramId {
 
     #[getter]
     pub fn program_id(&self) -> Pubkey {
-        Pubkey::from_str(&self.0).unwrap()
+        self.0
     }
 }
 
@@ -997,10 +997,8 @@ pub enum RpcTokenAccountsFilterWrapper {
 impl From<RpcTokenAccountsFilterWrapper> for rpc_config::RpcTokenAccountsFilter {
     fn from(w: RpcTokenAccountsFilterWrapper) -> Self {
         match w {
-            RpcTokenAccountsFilterWrapper::Mint(m) => rpc_config::RpcTokenAccountsFilter::Mint(m.0),
-            RpcTokenAccountsFilterWrapper::ProgramId(p) => {
-                rpc_config::RpcTokenAccountsFilter::ProgramId(p.0)
-            }
+            RpcTokenAccountsFilterWrapper::Mint(m) => Self::Mint(m.0.to_string()),
+            RpcTokenAccountsFilterWrapper::ProgramId(p) => Self::ProgramId(p.0.to_string()),
         }
     }
 }
@@ -1009,11 +1007,11 @@ impl From<rpc_config::RpcTokenAccountsFilter> for RpcTokenAccountsFilterWrapper 
     fn from(f: rpc_config::RpcTokenAccountsFilter) -> Self {
         match f {
             rpc_config::RpcTokenAccountsFilter::Mint(s) => {
-                RpcTokenAccountsFilterWrapper::Mint(RpcTokenAccountsFilterMint(s))
+                Self::Mint(RpcTokenAccountsFilterMint(Pubkey::from_str(&s).unwrap()))
             }
-            rpc_config::RpcTokenAccountsFilter::ProgramId(s) => {
-                RpcTokenAccountsFilterWrapper::ProgramId(RpcTokenAccountsFilterProgramId(s))
-            }
+            rpc_config::RpcTokenAccountsFilter::ProgramId(s) => Self::ProgramId(
+                RpcTokenAccountsFilterProgramId(Pubkey::from_str(&s).unwrap()),
+            ),
         }
     }
 }
