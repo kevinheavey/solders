@@ -225,6 +225,7 @@ pyclass_boilerplate_with_default!(
 #[pymethods]
 impl RpcSimulateTransactionConfig {
     #[new]
+    #[args(sig_verify = "false", replace_recent_blockhash = "false")]
     fn new(
         sig_verify: bool,
         replace_recent_blockhash: bool,
