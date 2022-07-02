@@ -8,7 +8,9 @@ use pyo3::{create_exception, exceptions::PyException, prelude::*};
 extern crate base64;
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, DisplayFromStr, FromInto};
-use solana_client::rpc_config::RpcTokenAccountsFilter;
+use solana_client::rpc_config::{
+    RpcBlockSubscribeFilter, RpcTokenAccountsFilter, RpcTransactionLogsFilter,
+};
 use solana_sdk::{
     message::Message as MessageOriginal, transaction::Transaction as TransactionOriginal,
 };
@@ -17,11 +19,13 @@ use solders_macros::{common_methods, richcmp_eq_only, rpc_id_getter};
 use crate::{Signature, SolderHash};
 
 use super::config::{
-    RpcAccountInfoConfig, RpcBlockConfig, RpcBlockProductionConfig, RpcContextConfig,
-    RpcEpochConfig, RpcGetVoteAccountsConfig, RpcLargestAccountsFilter, RpcLeaderScheduleConfig,
-    RpcProgramAccountsConfig, RpcRequestAirdropConfig, RpcSendTransactionConfig,
-    RpcSignatureStatusConfig, RpcSignaturesForAddressConfig, RpcSimulateTransactionConfig,
-    RpcSupplyConfig, RpcTokenAccountsFilterWrapper, RpcTransactionConfig,
+    RpcAccountInfoConfig, RpcBlockConfig, RpcBlockProductionConfig, RpcBlockSubscribeConfig,
+    RpcBlockSubscribeFilterWrapper, RpcContextConfig, RpcEpochConfig, RpcGetVoteAccountsConfig,
+    RpcLargestAccountsFilter, RpcLeaderScheduleConfig, RpcProgramAccountsConfig,
+    RpcRequestAirdropConfig, RpcSendTransactionConfig, RpcSignatureStatusConfig,
+    RpcSignatureSubscribeConfig, RpcSignaturesForAddressConfig, RpcSimulateTransactionConfig,
+    RpcSupplyConfig, RpcTokenAccountsFilterWrapper, RpcTransactionConfig, RpcTransactionLogsConfig,
+    TransactionLogsFilterWrapper,
 };
 
 create_exception!(
@@ -48,6 +52,53 @@ macro_rules! request_boilerplate {
         impl RichcmpEqualityOnly for $name {}
         pybytes_general_via_bincode!($name);
         py_from_bytes_general_via_bincode!($name);
+    };
+}
+
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize, Default)]
+pub struct UnsubscribeParams((u64,));
+
+macro_rules! unsubscribe_def {
+    ($name:ident) => {
+        /// ``$name`` request.
+        ///
+        /// Args:
+        ///     subscription_id (int): ID of subscription to cancel
+        ///     id (Optional[int]): Request ID.
+        ///
+        /// Example:
+        ///      >>> from solders.rpc.requests import $name
+        ///      >>> $name(1, 2).to_json()
+        ///      '{"jsonrpc":"2.0","id":0,"method":"requestAirdrop","params":["11111111111111111111111111111111",1000,{"recentBlockhash":null,"commitment":"confirmed"}]}'
+        ///
+        #[pyclass(module = "solders.rpc.requests")]
+        #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+        pub struct $name {
+            #[serde(flatten)]
+            base: RequestBase,
+            params: UnsubscribeParams,
+        }
+
+        #[richcmp_eq_only]
+        #[common_methods]
+        #[rpc_id_getter]
+        #[pymethods]
+        impl $name {
+            #[new]
+            fn new(subscription_id: u64, id: Option<u64>) -> Self {
+                let params = UnsubscribeParams((subscription_id,));
+                let base = RequestBase::new(RpcRequest::$name, id);
+                Self { base, params }
+            }
+
+            /// int: ID of subscription to cancel
+            #[getter]
+            fn subscription_id(&self) -> u64 {
+                self.params.0
+            }
+        }
+
+        request_boilerplate!($name);
     };
 }
 
@@ -163,6 +214,15 @@ pub enum RpcRequest {
     SendTransaction,
     SimulateTransaction,
     SignVote,
+    AccountSubscribe,
+    BlockSubscribe,
+    LogsSubscribe,
+    ProgramSubscribe,
+    SignatureSubscribe,
+    SlotSubscribe,
+    SlotsUpdatesSubscribe,
+    RootSubscribe,
+    VoteSubscribe,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
@@ -1131,7 +1191,7 @@ pub struct GetLargestAccountsParams(
 ///
 /// Args:
 ///     commitment (Optional[CommitmentLevel]): Bank state to query.
-///     filter (Optional[RpcLargestAccountsFilter]): Filter results by account type.
+///     filter_ (Optional[RpcLargestAccountsFilter]): Filter results by account type.
 ///     id (Optional[int]): Request ID.
 ///
 /// Example:
@@ -1140,7 +1200,7 @@ pub struct GetLargestAccountsParams(
 ///     >>> from solders.commitment_config import CommitmentLevel
 ///     >>> commitment = CommitmentLevel.Processed
 ///     >>> filter_ = RpcLargestAccountsFilter.Circulating
-///     >>> GetLargestAccounts(commitment=commitment, filter=filter_).to_json()
+///     >>> GetLargestAccounts(commitment=commitment, filter_=filter_).to_json()
 ///     '{"jsonrpc":"2.0","id":0,"method":"getLargestAccounts","params":[{"commitment":"processed"},"circulating"]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
@@ -1160,13 +1220,13 @@ impl GetLargestAccounts {
     #[new]
     fn new(
         commitment: Option<CommitmentLevel>,
-        filter: Option<RpcLargestAccountsFilter>,
+        filter_: Option<RpcLargestAccountsFilter>,
         id: Option<u64>,
     ) -> Self {
-        let params = if commitment.is_some() || filter.is_some() {
+        let params = if commitment.is_some() || filter_.is_some() {
             Some(GetLargestAccountsParams(
                 commitment.map(|c| c.into()),
-                filter,
+                filter_,
             ))
         } else {
             None
@@ -1186,7 +1246,7 @@ impl GetLargestAccounts {
 
     /// Optional[RpcLargestAccountsFilter]: Filter results by account type.
     #[getter]
-    pub fn filter(&self) -> Option<RpcLargestAccountsFilter> {
+    pub fn filter_(&self) -> Option<RpcLargestAccountsFilter> {
         self.params.clone().and_then(|p| p.1)
     }
 }
@@ -2000,7 +2060,7 @@ pub struct GetTokenAccountsByDelegateParams(
 ///
 /// Args:
 ///     account (Pubkey): The account delegate to query.
-///     filter (RpcTokenAccountsFilterMint | RpcTokenAccountsFilterProgramId): Filter by either token mint or token program.
+///     filter_ (RpcTokenAccountsFilterMint | RpcTokenAccountsFilterProgramId): Filter by either token mint or token program.
 ///     config (Optional[RpcAccountInfoConfig]): Extra configuration.
 ///     id (Optional[int]): Request ID.
 ///
@@ -2013,7 +2073,7 @@ pub struct GetTokenAccountsByDelegateParams(
 ///     >>> req = GetTokenAccountsByDelegate(Pubkey.default(), program_filter, config)
 ///     >>> req.to_json()
 ///     '{"jsonrpc":"2.0","id":0,"method":"getTokenAccountsByDelegate","params":["11111111111111111111111111111111",{"programId":"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"},{"encoding":null,"dataSlice":null,"minContextSlot":1234}]}'
-///     >>> req.filter
+///     >>> req.filter_
 ///     RpcTokenAccountsFilterProgramId(
 ///         Pubkey(
 ///             TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA,
@@ -2036,11 +2096,11 @@ impl GetTokenAccountsByDelegate {
     #[new]
     fn new(
         account: Pubkey,
-        filter: RpcTokenAccountsFilterWrapper,
+        filter_: RpcTokenAccountsFilterWrapper,
         config: Option<RpcAccountInfoConfig>,
         id: Option<u64>,
     ) -> Self {
-        let params = GetTokenAccountsByDelegateParams(account, filter, config);
+        let params = GetTokenAccountsByDelegateParams(account, filter_, config);
         let base = RequestBase::new(RpcRequest::GetTokenAccountsByDelegate, id);
         Self { base, params }
     }
@@ -2053,7 +2113,7 @@ impl GetTokenAccountsByDelegate {
 
     /// RpcTokenAccountsFilterWrapper: Filter by either token mint or token program.
     #[getter]
-    pub fn filter(&self) -> RpcTokenAccountsFilterWrapper {
+    pub fn filter_(&self) -> RpcTokenAccountsFilterWrapper {
         self.params.1.clone()
     }
 
@@ -2070,7 +2130,7 @@ request_boilerplate!(GetTokenAccountsByDelegate);
 ///
 /// Args:
 ///     account (Pubkey): The account owner to query.
-///     filter (RpcTokenAccountsFilterMint | RpcTokenAccountsFilterProgramId): Filter by either token mint or token program.
+///     filter_ (RpcTokenAccountsFilterMint | RpcTokenAccountsFilterProgramId): Filter by either token mint or token program.
 ///     config (Optional[RpcAccountInfoConfig]): Extra configuration.
 ///     id (Optional[int]): Request ID.
 ///
@@ -2083,7 +2143,7 @@ request_boilerplate!(GetTokenAccountsByDelegate);
 ///     >>> req = GetTokenAccountsByOwner(Pubkey.default(), mint_filter, config)
 ///     >>> req.to_json()
 ///     '{"jsonrpc":"2.0","id":0,"method":"getTokenAccountsByOwner","params":["11111111111111111111111111111111",{"mint":"11111111111111111111111111111111"},{"encoding":null,"dataSlice":null,"minContextSlot":1234}]}'
-///     >>> req.filter
+///     >>> req.filter_
 ///     RpcTokenAccountsFilterMint(
 ///         Pubkey(
 ///             11111111111111111111111111111111,
@@ -2106,11 +2166,11 @@ impl GetTokenAccountsByOwner {
     #[new]
     fn new(
         account: Pubkey,
-        filter: RpcTokenAccountsFilterWrapper,
+        filter_: RpcTokenAccountsFilterWrapper,
         config: Option<RpcAccountInfoConfig>,
         id: Option<u64>,
     ) -> Self {
-        let params = GetTokenAccountsByDelegateParams(account, filter, config);
+        let params = GetTokenAccountsByDelegateParams(account, filter_, config);
         let base = RequestBase::new(RpcRequest::GetTokenAccountsByOwner, id);
         Self { base, params }
     }
@@ -2123,7 +2183,7 @@ impl GetTokenAccountsByOwner {
 
     /// RpcTokenAccountsFilterWrapper: Filter by either token mint or token program.
     #[getter]
-    pub fn filter(&self) -> RpcTokenAccountsFilterWrapper {
+    pub fn filter_(&self) -> RpcTokenAccountsFilterWrapper {
         self.params.1.clone()
     }
 
@@ -2624,7 +2684,7 @@ pub struct SendTransactionParams(
 ///      >>> commitment = CommitmentLevel.Confirmed
 ///      >>> config = RpcSendTransactionConfig(preflight_commitment=commitment)
 ///      >>> SendTransaction(tx, config).to_json()
-///      {"jsonrpc":"2.0","id":0,"method":"sendTransaction","params":["AaVkKDb3UlpidO/ucBnOcmS+1dY8ZAC4vHxTxiccV8zPBlupuozppRjwrILZJaoKggAcVSD1XlAKstDVEPFOVgwBAAECiojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEAA2FiYw==",{"skipPreflight":false,"preflightCommitment":"confirmed","encoding":"base64","maxRetries":null,"minContextSlot":null}]}
+///      '{"jsonrpc":"2.0","id":0,"method":"sendTransaction","params":["AaVkKDb3UlpidO/ucBnOcmS+1dY8ZAC4vHxTxiccV8zPBlupuozppRjwrILZJaoKggAcVSD1XlAKstDVEPFOVgwBAAECiojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEAA2FiYw==",{"skipPreflight":false,"preflightCommitment":"confirmed","encoding":"base64","maxRetries":null,"minContextSlot":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -2737,6 +2797,424 @@ impl SimulateTransaction {
 
 request_boilerplate!(SimulateTransaction);
 
+/// An ``accountSubscribe`` request.
+///
+/// Args:
+///     account (Pubkey): Account to watch.
+///     config (Optional[RpcAccountInfoConfig]): Extra configuration.
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///     >>> from solders.rpc.requests import AccountSubscribe
+///     >>> from solders.rpc.config import RpcAccountInfoConfig
+///     >>> from solders.pubkey import Pubkey
+///     >>> from solders.account_decoder import UiAccountEncoding
+///     >>> config = RpcAccountInfoConfig(UiAccountEncoding.Base64)
+///     >>> AccountSubscribe(Pubkey.default(), config).to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"accountSubscribe","params":["11111111111111111111111111111111",{"encoding":"base64","dataSlice":null,"minContextSlot":null}]}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct AccountSubscribe {
+    #[serde(flatten)]
+    base: RequestBase,
+    params: GetAccountInfoParams,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl AccountSubscribe {
+    #[new]
+    fn new(account: Pubkey, config: Option<RpcAccountInfoConfig>, id: Option<u64>) -> Self {
+        let params = GetAccountInfoParams(account, config);
+        let base = RequestBase::new(RpcRequest::AccountSubscribe, id);
+        Self { base, params }
+    }
+
+    /// Pubkey: Account to watch.
+    #[getter]
+    fn account(&self) -> Pubkey {
+        self.params.0
+    }
+
+    /// Optional[RpcAccountInfoConfig]: Extra configuration.
+    #[getter]
+    fn config(&self) -> Option<RpcAccountInfoConfig> {
+        self.params.1.clone()
+    }
+}
+
+request_boilerplate!(AccountSubscribe);
+
+#[serde_as]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize, Default)]
+pub struct BlockSubscribeParams(
+    #[serde_as(as = "FromInto<RpcBlockSubscribeFilter>")] RpcBlockSubscribeFilterWrapper,
+    #[serde(skip_serializing_if = "Option::is_none")] Option<RpcBlockSubscribeConfig>,
+);
+
+/// A ``blockSubscribe`` request.
+///
+/// Args:
+///     filter_ (RpcBlockSubscribeFilter | RpcBlockSubscribeFilterMentions): Filter criteria for the logs to receive results by account type.
+///     config (Optional[RpcBlockSubscribeConfig]): Extra configuration.
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///      >>> from solders.rpc.requests import BlockSubscribe
+///      >>> from solders.rpc.config import RpcBlockSubscribeConfig, RpcBlockSubscribeFilter, RpcBlockSubscribeFilterMentions
+///      >>> from solders.pubkey import Pubkey
+///      >>> from solders.commitment_config import CommitmentLevel
+///      >>> from solders.transaction_status import TransactionDetails
+///      >>> config = RpcBlockSubscribeConfig(transaction_details=TransactionDetails.Signatures)
+///      >>> BlockSubscribe(RpcBlockSubscribeFilter.All, config).to_json()
+///      '{"jsonrpc":"2.0","id":0,"method":"blockSubscribe","params":["all",{"encoding":null,"transactionDetails":"signatures","showRewards":null,"maxSupportedTransactionVersion":null}]}'
+///      >>> BlockSubscribe(RpcBlockSubscribeFilterMentions(Pubkey.default()), config).to_json()
+///      '{"jsonrpc":"2.0","id":0,"method":"blockSubscribe","params":[{"mentionsAccountOrProgram":"11111111111111111111111111111111"},{"encoding":null,"transactionDetails":"signatures","showRewards":null,"maxSupportedTransactionVersion":null}]}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct BlockSubscribe {
+    #[serde(flatten)]
+    base: RequestBase,
+    params: BlockSubscribeParams,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl BlockSubscribe {
+    #[new]
+    fn new(
+        filter_: RpcBlockSubscribeFilterWrapper,
+        config: Option<RpcBlockSubscribeConfig>,
+        id: Option<u64>,
+    ) -> Self {
+        let params = BlockSubscribeParams(filter_, config);
+        let base = RequestBase::new(RpcRequest::BlockSubscribe, id);
+        Self { base, params }
+    }
+
+    /// Union[RpcBlockSubscribeFilter | RpcBlockSubscribeFilterMentions]: The filter being applied.
+    #[getter]
+    fn filter_(&self) -> RpcBlockSubscribeFilterWrapper {
+        self.params.0.clone()
+    }
+
+    /// Optional[RpcBlockSubscribeConfig]: Extra configuration.
+    #[getter]
+    fn config(&self) -> Option<RpcBlockSubscribeConfig> {
+        self.params.1.clone()
+    }
+}
+
+request_boilerplate!(BlockSubscribe);
+
+#[serde_as]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize, Default)]
+pub struct LogsSubscribeParams(
+    #[serde_as(as = "FromInto<RpcTransactionLogsFilter>")] TransactionLogsFilterWrapper,
+    #[serde(skip_serializing_if = "Option::is_none")] Option<RpcTransactionLogsConfig>,
+);
+
+/// A ``logsSubscribe`` request.
+///
+/// Args:
+///     filter_ (RpcTransactionLogsFilter | RpcTransactionLogsFilterMentions): Filter criteria for the logs to receive results by account type.
+///     config (Optional[RpcTransactionLogsConfig]): Extra configuration.
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///      >>> from solders.rpc.requests import LogsSubscribe
+///      >>> from solders.rpc.config import RpcTransactionLogsConfig, RpcTransactionLogsFilter, RpcTransactionLogsFilterMentions
+///      >>> from solders.pubkey import Pubkey
+///      >>> from solders.commitment_config import CommitmentLevel
+///      >>> config = RpcTransactionLogsConfig(commitment=CommitmentLevel.Confirmed)
+///      >>> LogsSubscribe(RpcTransactionLogsFilter.All, config).to_json()
+///      '{"jsonrpc":"2.0","id":0,"method":"logsSubscribe","params":["all",{"commitment":"confirmed"}]}'
+///      >>> LogsSubscribe(RpcTransactionLogsFilterMentions(Pubkey.default()), config).to_json()
+///      '{"jsonrpc":"2.0","id":0,"method":"logsSubscribe","params":[{"mentions":["11111111111111111111111111111111"]},{"commitment":"confirmed"}]}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct LogsSubscribe {
+    #[serde(flatten)]
+    base: RequestBase,
+    params: LogsSubscribeParams,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl LogsSubscribe {
+    #[new]
+    fn new(
+        filter_: TransactionLogsFilterWrapper,
+        config: Option<RpcTransactionLogsConfig>,
+        id: Option<u64>,
+    ) -> Self {
+        let params = LogsSubscribeParams(filter_, config);
+        let base = RequestBase::new(RpcRequest::LogsSubscribe, id);
+        Self { base, params }
+    }
+
+    /// Union[RpcTransactionLogsFilter | RpcTransactionLogsFilterMentions]: The filter being applied.
+    #[getter]
+    fn filter_(&self) -> TransactionLogsFilterWrapper {
+        self.params.0.clone()
+    }
+
+    /// Optional[RpcTransactionLogsConfig]: Extra configuration.
+    #[getter]
+    fn config(&self) -> Option<RpcTransactionLogsConfig> {
+        self.params.1.clone()
+    }
+}
+
+request_boilerplate!(LogsSubscribe);
+
+/// A ``programSubscribe`` request.
+///
+/// Args:
+///     program (Pubkey): The program that owns the accounts
+///     config (Optional[RpcProgramAccountsConfig]): Extra configuration.
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///     >>> from solders.rpc.requests import ProgramSubscribe
+///     >>> from solders.rpc.config import RpcProgramAccountsConfig, RpcAccountInfoConfig
+///     >>> from solders.rpc.filter import Memcmp
+///     >>> from solders.pubkey import Pubkey
+///     >>> acc_info_config = RpcAccountInfoConfig.default()
+///     >>> filters = [10, Memcmp(offset=10, bytes_=b"123")]
+///     >>> config = RpcProgramAccountsConfig(acc_info_config, filters)
+///     >>> ProgramSubscribe(Pubkey.default(), config).to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"programSubscribe","params":["11111111111111111111111111111111",{"filters":[{"dataSize":10},{"memcmp":{"offset":10,"bytes":[49,50,51],"encoding":null}}],"encoding":null,"dataSlice":null,"minContextSlot":null,"withContext":null}]}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct ProgramSubscribe {
+    #[serde(flatten)]
+    base: RequestBase,
+    params: GetProgramAccountsParams,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl ProgramSubscribe {
+    #[new]
+    fn new(program: Pubkey, config: Option<RpcProgramAccountsConfig>, id: Option<u64>) -> Self {
+        let params = GetProgramAccountsParams(program, config);
+        let base = RequestBase::new(RpcRequest::ProgramSubscribe, id);
+        Self { base, params }
+    }
+
+    /// Pubkey: The program that owns the accounts
+    #[getter]
+    pub fn program(&self) -> Pubkey {
+        self.params.0
+    }
+
+    /// Optional[RpcProgramAccountsConfig]: Extra configuration.
+    #[getter]
+    pub fn config(&self) -> Option<RpcProgramAccountsConfig> {
+        self.params.1.clone()
+    }
+}
+
+request_boilerplate!(ProgramSubscribe);
+
+#[serde_as]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize, Default)]
+pub struct SignatureSubscribeParams(
+    #[serde_as(as = "DisplayFromStr")] Signature,
+    #[serde(skip_serializing_if = "Option::is_none")] Option<RpcSignatureSubscribeConfig>,
+);
+
+/// A ``signatureSubscribe`` request.
+///
+/// Args:
+///     signature (Signature): The transaction to watch.
+///     config (Optional[RpcSignatureSubscribeConfig]): Extra configuration.
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///      >>> from solders.rpc.requests import SignatureSubscribe
+///      >>> from solders.rpc.config import RpcSignatureSubscribeConfig
+///      >>> from solders.signature import Signature
+///      >>> config = RpcSignatureSubscribeConfig(enable_received_notification=False)
+///      >>> SignatureSubscribe(Signature.default(), config).to_json()
+///      '{"jsonrpc":"2.0","id":0,"method":"signatureSubscribe","params":["1111111111111111111111111111111111111111111111111111111111111111",{"enableReceivedNotification":false}]}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct SignatureSubscribe {
+    #[serde(flatten)]
+    base: RequestBase,
+    params: SignatureSubscribeParams,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl SignatureSubscribe {
+    #[new]
+    fn new(
+        signature: Signature,
+        config: Option<RpcSignatureSubscribeConfig>,
+        id: Option<u64>,
+    ) -> Self {
+        let params = SignatureSubscribeParams(signature, config);
+        let base = RequestBase::new(RpcRequest::SignatureSubscribe, id);
+        Self { base, params }
+    }
+
+    /// Signature: The signature being watched
+    #[getter]
+    fn signature(&self) -> Signature {
+        self.params.0
+    }
+
+    /// Optional[RpcSignatureSubscribeConfig]: Extra configuration.
+    #[getter]
+    fn config(&self) -> Option<RpcSignatureSubscribeConfig> {
+        self.params.1.clone()
+    }
+}
+
+request_boilerplate!(SignatureSubscribe);
+
+/// A ``slotSubscribe`` request.
+///
+/// Args:
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///      >>> from solders.rpc.requests import SlotSubscribe
+///      >>> SlotSubscribe().to_json()
+///      '{"jsonrpc":"2.0","id":0,"method":"slotSubscribe"}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct SlotSubscribe {
+    #[serde(flatten)]
+    base: RequestBase,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl SlotSubscribe {
+    #[new]
+    fn new(id: Option<u64>) -> Self {
+        let base = RequestBase::new(RpcRequest::SlotSubscribe, id);
+        Self { base }
+    }
+}
+
+request_boilerplate!(SlotSubscribe);
+
+/// A ``slotsUpdatesSubscribe`` request.
+///
+/// Args:
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///      >>> from solders.rpc.requests import SlotsUpdatesSubscribe
+///      >>> SlotsUpdatesSubscribe().to_json()
+///      '{"jsonrpc":"2.0","id":0,"method":"slotsUpdatesSubscribe"}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct SlotsUpdatesSubscribe {
+    #[serde(flatten)]
+    base: RequestBase,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl SlotsUpdatesSubscribe {
+    #[new]
+    fn new(id: Option<u64>) -> Self {
+        let base = RequestBase::new(RpcRequest::SlotsUpdatesSubscribe, id);
+        Self { base }
+    }
+}
+
+request_boilerplate!(SlotsUpdatesSubscribe);
+
+/// A ``rootSubscribe`` request.
+///
+/// Args:
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///      >>> from solders.rpc.requests import RootSubscribe
+///      >>> RootSubscribe().to_json()
+///      '{"jsonrpc":"2.0","id":0,"method":"rootSubscribe"}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct RootSubscribe {
+    #[serde(flatten)]
+    base: RequestBase,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl RootSubscribe {
+    #[new]
+    fn new(id: Option<u64>) -> Self {
+        let base = RequestBase::new(RpcRequest::RootSubscribe, id);
+        Self { base }
+    }
+}
+
+request_boilerplate!(RootSubscribe);
+
+/// A ``voteSubscribe`` request.
+///
+/// Args:
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///      >>> from solders.rpc.requests import VoteSubscribe
+///      >>> VoteSubscribe().to_json()
+///      '{"jsonrpc":"2.0","id":0,"method":"voteSubscribe"}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct VoteSubscribe {
+    #[serde(flatten)]
+    base: RequestBase,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl VoteSubscribe {
+    #[new]
+    fn new(id: Option<u64>) -> Self {
+        let base = RequestBase::new(RpcRequest::VoteSubscribe, id);
+        Self { base }
+    }
+}
+
+request_boilerplate!(VoteSubscribe);
+
 #[derive(FromPyObject, Debug, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum Body {
@@ -2818,7 +3296,15 @@ pub fn create_requests_mod(py: Python<'_>) -> PyResult<&PyModule> {
     requests_mod.add_class::<MinimumLedgerSlot>()?;
     requests_mod.add_class::<RequestAirdrop>()?;
     requests_mod.add_class::<SendTransaction>()?;
-    requests_mod.add_class::<SimulateTransaction>()?;
+    requests_mod.add_class::<AccountSubscribe>()?;
+    requests_mod.add_class::<BlockSubscribe>()?;
+    requests_mod.add_class::<LogsSubscribe>()?;
+    requests_mod.add_class::<ProgramSubscribe>()?;
+    requests_mod.add_class::<SignatureSubscribe>()?;
+    requests_mod.add_class::<SlotSubscribe>()?;
+    requests_mod.add_class::<SlotsUpdatesSubscribe>()?;
+    requests_mod.add_class::<RootSubscribe>()?;
+    requests_mod.add_class::<VoteSubscribe>()?;
     let funcs = [
         wrap_pyfunction!(batch_to_json, requests_mod)?,
         wrap_pyfunction!(batch_from_json, requests_mod)?,

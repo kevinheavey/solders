@@ -834,7 +834,7 @@ impl RpcProgramAccountsConfig {
 }
 
 /// Fieldless filters for ``logsSubscribe``.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[pyclass]
 pub enum RpcTransactionLogsFilter {
     All,
@@ -846,7 +846,7 @@ pub enum RpcTransactionLogsFilter {
 /// Args:
 ///     pubkey (Pubkey): Subscribe to all transactions that mention the provided Pubkey.
 ///
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[pyclass]
 pub struct RpcTransactionLogsFilterMentions(Vec<String>);
 
@@ -870,10 +870,16 @@ impl RpcTransactionLogsFilterMentions {
 
 impl RichcmpEqualityOnly for RpcTransactionLogsFilterMentions {}
 
-#[derive(FromPyObject)]
+#[derive(FromPyObject, Clone, PartialEq, Serialize, Deserialize, Debug)]
 pub enum TransactionLogsFilterWrapper {
     Plain(RpcTransactionLogsFilter),
     Mentions(RpcTransactionLogsFilterMentions),
+}
+
+impl Default for TransactionLogsFilterWrapper {
+    fn default() -> Self {
+        Self::Plain(RpcTransactionLogsFilter::All)
+    }
 }
 
 impl From<TransactionLogsFilterWrapper> for rpc_config::RpcTransactionLogsFilter {
@@ -902,6 +908,15 @@ impl From<rpc_config::RpcTransactionLogsFilter> for TransactionLogsFilterWrapper
             rpc_config::RpcTransactionLogsFilter::Mentions(v) => {
                 Self::Mentions(RpcTransactionLogsFilterMentions(v))
             }
+        }
+    }
+}
+
+impl IntoPy<PyObject> for TransactionLogsFilterWrapper {
+    fn into_py(self, py: Python<'_>) -> PyObject {
+        match self {
+            Self::Plain(f) => f.into_py(py),
+            Self::Mentions(m) => m.into_py(py),
         }
     }
 }
@@ -1087,7 +1102,7 @@ pub enum RpcBlockSubscribeFilter {
 /// Args:
 ///     pubkey (Pubkey): Return only transactions that mention the provided pubkey.
 ///
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[pyclass]
 pub struct RpcBlockSubscribeFilterMentions(String);
 
@@ -1111,10 +1126,16 @@ impl RpcBlockSubscribeFilterMentions {
 
 impl RichcmpEqualityOnly for RpcBlockSubscribeFilterMentions {}
 
-#[derive(FromPyObject)]
+#[derive(FromPyObject, Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub enum RpcBlockSubscribeFilterWrapper {
     All(RpcBlockSubscribeFilter),
     MentionsAccountOrProgram(RpcBlockSubscribeFilterMentions),
+}
+
+impl Default for RpcBlockSubscribeFilterWrapper {
+    fn default() -> Self {
+        Self::All(RpcBlockSubscribeFilter::All)
+    }
 }
 
 impl From<RpcBlockSubscribeFilterWrapper> for rpc_config::RpcBlockSubscribeFilter {
