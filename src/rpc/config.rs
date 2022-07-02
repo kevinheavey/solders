@@ -4,7 +4,6 @@ use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use solana_client::rpc_config;
 use solana_sdk::commitment_config::CommitmentLevel as CommitmentLevelOriginal;
-use solana_transaction_status::UiTransactionEncoding as UiTransactionEncodingOriginal;
 use solders_macros::{common_methods, richcmp_eq_only};
 
 use crate::{
@@ -111,7 +110,7 @@ impl RpcSendTransactionConfig {
         Self(rpc_config::RpcSendTransactionConfig {
             skip_preflight,
             preflight_commitment: preflight_commitment.map(CommitmentLevelOriginal::from),
-            encoding: UiTransactionEncoding::Base64.into(),
+            encoding: Some(UiTransactionEncoding::Base64.into()),
             max_retries,
             min_context_slot,
         })
@@ -131,7 +130,7 @@ impl RpcSendTransactionConfig {
 
     /// UiTransactionEncoding: Encoding used for the transaction data.
     #[getter]
-    pub fn encoding(&self) -> UiTransactionEncoding {
+    pub fn encoding(&self) -> Option<UiTransactionEncoding> {
         self.0.encoding.map(|e| e.into())
     }
 
@@ -215,7 +214,6 @@ pyclass_boilerplate_with_default!(
     ///         will be replaced with the most recent blockhash
     ///         (conflicts with ``sig_verify``).
     ///     commitment (Optional[CommitmentLevel]): Commitment level at which to simulate the transaction.
-    ///     encoding (Optional[UiTransactionEncoding]): Encoding used for the transaction data.
     ///     accounts (Optional[RpcSimulateTransactionAccountsConfig]): Accounts configuration object.
     ///     min_context_slot (Optional[int]): The minimum slot that the request can be evaluated at.
     => RpcSimulateTransactionConfig
@@ -230,7 +228,6 @@ impl RpcSimulateTransactionConfig {
         sig_verify: bool,
         replace_recent_blockhash: bool,
         commitment: Option<CommitmentLevel>,
-        encoding: Option<UiTransactionEncoding>,
         accounts: Option<RpcSimulateTransactionAccountsConfig>,
         min_context_slot: Option<u64>,
     ) -> Self {
@@ -238,7 +235,7 @@ impl RpcSimulateTransactionConfig {
             sig_verify,
             replace_recent_blockhash,
             commitment: commitment.map(|c| c.into()),
-            encoding: encoding.map(|e| e.into()),
+            encoding: Some(UiTransactionEncoding::Base64.into()),
             accounts: accounts.map(|a| a.into()),
             min_context_slot,
         })
