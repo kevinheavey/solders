@@ -101,6 +101,7 @@ pyclass_boilerplate_with_default!(
 #[pymethods]
 impl RpcSendTransactionConfig {
     #[new]
+    #[args(skip_preflight = "false")]
     pub fn new(
         skip_preflight: bool,
         preflight_commitment: Option<CommitmentLevel>,
