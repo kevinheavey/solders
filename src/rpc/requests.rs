@@ -562,9 +562,14 @@ impl GetBlockCommitment {
 
 request_boilerplate!(GetBlockCommitment);
 
+#[serde_as]
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
-pub struct GetBlocksParams(u64, Option<u64>, Option<CommitmentConfig>);
+pub struct GetBlocksParams(
+    u64,
+    Option<u64>,
+    #[serde_as(as = "Option<FromInto<CommitmentConfig>>")] Option<CommitmentLevel>,
+);
 
 /// A ``getBlocks`` request.
 ///
@@ -600,7 +605,7 @@ impl GetBlocks {
         commitment: Option<CommitmentLevel>,
         id: Option<u64>,
     ) -> Self {
-        let params = GetBlocksParams(start, end, commitment.map(|c| c.into()));
+        let params = GetBlocksParams(start, end, commitment);
         let base = RequestBase::new(RpcRequest::GetBlocks, id);
         Self { base, params }
     }
@@ -620,7 +625,7 @@ impl GetBlocks {
     /// Optional[CommitmentLevel]: Bank state to query.
     #[getter]
     pub fn commitment(&self) -> Option<CommitmentLevel> {
-        self.params.2.map(|c| c.into())
+        self.params.2
     }
 }
 
@@ -660,7 +665,7 @@ impl GetBlocksWithLimit {
         commitment: Option<CommitmentLevel>,
         id: Option<u64>,
     ) -> Self {
-        let params = GetBlocksParams(start, limit, commitment.map(|c| c.into()));
+        let params = GetBlocksParams(start, limit, commitment);
         let base = RequestBase::new(RpcRequest::GetBlocksWithLimit, id);
         Self { base, params }
     }
@@ -680,7 +685,7 @@ impl GetBlocksWithLimit {
     /// Optional[CommitmentLevel]: Bank state to query.
     #[getter]
     pub fn commitment(&self) -> Option<CommitmentLevel> {
-        self.params.2.map(|c| c.into())
+        self.params.2
     }
 }
 
@@ -855,7 +860,7 @@ impl From<MessageBase64> for Message {
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct GetFeeForMessageParams(
     #[serde_as(as = "FromInto<MessageBase64>")] Message,
-    Option<CommitmentConfig>,
+    #[serde_as(as = "Option<FromInto<CommitmentConfig>>")] Option<CommitmentLevel>,
 );
 
 /// A ``getFeeForMessage`` request.
@@ -887,7 +892,7 @@ pub struct GetFeeForMessage {
 impl GetFeeForMessage {
     #[new]
     fn new(message: Message, commitment: Option<CommitmentLevel>, id: Option<u64>) -> Self {
-        let params = GetFeeForMessageParams(message, commitment.map(|c| c.into()));
+        let params = GetFeeForMessageParams(message, commitment);
         let base = RequestBase::new(RpcRequest::GetFeeForMessage, id);
         Self { base, params }
     }
@@ -901,7 +906,7 @@ impl GetFeeForMessage {
     /// Optional[CommitmentLevel]: Bank state to query.
     #[getter]
     pub fn commitment(&self) -> Option<CommitmentLevel> {
-        self.params.1.map(|c| c.into())
+        self.params.1
     }
 }
 
@@ -1194,9 +1199,13 @@ impl GetInflationReward {
 
 request_boilerplate!(GetInflationReward);
 
+#[serde_as]
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
-pub struct GetLargestAccountsParams(Option<CommitmentConfig>, Option<RpcLargestAccountsFilter>);
+pub struct GetLargestAccountsParams(
+    #[serde_as(as = "Option<FromInto<CommitmentConfig>>")] Option<CommitmentLevel>,
+    Option<RpcLargestAccountsFilter>,
+);
 
 /// A ``getLargestAccounts`` request.
 ///
@@ -1235,10 +1244,7 @@ impl GetLargestAccounts {
         id: Option<u64>,
     ) -> Self {
         let params = if commitment.is_some() || filter_.is_some() {
-            Some(GetLargestAccountsParams(
-                commitment.map(|c| c.into()),
-                filter_,
-            ))
+            Some(GetLargestAccountsParams(commitment, filter_))
         } else {
             None
         };
@@ -1249,10 +1255,7 @@ impl GetLargestAccounts {
     /// Optional[CommitmentLevel]: Bank state to query.
     #[getter]
     pub fn commitment(&self) -> Option<CommitmentLevel> {
-        self.params
-            .clone()
-            .and_then(|p| p.0)
-            .map(CommitmentLevel::from)
+        self.params.clone().and_then(|p| p.0)
     }
 
     /// Optional[RpcLargestAccountsFilter]: Filter results by account type.
@@ -1429,9 +1432,13 @@ impl GetMaxShredInsertSlot {
 
 request_boilerplate!(GetMaxShredInsertSlot);
 
+#[serde_as]
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
-pub struct GetMinimumBalanceForRentExemptionParams(usize, Option<CommitmentConfig>);
+pub struct GetMinimumBalanceForRentExemptionParams(
+    usize,
+    #[serde_as(as = "Option<FromInto<CommitmentConfig>>")] Option<CommitmentLevel>,
+);
 
 /// A ``getMinimumBalanceForRentExemption`` request.
 ///
@@ -1460,7 +1467,7 @@ pub struct GetMinimumBalanceForRentExemption {
 impl GetMinimumBalanceForRentExemption {
     #[new]
     fn new(length: usize, commitment: Option<CommitmentLevel>, id: Option<u64>) -> Self {
-        let params = GetMinimumBalanceForRentExemptionParams(length, commitment.map(|c| c.into()));
+        let params = GetMinimumBalanceForRentExemptionParams(length, commitment);
         let base = RequestBase::new(RpcRequest::GetMinimumBalanceForRentExemption, id);
         Self { base, params }
     }
@@ -1474,7 +1481,7 @@ impl GetMinimumBalanceForRentExemption {
     /// Optional[CommitmentLevel]: Bank state to query.
     #[getter]
     pub fn commitment(&self) -> Option<CommitmentLevel> {
-        self.params.1.map(|c| c.into())
+        self.params.1
     }
 }
 
@@ -2007,7 +2014,7 @@ request_boilerplate!(GetSupply);
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct PubkeyAndCommitmentParams(
     #[serde_as(as = "DisplayFromStr")] Pubkey,
-    Option<CommitmentConfig>,
+    #[serde_as(as = "Option<FromInto<CommitmentConfig>>")] Option<CommitmentLevel>,
 );
 
 /// A ``getTokenAccountBalance`` request.
@@ -2041,7 +2048,7 @@ pub struct GetTokenAccountBalance {
 impl GetTokenAccountBalance {
     #[new]
     fn new(account: Pubkey, commitment: Option<CommitmentLevel>, id: Option<u64>) -> Self {
-        let params = PubkeyAndCommitmentParams(account, commitment.map(|c| c.into()));
+        let params = PubkeyAndCommitmentParams(account, commitment);
         let base = RequestBase::new(RpcRequest::GetTokenAccountBalance, id);
         Self { base, params }
     }
@@ -2055,7 +2062,7 @@ impl GetTokenAccountBalance {
     /// Optional[CommitmentLevel]: Bank state to query.
     #[getter]
     pub fn commitment(&self) -> Option<CommitmentLevel> {
-        self.params.1.map(|c| c.into())
+        self.params.1
     }
 }
 
@@ -2238,7 +2245,7 @@ pub struct GetTokenLargestAccounts {
 impl GetTokenLargestAccounts {
     #[new]
     fn new(mint: Pubkey, commitment: Option<CommitmentLevel>, id: Option<u64>) -> Self {
-        let params = PubkeyAndCommitmentParams(mint, commitment.map(|c| c.into()));
+        let params = PubkeyAndCommitmentParams(mint, commitment);
         let base = RequestBase::new(RpcRequest::GetTokenLargestAccounts, id);
         Self { base, params }
     }
@@ -2252,7 +2259,7 @@ impl GetTokenLargestAccounts {
     /// Optional[CommitmentLevel]: Bank state to query.
     #[getter]
     pub fn commitment(&self) -> Option<CommitmentLevel> {
-        self.params.1.map(|c| c.into())
+        self.params.1
     }
 }
 
@@ -2286,7 +2293,7 @@ pub struct GetTokenSupply {
 impl GetTokenSupply {
     #[new]
     fn new(mint: Pubkey, commitment: Option<CommitmentLevel>, id: Option<u64>) -> Self {
-        let params = PubkeyAndCommitmentParams(mint, commitment.map(|c| c.into()));
+        let params = PubkeyAndCommitmentParams(mint, commitment);
         let base = RequestBase::new(RpcRequest::GetTokenSupply, id);
         Self { base, params }
     }
@@ -2300,7 +2307,7 @@ impl GetTokenSupply {
     /// Optional[CommitmentLevel]: Bank state to query.
     #[getter]
     pub fn commitment(&self) -> Option<CommitmentLevel> {
-        self.params.1.map(|c| c.into())
+        self.params.1
     }
 }
 
