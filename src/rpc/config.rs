@@ -935,7 +935,7 @@ impl RpcTransactionLogsConfig {
 /// Args:
 ///     mint (Pubkey):  Pubkey of the specific token Mint to limit accounts to.
 ///
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[pyclass]
 pub struct RpcTokenAccountsFilterMint(Pubkey);
 
@@ -964,7 +964,7 @@ impl RichcmpEqualityOnly for RpcTokenAccountsFilterMint {}
 /// Args:
 ///     program_id (Pubkey):   Pubkey of the Token program that owns the accounts.
 ///
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[pyclass]
 pub struct RpcTokenAccountsFilterProgramId(Pubkey);
 
@@ -988,7 +988,7 @@ impl RpcTokenAccountsFilterProgramId {
 
 impl RichcmpEqualityOnly for RpcTokenAccountsFilterProgramId {}
 
-#[derive(FromPyObject)]
+#[derive(FromPyObject, Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub enum RpcTokenAccountsFilterWrapper {
     Mint(RpcTokenAccountsFilterMint),
     ProgramId(RpcTokenAccountsFilterProgramId),
@@ -1019,8 +1019,8 @@ impl From<rpc_config::RpcTokenAccountsFilter> for RpcTokenAccountsFilterWrapper 
 impl IntoPy<PyObject> for RpcTokenAccountsFilterWrapper {
     fn into_py(self, py: Python<'_>) -> PyObject {
         match self {
-            RpcTokenAccountsFilterWrapper::Mint(m) => m.0.into_py(py),
-            RpcTokenAccountsFilterWrapper::ProgramId(m) => m.0.into_py(py),
+            RpcTokenAccountsFilterWrapper::Mint(m) => m.into_py(py),
+            RpcTokenAccountsFilterWrapper::ProgramId(m) => m.into_py(py),
         }
     }
 }

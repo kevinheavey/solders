@@ -8,16 +8,18 @@ use pyo3::{create_exception, exceptions::PyException, prelude::*};
 extern crate base64;
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, DisplayFromStr, FromInto};
+use solana_client::rpc_config::RpcTokenAccountsFilter;
 use solana_sdk::message::Message as MessageOriginal;
 use solders_macros::{common_methods, richcmp_eq_only, rpc_id_getter};
 
-use crate::Signature;
+use crate::{Signature, SolderHash};
 
 use super::config::{
     RpcAccountInfoConfig, RpcBlockConfig, RpcBlockProductionConfig, RpcContextConfig,
-    RpcEpochConfig, RpcLargestAccountsFilter, RpcLeaderScheduleConfig, RpcProgramAccountsConfig,
-    RpcRequestAirdropConfig, RpcSignatureStatusConfig, RpcSignaturesForAddressConfig,
-    RpcSupplyConfig,
+    RpcEpochConfig, RpcGetVoteAccountsConfig, RpcLargestAccountsFilter, RpcLeaderScheduleConfig,
+    RpcProgramAccountsConfig, RpcRequestAirdropConfig, RpcSignatureStatusConfig,
+    RpcSignaturesForAddressConfig, RpcSupplyConfig, RpcTokenAccountsFilterWrapper,
+    RpcTransactionConfig,
 };
 
 create_exception!(
@@ -146,6 +148,7 @@ pub enum RpcRequest {
     GetTokenAccountBalance,
     GetTokenAccountsByDelegate,
     GetTokenAccountsByOwner,
+    GetTokenLargestAccounts,
     GetTokenSupply,
     GetTransaction,
     GetTransactionCount,
@@ -1926,6 +1929,575 @@ impl GetSupply {
 request_boilerplate!(GetSupply);
 
 #[serde_as]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetTokenAccountBalanceParams(
+    #[serde_as(as = "DisplayFromStr")] Pubkey,
+    #[serde(skip_serializing_if = "Option::is_none")] Option<CommitmentConfig>,
+);
+
+/// A ``getTokenAccountBalance`` request.
+///
+/// Args:
+///     account (Pubkey): The token account to query.
+///     commitment (Optional[CommitmentLevel]): Extra configuration.
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///     >>> from solders.rpc.requests import GetTokenAccountBalance
+///     >>> from solders.commitment_config import CommitmentLevel
+///     >>> from solders.rpc.config import RpcEpochConfig
+///     >>> from solders.pubkey import Pubkey
+///     >>> config = RpcEpochConfig(epoch=1234)
+///     >>> GetTokenAccountBalance(Pubkey.default(), CommitmentLevel.Processed).to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"getTokenAccountBalance","params":["11111111111111111111111111111111",{"commitment":"processed"}]}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetTokenAccountBalance {
+    #[serde(flatten)]
+    base: RequestBase,
+    params: GetTokenAccountBalanceParams,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl GetTokenAccountBalance {
+    #[new]
+    fn new(account: Pubkey, commitment: Option<CommitmentLevel>, id: Option<u64>) -> Self {
+        let params = GetTokenAccountBalanceParams(account, commitment.map(|c| c.into()));
+        let base = RequestBase::new(RpcRequest::GetTokenAccountBalance, id);
+        Self { base, params }
+    }
+
+    /// Pubkey: The token account to query.
+    #[getter]
+    pub fn account(&self) -> Pubkey {
+        self.params.0
+    }
+
+    /// Optional[CommitmentLevel]: Bank state to query.
+    #[getter]
+    pub fn commitment(&self) -> Option<CommitmentLevel> {
+        self.params.1.map(|c| c.into())
+    }
+}
+
+request_boilerplate!(GetTokenAccountBalance);
+
+#[serde_as]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetTokenAccountsByDelegateParams(
+    #[serde_as(as = "DisplayFromStr")] Pubkey,
+    #[serde_as(as = "FromInto<RpcTokenAccountsFilter>")] RpcTokenAccountsFilterWrapper,
+    #[serde(skip_serializing_if = "Option::is_none")] Option<RpcAccountInfoConfig>,
+);
+
+/// A ``getTokenAccountsByDelegate`` request.
+///
+/// Args:
+///     account (Pubkey): The account delegate to query.
+///     filter (RpcTokenAccountsFilterMint | RpcTokenAccountsFilterProgramId): Filter by either token mint or token program.
+///     config (Optional[RpcAccountInfoConfig]): Extra configuration.
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///     >>> from solders.rpc.requests import GetTokenAccountsByDelegate
+///     >>> from solders.rpc.config import RpcTokenAccountsFilterProgramId, RpcAccountInfoConfig
+///     >>> from solders.pubkey import Pubkey
+///     >>> program_filter = RpcTokenAccountsFilterProgramId(Pubkey.from_string("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"))
+///     >>> config = RpcAccountInfoConfig(min_context_slot=1234)
+///     >>> req = GetTokenAccountsByDelegate(Pubkey.default(), program_filter, config)
+///     >>> req.to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"getTokenAccountsByDelegate","params":["11111111111111111111111111111111",{"programId":"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"},{"encoding":null,"dataSlice":null,"minContextSlot":1234}]}'
+///     >>> req.filter
+///     RpcTokenAccountsFilterProgramId(
+///         Pubkey(
+///             TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA,
+///         ),
+///     )
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetTokenAccountsByDelegate {
+    #[serde(flatten)]
+    base: RequestBase,
+    params: GetTokenAccountsByDelegateParams,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl GetTokenAccountsByDelegate {
+    #[new]
+    fn new(
+        account: Pubkey,
+        filter: RpcTokenAccountsFilterWrapper,
+        config: Option<RpcAccountInfoConfig>,
+        id: Option<u64>,
+    ) -> Self {
+        let params = GetTokenAccountsByDelegateParams(account, filter, config);
+        let base = RequestBase::new(RpcRequest::GetTokenAccountsByDelegate, id);
+        Self { base, params }
+    }
+
+    /// Pubkey: The account delegate to query.
+    #[getter]
+    pub fn account(&self) -> Pubkey {
+        self.params.0
+    }
+
+    /// RpcTokenAccountsFilterWrapper: Filter by either token mint or token program.
+    #[getter]
+    pub fn filter(&self) -> RpcTokenAccountsFilterWrapper {
+        self.params.1.clone()
+    }
+
+    /// Optional[RpcAccountInfoConfig]: Extra configuration.
+    #[getter]
+    pub fn config(&self) -> Option<RpcAccountInfoConfig> {
+        self.params.2.clone()
+    }
+}
+
+request_boilerplate!(GetTokenAccountsByDelegate);
+
+/// A ``getTokenAccountsByOwner`` request.
+///
+/// Args:
+///     account (Pubkey): The account owner to query.
+///     filter (RpcTokenAccountsFilterMint | RpcTokenAccountsFilterProgramId): Filter by either token mint or token program.
+///     config (Optional[RpcAccountInfoConfig]): Extra configuration.
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///     >>> from solders.rpc.requests import GetTokenAccountsByOwner
+///     >>> from solders.rpc.config import RpcTokenAccountsFilterMint, RpcAccountInfoConfig
+///     >>> from solders.pubkey import Pubkey
+///     >>> mint_filter = RpcTokenAccountsFilterMint(Pubkey.default())
+///     >>> config = RpcAccountInfoConfig(min_context_slot=1234)
+///     >>> req = GetTokenAccountsByOwner(Pubkey.default(), mint_filter, config)
+///     >>> req.to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"getTokenAccountsByOwner","params":["11111111111111111111111111111111",{"mint":"11111111111111111111111111111111"},{"encoding":null,"dataSlice":null,"minContextSlot":1234}]}'
+///     >>> req.filter
+///     RpcTokenAccountsFilterMint(
+///         Pubkey(
+///             11111111111111111111111111111111,
+///         ),
+///     )
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetTokenAccountsByOwner {
+    #[serde(flatten)]
+    base: RequestBase,
+    params: GetTokenAccountsByDelegateParams, // not a mistake that we're reusing GetTokenAccountsByDelegateParams
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl GetTokenAccountsByOwner {
+    #[new]
+    fn new(
+        account: Pubkey,
+        filter: RpcTokenAccountsFilterWrapper,
+        config: Option<RpcAccountInfoConfig>,
+        id: Option<u64>,
+    ) -> Self {
+        let params = GetTokenAccountsByDelegateParams(account, filter, config);
+        let base = RequestBase::new(RpcRequest::GetTokenAccountsByOwner, id);
+        Self { base, params }
+    }
+
+    /// Pubkey: The account owner to query.
+    #[getter]
+    pub fn account(&self) -> Pubkey {
+        self.params.0
+    }
+
+    /// RpcTokenAccountsFilterWrapper: Filter by either token mint or token program.
+    #[getter]
+    pub fn filter(&self) -> RpcTokenAccountsFilterWrapper {
+        self.params.1.clone()
+    }
+
+    /// Optional[RpcAccountInfoConfig]: Extra configuration.
+    #[getter]
+    pub fn config(&self) -> Option<RpcAccountInfoConfig> {
+        self.params.2.clone()
+    }
+}
+
+#[serde_as]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetTokenLargestAccountsParams(
+    #[serde_as(as = "DisplayFromStr")] Pubkey,
+    #[serde(skip_serializing_if = "Option::is_none")] Option<CommitmentConfig>,
+);
+
+request_boilerplate!(GetTokenAccountsByOwner);
+
+/// A ``getTokenLargestAccounts`` request.
+///
+/// Args:
+///     mint (Pubkey): The token mint to query.
+///     commitment (Optional[CommitmentLevel]): Bank state to query.
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///     >>> from solders.rpc.requests import GetTokenLargestAccounts
+///     >>> from solders.pubkey import Pubkey
+///     >>> GetTokenLargestAccounts(Pubkey.default()).to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"getTokenLargestAccounts","params":["11111111111111111111111111111111"]}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetTokenLargestAccounts {
+    #[serde(flatten)]
+    base: RequestBase,
+    params: GetTokenLargestAccountsParams,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl GetTokenLargestAccounts {
+    #[new]
+    fn new(mint: Pubkey, commitment: Option<CommitmentLevel>, id: Option<u64>) -> Self {
+        let params = GetTokenLargestAccountsParams(mint, commitment.map(|c| c.into()));
+        let base = RequestBase::new(RpcRequest::GetTokenLargestAccounts, id);
+        Self { base, params }
+    }
+
+    /// Pubkey: The token mint to query.
+    #[getter]
+    pub fn mint(&self) -> Pubkey {
+        self.params.0
+    }
+
+    /// Optional[CommitmentLevel]: Bank state to query.
+    #[getter]
+    pub fn commitment(&self) -> Option<CommitmentLevel> {
+        self.params.1.map(|c| c.into())
+    }
+}
+
+request_boilerplate!(GetTokenLargestAccounts);
+
+/// A ``getTokenSupply`` request.
+///
+/// Args:
+///     mint (Pubkey): The token mint to query.
+///     commitment (Optional[CommitmentLevel]): Bank state to query.
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///     >>> from solders.rpc.requests import GetTokenSupply
+///     >>> from solders.pubkey import Pubkey
+///     >>> GetTokenSupply(Pubkey.default()).to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"getTokenSupply","params":["11111111111111111111111111111111"]}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetTokenSupply {
+    #[serde(flatten)]
+    base: RequestBase,
+    params: GetTokenLargestAccountsParams,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl GetTokenSupply {
+    #[new]
+    fn new(mint: Pubkey, commitment: Option<CommitmentLevel>, id: Option<u64>) -> Self {
+        let params = GetTokenLargestAccountsParams(mint, commitment.map(|c| c.into()));
+        let base = RequestBase::new(RpcRequest::GetTokenSupply, id);
+        Self { base, params }
+    }
+
+    /// Pubkey: The token mint to query.
+    #[getter]
+    pub fn mint(&self) -> Pubkey {
+        self.params.0
+    }
+
+    /// Optional[CommitmentLevel]: Bank state to query.
+    #[getter]
+    pub fn commitment(&self) -> Option<CommitmentLevel> {
+        self.params.1.map(|c| c.into())
+    }
+}
+
+request_boilerplate!(GetTokenSupply);
+
+#[serde_as]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetTransactionParams(
+    #[serde_as(as = "DisplayFromStr")] Signature,
+    #[serde(skip_serializing_if = "Option::is_none")] Option<RpcTransactionConfig>,
+);
+
+/// A ``getTransaction`` request.
+///
+/// Args:
+///     signature (Signature): The transaction signature to query.
+///     config (Optional[RpcTransactionConfig]): Extra configuration.
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///     >>> from solders.rpc.requests import GetTransaction
+///     >>> from solders.rpc.config import RpcTransactionConfig
+///     >>> from solders.signature import Signature
+///     >>> config = RpcTransactionConfig(max_supported_transaction_version=1)
+///     >>> GetTransaction(Signature.default(), config).to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"getTransaction","params":["1111111111111111111111111111111111111111111111111111111111111111",{"encoding":null,"maxSupportedTransactionVersion":1}]}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetTransaction {
+    #[serde(flatten)]
+    base: RequestBase,
+    params: GetTransactionParams,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl GetTransaction {
+    #[new]
+    fn new(signature: Signature, config: Option<RpcTransactionConfig>, id: Option<u64>) -> Self {
+        let params = GetTransactionParams(signature, config);
+        let base = RequestBase::new(RpcRequest::GetTransaction, id);
+        Self { base, params }
+    }
+
+    /// Pubkey: The signature to query.
+    #[getter]
+    pub fn signature(&self) -> Signature {
+        self.params.0
+    }
+
+    /// Optional[RpcTransactionConfig]: Extra configuration.
+    #[getter]
+    pub fn config(&self) -> Option<RpcTransactionConfig> {
+        self.params.1.clone()
+    }
+}
+
+request_boilerplate!(GetTransaction);
+
+/// A ``getTransactionCount`` request.
+///
+/// Args:
+///     config (Optional[RpcContextConfig]): Extra configuration.
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///     >>> from solders.rpc.requests import GetTransactionCount
+///     >>> from solders.rpc.config import RpcContextConfig
+///     >>> config = RpcContextConfig(min_context_slot=1234)
+///     >>> GetTransactionCount(config).to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"getTransactionCount","params":[{"minContextSlot":1234}]}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetTransactionCount {
+    #[serde(flatten)]
+    base: RequestBase,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    params: Option<(RpcContextConfig,)>,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl GetTransactionCount {
+    #[new]
+    fn new(config: Option<RpcContextConfig>, id: Option<u64>) -> Self {
+        let params = config.map(|c| (c,));
+        let base = RequestBase::new(RpcRequest::GetTransactionCount, id);
+        Self { base, params }
+    }
+
+    /// Optional[RpcContextConfig]: Extra configuration.
+    #[getter]
+    pub fn config(&self) -> Option<RpcContextConfig> {
+        self.params.clone().map(|c| c.0)
+    }
+}
+
+request_boilerplate!(GetTransactionCount);
+
+/// A ``getVersion`` request.
+///
+/// Args:
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///     >>> from solders.rpc.requests import GetVersion
+///     >>> GetVersion().to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"getVersion"}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetVersion {
+    #[serde(flatten)]
+    base: RequestBase,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl GetVersion {
+    #[new]
+    fn new(id: Option<u64>) -> Self {
+        let base = RequestBase::new(RpcRequest::GetVersion, id);
+        Self { base }
+    }
+}
+
+request_boilerplate!(GetVersion);
+
+/// A ``getVoteAccounts`` request.
+///
+/// Args:
+///     config (Optional[RpcGetVoteAccountsConfig]): Extra configuration.
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///     >>> from solders.rpc.requests import GetVoteAccounts
+///     >>> from solders.rpc.config import RpcGetVoteAccountsConfig
+///     >>> config = RpcGetVoteAccountsConfig(keep_unstaked_delinquents=False)
+///     >>> GetVoteAccounts(config).to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"getVoteAccounts","params":[{"votePubkey":null,"keepUnstakedDelinquents":false,"delinquentSlotDistance":null}]}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct GetVoteAccounts {
+    #[serde(flatten)]
+    base: RequestBase,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    params: Option<(RpcGetVoteAccountsConfig,)>,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl GetVoteAccounts {
+    #[new]
+    fn new(config: Option<RpcGetVoteAccountsConfig>, id: Option<u64>) -> Self {
+        let params = config.map(|c| (c,));
+        let base = RequestBase::new(RpcRequest::GetVoteAccounts, id);
+        Self { base, params }
+    }
+
+    /// Optional[RpcGetVoteAccountsConfig]: Extra configuration.
+    #[getter]
+    pub fn config(&self) -> Option<RpcGetVoteAccountsConfig> {
+        self.params.clone().map(|p| p.0)
+    }
+}
+
+request_boilerplate!(GetVoteAccounts);
+
+#[serde_as]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct IsBlockhashValidParams(
+    #[serde_as(as = "DisplayFromStr")] SolderHash,
+    #[serde(skip_serializing_if = "Option::is_none")] Option<RpcContextConfig>,
+);
+
+/// An ``isBlockhashValid`` request.
+///
+/// Args:
+///     blockhash (Hash): The blockhash to check.
+///     config (Optional[RpcContextConfig]): Extra configuration.
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///     >>> from solders.rpc.requests import IsBlockhashValid
+///     >>> from solders.hash import Hash
+///     >>> IsBlockhashValid(Hash.default()).to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"isBlockhashValid","params":["11111111111111111111111111111111"]}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct IsBlockhashValid {
+    #[serde(flatten)]
+    base: RequestBase,
+    params: IsBlockhashValidParams,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl IsBlockhashValid {
+    #[new]
+    fn new(blockhash: SolderHash, config: Option<RpcContextConfig>, id: Option<u64>) -> Self {
+        let params = IsBlockhashValidParams(blockhash, config);
+        let base = RequestBase::new(RpcRequest::IsBlockhashValid, id);
+        Self { base, params }
+    }
+
+    /// Hash: The blockhash to check.
+    #[getter]
+    pub fn blockhash(&self) -> SolderHash {
+        self.params.0
+    }
+
+    /// Optional[RpcContextConfig]: Extra configuration.
+    #[getter]
+    pub fn config(&self) -> Option<RpcContextConfig> {
+        self.params.1.clone()
+    }
+}
+
+request_boilerplate!(IsBlockhashValid);
+
+/// A ``minimumLedgerSlot`` request.
+///
+/// Args:
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///     >>> from solders.rpc.requests import MinimumLedgerSlot
+///     >>> MinimumLedgerSlot().to_json()
+///     '{"jsonrpc":"2.0","id":0,"method":"minimumLedgerSlot"}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct MinimumLedgerSlot {
+    #[serde(flatten)]
+    base: RequestBase,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl MinimumLedgerSlot {
+    #[new]
+    fn new(id: Option<u64>) -> Self {
+        let base = RequestBase::new(RpcRequest::MinimumLedgerSlot, id);
+        Self { base }
+    }
+}
+
+request_boilerplate!(MinimumLedgerSlot);
+
+#[serde_as]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize, Default)]
 pub struct RequestAirdropParams(
     #[serde_as(as = "DisplayFromStr")] Pubkey,
@@ -2064,6 +2636,17 @@ pub fn create_requests_mod(py: Python<'_>) -> PyResult<&PyModule> {
     requests_mod.add_class::<GetSlotLeaders>()?;
     requests_mod.add_class::<GetStakeActivation>()?;
     requests_mod.add_class::<GetSupply>()?;
+    requests_mod.add_class::<GetTokenAccountBalance>()?;
+    requests_mod.add_class::<GetTokenAccountsByDelegate>()?;
+    requests_mod.add_class::<GetTokenAccountsByOwner>()?;
+    requests_mod.add_class::<GetTokenLargestAccounts>()?;
+    requests_mod.add_class::<GetTokenSupply>()?;
+    requests_mod.add_class::<GetTransaction>()?;
+    requests_mod.add_class::<GetTransactionCount>()?;
+    requests_mod.add_class::<GetVersion>()?;
+    requests_mod.add_class::<GetVoteAccounts>()?;
+    requests_mod.add_class::<IsBlockhashValid>()?;
+    requests_mod.add_class::<MinimumLedgerSlot>()?;
     requests_mod.add_class::<RequestAirdrop>()?;
     let funcs = [
         wrap_pyfunction!(batch_to_json, requests_mod)?,
