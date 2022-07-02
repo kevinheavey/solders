@@ -6,6 +6,7 @@ use crate::{
 };
 use pyo3::{create_exception, exceptions::PyException, prelude::*};
 extern crate base64;
+use camelpaste::paste;
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, DisplayFromStr, FromInto};
 use solana_client::rpc_config::{
@@ -60,47 +61,58 @@ pub struct UnsubscribeParams((u64,));
 
 macro_rules! unsubscribe_def {
     ($name:ident) => {
-        /// ``$name`` request.
-        ///
-        /// Args:
-        ///     subscription_id (int): ID of subscription to cancel
-        ///     id (Optional[int]): Request ID.
-        ///
-        /// Example:
-        ///      >>> from solders.rpc.requests import $name
-        ///      >>> $name(1, 2).to_json()
-        ///      '{"jsonrpc":"2.0","id":0,"method":"requestAirdrop","params":["11111111111111111111111111111111",1000,{"recentBlockhash":null,"commitment":"confirmed"}]}'
-        ///
-        #[pyclass(module = "solders.rpc.requests")]
-        #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
-        pub struct $name {
-            #[serde(flatten)]
-            base: RequestBase,
-            params: UnsubscribeParams,
-        }
+        paste! {
+        #[doc = "``" $name:camel "`` request.
 
-        #[richcmp_eq_only]
-        #[common_methods]
-        #[rpc_id_getter]
-        #[pymethods]
-        impl $name {
-            #[new]
-            fn new(subscription_id: u64, id: Option<u64>) -> Self {
-                let params = UnsubscribeParams((subscription_id,));
-                let base = RequestBase::new(RpcRequest::$name, id);
-                Self { base, params }
-            }
+Args:
+    subscription_id (int): ID of subscription to cancel
+    id (Optional[int]): Request ID.
 
-            /// int: ID of subscription to cancel
-            #[getter]
-            fn subscription_id(&self) -> u64 {
-                self.params.0
-            }
-        }
+Example:
+     >>> from solders.rpc.requests import " $name "
+     >>> " $name "(1, 2).to_json()
+     '{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"" $name:camel "\",\"params\":[1]}'
+"]
+                #[pyclass(module = "solders.rpc.requests")]
+                #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+                pub struct $name {
+                    #[serde(flatten)]
+                    base: RequestBase,
+                    params: UnsubscribeParams,
+                }
 
-        request_boilerplate!($name);
+                #[richcmp_eq_only]
+                #[common_methods]
+                #[rpc_id_getter]
+                #[pymethods]
+                impl $name {
+                    #[new]
+                    fn new(subscription_id: u64, id: Option<u64>) -> Self {
+                        let params = UnsubscribeParams((subscription_id,));
+                        let base = RequestBase::new(RpcRequest::$name, id);
+                        Self { base, params }
+                    }
+
+                    /// int: ID of subscription to cancel
+                    #[getter]
+                    fn subscription_id(&self) -> u64 {
+                        self.params.0 .0
+                    }
+                }
+
+                request_boilerplate!($name);}
     };
 }
+
+unsubscribe_def!(AccountUnsubscribe);
+unsubscribe_def!(BlockUnsubscribe);
+unsubscribe_def!(LogsUnsubscribe);
+unsubscribe_def!(ProgramUnsubscribe);
+unsubscribe_def!(SignatureUnsubscribe);
+unsubscribe_def!(SlotUnsubscribe);
+unsubscribe_def!(SlotsUpdatesUnsubscribe);
+unsubscribe_def!(RootUnsubscribe);
+unsubscribe_def!(VoteUnsubscribe);
 
 impl From<serde_json::Error> for PyErrWrapper {
     fn from(e: serde_json::Error) -> Self {
@@ -223,6 +235,15 @@ pub enum RpcRequest {
     SlotsUpdatesSubscribe,
     RootSubscribe,
     VoteSubscribe,
+    AccountUnsubscribe,
+    BlockUnsubscribe,
+    LogsUnsubscribe,
+    ProgramUnsubscribe,
+    SignatureUnsubscribe,
+    SlotUnsubscribe,
+    SlotsUpdatesUnsubscribe,
+    RootUnsubscribe,
+    VoteUnsubscribe,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
@@ -3305,6 +3326,15 @@ pub fn create_requests_mod(py: Python<'_>) -> PyResult<&PyModule> {
     requests_mod.add_class::<SlotsUpdatesSubscribe>()?;
     requests_mod.add_class::<RootSubscribe>()?;
     requests_mod.add_class::<VoteSubscribe>()?;
+    requests_mod.add_class::<AccountUnsubscribe>()?;
+    requests_mod.add_class::<BlockUnsubscribe>()?;
+    requests_mod.add_class::<LogsUnsubscribe>()?;
+    requests_mod.add_class::<ProgramUnsubscribe>()?;
+    requests_mod.add_class::<SignatureUnsubscribe>()?;
+    requests_mod.add_class::<SlotUnsubscribe>()?;
+    requests_mod.add_class::<SlotsUpdatesUnsubscribe>()?;
+    requests_mod.add_class::<RootUnsubscribe>()?;
+    requests_mod.add_class::<VoteUnsubscribe>()?;
     let funcs = [
         wrap_pyfunction!(batch_to_json, requests_mod)?,
         wrap_pyfunction!(batch_from_json, requests_mod)?,
