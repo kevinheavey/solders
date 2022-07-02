@@ -8,7 +8,7 @@ use pyo3::{create_exception, exceptions::PyException, prelude::*};
 extern crate base64;
 use camelpaste::paste;
 use serde::{Deserialize, Serialize};
-use serde_with::{serde_as, DisplayFromStr, FromInto};
+use serde_with::{serde_as, skip_serializing_none, DisplayFromStr, FromInto};
 use solana_client::rpc_config::{
     RpcBlockSubscribeFilter, RpcTokenAccountsFilter, RpcTransactionLogsFilter,
 };
@@ -264,10 +264,11 @@ impl RequestBase {
 }
 
 #[serde_as]
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct GetAccountInfoParams(
     #[serde_as(as = "DisplayFromStr")] Pubkey,
-    #[serde(skip_serializing_if = "Option::is_none")] Option<RpcAccountInfoConfig>,
+    Option<RpcAccountInfoConfig>,
 );
 
 /// A ``getAccountInfo`` request.
@@ -322,10 +323,11 @@ impl GetAccountInfo {
 request_boilerplate!(GetAccountInfo);
 
 #[serde_as]
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct GetBalanceParams(
     #[serde_as(as = "DisplayFromStr")] Pubkey,
-    #[serde(skip_serializing_if = "Option::is_none")] Option<RpcContextConfig>,
+    Option<RpcContextConfig>,
 );
 
 /// A ``getBalance`` request.
@@ -378,11 +380,9 @@ impl GetBalance {
 
 request_boilerplate!(GetBalance);
 
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
-pub struct GetBlockParams(
-    u64,
-    #[serde(skip_serializing_if = "Option::is_none")] Option<RpcBlockConfig>,
-);
+pub struct GetBlockParams(u64, Option<RpcBlockConfig>);
 
 /// A ``getBlock`` request.
 ///
@@ -448,11 +448,11 @@ request_boilerplate!(GetBlock);
 ///     '{"jsonrpc":"2.0","id":0,"method":"getBlockHeight","params":[{"minContextSlot":123}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct GetBlockHeight {
     #[serde(flatten)]
     base: RequestBase,
-    #[serde(skip_serializing_if = "Option::is_none")]
     params: Option<(RpcContextConfig,)>,
 }
 
@@ -493,11 +493,11 @@ request_boilerplate!(GetBlockHeight);
 ///     '{"jsonrpc":"2.0","id":0,"method":"getBlockProduction","params":[{"identity":"11111111111111111111111111111111","range":{"firstSlot":10,"lastSlot":15}}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct GetBlockProduction {
     #[serde(flatten)]
     base: RequestBase,
-    #[serde(skip_serializing_if = "Option::is_none")]
     params: Option<(RpcBlockProductionConfig,)>,
 }
 
@@ -562,12 +562,9 @@ impl GetBlockCommitment {
 
 request_boilerplate!(GetBlockCommitment);
 
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
-pub struct GetBlocksParams(
-    u64,
-    #[serde(skip_serializing_if = "Option::is_none")] Option<u64>,
-    #[serde(skip_serializing_if = "Option::is_none")] Option<CommitmentConfig>,
-);
+pub struct GetBlocksParams(u64, Option<u64>, Option<CommitmentConfig>);
 
 /// A ``getBlocks`` request.
 ///
@@ -775,11 +772,11 @@ request_boilerplate!(GetClusterNodes);
 ///     '{"jsonrpc":"2.0","id":0,"method":"getEpochInfo","params":[{"commitment":"processed","minContextSlot":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct GetEpochInfo {
     #[serde(flatten)]
     base: RequestBase,
-    #[serde(skip_serializing_if = "Option::is_none")]
     params: Option<(RpcContextConfig,)>,
 }
 
@@ -854,10 +851,11 @@ impl From<MessageBase64> for Message {
 }
 
 #[serde_as]
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct GetFeeForMessageParams(
     #[serde_as(as = "FromInto<MessageBase64>")] Message,
-    #[serde(skip_serializing_if = "Option::is_none")] Option<CommitmentConfig>,
+    Option<CommitmentConfig>,
 );
 
 /// A ``getFeeForMessage`` request.
@@ -1077,11 +1075,11 @@ request_boilerplate!(GetIdentity);
 ///     '{"jsonrpc":"2.0","id":0,"method":"getInflationGovernor","params":[{"commitment":"finalized"}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct GetInflationGovernor {
     #[serde(flatten)]
     base: RequestBase,
-    #[serde(skip_serializing_if = "Option::is_none")]
     params: Option<(CommitmentConfig,)>,
 }
 
@@ -1138,10 +1136,11 @@ impl GetInflationRate {
 request_boilerplate!(GetInflationRate);
 
 #[serde_as]
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct GetInflationRewardParams(
     #[serde_as(as = "Vec<DisplayFromStr>")] Vec<Pubkey>,
-    #[serde(skip_serializing_if = "Option::is_none")] Option<RpcEpochConfig>,
+    Option<RpcEpochConfig>,
 );
 
 /// A ``getInflationReward`` request.
@@ -1195,11 +1194,9 @@ impl GetInflationReward {
 
 request_boilerplate!(GetInflationReward);
 
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
-pub struct GetLargestAccountsParams(
-    #[serde(skip_serializing_if = "Option::is_none")] Option<CommitmentConfig>,
-    #[serde(skip_serializing_if = "Option::is_none")] Option<RpcLargestAccountsFilter>,
-);
+pub struct GetLargestAccountsParams(Option<CommitmentConfig>, Option<RpcLargestAccountsFilter>);
 
 /// A ``getLargestAccounts`` request.
 ///
@@ -1218,11 +1215,11 @@ pub struct GetLargestAccountsParams(
 ///     '{"jsonrpc":"2.0","id":0,"method":"getLargestAccounts","params":[{"commitment":"processed"},"circulating"]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct GetLargestAccounts {
     #[serde(flatten)]
     base: RequestBase,
-    #[serde(skip_serializing_if = "Option::is_none")]
     params: Option<GetLargestAccountsParams>,
 }
 
@@ -1282,11 +1279,11 @@ request_boilerplate!(GetLargestAccounts);
 ///     '{"jsonrpc":"2.0","id":0,"method":"getLatestBlockhash","params":[{"commitment":"processed","minContextSlot":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct GetLatestBlockhash {
     #[serde(flatten)]
     base: RequestBase,
-    #[serde(skip_serializing_if = "Option::is_none")]
     params: Option<(RpcContextConfig,)>,
 }
 
@@ -1311,11 +1308,9 @@ impl GetLatestBlockhash {
 
 request_boilerplate!(GetLatestBlockhash);
 
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
-pub struct GetLeaderScheduleParams(
-    #[serde(skip_serializing_if = "Option::is_none")] Option<u64>,
-    #[serde(skip_serializing_if = "Option::is_none")] Option<RpcLeaderScheduleConfig>,
-);
+pub struct GetLeaderScheduleParams(Option<u64>, Option<RpcLeaderScheduleConfig>);
 
 /// A ``GetLeaderSchedule`` request.
 ///
@@ -1333,11 +1328,11 @@ pub struct GetLeaderScheduleParams(
 ///     '{"jsonrpc":"2.0","id":0,"method":"getLeaderSchedule","params":[123,{"identity":"11111111111111111111111111111111"}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct GetLeaderSchedule {
     #[serde(flatten)]
     base: RequestBase,
-    #[serde(skip_serializing_if = "Option::is_none")]
     params: Option<GetLeaderScheduleParams>,
 }
 
@@ -1434,11 +1429,9 @@ impl GetMaxShredInsertSlot {
 
 request_boilerplate!(GetMaxShredInsertSlot);
 
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
-pub struct GetMinimumBalanceForRentExemptionParams(
-    usize,
-    #[serde(skip_serializing_if = "Option::is_none")] Option<CommitmentConfig>,
-);
+pub struct GetMinimumBalanceForRentExemptionParams(usize, Option<CommitmentConfig>);
 
 /// A ``getMinimumBalanceForRentExemption`` request.
 ///
@@ -1488,10 +1481,11 @@ impl GetMinimumBalanceForRentExemption {
 request_boilerplate!(GetMinimumBalanceForRentExemption);
 
 #[serde_as]
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct GetMultipleAccountsParams(
     #[serde_as(as = "Vec<DisplayFromStr>")] Vec<Pubkey>,
-    #[serde(skip_serializing_if = "Option::is_none")] Option<RpcAccountInfoConfig>,
+    Option<RpcAccountInfoConfig>,
 );
 
 /// A ``getMultipleAccounts`` request.
@@ -1550,10 +1544,11 @@ impl GetMultipleAccounts {
 request_boilerplate!(GetMultipleAccounts);
 
 #[serde_as]
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct GetProgramAccountsParams(
     #[serde_as(as = "DisplayFromStr")] Pubkey,
-    #[serde(skip_serializing_if = "Option::is_none")] Option<RpcProgramAccountsConfig>,
+    Option<RpcProgramAccountsConfig>,
 );
 
 /// A ``getProgramAccounts`` request.
@@ -1621,11 +1616,11 @@ request_boilerplate!(GetProgramAccounts);
 ///     '{"jsonrpc":"2.0","id":0,"method":"getRecentPerformanceSamples","params":[5]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct GetRecentPerformanceSamples {
     #[serde(flatten)]
     base: RequestBase,
-    #[serde(skip_serializing_if = "Option::is_none")]
     params: Option<(usize,)>,
 }
 
@@ -1651,10 +1646,11 @@ impl GetRecentPerformanceSamples {
 request_boilerplate!(GetRecentPerformanceSamples);
 
 #[serde_as]
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct GetSignaturesForAddressParams(
     #[serde_as(as = "DisplayFromStr")] Pubkey,
-    #[serde(skip_serializing_if = "Option::is_none")] Option<RpcSignaturesForAddressConfig>,
+    Option<RpcSignaturesForAddressConfig>,
 );
 
 /// A ``getSignaturesForAddress`` request.
@@ -1711,10 +1707,11 @@ impl GetSignaturesForAddress {
 request_boilerplate!(GetSignaturesForAddress);
 
 #[serde_as]
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct GetSignatureStatusesParams(
     #[serde_as(as = "Vec<DisplayFromStr>")] Vec<Signature>,
-    #[serde(skip_serializing_if = "Option::is_none")] Option<RpcSignatureStatusConfig>,
+    Option<RpcSignatureStatusConfig>,
 );
 
 /// A ``getSignatureStatuses`` request.
@@ -1785,11 +1782,11 @@ request_boilerplate!(GetSignatureStatuses);
 ///     '{"jsonrpc":"2.0","id":0,"method":"getSlot","params":[{"minContextSlot":123}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct GetSlot {
     #[serde(flatten)]
     base: RequestBase,
-    #[serde(skip_serializing_if = "Option::is_none")]
     params: Option<(RpcContextConfig,)>,
 }
 
@@ -1828,11 +1825,11 @@ request_boilerplate!(GetSlot);
 ///     '{"jsonrpc":"2.0","id":0,"method":"getSlot","params":[{"minContextSlot":123}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct GetSlotLeader {
     #[serde(flatten)]
     base: RequestBase,
-    #[serde(skip_serializing_if = "Option::is_none")]
     params: Option<(RpcContextConfig,)>,
 }
 
@@ -1905,10 +1902,11 @@ impl GetSlotLeaders {
 request_boilerplate!(GetSlotLeaders);
 
 #[serde_as]
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct GetStakeActivationParams(
     #[serde_as(as = "DisplayFromStr")] Pubkey,
-    #[serde(skip_serializing_if = "Option::is_none")] Option<RpcEpochConfig>,
+    Option<RpcEpochConfig>,
 );
 
 /// A ``getStakeActivation`` request.
@@ -1975,11 +1973,11 @@ request_boilerplate!(GetStakeActivation);
 ///     '{"jsonrpc":"2.0","id":0,"method":"getSupply","params":[{"excludeNonCirculatingAccountsList":true}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct GetSupply {
     #[serde(flatten)]
     base: RequestBase,
-    #[serde(skip_serializing_if = "Option::is_none")]
     params: Option<(RpcSupplyConfig,)>,
 }
 
@@ -2005,10 +2003,11 @@ impl GetSupply {
 request_boilerplate!(GetSupply);
 
 #[serde_as]
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct PubkeyAndCommitmentParams(
     #[serde_as(as = "DisplayFromStr")] Pubkey,
-    #[serde(skip_serializing_if = "Option::is_none")] Option<CommitmentConfig>,
+    Option<CommitmentConfig>,
 );
 
 /// A ``getTokenAccountBalance`` request.
@@ -2063,11 +2062,12 @@ impl GetTokenAccountBalance {
 request_boilerplate!(GetTokenAccountBalance);
 
 #[serde_as]
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct GetTokenAccountsByDelegateParams(
     #[serde_as(as = "DisplayFromStr")] Pubkey,
     #[serde_as(as = "FromInto<RpcTokenAccountsFilter>")] RpcTokenAccountsFilterWrapper,
-    #[serde(skip_serializing_if = "Option::is_none")] Option<RpcAccountInfoConfig>,
+    Option<RpcAccountInfoConfig>,
 );
 
 /// A ``getTokenAccountsByDelegate`` request.
@@ -2307,10 +2307,11 @@ impl GetTokenSupply {
 request_boilerplate!(GetTokenSupply);
 
 #[serde_as]
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct GetTransactionParams(
     #[serde_as(as = "DisplayFromStr")] Signature,
-    #[serde(skip_serializing_if = "Option::is_none")] Option<RpcTransactionConfig>,
+    Option<RpcTransactionConfig>,
 );
 
 /// A ``getTransaction`` request.
@@ -2377,11 +2378,11 @@ request_boilerplate!(GetTransaction);
 ///     '{"jsonrpc":"2.0","id":0,"method":"getTransactionCount","params":[{"minContextSlot":1234}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct GetTransactionCount {
     #[serde(flatten)]
     base: RequestBase,
-    #[serde(skip_serializing_if = "Option::is_none")]
     params: Option<(RpcContextConfig,)>,
 }
 
@@ -2451,11 +2452,11 @@ request_boilerplate!(GetVersion);
 ///     '{"jsonrpc":"2.0","id":0,"method":"getVoteAccounts","params":[{"votePubkey":null,"keepUnstakedDelinquents":false,"delinquentSlotDistance":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct GetVoteAccounts {
     #[serde(flatten)]
     base: RequestBase,
-    #[serde(skip_serializing_if = "Option::is_none")]
     params: Option<(RpcGetVoteAccountsConfig,)>,
 }
 
@@ -2481,10 +2482,11 @@ impl GetVoteAccounts {
 request_boilerplate!(GetVoteAccounts);
 
 #[serde_as]
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct IsBlockhashValidParams(
     #[serde_as(as = "DisplayFromStr")] SolderHash,
-    #[serde(skip_serializing_if = "Option::is_none")] Option<RpcContextConfig>,
+    Option<RpcContextConfig>,
 );
 
 /// An ``isBlockhashValid`` request.
@@ -2567,11 +2569,12 @@ impl MinimumLedgerSlot {
 request_boilerplate!(MinimumLedgerSlot);
 
 #[serde_as]
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize, Default)]
 pub struct RequestAirdropParams(
     #[serde_as(as = "DisplayFromStr")] Pubkey,
     u64,
-    #[serde(skip_serializing_if = "Option::is_none")] Option<RpcRequestAirdropConfig>,
+    Option<RpcRequestAirdropConfig>,
 );
 
 /// A ``requestAirdrop`` request.
@@ -2656,10 +2659,11 @@ impl From<TransactionBase64> for Transaction {
 }
 
 #[serde_as]
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize, Default)]
 pub struct SendTransactionParams(
     #[serde_as(as = "FromInto<TransactionBase64>")] Transaction,
-    #[serde(skip_serializing_if = "Option::is_none")] Option<RpcSendTransactionConfig>,
+    Option<RpcSendTransactionConfig>,
 );
 
 /// A ``sendTransaction`` request.
@@ -2729,10 +2733,11 @@ impl SendTransaction {
 request_boilerplate!(SendTransaction);
 
 #[serde_as]
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize, Default)]
 pub struct SimulateTransactionParams(
     #[serde_as(as = "FromInto<TransactionBase64>")] Transaction,
-    #[serde(skip_serializing_if = "Option::is_none")] Option<RpcSimulateTransactionConfig>,
+    Option<RpcSimulateTransactionConfig>,
 );
 
 /// A ``simulateTransaction`` request.
@@ -2856,10 +2861,11 @@ impl AccountSubscribe {
 request_boilerplate!(AccountSubscribe);
 
 #[serde_as]
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize, Default)]
 pub struct BlockSubscribeParams(
     #[serde_as(as = "FromInto<RpcBlockSubscribeFilter>")] RpcBlockSubscribeFilterWrapper,
-    #[serde(skip_serializing_if = "Option::is_none")] Option<RpcBlockSubscribeConfig>,
+    Option<RpcBlockSubscribeConfig>,
 );
 
 /// A ``blockSubscribe`` request.
@@ -2921,10 +2927,11 @@ impl BlockSubscribe {
 request_boilerplate!(BlockSubscribe);
 
 #[serde_as]
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize, Default)]
 pub struct LogsSubscribeParams(
     #[serde_as(as = "FromInto<RpcTransactionLogsFilter>")] TransactionLogsFilterWrapper,
-    #[serde(skip_serializing_if = "Option::is_none")] Option<RpcTransactionLogsConfig>,
+    Option<RpcTransactionLogsConfig>,
 );
 
 /// A ``logsSubscribe`` request.
@@ -3038,10 +3045,11 @@ impl ProgramSubscribe {
 request_boilerplate!(ProgramSubscribe);
 
 #[serde_as]
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize, Default)]
 pub struct SignatureSubscribeParams(
     #[serde_as(as = "DisplayFromStr")] Signature,
-    #[serde(skip_serializing_if = "Option::is_none")] Option<RpcSignatureSubscribeConfig>,
+    Option<RpcSignatureSubscribeConfig>,
 );
 
 /// A ``signatureSubscribe`` request.
