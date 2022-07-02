@@ -2605,7 +2605,7 @@ pub struct SendTransactionParams(
 /// Example:
 ///      >>> from solders.rpc.requests import SendTransaction
 ///      >>> from solders.rpc.config import RpcSendTransactionConfig
-///      >>> from solders.Transaction import Transaction
+///      >>> from solders.transaction import Transaction
 ///      >>> from solders.message import Message
 ///      >>> from solders.keypair import Keypair
 ///      >>> from solders.instruction import Instruction
@@ -2623,7 +2623,7 @@ pub struct SendTransactionParams(
 ///      >>> commitment = CommitmentLevel.Confirmed
 ///      >>> config = RpcSendTransactionConfig(preflight_commitment=commitment)
 ///      >>> SendTransaction(tx, config).to_json()
-///      '{"jsonrpc":"2.0","id":0,"method":"requestAirdrop","params":["11111111111111111111111111111111",1000,{"recentBlockhash":null,"commitment":"confirmed"}]}'
+///      '{"jsonrpc":"2.0","id":0,"method":"sendTransaction","params":["AW+Hy6fNJCICr2xnjk0DvmsJwfXo1CMPj/VCAkVWiEPSfmWDObuilvbAUI1GAclfPDlaeAzSxQ3mbQyDNxpwyAYBAAECqSVnJkhlb6E1tlGysqcjeH1eZ0s0tRBy3fcrUERncZkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEAA2FiYw==",{"skipPreflight":false,"preflightCommitment":"confirmed","encoding":"base64","maxRetries":null,"minContextSlot":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -2678,7 +2678,7 @@ pub struct SimulateTransactionParams(
 ///      >>> from solders.rpc.requests import SimulateTransaction
 ///      >>> from solders.rpc.config import RpcSimulateTransactionConfig, RpcSimulateTransactionAccountsConfig
 ///      >>> from solders.account_decoder import UiAccountEncoding
-///      >>> from solders.Transaction import Transaction
+///      >>> from solders.transaction import Transaction
 ///      >>> from solders.message import Message
 ///      >>> from solders.keypair import Keypair
 ///      >>> from solders.instruction import Instruction
