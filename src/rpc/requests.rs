@@ -629,13 +629,6 @@ impl GetBlocks {
 
 request_boilerplate!(GetBlocks);
 
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
-pub struct GetBlocksWithLimitParams(
-    u64,
-    #[serde(skip_serializing_if = "Option::is_none")] Option<u64>,
-    #[serde(skip_serializing_if = "Option::is_none")] Option<CommitmentConfig>,
-);
-
 /// A ``getBlocksWithLimit`` request.
 ///
 /// Args:
@@ -655,7 +648,7 @@ pub struct GetBlocksWithLimitParams(
 pub struct GetBlocksWithLimit {
     #[serde(flatten)]
     base: RequestBase,
-    params: GetBlocksWithLimitParams,
+    params: GetBlocksParams,
 }
 
 #[richcmp_eq_only]
@@ -670,7 +663,7 @@ impl GetBlocksWithLimit {
         commitment: Option<CommitmentLevel>,
         id: Option<u64>,
     ) -> Self {
-        let params = GetBlocksWithLimitParams(start, limit, commitment.map(|c| c.into()));
+        let params = GetBlocksParams(start, limit, commitment.map(|c| c.into()));
         let base = RequestBase::new(RpcRequest::GetBlocksWithLimit, id);
         Self { base, params }
     }
@@ -2013,7 +2006,7 @@ request_boilerplate!(GetSupply);
 
 #[serde_as]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
-pub struct GetTokenAccountBalanceParams(
+pub struct PubkeyAndCommitmentParams(
     #[serde_as(as = "DisplayFromStr")] Pubkey,
     #[serde(skip_serializing_if = "Option::is_none")] Option<CommitmentConfig>,
 );
@@ -2039,7 +2032,7 @@ pub struct GetTokenAccountBalanceParams(
 pub struct GetTokenAccountBalance {
     #[serde(flatten)]
     base: RequestBase,
-    params: GetTokenAccountBalanceParams,
+    params: PubkeyAndCommitmentParams,
 }
 
 #[richcmp_eq_only]
@@ -2049,7 +2042,7 @@ pub struct GetTokenAccountBalance {
 impl GetTokenAccountBalance {
     #[new]
     fn new(account: Pubkey, commitment: Option<CommitmentLevel>, id: Option<u64>) -> Self {
-        let params = GetTokenAccountBalanceParams(account, commitment.map(|c| c.into()));
+        let params = PubkeyAndCommitmentParams(account, commitment.map(|c| c.into()));
         let base = RequestBase::new(RpcRequest::GetTokenAccountBalance, id);
         Self { base, params }
     }
@@ -2215,13 +2208,6 @@ impl GetTokenAccountsByOwner {
     }
 }
 
-#[serde_as]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
-pub struct GetTokenLargestAccountsParams(
-    #[serde_as(as = "DisplayFromStr")] Pubkey,
-    #[serde(skip_serializing_if = "Option::is_none")] Option<CommitmentConfig>,
-);
-
 request_boilerplate!(GetTokenAccountsByOwner);
 
 /// A ``getTokenLargestAccounts`` request.
@@ -2242,7 +2228,7 @@ request_boilerplate!(GetTokenAccountsByOwner);
 pub struct GetTokenLargestAccounts {
     #[serde(flatten)]
     base: RequestBase,
-    params: GetTokenLargestAccountsParams,
+    params: PubkeyAndCommitmentParams,
 }
 
 #[richcmp_eq_only]
@@ -2252,7 +2238,7 @@ pub struct GetTokenLargestAccounts {
 impl GetTokenLargestAccounts {
     #[new]
     fn new(mint: Pubkey, commitment: Option<CommitmentLevel>, id: Option<u64>) -> Self {
-        let params = GetTokenLargestAccountsParams(mint, commitment.map(|c| c.into()));
+        let params = PubkeyAndCommitmentParams(mint, commitment.map(|c| c.into()));
         let base = RequestBase::new(RpcRequest::GetTokenLargestAccounts, id);
         Self { base, params }
     }
@@ -2290,7 +2276,7 @@ request_boilerplate!(GetTokenLargestAccounts);
 pub struct GetTokenSupply {
     #[serde(flatten)]
     base: RequestBase,
-    params: GetTokenLargestAccountsParams,
+    params: PubkeyAndCommitmentParams,
 }
 
 #[richcmp_eq_only]
@@ -2300,7 +2286,7 @@ pub struct GetTokenSupply {
 impl GetTokenSupply {
     #[new]
     fn new(mint: Pubkey, commitment: Option<CommitmentLevel>, id: Option<u64>) -> Self {
-        let params = GetTokenLargestAccountsParams(mint, commitment.map(|c| c.into()));
+        let params = PubkeyAndCommitmentParams(mint, commitment.map(|c| c.into()));
         let base = RequestBase::new(RpcRequest::GetTokenSupply, id);
         Self { base, params }
     }
