@@ -88,8 +88,7 @@ pyclass_boilerplate_with_default!(
     ///
     /// Args:
     ///     skip_preflight (bool):  If true, skip the preflight transaction checks.
-    ///     preflight_commitment (Optional[CommitmentLevel]): Commitment level to use for preflight.
-    ///     encoding: (Optional[UiTransactionEncoding]): Encoding used for the transaction data.
+    ///     preflight_commitment (Optional[CommitmentLevel]): Commitment level to use for preflight checks.
     ///     max_retries: (Optional[int]): Maximum number of times for the RPC node to retry sending
     ///         the transaction to the leader. If this parameter not provided, the RPC node will
     ///         retry the transaction until it is finalized or until the blockhash expires.
@@ -106,39 +105,43 @@ impl RpcSendTransactionConfig {
     pub fn new(
         skip_preflight: bool,
         preflight_commitment: Option<CommitmentLevel>,
-        encoding: Option<UiTransactionEncoding>,
         max_retries: Option<usize>,
         min_context_slot: Option<u64>,
     ) -> Self {
         Self(rpc_config::RpcSendTransactionConfig {
             skip_preflight,
             preflight_commitment: preflight_commitment.map(CommitmentLevelOriginal::from),
-            encoding: encoding.map(UiTransactionEncodingOriginal::from),
+            encoding: UiTransactionEncoding::Base64.into(),
             max_retries,
             min_context_slot,
         })
     }
 
+    /// bool:  If true, skip the preflight transaction checks.
     #[getter]
     pub fn skip_preflight(&self) -> bool {
         self.0.skip_preflight
     }
 
+    /// Optional[CommitmentLevel]: Commitment level to use for preflight checks.
     #[getter]
     pub fn preflight_commitment(&self) -> Option<CommitmentLevel> {
         self.0.preflight_commitment.map(|p| p.into())
     }
 
+    /// UiTransactionEncoding: Encoding used for the transaction data.
     #[getter]
-    pub fn encoding(&self) -> Option<UiTransactionEncoding> {
+    pub fn encoding(&self) -> UiTransactionEncoding {
         self.0.encoding.map(|e| e.into())
     }
 
+    /// Optional[int]: Maximum number of times for the RPC node to retry sending the transaction to the leader.
     #[getter]
     pub fn max_retries(&self) -> Option<usize> {
         self.0.max_retries
     }
 
+    /// Optional[int]: The minimum slot that the request can be evaluated at.
     #[getter]
     pub fn min_context_slot(&self) -> Option<u64> {
         self.0.min_context_slot
