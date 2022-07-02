@@ -2698,7 +2698,7 @@ pub struct SimulateTransactionParams(
 ///      >>> commitment = CommitmentLevel.Confirmed
 ///      >>> config = RpcSimulateTransactionConfig(commitment=commitment, accounts=accounts_config)
 ///      >>> SimulateTransaction(tx, config).to_json()
-///      '{"jsonrpc":"2.0","id":0,"method":"requestAirdrop","params":["11111111111111111111111111111111",1000,{"recentBlockhash":null,"commitment":"confirmed"}]}'
+///      {"jsonrpc":"2.0","id":0,"method":"simulateTransaction","params":["ATmQClBmeLRAu0Pei2acv7bTpFsGUFkzNuXhTEPwHKZau0QmQBqkXSVJl+R0XF7lh7z/Q80zGnvGS8YwZW3UVQkBAAECxDoGJPxSPU4pq3UGjlHBKFzykvEYnSdzjAc4WtsfLa8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEAA2FiYw==",{"sigVerify":false,"replaceRecentBlockhash":false,"commitment":"confirmed","encoding":"base64","accounts":{"encoding":"base64+zstd","addresses":["11111111111111111111111111111111"]},"minContextSlot":null}]}
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
