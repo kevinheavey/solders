@@ -1,9 +1,8 @@
 #![allow(deprecated)]
 use crate::{
     commitment_config::{CommitmentConfig, CommitmentLevel},
-    py_from_bytes_general_via_bincode, pybytes_general_via_bincode, to_py_err, CommonMethods,
-    Message, Pubkey, PyBytesBincode, PyErrWrapper, PyFromBytesBincode, RichcmpEqualityOnly,
-    Transaction,
+    py_from_bytes_general_via_cbor, pybytes_general_via_cbor, to_py_err, CommonMethods, Message,
+    Pubkey, PyBytesCbor, PyErrWrapper, PyFromBytesCbor, RichcmpEqualityOnly, Transaction,
 };
 use pyo3::{
     create_exception,
@@ -72,8 +71,8 @@ macro_rules! request_boilerplate {
             }
         }
         impl RichcmpEqualityOnly for $name {}
-        pybytes_general_via_bincode!($name);
-        py_from_bytes_general_via_bincode!($name);
+        pybytes_general_via_cbor!($name);
+        py_from_bytes_general_via_cbor!($name);
         impl From<$name> for Body {
             fn from(r: $name) -> Self {
                 Self::$name(r)

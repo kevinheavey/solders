@@ -10,17 +10,17 @@ use crate::{
     account_decoder::{UiAccountEncoding, UiDataSliceConfig},
     commitment_config::CommitmentLevel,
     hash::Hash as SolderHash,
-    impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
+    impl_display, py_from_bytes_general_via_cbor, pybytes_general_via_cbor,
     transaction_status::{TransactionDetails, UiTransactionEncoding},
-    CommonMethods, Pubkey, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly, Signature,
+    CommonMethods, Pubkey, PyBytesCbor, PyFromBytesCbor, RichcmpEqualityOnly, Signature,
 };
 
 use super::filter::RpcFilterType;
 
 macro_rules! rpc_config_impls {
     ($ident:ident) => {
-        pybytes_general_via_bincode!($ident);
-        py_from_bytes_general_via_bincode!($ident);
+        pybytes_general_via_cbor!($ident);
+        py_from_bytes_general_via_cbor!($ident);
         impl_display!($ident);
         impl RichcmpEqualityOnly for $ident {}
         impl CommonMethods<'_> for $ident {}

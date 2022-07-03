@@ -88,9 +88,22 @@ create_exception!(
     "Raised when the Rust bincode library returns an error during (de)serialization."
 );
 
+create_exception!(
+    solders,
+    CborError,
+    PyException,
+    "Raised when the Rust cbor library returns an error during (de)serialization."
+);
+
 impl From<Box<ErrorKind>> for PyErrWrapper {
     fn from(e: Box<ErrorKind>) -> Self {
         Self(BincodeError::new_err(e.to_string()))
+    }
+}
+
+impl From<serde_cbor::Error> for PyErrWrapper {
+    fn from(e: serde_cbor::Error) -> Self {
+        Self(CborError::new_err(e.to_string()))
     }
 }
 
@@ -247,9 +260,29 @@ macro_rules! pybytes_general_for_pybytes_bincode {
 
 pub(crate) use pybytes_general_for_pybytes_bincode;
 
+macro_rules! pybytes_general_for_pybytes_cbor {
+    ($ident:ident) => {
+        impl crate::PyBytesGeneral for $ident {
+            fn pybytes_general<'a>(
+                &self,
+                py: pyo3::prelude::Python<'a>,
+            ) -> &'a pyo3::types::PyBytes {
+                self.pybytes_cbor(py)
+            }
+        }
+    };
+}
+pub(crate) use pybytes_general_for_pybytes_cbor;
+
 pub trait PyBytesBincode: Serialize {
     fn pybytes_bincode<'a>(&self, py: Python<'a>) -> &'a PyBytes {
         PyBytes::new(py, &bincode::serialize(self).unwrap())
+    }
+}
+
+pub trait PyBytesCbor: Serialize + std::marker::Sized {
+    fn pybytes_cbor<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+        PyBytes::new(py, &serde_cbor::to_vec(self).unwrap())
     }
 }
 
@@ -272,8 +305,15 @@ macro_rules! pybytes_general_via_bincode {
         crate::pybytes_general_for_pybytes_bincode!($ident);
     };
 }
-
 pub(crate) use pybytes_general_via_bincode;
+
+macro_rules! pybytes_general_via_cbor {
+    ($ident:ident) => {
+        impl crate::PyBytesCbor for $ident {}
+        crate::pybytes_general_for_pybytes_cbor!($ident);
+    };
+}
+pub(crate) use pybytes_general_via_cbor;
 
 macro_rules! py_from_bytes_general_for_py_from_bytes_bincode {
     ($ident:ident) => {
@@ -284,8 +324,18 @@ macro_rules! py_from_bytes_general_for_py_from_bytes_bincode {
         }
     };
 }
-
 pub(crate) use py_from_bytes_general_for_py_from_bytes_bincode;
+
+macro_rules! py_from_bytes_general_for_py_from_bytes_cbor {
+    ($ident:ident) => {
+        impl crate::PyFromBytesGeneral for $ident {
+            fn py_from_bytes_general(raw: &[u8]) -> PyResult<Self> {
+                Self::py_from_bytes_cbor(raw)
+            }
+        }
+    };
+}
+pub(crate) use py_from_bytes_general_for_py_from_bytes_cbor;
 
 macro_rules! py_from_bytes_general_via_bincode {
     ($ident:ident) => {
@@ -298,6 +348,22 @@ pub(crate) use py_from_bytes_general_via_bincode;
 pub trait PyFromBytesBincode<'b>: Deserialize<'b> {
     fn py_from_bytes_bincode(raw: &'b [u8]) -> PyResult<Self> {
         let deser = bincode::deserialize::<Self>(raw);
+        handle_py_err(deser)
+    }
+}
+
+macro_rules! py_from_bytes_general_via_cbor {
+    ($ident:ident) => {
+        impl crate::PyFromBytesCbor<'_> for $ident {}
+        crate::py_from_bytes_general_for_py_from_bytes_cbor!($ident);
+    };
+}
+
+pub(crate) use py_from_bytes_general_via_cbor;
+
+pub trait PyFromBytesCbor<'b>: Deserialize<'b> {
+    fn py_from_bytes_cbor(raw: &'b [u8]) -> PyResult<Self> {
+        let deser = serde_cbor::from_slice::<Self>(raw);
         handle_py_err(deser)
     }
 }
@@ -380,6 +446,7 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
     let errors_mod = PyModule::new(py, "errors")?;
     errors_mod.add("BincodeError", py.get_type::<BincodeError>())?;
     errors_mod.add("SignerError", py.get_type::<SignerError>())?;
+    errors_mod.add("CborError", py.get_type::<CborError>())?;
     let rpc_mod = create_rpc_mod(py)?;
     let commitment_config_mod = PyModule::new(py, "commitment_config")?;
     commitment_config_mod.add_class::<CommitmentConfig>()?;
