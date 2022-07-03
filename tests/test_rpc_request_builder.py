@@ -73,11 +73,18 @@ from solders.rpc.requests import (
     batch_to_json,
     batch_from_json,
 )
-from solders.rpc.config import RpcSignatureStatusConfig, RpcRequestAirdropConfig, RpcContextConfig, RpcBlockConfig, RpcAccountInfoConfig
+from solders.rpc.config import (
+    RpcSignatureStatusConfig,
+    RpcRequestAirdropConfig,
+    RpcContextConfig,
+    RpcBlockConfig,
+    RpcAccountInfoConfig,
+)
 from solders.transaction_status import UiTransactionEncoding, TransactionDetails
 from solders.signature import Signature
 from solders.account_decoder import UiAccountEncoding
 from solders.pubkey import Pubkey
+
 
 def test_get_account_info() -> None:
     config = RpcAccountInfoConfig(UiAccountEncoding.Base64)
@@ -92,11 +99,16 @@ def test_get_balance() -> None:
     as_json = req.to_json()
     assert GetBalance.from_json(as_json) == req
 
+
 def test_get_block() -> None:
-    config = RpcBlockConfig(encoding=UiTransactionEncoding.Base58, transaction_details=TransactionDetails.None_)
+    config = RpcBlockConfig(
+        encoding=UiTransactionEncoding.Base58,
+        transaction_details=TransactionDetails.None_,
+    )
     req = GetBlock(123, config)
     as_json = req.to_json()
     assert GetBlock.from_json(as_json) == req
+
 
 def test_get_block_height() -> None:
     config = RpcContextConfig(min_context_slot=123)
