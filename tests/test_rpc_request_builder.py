@@ -79,9 +79,12 @@ from solders.rpc.config import (
     RpcContextConfig,
     RpcBlockConfig,
     RpcAccountInfoConfig,
+    RpcBlockProductionConfig,
+    RpcBlockProductionConfigRange
 )
 from solders.transaction_status import UiTransactionEncoding, TransactionDetails
 from solders.signature import Signature
+from solders.commitment_config import CommitmentLevel
 from solders.account_decoder import UiAccountEncoding
 from solders.pubkey import Pubkey
 
@@ -115,6 +118,23 @@ def test_get_block_height() -> None:
     req = GetBlockHeight(config)
     as_json = req.to_json()
     assert GetBlockHeight.from_json(as_json) == req
+
+def test_get_block_production() -> None:
+    slot_range = RpcBlockProductionConfigRange(first_slot=10, last_slot=15)
+    config = RpcBlockProductionConfig(identity=Pubkey.default(), range=slot_range)
+    req = GetBlockProduction(config)
+    as_json = req.to_json()
+    assert GetBlockProduction.from_json(as_json) == req
+
+def test_get_block_commitment() -> None:
+    req = GetBlockCommitment(123)
+    as_json = req.to_json()
+    assert GetBlockCommitment.from_json(as_json) == req
+
+def test_get_blocks() -> None:
+    req = GetBlocks(123, commitment=CommitmentLevel.Processed)
+    as_json = req.to_json()
+    assert GetBlocks.from_json(as_json) == req
 
 
 def test_get_signature_statuses() -> None:
