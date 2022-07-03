@@ -8,7 +8,12 @@ class MemcmpEncoding:
     def __eq__(self, o: object) -> bool: ...
 
 class Memcmp:
-    def __init__(self, offset: int, bytes_: Union[str, Sequence[int], bytes], encoding: Optional[MemcmpEncoding] = None): ...
+    def __init__(
+        self,
+        offset: int,
+        bytes_: Union[str, Sequence[int], bytes],
+        encoding: Optional[MemcmpEncoding] = None,
+    ): ...
     @property
     def offset(self) -> int: ...
     @property
