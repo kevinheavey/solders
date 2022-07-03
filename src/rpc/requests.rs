@@ -2841,29 +2841,124 @@ macro_rules ! pyunion {
     }
 }
 
-pyunion!(Body, GetSignatureStatuses, RequestAirdrop);
+pyunion!(
+    Body,
+    GetAccountInfo,
+    GetBalance,
+    GetBlock,
+    GetBlockHeight,
+    GetBlockProduction,
+    GetBlockCommitment,
+    GetBlocks,
+    GetBlocksWithLimit,
+    GetBlockTime,
+    GetClusterNodes,
+    GetEpochInfo,
+    GetEpochSchedule,
+    GetFeeForMessage,
+    GetFirstAvailableBlock,
+    GetGenesisHash,
+    GetHealth,
+    GetHighestSnapshotSlot,
+    GetIdentity,
+    GetInflationGovernor,
+    GetInflationRate,
+    GetInflationReward,
+    GetLargestAccounts,
+    GetLatestBlockhash,
+    GetLeaderSchedule,
+    GetMaxRetransmitSlot,
+    GetMaxShredInsertSlot,
+    GetMinimumBalanceForRentExemption,
+    GetMultipleAccounts,
+    GetProgramAccounts,
+    GetRecentPerformanceSamples,
+    GetSignaturesForAddress,
+    GetSignatureStatuses,
+    GetSlot,
+    GetSlotLeader,
+    GetSlotLeaders,
+    GetStakeActivation,
+    GetSupply,
+    GetTokenAccountBalance,
+    GetTokenAccountsByDelegate,
+    GetTokenAccountsByOwner,
+    GetTokenLargestAccounts,
+    GetTokenSupply,
+    GetTransaction,
+    GetTransactionCount,
+    GetVersion,
+    GetVoteAccounts,
+    IsBlockhashValid,
+    MinimumLedgerSlot,
+    RequestAirdrop,
+    SendTransaction,
+    AccountSubscribe,
+    BlockSubscribe,
+    LogsSubscribe,
+    ProgramSubscribe,
+    SignatureSubscribe,
+    SlotSubscribe,
+    SlotsUpdatesSubscribe,
+    RootSubscribe,
+    VoteSubscribe,
+    AccountUnsubscribe,
+    BlockUnsubscribe,
+    LogsUnsubscribe,
+    ProgramUnsubscribe,
+    SignatureUnsubscribe,
+    SlotUnsubscribe,
+    SlotsUpdatesUnsubscribe,
+    RootUnsubscribe,
+    VoteUnsubscribe
+);
 
-// #[derive(FromPyObject, Debug, Serialize, Deserialize)]
-// #[serde(untagged)]
-// pub enum Body {
-//     GetSignatureStatuses(GetSignatureStatuses),
-//     RequestAirdrop(RequestAirdrop),
-// }
-
-// impl IntoPy<PyObject> for Body {
-//     fn into_py(self, py: Python<'_>) -> PyObject {
-//         match self {
-//             Body::GetSignatureStatuses(x) => x.into_py(py),
-//             Body::RequestAirdrop(x) => x.into_py(py),
-//         }
-//     }
-// }
-
+/// Serialize a list of request objects into a single batch request JSON.
+///
+/// Args:
+///     reqs: A list of request objects.
+///
+/// Returns:
+///     str: The batch JSON string.
+///
+/// Example:
+///     >>> from solders.rpc.requests import batch_to_json, GetClusterNodes, GetEpochSchedule
+///     >>> batch_to_json([GetClusterNodes(0), GetEpochSchedule(1)])
+///     '[{"jsonrpc":"2.0","id":0,"method":"getClusterNodes"},{"jsonrpc":"2.0","id":1,"method":"getEpochSchedule"}]'
+///
 #[pyfunction]
 pub fn batch_to_json(reqs: Vec<Body>) -> String {
     serde_json::to_string(&reqs).unwrap()
 }
 
+/// Deserialize a batch request JSON string into a list of request objects.
+///
+/// Args:
+///     raw (str): The batch JSON string.
+///
+/// Returns:
+///     A list of request objects.
+///
+/// Example:
+///     >>> from solders.rpc.requests import batch_from_json
+///     >>> raw = '[{"jsonrpc":"2.0","id":0,"method":"getClusterNodes"},{"jsonrpc":"2.0","id":1,"method":"getEpochSchedule"}]'
+///     >>> batch_from_json(raw)
+///     [GetBlockHeight {
+///         base: RequestBase {
+///             jsonrpc: "2.0",
+///             id: 0,
+///             method: GetClusterNodes,
+///         },
+///         params: None,
+///     }, GetBlockHeight {
+///         base: RequestBase {
+///             jsonrpc: "2.0",
+///             id: 1,
+///             method: GetEpochSchedule,
+///         },
+///         params: None,
+///     }]
+///
 #[pyfunction]
 pub fn batch_from_json(raw: &str) -> PyResult<Vec<PyObject>> {
     let gil = Python::acquire_gil();
