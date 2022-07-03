@@ -84,6 +84,7 @@ from solders.rpc.config import (
 )
 from solders.transaction_status import UiTransactionEncoding, TransactionDetails
 from solders.signature import Signature
+from solders.message import Message
 from solders.commitment_config import CommitmentLevel
 from solders.account_decoder import UiAccountEncoding
 from solders.pubkey import Pubkey
@@ -151,6 +152,21 @@ def test_get_cluster_nodes() -> None:
     as_json = req.to_json()
     assert GetClusterNodes.from_json(as_json) == req
 
+def test_get_epoch_info() -> None:
+    config = RpcContextConfig(commitment=CommitmentLevel.Processed)
+    req = GetEpochInfo(config)
+    as_json = req.to_json()
+    assert GetEpochInfo.from_json(as_json) == req
+
+def test_get_epoch_schedule() -> None:
+    req = GetEpochSchedule(123)
+    as_json = req.to_json()
+    assert GetEpochSchedule.from_json(as_json) == req
+
+def test_get_fee_for_message() -> None:
+    req = GetFeeForMessage(Message.default(), commitment=CommitmentLevel.Processed)
+    as_json = req.to_json()
+    assert GetFeeForMessage.from_json(as_json) == req
 
 def test_get_signature_statuses() -> None:
     req = GetSignatureStatuses([Signature.default()], RpcSignatureStatusConfig(True))
