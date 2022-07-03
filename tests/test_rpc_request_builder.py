@@ -136,6 +136,21 @@ def test_get_blocks() -> None:
     as_json = req.to_json()
     assert GetBlocks.from_json(as_json) == req
 
+def test_get_blocks_with_limit() -> None:
+    req = GetBlocksWithLimit(123, 5, commitment=CommitmentLevel.Processed)
+    as_json = req.to_json()
+    assert GetBlocksWithLimit.from_json(as_json) == req
+
+def test_get_block_time() -> None:
+    req = GetBlockTime(123)
+    as_json = req.to_json()
+    assert GetBlockTime.from_json(as_json) == req
+
+def test_get_cluster_nodes() -> None:
+    req = GetClusterNodes(123)
+    as_json = req.to_json()
+    assert GetClusterNodes.from_json(as_json) == req
+
 
 def test_get_signature_statuses() -> None:
     req = GetSignatureStatuses([Signature.default()], RpcSignatureStatusConfig(True))
