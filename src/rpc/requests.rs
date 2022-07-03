@@ -504,13 +504,12 @@ impl GetBlockCommitment {
 request_boilerplate!(GetBlockCommitment);
 
 #[serde_as]
-#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct GetBlocksParams(
     u64,
     #[serde(default)] Option<u64>,
     #[serde_as(as = "Option<FromInto<CommitmentConfig>>")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     Option<CommitmentLevel>,
 );
 
@@ -526,7 +525,7 @@ pub struct GetBlocksParams(
 ///     >>> from solders.rpc.requests import GetBlocks
 ///     >>> from solders.commitment_config import CommitmentLevel
 ///     >>> GetBlocks(123, commitment=CommitmentLevel.Processed).to_json()
-///     '{"method":"getBlocks","jsonrpc":"2.0","id":0,"params":[123,{"commitment":"processed"}]}'
+///     '{"method":"getBlocks","jsonrpc":"2.0","id":0,"params":[123,null,{"commitment":"processed"}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
