@@ -168,6 +168,31 @@ def test_get_fee_for_message() -> None:
     as_json = req.to_json()
     assert GetFeeForMessage.from_json(as_json) == req
 
+def test_get_first_available_block() -> None:
+    req = GetFirstAvailableBlock(123)
+    as_json = req.to_json()
+    assert GetFirstAvailableBlock.from_json(as_json) == req
+
+def test_get_genesis_hash() -> None:
+    req = GetGenesisHash(123)
+    as_json = req.to_json()
+    assert GetGenesisHash.from_json(as_json) == req
+
+def test_get_health() -> None:
+    req = GetHealth(123)
+    as_json = req.to_json()
+    assert GetHealth.from_json(as_json) == req
+
+def test_get_highest_snapshot_slot() -> None:
+    req = GetHighestSnapshotSlot(123)
+    as_json = req.to_json()
+    assert GetHighestSnapshotSlot.from_json(as_json) == req
+
+def test_get_identity() -> None:
+    req = GetIdentity(123)
+    as_json = req.to_json()
+    assert GetIdentity.from_json(as_json) == req
+
 def test_get_signature_statuses() -> None:
     req = GetSignatureStatuses([Signature.default()], RpcSignatureStatusConfig(True))
     as_json = req.to_json()
