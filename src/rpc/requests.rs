@@ -1458,7 +1458,7 @@ request_boilerplate!(GetSignaturesForAddress);
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct GetSignatureStatusesParams(
     #[serde_as(as = "Vec<DisplayFromStr>")] Vec<Signature>,
-    Option<RpcSignatureStatusConfig>,
+    #[serde(default)] Option<RpcSignatureStatusConfig>,
 );
 
 /// A ``getSignatureStatuses`` request.
@@ -2261,7 +2261,7 @@ zero_param_req_def!(MinimumLedgerSlot);
 pub struct RequestAirdropParams(
     #[serde_as(as = "DisplayFromStr")] Pubkey,
     u64,
-    Option<RpcRequestAirdropConfig>,
+    #[serde(default)] Option<RpcRequestAirdropConfig>,
 );
 
 /// A ``requestAirdrop`` request.
@@ -2797,21 +2797,41 @@ zero_param_req_def!(SlotsUpdatesSubscribe);
 zero_param_req_def!(RootSubscribe);
 zero_param_req_def!(VoteSubscribe);
 
-#[derive(FromPyObject, Debug, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum Body {
-    GetSignatureStatuses(GetSignatureStatuses),
-    RequestAirdrop(RequestAirdrop),
-}
+macro_rules ! pyunion {
+    ($name:ident, $($variant:ident),+) => {
+        #[derive(FromPyObject, Debug, Serialize, Deserialize)]
+        #[serde(untagged)]
+        pub enum $name {
+            $($variant($variant),)+
+        }
 
-impl IntoPy<PyObject> for Body {
-    fn into_py(self, py: Python<'_>) -> PyObject {
-        match self {
-            Body::GetSignatureStatuses(x) => x.into_py(py),
-            Body::RequestAirdrop(x) => x.into_py(py),
+        impl IntoPy<PyObject> for $name {
+            fn into_py(self, py: Python<'_>) -> PyObject {
+                match self {
+                    $(Self::$variant(x) => x.into_py(py),)+
+                }
+            }
         }
     }
 }
+
+pyunion!(Body, GetSignatureStatuses, RequestAirdrop);
+
+// #[derive(FromPyObject, Debug, Serialize, Deserialize)]
+// #[serde(untagged)]
+// pub enum Body {
+//     GetSignatureStatuses(GetSignatureStatuses),
+//     RequestAirdrop(RequestAirdrop),
+// }
+
+// impl IntoPy<PyObject> for Body {
+//     fn into_py(self, py: Python<'_>) -> PyObject {
+//         match self {
+//             Body::GetSignatureStatuses(x) => x.into_py(py),
+//             Body::RequestAirdrop(x) => x.into_py(py),
+//         }
+//     }
+// }
 
 #[pyfunction]
 pub fn batch_to_json(reqs: Vec<Body>) -> String {
