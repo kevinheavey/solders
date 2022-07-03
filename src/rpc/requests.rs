@@ -1,10 +1,15 @@
 #![allow(deprecated)]
 use crate::{
     commitment_config::{CommitmentConfig, CommitmentLevel},
-    py_from_bytes_general_via_bincode, pybytes_general_via_bincode, CommonMethods, Message, Pubkey,
-    PyBytesBincode, PyErrWrapper, PyFromBytesBincode, RichcmpEqualityOnly, Transaction,
+    py_from_bytes_general_via_bincode, pybytes_general_via_bincode, to_py_err, CommonMethods,
+    Message, Pubkey, PyBytesBincode, PyErrWrapper, PyFromBytesBincode, RichcmpEqualityOnly,
+    Transaction,
 };
-use pyo3::{create_exception, exceptions::PyException, prelude::*};
+use pyo3::{
+    create_exception,
+    exceptions::{PyException, PyValueError},
+    prelude::*,
+};
 extern crate base64;
 use camelpaste::paste;
 use serde::{Deserialize, Serialize};
@@ -49,10 +54,31 @@ macro_rules! rpc_impl_display {
 macro_rules! request_boilerplate {
     ($name:ident) => {
         rpc_impl_display!($name);
-        impl CommonMethods<'_> for $name {}
+        impl CommonMethods<'_> for $name {
+            fn py_to_json(&self) -> String {
+                let wrapped = Body::from(self.clone());
+                serde_json::to_string(&wrapped).unwrap()
+            }
+
+            fn py_from_json(raw: &str) -> PyResult<Self> {
+                let parsed = serde_json::from_str::<Body>(raw).map_err(to_py_err)?;
+                match parsed {
+                    Body::$name(x) => Ok(x),
+                    _ => Err(PyValueError::new_err(format!(
+                        "Deserialized to wrong type: {:?}",
+                        parsed
+                    ))),
+                }
+            }
+        }
         impl RichcmpEqualityOnly for $name {}
         pybytes_general_via_bincode!($name);
         py_from_bytes_general_via_bincode!($name);
+        impl From<$name> for Body {
+            fn from(r: $name) -> Self {
+                Self::$name(r)
+            }
+        }
     };
 }
 
@@ -71,7 +97,7 @@ Args:
 Example:
      >>> from solders.rpc.requests import " $name "
      >>> " $name "(1, 2).to_json()
-     '{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"" $name:camel "\",\"params\":[1]}'
+     '{\"method\":\"" $name:camel "\",\"jsonrpc\":\"2.0\",\"id\":2,\"params\":[1]}'
 "]
                 #[pyclass(module = "solders.rpc.requests")]
                 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -89,7 +115,7 @@ Example:
                     #[new]
                     fn new(subscription_id: u64, id: Option<u64>) -> Self {
                         let params = UnsubscribeParams((subscription_id,));
-                        let base = RequestBase::new(RpcRequest::$name, id);
+                        let base = RequestBase::new(id);
                         Self { base, params }
                     }
 
@@ -115,10 +141,10 @@ Args:
 Example:
      >>> from solders.rpc.requests import " $name "
      >>> " $name "(123).to_json()
-     '{\"jsonrpc\":\"2.0\",\"id\":123,\"method\":\"" $name:camel "\"}'
+     '{\"method\":\"" $name:camel "\",\"jsonrpc\":\"2.0\",\"id\":123}'
 "]
                 #[pyclass(module = "solders.rpc.requests")]
-                #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+                #[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
                 pub struct $name {
                     #[serde(flatten)]
                     base: RequestBase,
@@ -131,7 +157,7 @@ Example:
                 impl $name {
                     #[new]
                     fn new(id: Option<u64>) -> Self {
-                        let base = RequestBase::new(RpcRequest::$name, id);
+                        let base = RequestBase::new(id);
                         Self { base }
                     }
                 }
@@ -156,145 +182,23 @@ impl From<serde_json::Error> for PyErrWrapper {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-#[pyclass]
-pub enum RpcRequest {
-    DeregisterNode,
-    GetAccountInfo,
-    GetBalance,
-    GetBlock,
-    GetBlockCommitment,
-    GetBlockHeight,
-    GetBlockProduction,
-    GetBlocks,
-    GetBlocksWithLimit,
-    GetBlockTime,
-    GetClusterNodes,
-    #[deprecated(since = "1.7.0", note = "Please use RpcRequest::GetBlock instead")]
-    GetConfirmedBlock,
-    #[deprecated(since = "1.7.0", note = "Please use RpcRequest::GetBlocks instead")]
-    GetConfirmedBlocks,
-    #[deprecated(
-        since = "1.7.0",
-        note = "Please use RpcRequest::GetBlocksWithLimit instead"
-    )]
-    GetConfirmedBlocksWithLimit,
-    #[deprecated(
-        since = "1.7.0",
-        note = "Please use RpcRequest::GetSignaturesForAddress instead"
-    )]
-    GetConfirmedSignaturesForAddress2,
-    #[deprecated(
-        since = "1.7.0",
-        note = "Please use RpcRequest::GetTransaction instead"
-    )]
-    GetConfirmedTransaction,
-    GetEpochInfo,
-    GetEpochSchedule,
-    #[deprecated(
-        since = "1.9.0",
-        note = "Please use RpcRequest::GetFeeForMessage instead"
-    )]
-    GetFeeCalculatorForBlockhash,
-    GetFeeForMessage,
-    #[deprecated(
-        since = "1.9.0",
-        note = "Please do not use, will no longer be available in the future"
-    )]
-    GetFeeRateGovernor,
-    #[deprecated(
-        since = "1.9.0",
-        note = "Please use RpcRequest::GetFeeForMessage instead"
-    )]
-    GetFees,
-    GetFirstAvailableBlock,
-    GetGenesisHash,
-    GetHealth,
-    GetIdentity,
-    GetInflationGovernor,
-    GetInflationRate,
-    GetInflationReward,
-    GetLargestAccounts,
-    GetLatestBlockhash,
-    GetLeaderSchedule,
-    GetMaxRetransmitSlot,
-    GetMaxShredInsertSlot,
-    GetMinimumBalanceForRentExemption,
-    GetMultipleAccounts,
-    GetProgramAccounts,
-    #[deprecated(
-        since = "1.9.0",
-        note = "Please use RpcRequest::GetLatestBlockhash instead"
-    )]
-    GetRecentBlockhash,
-    GetRecentPerformanceSamples,
-    GetHighestSnapshotSlot,
-    #[deprecated(
-        since = "1.9.0",
-        note = "Please use RpcRequest::GetHighestSnapshotSlot instead"
-    )]
-    GetSnapshotSlot,
-    GetSignaturesForAddress,
-    GetSignatureStatuses,
-    GetSlot,
-    GetSlotLeader,
-    GetSlotLeaders,
-    GetStorageTurn,
-    GetStorageTurnRate,
-    GetSlotsPerSegment,
-    GetStakeActivation,
-    GetStoragePubkeysForSlot,
-    GetSupply,
-    GetTokenAccountBalance,
-    GetTokenAccountsByDelegate,
-    GetTokenAccountsByOwner,
-    GetTokenLargestAccounts,
-    GetTokenSupply,
-    GetTransaction,
-    GetTransactionCount,
-    GetVersion,
-    GetVoteAccounts,
-    IsBlockhashValid,
-    MinimumLedgerSlot,
-    RegisterNode,
-    RequestAirdrop,
-    SendTransaction,
-    SimulateTransaction,
-    SignVote,
-    AccountSubscribe,
-    BlockSubscribe,
-    LogsSubscribe,
-    ProgramSubscribe,
-    SignatureSubscribe,
-    SlotSubscribe,
-    SlotsUpdatesSubscribe,
-    RootSubscribe,
-    VoteSubscribe,
-    AccountUnsubscribe,
-    BlockUnsubscribe,
-    LogsUnsubscribe,
-    ProgramUnsubscribe,
-    SignatureUnsubscribe,
-    SlotUnsubscribe,
-    SlotsUpdatesUnsubscribe,
-    RootUnsubscribe,
-    VoteUnsubscribe,
+#[derive(Deserialize, Serialize, PartialEq, Eq, Clone, Debug)]
+pub enum V2 {
+    #[serde(rename = "2.0")]
+    TwoPointOh,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 struct RequestBase {
-    jsonrpc: String,
+    jsonrpc: V2,
     id: u64,
-    method: RpcRequest,
 }
 
 impl RequestBase {
-    fn new(method: RpcRequest, id: Option<u64>) -> Self {
+    fn new(id: Option<u64>) -> Self {
         Self {
-            jsonrpc: "2.0".into(),
+            jsonrpc: V2::TwoPointOh,
             id: id.unwrap_or(0),
-            method,
         }
     }
 }
@@ -321,7 +225,7 @@ pub struct GetAccountInfoParams(
 ///     >>> from solders.account_decoder import UiAccountEncoding
 ///     >>> config = RpcAccountInfoConfig(UiAccountEncoding.Base64)
 ///     >>> GetAccountInfo(Pubkey.default(), config).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getAccountInfo","params":["11111111111111111111111111111111",{"encoding":"base64","dataSlice":null,"minContextSlot":null}]}'
+///     '{"method":"getAccountInfo","jsonrpc":"2.0","id":0,"params":["11111111111111111111111111111111",{"encoding":"base64","dataSlice":null,"minContextSlot":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -339,7 +243,7 @@ impl GetAccountInfo {
     #[new]
     fn new(pubkey: Pubkey, config: Option<RpcAccountInfoConfig>, id: Option<u64>) -> Self {
         let params = GetAccountInfoParams(pubkey, config);
-        let base = RequestBase::new(RpcRequest::GetAccountInfo, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -379,7 +283,7 @@ pub struct GetBalanceParams(
 ///     >>> from solders.pubkey import Pubkey
 ///     >>> config = RpcContextConfig(min_context_slot=1)
 ///     >>> GetBalance(Pubkey.default(), config).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getBalance","params":["11111111111111111111111111111111",{"minContextSlot":1}]}'
+///     '{"method":"getBalance","jsonrpc":"2.0","id":0,"params":["11111111111111111111111111111111",{"minContextSlot":1}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -397,7 +301,7 @@ impl GetBalance {
     #[new]
     fn new(pubkey: Pubkey, config: Option<RpcContextConfig>, id: Option<u64>) -> Self {
         let params = GetBalanceParams(pubkey, config);
-        let base = RequestBase::new(RpcRequest::GetBalance, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -433,7 +337,7 @@ pub struct GetBlockParams(u64, #[serde(default)] Option<RpcBlockConfig>);
 ///     >>> from solders.transaction_status import TransactionDetails, UiTransactionEncoding
 ///     >>> config = RpcBlockConfig(encoding=UiTransactionEncoding.Base58, transaction_details=TransactionDetails.None_)
 ///     >>> GetBlock(123, config).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getBlock","params":[123,{"encoding":"base58","transactionDetails":"none","rewards":null,"maxSupportedTransactionVersion":null}]}'
+///     '{"method":"getBlock","jsonrpc":"2.0","id":0,"params":[123,{"encoding":"base58","transactionDetails":"none","rewards":null,"maxSupportedTransactionVersion":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -451,7 +355,7 @@ impl GetBlock {
     #[new]
     fn new(slot: u64, config: Option<RpcBlockConfig>, id: Option<u64>) -> Self {
         let params = GetBlockParams(slot, config);
-        let base = RequestBase::new(RpcRequest::GetBlock, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -481,7 +385,7 @@ request_boilerplate!(GetBlock);
 ///     >>> from solders.rpc.config import RpcContextConfig
 ///     >>> config = RpcContextConfig(min_context_slot=123)
 ///     >>> GetBlockHeight(config).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getBlockHeight","params":[{"minContextSlot":123}]}'
+///     '{"method":"getBlockHeight","jsonrpc":"2.0","id":0,"params":[{"minContextSlot":123}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[skip_serializing_none]
@@ -501,7 +405,7 @@ impl GetBlockHeight {
     #[new]
     fn new(config: Option<RpcContextConfig>, id: Option<u64>) -> Self {
         let params = config.map(|c| (c,));
-        let base = RequestBase::new(RpcRequest::GetBlockHeight, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -527,7 +431,7 @@ request_boilerplate!(GetBlockHeight);
 ///     >>> slot_range = RpcBlockProductionConfigRange(first_slot=10, last_slot=15)
 ///     >>> config = RpcBlockProductionConfig(identity=Pubkey.default(), range=slot_range)
 ///     >>> GetBlockProduction(config).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getBlockProduction","params":[{"identity":"11111111111111111111111111111111","range":{"firstSlot":10,"lastSlot":15}}]}'
+///     '{"method":"getBlockProduction","jsonrpc":"2.0","id":0,"params":[{"identity":"11111111111111111111111111111111","range":{"firstSlot":10,"lastSlot":15}}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[skip_serializing_none]
@@ -547,7 +451,7 @@ impl GetBlockProduction {
     #[new]
     fn new(config: Option<RpcBlockProductionConfig>, id: Option<u64>) -> Self {
         let params = config.map(|c| (c,));
-        let base = RequestBase::new(RpcRequest::GetBlockProduction, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -569,7 +473,7 @@ request_boilerplate!(GetBlockProduction);
 /// Example:
 ///     >>> from solders.rpc.requests import GetBlockCommitment
 ///     >>> GetBlockCommitment(123).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getBlockCommitment","params":[123]}'
+///     '{"method":"getBlockCommitment","jsonrpc":"2.0","id":0,"params":[123]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -587,7 +491,7 @@ impl GetBlockCommitment {
     #[new]
     fn new(slot: u64, id: Option<u64>) -> Self {
         let params = (slot,);
-        let base = RequestBase::new(RpcRequest::GetBlockCommitment, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -623,7 +527,7 @@ pub struct GetBlocksParams(
 ///     >>> from solders.rpc.requests import GetBlocks
 ///     >>> from solders.commitment_config import CommitmentLevel
 ///     >>> GetBlocks(123, commitment=CommitmentLevel.Processed).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getBlocks","params":[123,{"commitment":"processed"}]}'
+///     '{"method":"getBlocks","jsonrpc":"2.0","id":0,"params":[123,{"commitment":"processed"}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -646,7 +550,7 @@ impl GetBlocks {
         id: Option<u64>,
     ) -> Self {
         let params = GetBlocksParams(start, end, commitment);
-        let base = RequestBase::new(RpcRequest::GetBlocks, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -683,7 +587,7 @@ request_boilerplate!(GetBlocks);
 ///     >>> from solders.rpc.requests import GetBlocksWithLimit
 ///     >>> from solders.commitment_config import CommitmentLevel
 ///     >>> GetBlocksWithLimit(123, 5, commitment=CommitmentLevel.Processed).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getBlocksWithLimit","params":[123,5,{"commitment":"processed"}]}'
+///     '{"method":"getBlocksWithLimit","jsonrpc":"2.0","id":0,"params":[123,5,{"commitment":"processed"}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -706,7 +610,7 @@ impl GetBlocksWithLimit {
         id: Option<u64>,
     ) -> Self {
         let params = GetBlocksParams(start, limit, commitment);
-        let base = RequestBase::new(RpcRequest::GetBlocksWithLimit, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -740,7 +644,7 @@ request_boilerplate!(GetBlocksWithLimit);
 /// Example:
 ///     >>> from solders.rpc.requests import GetBlockTime
 ///     >>> GetBlockTime(123).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getBlockTime","params":[123]}'
+///     '{"method":"getBlockTime","jsonrpc":"2.0","id":0,"params":[123]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -758,7 +662,7 @@ impl GetBlockTime {
     #[new]
     fn new(slot: u64, id: Option<u64>) -> Self {
         let params = (slot,);
-        let base = RequestBase::new(RpcRequest::GetBlockTime, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -785,7 +689,7 @@ zero_param_req_def!(GetClusterNodes);
 ///     >>> from solders.commitment_config import CommitmentLevel
 ///     >>> config = RpcContextConfig(commitment=CommitmentLevel.Processed)
 ///     >>> GetEpochInfo(config).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getEpochInfo","params":[{"commitment":"processed","minContextSlot":null}]}'
+///     '{"method":"getEpochInfo","jsonrpc":"2.0","id":0,"params":[{"commitment":"processed","minContextSlot":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[skip_serializing_none]
@@ -805,7 +709,7 @@ impl GetEpochInfo {
     #[new]
     fn new(config: Option<RpcContextConfig>, id: Option<u64>) -> Self {
         let params = config.map(|c| (c,));
-        let base = RequestBase::new(RpcRequest::GetEpochInfo, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -860,7 +764,7 @@ pub struct GetFeeForMessageParams(
 ///     >>> from solders.commitment_config import CommitmentLevel
 ///     >>> from solders.message import Message
 ///     >>> GetFeeForMessage(Message.default(), commitment=CommitmentLevel.Processed).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getFeeForMessage","params":["AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",{"commitment":"processed"}]}'
+///     '{"method":"getFeeForMessage","jsonrpc":"2.0","id":0,"params":["AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",{"commitment":"processed"}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -878,7 +782,7 @@ impl GetFeeForMessage {
     #[new]
     fn new(message: Message, commitment: Option<CommitmentLevel>, id: Option<u64>) -> Self {
         let params = GetFeeForMessageParams(message, commitment);
-        let base = RequestBase::new(RpcRequest::GetFeeForMessage, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -914,7 +818,7 @@ zero_param_req_def!(GetIdentity);
 ///     >>> from solders.rpc.requests import GetInflationGovernor
 ///     >>> from solders.commitment_config import CommitmentLevel
 ///     >>> GetInflationGovernor(CommitmentLevel.Finalized).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getInflationGovernor","params":[{"commitment":"finalized"}]}'
+///     '{"method":"getInflationGovernor","jsonrpc":"2.0","id":0,"params":[{"commitment":"finalized"}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[skip_serializing_none]
@@ -934,7 +838,7 @@ impl GetInflationGovernor {
     #[new]
     fn new(commitment: Option<CommitmentLevel>, id: Option<u64>) -> Self {
         let params = commitment.map(|c| (c.into(),));
-        let base = RequestBase::new(RpcRequest::GetInflationGovernor, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -970,7 +874,7 @@ pub struct GetInflationRewardParams(
 ///     >>> config = RpcEpochConfig(epoch=1234)
 ///     >>> addresses = [Pubkey.default(), Pubkey.default()]
 ///     >>> GetInflationReward(addresses, config).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getInflationReward","params":[["11111111111111111111111111111111","11111111111111111111111111111111"],{"epoch":1234,"minContextSlot":null}]}'
+///     '{"method":"getInflationReward","jsonrpc":"2.0","id":0,"params":[["11111111111111111111111111111111","11111111111111111111111111111111"],{"epoch":1234,"minContextSlot":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -988,7 +892,7 @@ impl GetInflationReward {
     #[new]
     fn new(addresses: Vec<Pubkey>, config: Option<RpcEpochConfig>, id: Option<u64>) -> Self {
         let params = GetInflationRewardParams(addresses, config);
-        let base = RequestBase::new(RpcRequest::GetInflationReward, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -1031,7 +935,7 @@ pub struct GetLargestAccountsParams(
 ///     >>> commitment = CommitmentLevel.Processed
 ///     >>> filter_ = RpcLargestAccountsFilter.Circulating
 ///     >>> GetLargestAccounts(commitment=commitment, filter_=filter_).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getLargestAccounts","params":[{"commitment":"processed"},"circulating"]}'
+///     '{"method":"getLargestAccounts","jsonrpc":"2.0","id":0,"params":[{"commitment":"processed"},"circulating"]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[skip_serializing_none]
@@ -1059,7 +963,7 @@ impl GetLargestAccounts {
         } else {
             None
         };
-        let base = RequestBase::new(RpcRequest::GetLargestAccounts, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -1090,7 +994,7 @@ request_boilerplate!(GetLargestAccounts);
 ///     >>> from solders.commitment_config import CommitmentLevel
 ///     >>> config = RpcContextConfig(commitment=CommitmentLevel.Processed)
 ///     >>> GetLatestBlockhash(config).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getLatestBlockhash","params":[{"commitment":"processed","minContextSlot":null}]}'
+///     '{"method":"getLatestBlockhash","jsonrpc":"2.0","id":0,"params":[{"commitment":"processed","minContextSlot":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[skip_serializing_none]
@@ -1110,7 +1014,7 @@ impl GetLatestBlockhash {
     #[new]
     fn new(config: Option<RpcContextConfig>, id: Option<u64>) -> Self {
         let params = config.map(|c| (c,));
-        let base = RequestBase::new(RpcRequest::GetLatestBlockhash, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -1143,7 +1047,7 @@ pub struct GetLeaderScheduleParams(
 ///     >>> from solders.pubkey import Pubkey
 ///     >>> config = RpcLeaderScheduleConfig(identity=Pubkey.default())
 ///     >>> GetLeaderSchedule(123, config).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getLeaderSchedule","params":[123,{"identity":"11111111111111111111111111111111"}]}'
+///     '{"method":"getLeaderSchedule","jsonrpc":"2.0","id":0,"params":[123,{"identity":"11111111111111111111111111111111"}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[skip_serializing_none]
@@ -1167,7 +1071,7 @@ impl GetLeaderSchedule {
         } else {
             None
         };
-        let base = RequestBase::new(RpcRequest::GetLeaderSchedule, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -1208,7 +1112,7 @@ pub struct GetMinimumBalanceForRentExemptionParams(
 /// Example:
 ///     >>> from solders.rpc.requests import GetMinimumBalanceForRentExemption
 ///     >>> GetMinimumBalanceForRentExemption(50).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getMinimumBalanceForRentExemption","params":[50]}'
+///     '{"method":"getMinimumBalanceForRentExemption","jsonrpc":"2.0","id":0,"params":[50]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -1226,7 +1130,7 @@ impl GetMinimumBalanceForRentExemption {
     #[new]
     fn new(length: usize, commitment: Option<CommitmentLevel>, id: Option<u64>) -> Self {
         let params = GetMinimumBalanceForRentExemptionParams(length, commitment);
-        let base = RequestBase::new(RpcRequest::GetMinimumBalanceForRentExemption, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -1271,7 +1175,7 @@ pub struct GetMultipleAccountsParams(
 ///     >>> config = RpcAccountInfoConfig(encoding=encoding, data_slice=data_slice)
 ///     >>> accounts = [Pubkey.default(), Pubkey.default()]
 ///     >>> GetMultipleAccounts(accounts, config).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getMultipleAccounts","params":[["11111111111111111111111111111111","11111111111111111111111111111111"],{"encoding":"base64+zstd","dataSlice":{"offset":10,"length":8},"minContextSlot":null}]}'
+///     '{"method":"getMultipleAccounts","jsonrpc":"2.0","id":0,"params":[["11111111111111111111111111111111","11111111111111111111111111111111"],{"encoding":"base64+zstd","dataSlice":{"offset":10,"length":8},"minContextSlot":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -1289,7 +1193,7 @@ impl GetMultipleAccounts {
     #[new]
     fn new(accounts: Vec<Pubkey>, config: Option<RpcAccountInfoConfig>, id: Option<u64>) -> Self {
         let params = GetMultipleAccountsParams(accounts, config);
-        let base = RequestBase::new(RpcRequest::GetMultipleAccounts, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -1332,7 +1236,7 @@ pub struct GetProgramAccountsParams(
 ///     >>> filters = [10, Memcmp(offset=10, bytes_=b"123")]
 ///     >>> config = RpcProgramAccountsConfig(acc_info_config, filters)
 ///     >>> GetProgramAccounts(Pubkey.default(), config).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getProgramAccounts","params":["11111111111111111111111111111111",{"filters":[{"dataSize":10},{"memcmp":{"offset":10,"bytes":[49,50,51],"encoding":null}}],"encoding":null,"dataSlice":null,"minContextSlot":null,"withContext":null}]}'
+///     '{"method":"getProgramAccounts","jsonrpc":"2.0","id":0,"params":["11111111111111111111111111111111",{"filters":[{"dataSize":10},{"memcmp":{"offset":10,"bytes":[49,50,51],"encoding":null}}],"encoding":null,"dataSlice":null,"minContextSlot":null,"withContext":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -1350,7 +1254,7 @@ impl GetProgramAccounts {
     #[new]
     fn new(program: Pubkey, config: Option<RpcProgramAccountsConfig>, id: Option<u64>) -> Self {
         let params = GetProgramAccountsParams(program, config);
-        let base = RequestBase::new(RpcRequest::GetProgramAccounts, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -1378,7 +1282,7 @@ request_boilerplate!(GetProgramAccounts);
 /// Example:
 ///     >>> from solders.rpc.requests import GetRecentPerformanceSamples
 ///     >>> GetRecentPerformanceSamples(5).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getRecentPerformanceSamples","params":[5]}'
+///     '{"method":"getRecentPerformanceSamples","jsonrpc":"2.0","id":0,"params":[5]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[skip_serializing_none]
@@ -1398,7 +1302,7 @@ impl GetRecentPerformanceSamples {
     #[new]
     fn new(limit: Option<usize>, id: Option<u64>) -> Self {
         let params = limit.map(|x| (x,));
-        let base = RequestBase::new(RpcRequest::GetRecentPerformanceSamples, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -1431,7 +1335,7 @@ pub struct GetSignaturesForAddressParams(
 ///     >>> from solders.rpc.config import RpcSignaturesForAddressConfig
 ///     >>> config = RpcSignaturesForAddressConfig(limit=10)
 ///     >>> GetSignaturesForAddress(Pubkey.default(), config).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getSignaturesForAddress","params":["11111111111111111111111111111111",{"before":null,"until":null,"limit":10,"minContextSlot":null}]}'
+///     '{"method":"getSignaturesForAddress","jsonrpc":"2.0","id":0,"params":["11111111111111111111111111111111",{"before":null,"until":null,"limit":10,"minContextSlot":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -1453,7 +1357,7 @@ impl GetSignaturesForAddress {
         id: Option<u64>,
     ) -> Self {
         let params = GetSignaturesForAddressParams(address, config);
-        let base = RequestBase::new(RpcRequest::GetSignaturesForAddress, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -1493,7 +1397,7 @@ pub struct GetSignatureStatusesParams(
 ///     >>> from solders.rpc.config import RpcSignatureStatusConfig
 ///     >>> config = RpcSignatureStatusConfig(search_transaction_history=True)
 ///     >>> GetSignatureStatuses([Signature.default()], config).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getSignatureStatuses","params":[["1111111111111111111111111111111111111111111111111111111111111111"],{"searchTransactionHistory":true}]}'
+///     '{"method":"getSignatureStatuses","jsonrpc":"2.0","id":0,"params":[["1111111111111111111111111111111111111111111111111111111111111111"],{"searchTransactionHistory":true}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -1515,7 +1419,7 @@ impl GetSignatureStatuses {
         id: Option<u64>,
     ) -> Self {
         let params = GetSignatureStatusesParams(signatures, config);
-        let base = RequestBase::new(RpcRequest::GetSignatureStatuses, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -1545,7 +1449,7 @@ request_boilerplate!(GetSignatureStatuses);
 ///     >>> from solders.rpc.config import RpcContextConfig
 ///     >>> config = RpcContextConfig(min_context_slot=123)
 ///     >>> GetSlot(config).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getSlot","params":[{"minContextSlot":123}]}'
+///     '{"method":"getSlot","jsonrpc":"2.0","id":0,"params":[{"minContextSlot":123}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[skip_serializing_none]
@@ -1565,7 +1469,7 @@ impl GetSlot {
     #[new]
     fn new(config: Option<RpcContextConfig>, id: Option<u64>) -> Self {
         let params = config.map(|c| (c,));
-        let base = RequestBase::new(RpcRequest::GetSlot, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -1589,7 +1493,7 @@ request_boilerplate!(GetSlot);
 ///     >>> from solders.rpc.config import RpcContextConfig
 ///     >>> config = RpcContextConfig(min_context_slot=123)
 ///     >>> GetSlot(config).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getSlot","params":[{"minContextSlot":123}]}'
+///     '{"method":"getSlot","jsonrpc":"2.0","id":0,"params":[{"minContextSlot":123}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[skip_serializing_none]
@@ -1609,7 +1513,7 @@ impl GetSlotLeader {
     #[new]
     fn new(config: Option<RpcContextConfig>, id: Option<u64>) -> Self {
         let params = config.map(|c| (c,));
-        let base = RequestBase::new(RpcRequest::GetSlotLeader, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -1632,7 +1536,7 @@ request_boilerplate!(GetSlotLeader);
 /// Example:
 ///     >>> from solders.rpc.requests import GetSlotLeaders
 ///     >>> GetSlotLeaders(100, 10).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getSlotLeaders","params":[100,10]}'
+///     '{"method":"getSlotLeaders","jsonrpc":"2.0","id":0,"params":[100,10]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -1650,7 +1554,7 @@ impl GetSlotLeaders {
     #[new]
     fn new(start: u64, limit: u64, id: Option<u64>) -> Self {
         let params = (start, limit);
-        let base = RequestBase::new(RpcRequest::GetSlotLeaders, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -1690,7 +1594,7 @@ pub struct GetStakeActivationParams(
 ///     >>> from solders.pubkey import Pubkey
 ///     >>> config = RpcEpochConfig(epoch=1234)
 ///     >>> GetStakeActivation(Pubkey.default(), config).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getStakeActivation","params":["11111111111111111111111111111111",{"epoch":1234,"minContextSlot":null}]}'
+///     '{"method":"getStakeActivation","jsonrpc":"2.0","id":0,"params":["11111111111111111111111111111111",{"epoch":1234,"minContextSlot":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -1708,7 +1612,7 @@ impl GetStakeActivation {
     #[new]
     fn new(account: Pubkey, config: Option<RpcEpochConfig>, id: Option<u64>) -> Self {
         let params = GetStakeActivationParams(account, config);
-        let base = RequestBase::new(RpcRequest::GetStakeActivation, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -1738,7 +1642,7 @@ request_boilerplate!(GetStakeActivation);
 ///     >>> from solders.rpc.config import RpcSupplyConfig
 ///     >>> config = RpcSupplyConfig(exclude_non_circulating_accounts_list=True)
 ///     >>> GetSupply(config).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getSupply","params":[{"excludeNonCirculatingAccountsList":true}]}'
+///     '{"method":"getSupply","jsonrpc":"2.0","id":0,"params":[{"excludeNonCirculatingAccountsList":true}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[skip_serializing_none]
@@ -1758,7 +1662,7 @@ impl GetSupply {
     #[new]
     fn new(config: Option<RpcSupplyConfig>, id: Option<u64>) -> Self {
         let params = config.map(|c| (c,));
-        let base = RequestBase::new(RpcRequest::GetSupply, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -1795,7 +1699,7 @@ pub struct PubkeyAndCommitmentParams(
 ///     >>> from solders.pubkey import Pubkey
 ///     >>> config = RpcEpochConfig(epoch=1234)
 ///     >>> GetTokenAccountBalance(Pubkey.default(), CommitmentLevel.Processed).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getTokenAccountBalance","params":["11111111111111111111111111111111",{"commitment":"processed"}]}'
+///     '{"method":"getTokenAccountBalance","jsonrpc":"2.0","id":0,"params":["11111111111111111111111111111111",{"commitment":"processed"}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -1813,7 +1717,7 @@ impl GetTokenAccountBalance {
     #[new]
     fn new(account: Pubkey, commitment: Option<CommitmentLevel>, id: Option<u64>) -> Self {
         let params = PubkeyAndCommitmentParams(account, commitment);
-        let base = RequestBase::new(RpcRequest::GetTokenAccountBalance, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -1857,7 +1761,7 @@ pub struct GetTokenAccountsByDelegateParams(
 ///     >>> config = RpcAccountInfoConfig(min_context_slot=1234)
 ///     >>> req = GetTokenAccountsByDelegate(Pubkey.default(), program_filter, config)
 ///     >>> req.to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getTokenAccountsByDelegate","params":["11111111111111111111111111111111",{"programId":"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"},{"encoding":null,"dataSlice":null,"minContextSlot":1234}]}'
+///     '{"method":"getTokenAccountsByDelegate","jsonrpc":"2.0","id":0,"params":["11111111111111111111111111111111",{"programId":"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"},{"encoding":null,"dataSlice":null,"minContextSlot":1234}]}'
 ///     >>> req.filter_
 ///     RpcTokenAccountsFilterProgramId(
 ///         Pubkey(
@@ -1886,7 +1790,7 @@ impl GetTokenAccountsByDelegate {
         id: Option<u64>,
     ) -> Self {
         let params = GetTokenAccountsByDelegateParams(account, filter_, config);
-        let base = RequestBase::new(RpcRequest::GetTokenAccountsByDelegate, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -1927,7 +1831,7 @@ request_boilerplate!(GetTokenAccountsByDelegate);
 ///     >>> config = RpcAccountInfoConfig(min_context_slot=1234)
 ///     >>> req = GetTokenAccountsByOwner(Pubkey.default(), mint_filter, config)
 ///     >>> req.to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getTokenAccountsByOwner","params":["11111111111111111111111111111111",{"mint":"11111111111111111111111111111111"},{"encoding":null,"dataSlice":null,"minContextSlot":1234}]}'
+///     '{"method":"getTokenAccountsByOwner","jsonrpc":"2.0","id":0,"params":["11111111111111111111111111111111",{"mint":"11111111111111111111111111111111"},{"encoding":null,"dataSlice":null,"minContextSlot":1234}]}'
 ///     >>> req.filter_
 ///     RpcTokenAccountsFilterMint(
 ///         Pubkey(
@@ -1956,7 +1860,7 @@ impl GetTokenAccountsByOwner {
         id: Option<u64>,
     ) -> Self {
         let params = GetTokenAccountsByDelegateParams(account, filter_, config);
-        let base = RequestBase::new(RpcRequest::GetTokenAccountsByOwner, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -1992,7 +1896,7 @@ request_boilerplate!(GetTokenAccountsByOwner);
 ///     >>> from solders.rpc.requests import GetTokenLargestAccounts
 ///     >>> from solders.pubkey import Pubkey
 ///     >>> GetTokenLargestAccounts(Pubkey.default()).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getTokenLargestAccounts","params":["11111111111111111111111111111111"]}'
+///     '{"method":"getTokenLargestAccounts","jsonrpc":"2.0","id":0,"params":["11111111111111111111111111111111"]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -2010,7 +1914,7 @@ impl GetTokenLargestAccounts {
     #[new]
     fn new(mint: Pubkey, commitment: Option<CommitmentLevel>, id: Option<u64>) -> Self {
         let params = PubkeyAndCommitmentParams(mint, commitment);
-        let base = RequestBase::new(RpcRequest::GetTokenLargestAccounts, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -2040,7 +1944,7 @@ request_boilerplate!(GetTokenLargestAccounts);
 ///     >>> from solders.rpc.requests import GetTokenSupply
 ///     >>> from solders.pubkey import Pubkey
 ///     >>> GetTokenSupply(Pubkey.default()).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getTokenSupply","params":["11111111111111111111111111111111"]}'
+///     '{"method":"getTokenSupply","jsonrpc":"2.0","id":0,"params":["11111111111111111111111111111111"]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -2058,7 +1962,7 @@ impl GetTokenSupply {
     #[new]
     fn new(mint: Pubkey, commitment: Option<CommitmentLevel>, id: Option<u64>) -> Self {
         let params = PubkeyAndCommitmentParams(mint, commitment);
-        let base = RequestBase::new(RpcRequest::GetTokenSupply, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -2098,7 +2002,7 @@ pub struct GetTransactionParams(
 ///     >>> from solders.signature import Signature
 ///     >>> config = RpcTransactionConfig(max_supported_transaction_version=1)
 ///     >>> GetTransaction(Signature.default(), config).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getTransaction","params":["1111111111111111111111111111111111111111111111111111111111111111",{"encoding":null,"maxSupportedTransactionVersion":1}]}'
+///     '{"method":"getTransaction","jsonrpc":"2.0","id":0,"params":["1111111111111111111111111111111111111111111111111111111111111111",{"encoding":null,"maxSupportedTransactionVersion":1}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -2116,7 +2020,7 @@ impl GetTransaction {
     #[new]
     fn new(signature: Signature, config: Option<RpcTransactionConfig>, id: Option<u64>) -> Self {
         let params = GetTransactionParams(signature, config);
-        let base = RequestBase::new(RpcRequest::GetTransaction, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -2146,7 +2050,7 @@ request_boilerplate!(GetTransaction);
 ///     >>> from solders.rpc.config import RpcContextConfig
 ///     >>> config = RpcContextConfig(min_context_slot=1234)
 ///     >>> GetTransactionCount(config).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getTransactionCount","params":[{"minContextSlot":1234}]}'
+///     '{"method":"getTransactionCount","jsonrpc":"2.0","id":0,"params":[{"minContextSlot":1234}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[skip_serializing_none]
@@ -2166,7 +2070,7 @@ impl GetTransactionCount {
     #[new]
     fn new(config: Option<RpcContextConfig>, id: Option<u64>) -> Self {
         let params = config.map(|c| (c,));
-        let base = RequestBase::new(RpcRequest::GetTransactionCount, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -2191,7 +2095,7 @@ zero_param_req_def!(GetVersion);
 ///     >>> from solders.rpc.config import RpcGetVoteAccountsConfig
 ///     >>> config = RpcGetVoteAccountsConfig(keep_unstaked_delinquents=False)
 ///     >>> GetVoteAccounts(config).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"getVoteAccounts","params":[{"votePubkey":null,"keepUnstakedDelinquents":false,"delinquentSlotDistance":null}]}'
+///     '{"method":"getVoteAccounts","jsonrpc":"2.0","id":0,"params":[{"votePubkey":null,"keepUnstakedDelinquents":false,"delinquentSlotDistance":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[skip_serializing_none]
@@ -2211,7 +2115,7 @@ impl GetVoteAccounts {
     #[new]
     fn new(config: Option<RpcGetVoteAccountsConfig>, id: Option<u64>) -> Self {
         let params = config.map(|c| (c,));
-        let base = RequestBase::new(RpcRequest::GetVoteAccounts, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -2243,7 +2147,7 @@ pub struct IsBlockhashValidParams(
 ///     >>> from solders.rpc.requests import IsBlockhashValid
 ///     >>> from solders.hash import Hash
 ///     >>> IsBlockhashValid(Hash.default()).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"isBlockhashValid","params":["11111111111111111111111111111111"]}'
+///     '{"method":"isBlockhashValid","jsonrpc":"2.0","id":0,"params":["11111111111111111111111111111111"]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -2261,7 +2165,7 @@ impl IsBlockhashValid {
     #[new]
     fn new(blockhash: SolderHash, config: Option<RpcContextConfig>, id: Option<u64>) -> Self {
         let params = IsBlockhashValidParams(blockhash, config);
-        let base = RequestBase::new(RpcRequest::IsBlockhashValid, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -2305,7 +2209,7 @@ pub struct RequestAirdropParams(
 ///      >>> from solders.commitment_config import CommitmentLevel
 ///      >>> config = RpcRequestAirdropConfig(commitment=CommitmentLevel.Confirmed)
 ///      >>> RequestAirdrop(Pubkey.default(), 1000, config).to_json()
-///      '{"jsonrpc":"2.0","id":0,"method":"requestAirdrop","params":["11111111111111111111111111111111",1000,{"recentBlockhash":null,"commitment":"confirmed"}]}'
+///      '{"method":"requestAirdrop","jsonrpc":"2.0","id":0,"params":["11111111111111111111111111111111",1000,{"recentBlockhash":null,"commitment":"confirmed"}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -2328,7 +2232,7 @@ impl RequestAirdrop {
         id: Option<u64>,
     ) -> Self {
         let params = RequestAirdropParams(pubkey, lamports, config);
-        let base = RequestBase::new(RpcRequest::RequestAirdrop, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -2408,7 +2312,7 @@ pub struct SendTransactionParams(
 ///      >>> commitment = CommitmentLevel.Confirmed
 ///      >>> config = RpcSendTransactionConfig(preflight_commitment=commitment)
 ///      >>> SendTransaction(tx, config).to_json()
-///      '{"jsonrpc":"2.0","id":0,"method":"sendTransaction","params":["AaVkKDb3UlpidO/ucBnOcmS+1dY8ZAC4vHxTxiccV8zPBlupuozppRjwrILZJaoKggAcVSD1XlAKstDVEPFOVgwBAAECiojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEAA2FiYw==",{"skipPreflight":false,"preflightCommitment":"confirmed","encoding":"base64","maxRetries":null,"minContextSlot":null}]}'
+///      '{"method":"sendTransaction","jsonrpc":"2.0","id":0,"params":["AaVkKDb3UlpidO/ucBnOcmS+1dY8ZAC4vHxTxiccV8zPBlupuozppRjwrILZJaoKggAcVSD1XlAKstDVEPFOVgwBAAECiojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEAA2FiYw==",{"skipPreflight":false,"preflightCommitment":"confirmed","encoding":"base64","maxRetries":null,"minContextSlot":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -2426,7 +2330,7 @@ impl SendTransaction {
     #[new]
     fn new(tx: Transaction, config: Option<RpcSendTransactionConfig>, id: Option<u64>) -> Self {
         let params = SendTransactionParams(tx, config);
-        let base = RequestBase::new(RpcRequest::SendTransaction, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -2485,7 +2389,7 @@ pub struct SimulateTransactionParams(
 ///      >>> commitment = CommitmentLevel.Confirmed
 ///      >>> config = RpcSimulateTransactionConfig(commitment=commitment, accounts=accounts_config)
 ///      >>> SimulateTransaction(tx, config).to_json()
-///      {"jsonrpc":"2.0","id":0,"method":"simulateTransaction","params":["AaVkKDb3UlpidO/ucBnOcmS+1dY8ZAC4vHxTxiccV8zPBlupuozppRjwrILZJaoKggAcVSD1XlAKstDVEPFOVgwBAAECiojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEAA2FiYw==",{"sigVerify":false,"replaceRecentBlockhash":false,"commitment":"confirmed","encoding":"base64","accounts":{"encoding":"base64+zstd","addresses":["11111111111111111111111111111111"]},"minContextSlot":null}]}
+///      {"method":"simulateTransaction","jsonrpc":"2.0","id":0,"params":["AaVkKDb3UlpidO/ucBnOcmS+1dY8ZAC4vHxTxiccV8zPBlupuozppRjwrILZJaoKggAcVSD1XlAKstDVEPFOVgwBAAECiojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEAA2FiYw==",{"sigVerify":false,"replaceRecentBlockhash":false,"commitment":"confirmed","encoding":"base64","accounts":{"encoding":"base64+zstd","addresses":["11111111111111111111111111111111"]},"minContextSlot":null}]}
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -2503,7 +2407,7 @@ impl SimulateTransaction {
     #[new]
     fn new(tx: Transaction, config: Option<RpcSimulateTransactionConfig>, id: Option<u64>) -> Self {
         let params = SimulateTransactionParams(tx, config);
-        let base = RequestBase::new(RpcRequest::SimulateTransaction, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -2536,7 +2440,7 @@ request_boilerplate!(SimulateTransaction);
 ///     >>> from solders.account_decoder import UiAccountEncoding
 ///     >>> config = RpcAccountInfoConfig(UiAccountEncoding.Base64)
 ///     >>> AccountSubscribe(Pubkey.default(), config).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"accountSubscribe","params":["11111111111111111111111111111111",{"encoding":"base64","dataSlice":null,"minContextSlot":null}]}'
+///     '{"method":"accountSubscribe","jsonrpc":"2.0","id":0,"params":["11111111111111111111111111111111",{"encoding":"base64","dataSlice":null,"minContextSlot":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -2554,7 +2458,7 @@ impl AccountSubscribe {
     #[new]
     fn new(account: Pubkey, config: Option<RpcAccountInfoConfig>, id: Option<u64>) -> Self {
         let params = GetAccountInfoParams(account, config);
-        let base = RequestBase::new(RpcRequest::AccountSubscribe, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -2596,9 +2500,9 @@ pub struct BlockSubscribeParams(
 ///      >>> from solders.transaction_status import TransactionDetails
 ///      >>> config = RpcBlockSubscribeConfig(transaction_details=TransactionDetails.Signatures)
 ///      >>> BlockSubscribe(RpcBlockSubscribeFilter.All, config).to_json()
-///      '{"jsonrpc":"2.0","id":0,"method":"blockSubscribe","params":["all",{"encoding":null,"transactionDetails":"signatures","showRewards":null,"maxSupportedTransactionVersion":null}]}'
+///      '{"method":"blockSubscribe","jsonrpc":"2.0","id":0,"params":["all",{"encoding":null,"transactionDetails":"signatures","showRewards":null,"maxSupportedTransactionVersion":null}]}'
 ///      >>> BlockSubscribe(RpcBlockSubscribeFilterMentions(Pubkey.default()), config).to_json()
-///      '{"jsonrpc":"2.0","id":0,"method":"blockSubscribe","params":[{"mentionsAccountOrProgram":"11111111111111111111111111111111"},{"encoding":null,"transactionDetails":"signatures","showRewards":null,"maxSupportedTransactionVersion":null}]}'
+///      '{"method":"blockSubscribe","jsonrpc":"2.0","id":0,"params":[{"mentionsAccountOrProgram":"11111111111111111111111111111111"},{"encoding":null,"transactionDetails":"signatures","showRewards":null,"maxSupportedTransactionVersion":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -2620,7 +2524,7 @@ impl BlockSubscribe {
         id: Option<u64>,
     ) -> Self {
         let params = BlockSubscribeParams(filter_, config);
-        let base = RequestBase::new(RpcRequest::BlockSubscribe, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -2661,9 +2565,9 @@ pub struct LogsSubscribeParams(
 ///      >>> from solders.commitment_config import CommitmentLevel
 ///      >>> config = RpcTransactionLogsConfig(commitment=CommitmentLevel.Confirmed)
 ///      >>> LogsSubscribe(RpcTransactionLogsFilter.All, config).to_json()
-///      '{"jsonrpc":"2.0","id":0,"method":"logsSubscribe","params":["all",{"commitment":"confirmed"}]}'
+///      '{"method":"logsSubscribe","jsonrpc":"2.0","id":0,"params":["all",{"commitment":"confirmed"}]}'
 ///      >>> LogsSubscribe(RpcTransactionLogsFilterMentions(Pubkey.default()), config).to_json()
-///      '{"jsonrpc":"2.0","id":0,"method":"logsSubscribe","params":[{"mentions":["11111111111111111111111111111111"]},{"commitment":"confirmed"}]}'
+///      '{"method":"logsSubscribe","jsonrpc":"2.0","id":0,"params":[{"mentions":["11111111111111111111111111111111"]},{"commitment":"confirmed"}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -2685,7 +2589,7 @@ impl LogsSubscribe {
         id: Option<u64>,
     ) -> Self {
         let params = LogsSubscribeParams(filter_, config);
-        let base = RequestBase::new(RpcRequest::LogsSubscribe, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -2720,7 +2624,7 @@ request_boilerplate!(LogsSubscribe);
 ///     >>> filters = [10, Memcmp(offset=10, bytes_=b"123")]
 ///     >>> config = RpcProgramAccountsConfig(acc_info_config, filters)
 ///     >>> ProgramSubscribe(Pubkey.default(), config).to_json()
-///     '{"jsonrpc":"2.0","id":0,"method":"programSubscribe","params":["11111111111111111111111111111111",{"filters":[{"dataSize":10},{"memcmp":{"offset":10,"bytes":[49,50,51],"encoding":null}}],"encoding":null,"dataSlice":null,"minContextSlot":null,"withContext":null}]}'
+///     '{"method":"programSubscribe","jsonrpc":"2.0","id":0,"params":["11111111111111111111111111111111",{"filters":[{"dataSize":10},{"memcmp":{"offset":10,"bytes":[49,50,51],"encoding":null}}],"encoding":null,"dataSlice":null,"minContextSlot":null,"withContext":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -2738,7 +2642,7 @@ impl ProgramSubscribe {
     #[new]
     fn new(program: Pubkey, config: Option<RpcProgramAccountsConfig>, id: Option<u64>) -> Self {
         let params = GetProgramAccountsParams(program, config);
-        let base = RequestBase::new(RpcRequest::ProgramSubscribe, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -2778,7 +2682,7 @@ pub struct SignatureSubscribeParams(
 ///      >>> from solders.signature import Signature
 ///      >>> config = RpcSignatureSubscribeConfig(enable_received_notification=False)
 ///      >>> SignatureSubscribe(Signature.default(), config).to_json()
-///      '{"jsonrpc":"2.0","id":0,"method":"signatureSubscribe","params":["1111111111111111111111111111111111111111111111111111111111111111",{"enableReceivedNotification":false}]}'
+///      '{"method":"signatureSubscribe","jsonrpc":"2.0","id":0,"params":["1111111111111111111111111111111111111111111111111111111111111111",{"enableReceivedNotification":false}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -2800,7 +2704,7 @@ impl SignatureSubscribe {
         id: Option<u64>,
     ) -> Self {
         let params = SignatureSubscribeParams(signature, config);
-        let base = RequestBase::new(RpcRequest::SignatureSubscribe, id);
+        let base = RequestBase::new(id);
         Self { base, params }
     }
 
@@ -2825,8 +2729,8 @@ zero_param_req_def!(VoteSubscribe);
 
 macro_rules ! pyunion {
     ($name:ident, $($variant:ident),+) => {
-        #[derive(FromPyObject, Debug, Serialize, Deserialize)]
-        #[serde(untagged)]
+        #[derive(FromPyObject, Clone, Debug, PartialEq, Serialize, Deserialize)]
+        #[serde(tag = "method", rename_all = "camelCase")]
         pub enum $name {
             $($variant($variant),)+
         }
@@ -2907,6 +2811,7 @@ pyunion!(
     LogsUnsubscribe,
     ProgramUnsubscribe,
     SignatureUnsubscribe,
+    SimulateTransaction,
     SlotUnsubscribe,
     SlotsUpdatesUnsubscribe,
     RootUnsubscribe,
@@ -2924,7 +2829,7 @@ pyunion!(
 /// Example:
 ///     >>> from solders.rpc.requests import batch_to_json, GetClusterNodes, GetEpochSchedule
 ///     >>> batch_to_json([GetClusterNodes(0), GetEpochSchedule(1)])
-///     '[{"jsonrpc":"2.0","id":0,"method":"getClusterNodes"},{"jsonrpc":"2.0","id":1,"method":"getEpochSchedule"}]'
+///     '[{"method":"getClusterNodes","jsonrpc":"2.0","id":0},{"method":"getEpochSchedule","jsonrpc":"2.0","id":1}]'
 ///
 #[pyfunction]
 pub fn batch_to_json(reqs: Vec<Body>) -> String {
@@ -2943,20 +2848,16 @@ pub fn batch_to_json(reqs: Vec<Body>) -> String {
 ///     >>> from solders.rpc.requests import batch_from_json
 ///     >>> raw = '[{"jsonrpc":"2.0","id":0,"method":"getClusterNodes"},{"jsonrpc":"2.0","id":1,"method":"getEpochSchedule"}]'
 ///     >>> batch_from_json(raw)
-///     [GetBlockHeight {
+///     [GetClusterNodes {
 ///         base: RequestBase {
-///             jsonrpc: "2.0",
+///             jsonrpc: TwoPointOh,
 ///             id: 0,
-///             method: GetClusterNodes,
 ///         },
-///         params: None,
-///     }, GetBlockHeight {
+///     }, GetEpochSchedule {
 ///         base: RequestBase {
-///             jsonrpc: "2.0",
+///             jsonrpc: TwoPointOh,
 ///             id: 1,
-///             method: GetEpochSchedule,
 ///         },
-///         params: None,
 ///     }]
 ///
 #[pyfunction]

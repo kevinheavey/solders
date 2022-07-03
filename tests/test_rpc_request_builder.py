@@ -28,9 +28,9 @@ def test_batch() -> None:
     ]
     as_json = batch_to_json(reqs)
     assert as_json == (
-        '[{"jsonrpc":"2.0","id":0,"method":"getSignatureStatuses","params"'
+        '[{"method":"getSignatureStatuses","jsonrpc":"2.0","id":0,"params"'
         ':[["1111111111111111111111111111111111111111111111111111111111111111"],'
-        '{"searchTransactionHistory":true}]},{"jsonrpc":"2.0","id":0,'
-        '"method":"requestAirdrop","params":["11111111111111111111111111111111",1000]}]'
+        '{"searchTransactionHistory":true}]},{"method":"requestAirdrop","jsonrpc":"2.0","id":0,'
+        '"params":["11111111111111111111111111111111",1000]}]'
     )
     assert batch_from_json(as_json) == reqs
