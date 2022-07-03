@@ -1,7 +1,7 @@
-from typing import Optional, Sequence, List
+from typing import Optional, Sequence, List, Union
 from solders.commitment_config import CommitmentLevel
-from solders.transaction_status import UiTransactionEncoding
-from solders.account_decoder import UiAccountEncoding
+from solders.transaction_status import UiTransactionEncoding, TransactionDetails
+from solders.account_decoder import UiAccountEncoding, UiDataSliceConfig
 from solders.hash import Hash
 from solders.pubkey import Pubkey
 from solders.rpc.filter import Memcmp
@@ -20,7 +20,14 @@ class RpcSignatureStatusConfig:
     def from_json(raw: str) -> "RpcSignatureStatusConfig": ...
 
 class RpcSendTransactionConfig:
-    def __init__(self, skip_preflight: bool, preflight_commitment: Optional[CommitmentLevel] = None, encoding: Optional[UiTransactionEncoding] = None, max_retries: Optional[int] = None, min_context_slot: Optional[int] = None): ...
+    def __init__(
+        self,
+        skip_preflight: bool,
+        preflight_commitment: Optional[CommitmentLevel] = None,
+        encoding: Optional[UiTransactionEncoding] = None,
+        max_retries: Optional[int] = None,
+        min_context_slot: Optional[int] = None,
+    ): ...
     @property
     def skip_preflight(self) -> bool: ...
     @property
@@ -41,9 +48,10 @@ class RpcSendTransactionConfig:
     @staticmethod
     def default() -> "RpcSendTransactionConfig": ...
 
-
 class RpcSimulateTransactionAccountsConfig:
-    def __init__(self, addresses: Sequence[Pubkey], encoding: Optional[UiAccountEncoding] = None): ...
+    def __init__(
+        self, addresses: Sequence[Pubkey], encoding: Optional[UiAccountEncoding] = None
+    ): ...
     @property
     def addresses(self) -> List[Pubkey]: ...
     @property
@@ -51,7 +59,9 @@ class RpcSimulateTransactionAccountsConfig:
     def __bytes__(self) -> bytes: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
-    def __richcmp__(self, other: "RpcSimulateTransactionAccountsConfig", op: int) -> bool: ...
+    def __richcmp__(
+        self, other: "RpcSimulateTransactionAccountsConfig", op: int
+    ) -> bool: ...
     def to_json(self) -> str: ...
     @staticmethod
     def from_json(raw: str) -> "RpcSimulateTransactionAccountsConfig": ...
@@ -59,11 +69,15 @@ class RpcSimulateTransactionAccountsConfig:
     def default() -> "RpcSimulateTransactionAccountsConfig": ...
 
 class RpcSimulateTransactionConfig:
-    def __init__(self, sig_verify: bool, replace_recent_blockhash: bool,
+    def __init__(
+        self,
+        sig_verify: bool,
+        replace_recent_blockhash: bool,
         commitment: Optional[CommitmentLevel] = None,
         encoding: Optional[UiTransactionEncoding] = None,
         accounts: Optional[RpcSimulateTransactionAccountsConfig] = None,
-        min_context_slot: Optional[int] = None,): ...
+        min_context_slot: Optional[int] = None,
+    ): ...
     @property
     def sig_verify(self) -> bool: ...
     @property
@@ -87,7 +101,11 @@ class RpcSimulateTransactionConfig:
     def default() -> "RpcSimulateTransactionConfig": ...
 
 class RpcRequestAirdropConfig:
-    def __init__(self, recent_blockhash: Optional[Hash] = None, commitment: Optional[CommitmentLevel] = None): ...
+    def __init__(
+        self,
+        recent_blockhash: Optional[Hash] = None,
+        commitment: Optional[CommitmentLevel] = None,
+    ): ...
     @property
     def recent_blockhash(self) -> Optional[Hash]: ...
     @property
@@ -103,7 +121,11 @@ class RpcRequestAirdropConfig:
     def default() -> "RpcRequestAirdropConfig": ...
 
 class RpcLeaderScheduleConfig:
-    def __init__(self, identity: Optional[Pubkey] = None, commitment: Optional[CommitmentLevel] = None): ...
+    def __init__(
+        self,
+        identity: Optional[Pubkey] = None,
+        commitment: Optional[CommitmentLevel] = None,
+    ): ...
     @property
     def identity(self) -> Optional[Pubkey]: ...
     @property
@@ -133,9 +155,12 @@ class RpcBlockProductionConfigRange:
     def from_json(raw: str) -> "RpcBlockProductionConfigRange": ...
 
 class RpcBlockProductionConfig:
-    def __init__(self,         identity: Optional[Pubkey] = None,
+    def __init__(
+        self,
+        identity: Optional[Pubkey] = None,
         range: Optional[RpcBlockProductionConfigRange] = None,
-        commitment: Optional[CommitmentLevel] = None,): ...
+        commitment: Optional[CommitmentLevel] = None,
+    ): ...
     @property
     def identity(self) -> Optional[Pubkey]: ...
     @property
@@ -153,10 +178,13 @@ class RpcBlockProductionConfig:
     def default() -> "RpcBlockProductionConfig": ...
 
 class RpcGetVoteAccountsConfig:
-    def __init__(self, vote_pubkey: Optional[Pubkey] = None,
+    def __init__(
+        self,
+        vote_pubkey: Optional[Pubkey] = None,
         commitment: Optional[CommitmentLevel] = None,
         keep_unstaked_delinquents: Optional[bool] = None,
-        delinquent_slot_distance: Optional[int] = None,): ...
+        delinquent_slot_distance: Optional[int] = None,
+    ): ...
     @property
     def vote_pubkey(self) -> Optional[Pubkey]: ...
     @property
@@ -183,10 +211,12 @@ class RpcLargestAccountsFilter:
     def __repr__(self) -> str: ...
     def __eq__(self, o: object) -> bool: ...
 
-
 class RpcLargestAccountsConfig:
-    def __init__(self, commitment: Optional[CommitmentLevel] = None,
-        filter: Optional[RpcLargestAccountsFilter] = None,): ...
+    def __init__(
+        self,
+        commitment: Optional[CommitmentLevel] = None,
+        filter: Optional[RpcLargestAccountsFilter] = None,
+    ): ...
     @property
     def commitment(self) -> Optional[CommitmentLevel]: ...
     @property
@@ -202,7 +232,11 @@ class RpcLargestAccountsConfig:
     def default() -> "RpcLargestAccountsConfig": ...
 
 class RpcSupplyConfig:
-    def __init__(self, exclude_non_circulating_accounts_list: bool, commitment: Optional[CommitmentLevel] = None): ...
+    def __init__(
+        self,
+        exclude_non_circulating_accounts_list: bool,
+        commitment: Optional[CommitmentLevel] = None,
+    ): ...
     @property
     def exclude_non_circulating_accounts_list(self) -> bool: ...
     @property
@@ -218,9 +252,12 @@ class RpcSupplyConfig:
     def default() -> "RpcSupplyConfig": ...
 
 class RpcEpochConfig:
-    def __init__(self,         epoch: Optional[int] = None,
+    def __init__(
+        self,
+        epoch: Optional[int] = None,
         commitment: Optional[CommitmentLevel] = None,
-        min_context_slot: Optional[int] = None,): ...
+        min_context_slot: Optional[int] = None,
+    ): ...
     @property
     def epoch(self) -> Optional[int]: ...
     @property
@@ -238,10 +275,13 @@ class RpcEpochConfig:
     def default() -> "RpcEpochConfig": ...
 
 class RpcAccountInfoConfig:
-    def __init__(self, encoding: Optional[UiAccountEncoding] = None,
+    def __init__(
+        self,
+        encoding: Optional[UiAccountEncoding] = None,
         data_slice: Optional[UiDataSliceConfig] = None,
         commitment: Optional[CommitmentLevel] = None,
-        min_context_slot: Optional[int] = None,): ...
+        min_context_slot: Optional[int] = None,
+    ): ...
     @property
     def encoding(self) -> Optional[UiAccountEncoding]: ...
     @property
@@ -261,9 +301,12 @@ class RpcAccountInfoConfig:
     def default() -> "RpcAccountInfoConfig": ...
 
 class RpcProgramAccountsConfig:
-    def __init__(self, account_config: RpcAccountInfoConfig,
+    def __init__(
+        self,
+        account_config: RpcAccountInfoConfig,
         filters: Optional[Sequence[Union[int, Memcmp]]] = None,
-        with_context: Optional[bool] = None,): ...
+        with_context: Optional[bool] = None,
+    ): ...
     @property
     def account_config(self) -> RpcAccountInfoConfig: ...
     @property
@@ -290,11 +333,12 @@ class RpcTransactionLogsFilter:
 
 class RpcTransactionLogsFilterMentions:
     def __init__(self, pubkey: Pubkey): ...
-    def __richcmp__(self, other: "RpcTransactionLogsFilterMentions", op: int) -> bool: ...
+    def __richcmp__(
+        self, other: "RpcTransactionLogsFilterMentions", op: int
+    ) -> bool: ...
     def __repr__(self) -> str: ...
     @property
     def pubkey(self) -> Pubkey: ...
-
 
 class RpcTransactionLogsConfig:
     def __init__(self, commitment: Optional[CommitmentLevel] = None): ...
@@ -315,16 +359,21 @@ class RpcTokenAccountsFilterMint:
     @property
     def mint(self) -> Pubkey: ...
 
-
 class RpcTokenAccountsFilterProgramId:
     def __init__(self, program_id: Pubkey): ...
-    def __richcmp__(self, other: "RpcTokenAccountsFilterProgramId", op: int) -> bool: ...
+    def __richcmp__(
+        self, other: "RpcTokenAccountsFilterProgramId", op: int
+    ) -> bool: ...
     def __repr__(self) -> str: ...
     @property
     def program_id(self) -> Pubkey: ...
 
 class RpcSignatureSubscribeConfig:
-    def __init__(self, commitment: Optional[CommitmentLevel] = None, enable_received_notification: Optional[bool] = None): ...
+    def __init__(
+        self,
+        commitment: Optional[CommitmentLevel] = None,
+        enable_received_notification: Optional[bool] = None,
+    ): ...
     @property
     def commitment(self) -> Optional[CommitmentLevel]: ...
     @property
@@ -339,7 +388,6 @@ class RpcSignatureSubscribeConfig:
     @staticmethod
     def default() -> "RpcSignatureSubscribeConfig": ...
 
-
 class RpcBlockSubscribeFilter:
     All: "RpcBlockSubscribeFilter"
     def __int__(self) -> int: ...
@@ -349,17 +397,22 @@ class RpcBlockSubscribeFilter:
 
 class RpcBlockSubscribeFilterMentions:
     def __init__(self, pubkey: Pubkey): ...
-    def __richcmp__(self, other: "RpcBlockSubscribeFilterMentions", op: int) -> bool: ...
+    def __richcmp__(
+        self, other: "RpcBlockSubscribeFilterMentions", op: int
+    ) -> bool: ...
     def __repr__(self) -> str: ...
     @property
     def pubkey(self) -> Pubkey: ...
 
 class RpcBlockSubscribeConfig:
-    def __init__(self, commitment: Optional[CommitmentLevel] = None,
+    def __init__(
+        self,
+        commitment: Optional[CommitmentLevel] = None,
         encoding: Optional[UiTransactionEncoding] = None,
         transaction_details: Optional[TransactionDetails] = None,
         show_rewards: Optional[bool] = None,
-        max_supported_transaction_version: Optional[u8] = None,): ...
+        max_supported_transaction_version: Optional[int] = None,
+    ): ...
     @property
     def commitment(self) -> Optional[CommitmentLevel]: ...
     @property
@@ -380,13 +433,15 @@ class RpcBlockSubscribeConfig:
     @staticmethod
     def default() -> "RpcBlockSubscribeConfig": ...
 
-
 class RpcSignaturesForAddressConfig:
-    def __init__(self, before: Optional[Signature] = None,
+    def __init__(
+        self,
+        before: Optional[Signature] = None,
         until: Optional[Signature] = None,
         limit: Optional[int] = None,
         commitment: Optional[CommitmentLevel] = None,
-        min_context_slot: Optional[int] = None,): ...
+        min_context_slot: Optional[int] = None,
+    ): ...
     @property
     def before(self) -> Optional[Signature]: ...
     @property
@@ -408,11 +463,14 @@ class RpcSignaturesForAddressConfig:
     def default() -> "RpcSignaturesForAddressConfig": ...
 
 class RpcBlockConfig:
-    def __init__(self, encoding: Optional[UiTransactionEncoding] = None,
+    def __init__(
+        self,
+        encoding: Optional[UiTransactionEncoding] = None,
         transaction_details: Optional[TransactionDetails] = None,
         rewards: Optional[bool] = None,
         commitment: Optional[CommitmentLevel] = None,
-        max_supported_transaction_version: Optional[u8] = None,): ...
+        max_supported_transaction_version: Optional[int] = None,
+    ): ...
     @property
     def encoding(self) -> Optional[UiTransactionEncoding]: ...
     @property
@@ -422,7 +480,7 @@ class RpcBlockConfig:
     @property
     def commitment(self) -> Optional[CommitmentLevel]: ...
     @property
-    def max_supported_transaction_version(self) -> Optional[u8]: ...
+    def max_supported_transaction_version(self) -> Optional[int]: ...
     def __bytes__(self) -> bytes: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
@@ -435,12 +493,17 @@ class RpcBlockConfig:
     @staticmethod
     def rewards_only() -> "RpcBlockConfig": ...
     @staticmethod
-    def rewards_with_commitment(commitment: Optional[CommitmentLevel] = None) -> "RpcBlockConfig": ...
+    def rewards_with_commitment(
+        commitment: Optional[CommitmentLevel] = None,
+    ) -> "RpcBlockConfig": ...
 
 class RpcTransactionConfig:
-    def __init__(self, encoding: Optional[UiTransactionEncoding] = None,
+    def __init__(
+        self,
+        encoding: Optional[UiTransactionEncoding] = None,
         commitment: Optional[CommitmentLevel] = None,
-        max_supported_transaction_version: Optional[u8] = None,): ...
+        max_supported_transaction_version: Optional[int] = None,
+    ): ...
     @property
     def encoding(self) -> Optional[UiTransactionEncoding]: ...
     @property
@@ -458,7 +521,11 @@ class RpcTransactionConfig:
     def default() -> "RpcTransactionConfig": ...
 
 class RpcContextConfig:
-    def __init__(self, commitment: Optional[CommitmentLevel] = None, min_context_slot: Optional[int] = None): ...
+    def __init__(
+        self,
+        commitment: Optional[CommitmentLevel] = None,
+        min_context_slot: Optional[int] = None,
+    ): ...
     @property
     def commitment(self) -> Optional[CommitmentLevel]: ...
     @property
