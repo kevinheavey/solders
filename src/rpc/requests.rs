@@ -801,7 +801,6 @@ impl GetFeeForMessage {
 request_boilerplate!(GetFeeForMessage);
 
 zero_param_req_def!(GetFirstAvailableBlock);
-
 zero_param_req_def!(GetGenesisHash);
 zero_param_req_def!(GetHealth);
 zero_param_req_def!(GetHighestSnapshotSlot);
@@ -2933,6 +2932,7 @@ pub fn create_requests_mod(py: Python<'_>) -> PyResult<&PyModule> {
     requests_mod.add_class::<LogsUnsubscribe>()?;
     requests_mod.add_class::<ProgramUnsubscribe>()?;
     requests_mod.add_class::<SignatureUnsubscribe>()?;
+    requests_mod.add_class::<SimulateTransaction>()?;
     requests_mod.add_class::<SlotUnsubscribe>()?;
     requests_mod.add_class::<SlotsUpdatesUnsubscribe>()?;
     requests_mod.add_class::<RootUnsubscribe>()?;
