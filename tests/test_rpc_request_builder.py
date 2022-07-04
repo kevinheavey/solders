@@ -1,5 +1,6 @@
 """These tests are mainly about getting mypy to check stuff, as it doesn't check doc examples."""
 
+from typing import List
 from solders.rpc.requests import (
     GetAccountInfo,
     GetBalance,
@@ -88,11 +89,26 @@ from solders.rpc.config import (
     RpcTokenAccountsFilterProgramId,
     RpcProgramAccountsConfig,
     RpcSignaturesForAddressConfig,
+    RpcTokenAccountsFilterMint,
+    RpcTransactionConfig,
+    RpcGetVoteAccountsConfig,
+    RpcSendTransactionConfig,
+    RpcBlockSubscribeConfig,
+    RpcBlockSubscribeFilter,
+    RpcBlockSubscribeFilterMentions,
+    RpcTransactionLogsConfig,
+    RpcTransactionLogsFilter,
+    RpcTransactionLogsFilterMentions,
+    RpcSignatureSubscribeConfig,
 )
 from solders.rpc.filter import Memcmp
+from solders.hash import Hash
+from solders.keypair import Keypair
+from solders.transaction import Transaction
 from solders.transaction_status import UiTransactionEncoding, TransactionDetails
 from solders.signature import Signature
 from solders.message import Message
+from solders.instruction import Instruction, AccountMeta
 from solders.commitment_config import CommitmentLevel
 from solders.account_decoder import UiAccountEncoding, UiDataSliceConfig
 from solders.pubkey import Pubkey
@@ -366,10 +382,208 @@ def test_get_token_accounts_by_delegate() -> None:
     assert GetTokenAccountsByDelegate.from_json(as_json) == req
 
 
+def test_get_token_accounts_by_owner() -> None:
+    mint_filter = RpcTokenAccountsFilterMint(Pubkey.default())
+    config = RpcAccountInfoConfig(min_context_slot=1234)
+    req = GetTokenAccountsByOwner(Pubkey.default(), mint_filter, config)
+    assert req.filter_ == mint_filter
+    as_json = req.to_json()
+    assert GetTokenAccountsByOwner.from_json(as_json) == req
+
+
+def test_get_token_largest_accounts() -> None:
+    req = GetTokenLargestAccounts(Pubkey.default())
+    as_json = req.to_json()
+    assert GetTokenLargestAccounts.from_json(as_json) == req
+
+
+def test_get_token_supply() -> None:
+    req = GetTokenSupply(Pubkey.default())
+    as_json = req.to_json()
+    assert GetTokenSupply.from_json(as_json) == req
+
+
+def test_get_transaction() -> None:
+    config = RpcTransactionConfig(max_supported_transaction_version=1)
+    req = GetTransaction(Signature.default(), config)
+    as_json = req.to_json()
+    assert GetTransaction.from_json(as_json) == req
+
+
+def test_get_transaction_count() -> None:
+    config = RpcContextConfig(min_context_slot=1234)
+    req = GetTransactionCount(config)
+    as_json = req.to_json()
+    assert GetTransactionCount.from_json(as_json) == req
+
+
+def test_get_version() -> None:
+    req = GetVersion(123)
+    as_json = req.to_json()
+    assert GetVersion.from_json(as_json) == req
+
+
+def test_get_vote_accounts() -> None:
+    config = RpcGetVoteAccountsConfig(keep_unstaked_delinquents=False)
+    req = GetVoteAccounts(config)
+    as_json = req.to_json()
+    assert GetVoteAccounts.from_json(as_json) == req
+
+
+def test_is_blockhash_valid() -> None:
+    req = IsBlockhashValid(Hash.default())
+    as_json = req.to_json()
+    assert IsBlockhashValid.from_json(as_json) == req
+
+
+def test_minimum_ledger_slot() -> None:
+    req = MinimumLedgerSlot(123)
+    as_json = req.to_json()
+    assert MinimumLedgerSlot.from_json(as_json) == req
+
+
 def test_request_airdrop() -> None:
     req = RequestAirdrop(Pubkey.default(), 1000)
     as_json = req.to_json()
     assert RequestAirdrop.from_json(as_json) == req
+
+
+def test_send_transaction() -> None:
+    program_id = Pubkey.default()
+    arbitrary_instruction_data = b"abc"
+    accounts: List[AccountMeta] = []
+    instruction = Instruction(program_id, arbitrary_instruction_data, accounts)
+    seed = bytes([1] * 32)
+    payer = Keypair.from_seed(seed)
+    message = Message([instruction], payer.pubkey())
+    blockhash = Hash.default()  # replace with a real blockhash
+    tx = Transaction([payer], message, blockhash)
+    commitment = CommitmentLevel.Confirmed
+    config = RpcSendTransactionConfig(preflight_commitment=commitment)
+    req = SendTransaction(tx, config)
+    as_json = req.to_json()
+    assert SendTransaction.from_json(as_json) == req
+
+
+def test_account_subscribe() -> None:
+    config = RpcAccountInfoConfig(UiAccountEncoding.Base64)
+    req = AccountSubscribe(Pubkey.default(), config)
+    as_json = req.to_json()
+    assert AccountSubscribe.from_json(as_json) == req
+
+
+def test_block_subscribe() -> None:
+    config = RpcBlockSubscribeConfig(transaction_details=TransactionDetails.Signatures)
+    req = BlockSubscribe(RpcBlockSubscribeFilter.All, config)
+    as_json = req.to_json()
+    assert BlockSubscribe.from_json(as_json) == req
+    req2 = BlockSubscribe(RpcBlockSubscribeFilterMentions(Pubkey.default()), config)
+    as_json2 = req2.to_json()
+    assert BlockSubscribe.from_json(as_json2) == req2
+
+
+def test_logs_subscribe() -> None:
+    config = RpcTransactionLogsConfig(commitment=CommitmentLevel.Confirmed)
+    req = LogsSubscribe(RpcTransactionLogsFilter.All, config)
+    as_json = req.to_json()
+    assert LogsSubscribe.from_json(as_json) == req
+    req2 = LogsSubscribe(RpcTransactionLogsFilterMentions(Pubkey.default()), config)
+    as_json2 = req2.to_json()
+    assert LogsSubscribe.from_json(as_json2) == req2
+
+
+def test_program_subscribe() -> None:
+    acc_info_config = RpcAccountInfoConfig.default()
+    filters = [10, Memcmp(offset=10, bytes_=b"123")]
+    config = RpcProgramAccountsConfig(acc_info_config, filters)
+    req = ProgramSubscribe(Pubkey.default(), config)
+    as_json = req.to_json()
+    assert ProgramSubscribe.from_json(as_json) == req
+
+
+def test_signature_subscribe() -> None:
+    config = RpcSignatureSubscribeConfig(enable_received_notification=False)
+    req = SignatureSubscribe(Signature.default(), config)
+    as_json = req.to_json()
+    assert SignatureSubscribe.from_json(as_json) == req
+
+
+def test_slot_subscribe() -> None:
+    req = SlotSubscribe(123)
+    as_json = req.to_json()
+    assert SlotSubscribe.from_json(as_json) == req
+
+
+def test_slots_updates_subscribe() -> None:
+    req = SlotsUpdatesSubscribe(123)
+    as_json = req.to_json()
+    assert SlotsUpdatesSubscribe.from_json(as_json) == req
+
+
+def test_root_subscribe() -> None:
+    req = RootSubscribe(123)
+    as_json = req.to_json()
+    assert RootSubscribe.from_json(as_json) == req
+
+
+def test_vote_subscribe() -> None:
+    req = VoteSubscribe(123)
+    as_json = req.to_json()
+    assert VoteSubscribe.from_json(as_json) == req
+
+
+def test_account_unsubscribe() -> None:
+    req = AccountUnsubscribe(1, 2)
+    as_json = req.to_json()
+    assert AccountUnsubscribe.from_json(as_json) == req
+
+
+def test_block_unsubscribe() -> None:
+    req = BlockUnsubscribe(1, 2)
+    as_json = req.to_json()
+    assert BlockUnsubscribe.from_json(as_json) == req
+
+
+def test_logs_unsubscribe() -> None:
+    req = LogsUnsubscribe(1, 2)
+    as_json = req.to_json()
+    assert LogsUnsubscribe.from_json(as_json) == req
+
+
+def test_program_unsubscribe() -> None:
+    req = ProgramUnsubscribe(1, 2)
+    as_json = req.to_json()
+    assert ProgramUnsubscribe.from_json(as_json) == req
+
+
+def test_signature_unsubscribe() -> None:
+    req = SignatureUnsubscribe(1, 2)
+    as_json = req.to_json()
+    assert SignatureUnsubscribe.from_json(as_json) == req
+
+
+def test_slot_unsubscribe() -> None:
+    req = SlotUnsubscribe(1, 2)
+    as_json = req.to_json()
+    assert SlotUnsubscribe.from_json(as_json) == req
+
+
+def test_slots_updates_unsubscribe() -> None:
+    req = SlotsUpdatesUnsubscribe(1, 2)
+    as_json = req.to_json()
+    assert SlotsUpdatesUnsubscribe.from_json(as_json) == req
+
+
+def test_root_unsubscribe() -> None:
+    req = RootUnsubscribe(1, 2)
+    as_json = req.to_json()
+    assert RootUnsubscribe.from_json(as_json) == req
+
+
+def test_vote_unsubscribe() -> None:
+    req = VoteUnsubscribe(1, 2)
+    as_json = req.to_json()
+    assert VoteUnsubscribe.from_json(as_json) == req
 
 
 def test_batch() -> None:
