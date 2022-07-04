@@ -1,4 +1,4 @@
-from typing import Sequence, Union
+from typing import Sequence, Union, Optional
 
 class MemcmpEncoding:
     Binary: "MemcmpEncoding"
