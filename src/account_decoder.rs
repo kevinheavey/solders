@@ -1,8 +1,6 @@
+use crate::tmp_account_decoder::UiDataSliceConfig as UiDataSliceConfigOriginal;
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
-use solana_account_decoder::{
-    UiAccountEncoding as UiAccountEncodingOriginal, UiDataSliceConfig as UiDataSliceConfigOriginal,
-};
 use solders_macros::richcmp_eq_only;
 
 use crate::RichcmpEqualityOnly;
@@ -63,30 +61,6 @@ pub enum UiAccountEncoding {
     Base64,
     JsonParsed,
     Base64Zstd,
-}
-
-impl From<UiAccountEncodingOriginal> for UiAccountEncoding {
-    fn from(e: UiAccountEncodingOriginal) -> Self {
-        match e {
-            UiAccountEncodingOriginal::Binary => Self::Binary,
-            UiAccountEncodingOriginal::Base64 => Self::Base64,
-            UiAccountEncodingOriginal::Base58 => Self::Base58,
-            UiAccountEncodingOriginal::JsonParsed => Self::JsonParsed,
-            UiAccountEncodingOriginal::Base64Zstd => Self::Base64Zstd,
-        }
-    }
-}
-
-impl From<UiAccountEncoding> for UiAccountEncodingOriginal {
-    fn from(e: UiAccountEncoding) -> Self {
-        match e {
-            UiAccountEncoding::Binary => Self::Binary,
-            UiAccountEncoding::Base64 => Self::Base64,
-            UiAccountEncoding::Base58 => Self::Base58,
-            UiAccountEncoding::JsonParsed => Self::JsonParsed,
-            UiAccountEncoding::Base64Zstd => Self::Base64Zstd,
-        }
-    }
 }
 
 pub fn create_account_decoder_mod(py: Python<'_>) -> PyResult<&PyModule> {

@@ -2,13 +2,16 @@
 use serde::{Deserialize, Serialize};
 
 use {
+    crate::account_decoder::UiAccountEncoding,
     crate::rpc::tmp_filter::RpcFilterType,
-    solana_account_decoder::{UiAccountEncoding, UiDataSliceConfig},
+    // TODO: use solana_account_decoder once its dependencies are light
+    crate::tmp_account_decoder::UiDataSliceConfig,
+    // TODO: use solana_transaction_status once its dependencies are light
+    crate::transaction_status::{TransactionDetails, UiTransactionEncoding},
     solana_sdk::{
         clock::{Epoch, Slot},
         commitment_config::{CommitmentConfig, CommitmentLevel},
     },
-    solana_transaction_status::{TransactionDetails, UiTransactionEncoding},
 };
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -272,14 +275,14 @@ impl EncodingConfig for RpcBlockConfig {
 impl RpcBlockConfig {
     pub fn rewards_only() -> Self {
         Self {
-            transaction_details: Some(TransactionDetails::None),
+            transaction_details: Some(TransactionDetails::None_),
             ..Self::default()
         }
     }
 
     pub fn rewards_with_commitment(commitment: Option<CommitmentConfig>) -> Self {
         Self {
-            transaction_details: Some(TransactionDetails::None),
+            transaction_details: Some(TransactionDetails::None_),
             commitment,
             ..Self::default()
         }

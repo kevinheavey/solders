@@ -111,7 +111,7 @@ impl RpcSendTransactionConfig {
         Self(rpc_config::RpcSendTransactionConfig {
             skip_preflight,
             preflight_commitment: preflight_commitment.map(CommitmentLevelOriginal::from),
-            encoding: Some(UiTransactionEncoding::Base64.into()),
+            encoding: Some(UiTransactionEncoding::Base64),
             max_retries,
             min_context_slot,
         })
@@ -132,7 +132,7 @@ impl RpcSendTransactionConfig {
     /// UiTransactionEncoding: Encoding used for the transaction data.
     #[getter]
     pub fn encoding(&self) -> Option<UiTransactionEncoding> {
-        self.0.encoding.map(|e| e.into())
+        self.0.encoding
     }
 
     /// Optional[int]: Maximum number of times for the RPC node to retry sending the transaction to the leader.
@@ -174,7 +174,7 @@ impl RpcSimulateTransactionAccountsConfig {
     #[new]
     pub fn new(addresses: Vec<Pubkey>, encoding: Option<UiAccountEncoding>) -> Self {
         Self(rpc_config::RpcSimulateTransactionAccountsConfig {
-            encoding: encoding.map(|x| x.into()),
+            encoding,
             addresses: addresses.iter().map(|a| a.to_string()).collect(),
         })
     }
@@ -201,7 +201,7 @@ impl RpcSimulateTransactionAccountsConfig {
 
     #[getter]
     pub fn encoding(&self) -> Option<UiAccountEncoding> {
-        self.0.encoding.map(|e| e.into())
+        self.0.encoding
     }
 }
 
@@ -237,7 +237,7 @@ impl RpcSimulateTransactionConfig {
             sig_verify,
             replace_recent_blockhash,
             commitment: commitment.map(|c| c.into()),
-            encoding: Some(UiTransactionEncoding::Base64.into()),
+            encoding: Some(UiTransactionEncoding::Base64),
             accounts: accounts.map(|a| a.into()),
             min_context_slot,
         })
@@ -270,7 +270,7 @@ impl RpcSimulateTransactionConfig {
 
     #[getter]
     pub fn encoding(&self) -> Option<UiTransactionEncoding> {
-        self.0.encoding.map(|e| e.into())
+        self.0.encoding
     }
 
     #[getter]
@@ -735,7 +735,7 @@ impl RpcAccountInfoConfig {
         min_context_slot: Option<u64>,
     ) -> Self {
         Self(rpc_config::RpcAccountInfoConfig {
-            encoding: encoding.map(|e| e.into()),
+            encoding,
             data_slice: data_slice.map(|d| d.into()),
             commitment: commitment.map(|c| c.into()),
             min_context_slot,
@@ -754,7 +754,7 @@ impl RpcAccountInfoConfig {
 
     #[getter]
     pub fn encoding(&self) -> Option<UiAccountEncoding> {
-        self.0.encoding.map(|e| e.into())
+        self.0.encoding
     }
 
     #[getter]
@@ -1196,8 +1196,8 @@ impl RpcBlockSubscribeConfig {
     ) -> Self {
         rpc_config::RpcBlockSubscribeConfig {
             commitment: commitment.map(|c| c.into()),
-            encoding: encoding.map(|e| e.into()),
-            transaction_details: transaction_details.map(|t| t.into()),
+            encoding,
+            transaction_details,
             show_rewards,
             max_supported_transaction_version,
         }
@@ -1211,12 +1211,12 @@ impl RpcBlockSubscribeConfig {
 
     #[getter]
     pub fn encoding(&self) -> Option<UiTransactionEncoding> {
-        self.0.encoding.map(|e| e.into())
+        self.0.encoding
     }
 
     #[getter]
     pub fn transaction_details(&self) -> Option<TransactionDetails> {
-        self.0.transaction_details.map(|t| t.into())
+        self.0.transaction_details
     }
 
     #[getter]
@@ -1343,8 +1343,8 @@ impl RpcBlockConfig {
         max_supported_transaction_version: Option<u8>,
     ) -> Self {
         rpc_config::RpcBlockConfig {
-            encoding: encoding.map(|e| e.into()),
-            transaction_details: transaction_details.map(|t| t.into()),
+            encoding,
+            transaction_details,
             rewards,
             commitment: commitment.map(|c| c.into()),
             max_supported_transaction_version,
@@ -1354,12 +1354,12 @@ impl RpcBlockConfig {
 
     #[getter]
     pub fn encoding(&self) -> Option<UiTransactionEncoding> {
-        self.0.encoding.map(|e| e.into())
+        self.0.encoding
     }
 
     #[getter]
     pub fn transaction_details(&self) -> Option<TransactionDetails> {
-        self.0.transaction_details.map(|t| t.into())
+        self.0.transaction_details
     }
 
     #[getter]
@@ -1423,7 +1423,7 @@ impl RpcTransactionConfig {
         max_supported_transaction_version: Option<u8>,
     ) -> Self {
         rpc_config::RpcTransactionConfig {
-            encoding: encoding.map(|e| e.into()),
+            encoding,
             commitment: commitment.map(|c| c.into()),
             max_supported_transaction_version,
         }
@@ -1443,7 +1443,7 @@ impl RpcTransactionConfig {
 
     #[getter]
     pub fn encoding(&self) -> Option<UiTransactionEncoding> {
-        self.0.encoding.map(|e| e.into())
+        self.0.encoding
     }
 
     #[getter]
