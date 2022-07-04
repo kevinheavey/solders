@@ -494,7 +494,7 @@ def test_send_transaction() -> None:
 def test_simulate_transaction() -> None:
     program_id = Pubkey.default()
     arbitrary_instruction_data = b"abc"
-    accounts = []
+    accounts: List[AccountMeta] = []
     instruction = Instruction(program_id, arbitrary_instruction_data, accounts)
     seed = bytes([1] * 32)
     payer = Keypair.from_seed(seed)
