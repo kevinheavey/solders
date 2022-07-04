@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.1] - 2022-07-04
+
+### Fixed
+
+Make `rpc.requests.Body` alias available at runtime [(#6)](https://github.com/kevinheavey/solders/pull/6)
+
 ## [0.3.0] - 2022-07-04
 
 ### Added
