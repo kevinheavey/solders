@@ -1,9 +1,9 @@
-use pyo3::prelude::*;
-use serde::{Deserialize, Serialize};
-use solana_client::rpc_filter::{
+use crate::rpc::tmp_filter::{
     Memcmp as MemcmpOriginal, MemcmpEncodedBytes as MemcmpEncodedBytesOriginal,
     MemcmpEncoding as MemcmpEncodingOriginal, RpcFilterType as RpcFilterTypeOriginal,
 };
+use pyo3::prelude::*;
+use serde::{Deserialize, Serialize};
 
 use solders_macros::{common_methods, enum_original_mapping, richcmp_eq_only};
 

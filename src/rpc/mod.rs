@@ -6,6 +6,8 @@ use pyo3::prelude::*;
 pub mod config;
 pub mod filter;
 pub mod requests;
+mod tmp_config;
+mod tmp_filter;
 
 pub fn create_rpc_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let rpc_mod = PyModule::new(py, "rpc")?;

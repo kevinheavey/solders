@@ -10,12 +10,12 @@ use pyo3::{
     prelude::*,
 };
 extern crate base64;
+use crate::rpc::tmp_config::{
+    RpcBlockSubscribeFilter, RpcTokenAccountsFilter, RpcTransactionLogsFilter,
+};
 use camelpaste::paste;
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, skip_serializing_none, DisplayFromStr, FromInto};
-use solana_client::rpc_config::{
-    RpcBlockSubscribeFilter, RpcTokenAccountsFilter, RpcTransactionLogsFilter,
-};
 use solana_sdk::{
     message::Message as MessageOriginal, transaction::Transaction as TransactionOriginal,
 };

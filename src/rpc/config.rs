@@ -1,8 +1,8 @@
 use std::str::FromStr;
 
+use crate::rpc::tmp_config as rpc_config;
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
-use solana_client::rpc_config;
 use solana_sdk::commitment_config::CommitmentLevel as CommitmentLevelOriginal;
 use solders_macros::{common_methods, richcmp_eq_only};
 
