@@ -9,6 +9,8 @@ on:
 env:
   name: solders
   python_version: "3.7"
+  CARGO_INCREMENTAL: 0
+  RUSTFLAGS: "-D warnings"
 
 jobs:
   macos_x86_64:
