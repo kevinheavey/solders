@@ -22,6 +22,7 @@ impl From<ParseCommitmentLevelErrorOriginal> for PyErrWrapper {
     }
 }
 
+/// RPC request `commitment <https://docs.solana.com/developing/clients/jsonrpc-api#configuring-state-commitment>`_ options.
 #[pyclass(module = "solders.commitment_config")]
 #[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum CommitmentLevel {
