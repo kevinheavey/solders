@@ -11,7 +11,7 @@ env:
   python_version: "3.7"
 
 jobs:
-  macos:
+  macos_x86_64:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
@@ -26,21 +26,36 @@ jobs:
           profile: minimal
           default: true
       - uses: Swatinem/rust-cache@v1
-      - name: Build wheels - x86_64
+      - name: Build wheels
         uses: messense/maturin-action@v1
         with:
           target: x86_64
           args: --release --out dist --no-sdist
-      - name: Install built wheel - x86_64
+      - name: Install built wheel
         run: |
           pip install ${{ env.name }} --no-index --find-links dist --force-reinstall
           pip install pytest based58 typing-extensions pybip39
           pytest
-      - name: Build wheels - universal2
+  macos_universal2:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ env.python_version }}
+          architecture: x64
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          profile: minimal
+          default: true
+      - uses: Swatinem/rust-cache@v1
+      - name: Build wheels
         uses: messense/maturin-action@v1
         with:
           args: --release --universal2 --out dist --no-sdist
-      - name: Install built wheel - universal2
+      - name: Install built wheel
         run: |
           pip install ${{ env.name }} --no-index --find-links dist --force-reinstall
           pytest
