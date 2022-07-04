@@ -100,6 +100,8 @@ from solders.rpc.config import (
     RpcTransactionLogsFilter,
     RpcTransactionLogsFilterMentions,
     RpcSignatureSubscribeConfig,
+    RpcSimulateTransactionAccountsConfig,
+    RpcSimulateTransactionConfig
 )
 from solders.rpc.filter import Memcmp
 from solders.hash import Hash
@@ -463,6 +465,24 @@ def test_send_transaction() -> None:
     req = SendTransaction(tx, config)
     as_json = req.to_json()
     assert SendTransaction.from_json(as_json) == req
+
+def test_simulate_transaction() -> None:
+    program_id = Pubkey.default()
+    arbitrary_instruction_data = b"abc"
+    accounts = []
+    instruction = Instruction(program_id, arbitrary_instruction_data, accounts)
+    seed = bytes([1] * 32)
+    payer = Keypair.from_seed(seed)
+    message = Message([instruction], payer.pubkey())
+    blockhash = Hash.default()  # replace with a real blockhash
+    tx = Transaction([payer], message, blockhash)
+    account_encoding = UiAccountEncoding.Base64Zstd
+    accounts_config = RpcSimulateTransactionAccountsConfig([Pubkey.default()], account_encoding)
+    commitment = CommitmentLevel.Confirmed
+    config = RpcSimulateTransactionConfig(commitment=commitment, accounts=accounts_config)
+    req = SimulateTransaction(tx, config)
+    as_json = req.to_json()
+    assert SimulateTransaction.from_json(as_json) == req
 
 
 def test_account_subscribe() -> None:
