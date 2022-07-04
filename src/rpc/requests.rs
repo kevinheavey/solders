@@ -2288,18 +2288,19 @@ pub struct SendTransactionParams(
 ///     id (Optional[int]): Request ID.
 ///
 /// Example:
+///      >>> from typing import List
 ///      >>> from solders.rpc.requests import SendTransaction
 ///      >>> from solders.rpc.config import RpcSendTransactionConfig
 ///      >>> from solders.transaction import Transaction
 ///      >>> from solders.message import Message
 ///      >>> from solders.keypair import Keypair
-///      >>> from solders.instruction import Instruction
+///      >>> from solders.instruction import Instruction, AccountMeta
 ///      >>> from solders.hash import Hash
 ///      >>> from solders.pubkey import Pubkey
 ///      >>> from solders.commitment_config import CommitmentLevel
 ///      >>> program_id = Pubkey.default()
 ///      >>> arbitrary_instruction_data = b"abc"
-///      >>> accounts = []
+///      >>> accounts: List[AccountMeta] = []
 ///      >>> instruction = Instruction(program_id, arbitrary_instruction_data, accounts)
 ///      >>> seed = bytes([1] * 32)
 ///      >>> payer = Keypair.from_seed(seed)
