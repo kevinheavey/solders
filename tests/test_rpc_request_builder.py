@@ -80,13 +80,16 @@ from solders.rpc.config import (
     RpcBlockConfig,
     RpcAccountInfoConfig,
     RpcBlockProductionConfig,
-    RpcBlockProductionConfigRange
+    RpcBlockProductionConfigRange,
+    RpcLeaderScheduleConfig,
+    RpcEpochConfig,
+    RpcLargestAccountsFilter,
 )
 from solders.transaction_status import UiTransactionEncoding, TransactionDetails
 from solders.signature import Signature
 from solders.message import Message
 from solders.commitment_config import CommitmentLevel
-from solders.account_decoder import UiAccountEncoding
+from solders.account_decoder import UiAccountEncoding, UiDataSliceConfig
 from solders.pubkey import Pubkey
 
 
@@ -120,6 +123,7 @@ def test_get_block_height() -> None:
     as_json = req.to_json()
     assert GetBlockHeight.from_json(as_json) == req
 
+
 def test_get_block_production() -> None:
     slot_range = RpcBlockProductionConfigRange(first_slot=10, last_slot=15)
     config = RpcBlockProductionConfig(identity=Pubkey.default(), range=slot_range)
@@ -127,30 +131,36 @@ def test_get_block_production() -> None:
     as_json = req.to_json()
     assert GetBlockProduction.from_json(as_json) == req
 
+
 def test_get_block_commitment() -> None:
     req = GetBlockCommitment(123)
     as_json = req.to_json()
     assert GetBlockCommitment.from_json(as_json) == req
+
 
 def test_get_blocks() -> None:
     req = GetBlocks(123, commitment=CommitmentLevel.Processed)
     as_json = req.to_json()
     assert GetBlocks.from_json(as_json) == req
 
+
 def test_get_blocks_with_limit() -> None:
     req = GetBlocksWithLimit(123, 5, commitment=CommitmentLevel.Processed)
     as_json = req.to_json()
     assert GetBlocksWithLimit.from_json(as_json) == req
+
 
 def test_get_block_time() -> None:
     req = GetBlockTime(123)
     as_json = req.to_json()
     assert GetBlockTime.from_json(as_json) == req
 
+
 def test_get_cluster_nodes() -> None:
     req = GetClusterNodes(123)
     as_json = req.to_json()
     assert GetClusterNodes.from_json(as_json) == req
+
 
 def test_get_epoch_info() -> None:
     config = RpcContextConfig(commitment=CommitmentLevel.Processed)
@@ -158,40 +168,118 @@ def test_get_epoch_info() -> None:
     as_json = req.to_json()
     assert GetEpochInfo.from_json(as_json) == req
 
+
 def test_get_epoch_schedule() -> None:
     req = GetEpochSchedule(123)
     as_json = req.to_json()
     assert GetEpochSchedule.from_json(as_json) == req
+
 
 def test_get_fee_for_message() -> None:
     req = GetFeeForMessage(Message.default(), commitment=CommitmentLevel.Processed)
     as_json = req.to_json()
     assert GetFeeForMessage.from_json(as_json) == req
 
+
 def test_get_first_available_block() -> None:
     req = GetFirstAvailableBlock(123)
     as_json = req.to_json()
     assert GetFirstAvailableBlock.from_json(as_json) == req
+
 
 def test_get_genesis_hash() -> None:
     req = GetGenesisHash(123)
     as_json = req.to_json()
     assert GetGenesisHash.from_json(as_json) == req
 
+
 def test_get_health() -> None:
     req = GetHealth(123)
     as_json = req.to_json()
     assert GetHealth.from_json(as_json) == req
+
 
 def test_get_highest_snapshot_slot() -> None:
     req = GetHighestSnapshotSlot(123)
     as_json = req.to_json()
     assert GetHighestSnapshotSlot.from_json(as_json) == req
 
+
 def test_get_identity() -> None:
     req = GetIdentity(123)
     as_json = req.to_json()
     assert GetIdentity.from_json(as_json) == req
+
+
+def test_get_inflation_governor() -> None:
+    req = GetInflationGovernor(CommitmentLevel.Finalized)
+    as_json = req.to_json()
+    assert GetInflationGovernor.from_json(as_json) == req
+
+
+def test_get_inflation_rate() -> None:
+    req = GetInflationRate(123)
+    as_json = req.to_json()
+    assert GetInflationRate.from_json(as_json) == req
+
+
+def test_get_inflation_reward() -> None:
+    config = RpcEpochConfig(epoch=1234)
+    addresses = [Pubkey.default(), Pubkey.default()]
+    req = GetInflationReward(addresses, config)
+    as_json = req.to_json()
+    assert GetInflationReward.from_json(as_json) == req
+
+
+def test_get_largest_accounts() -> None:
+    commitment = CommitmentLevel.Processed
+    filter_ = RpcLargestAccountsFilter.Circulating
+    req = GetLargestAccounts(commitment=commitment, filter_=filter_)
+    as_json = req.to_json()
+    assert GetLargestAccounts.from_json(as_json) == req
+
+
+def test_get_latest_blockhash() -> None:
+    config = RpcContextConfig(commitment=CommitmentLevel.Processed)
+    req = GetLatestBlockhash(config)
+    as_json = req.to_json()
+    assert GetLatestBlockhash.from_json(as_json) == req
+
+
+def test_get_leader_schedule() -> None:
+    config = RpcLeaderScheduleConfig(identity=Pubkey.default())
+    req = GetLeaderSchedule(123, config)
+    as_json = req.to_json()
+    assert GetLeaderSchedule.from_json(as_json) == req
+
+
+def test_get_max_retransmit_slot() -> None:
+    req = GetMaxRetransmitSlot(123)
+    as_json = req.to_json()
+    assert GetMaxRetransmitSlot.from_json(as_json) == req
+
+
+def test_get_max_shred_insert_slot() -> None:
+    req = GetMaxShredInsertSlot(123)
+    as_json = req.to_json()
+    assert GetMaxShredInsertSlot.from_json(as_json) == req
+
+
+def test_get_minimum_balance_for_rent_exemption() -> None:
+    req = GetMinimumBalanceForRentExemption(50)
+    as_json = req.to_json()
+    assert GetMinimumBalanceForRentExemption.from_json(as_json) == req
+
+
+def test_get_multiple_accounts() -> None:
+    encoding = UiAccountEncoding.Base64Zstd
+    data_slice = UiDataSliceConfig(10, 8)
+    config = RpcAccountInfoConfig(encoding=encoding, data_slice=data_slice)
+    accounts = [Pubkey.default(), Pubkey.default()]
+    req = GetMultipleAccounts(accounts, config)
+    as_json = req.to_json()
+    assert GetMultipleAccounts.from_json(as_json) == req
+
 
 def test_get_signature_statuses() -> None:
     req = GetSignatureStatuses([Signature.default()], RpcSignatureStatusConfig(True))
