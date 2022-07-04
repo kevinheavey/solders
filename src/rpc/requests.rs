@@ -1489,8 +1489,8 @@ request_boilerplate!(GetSlot);
 ///     >>> from solders.rpc.requests import GetSlotLeader
 ///     >>> from solders.rpc.config import RpcContextConfig
 ///     >>> config = RpcContextConfig(min_context_slot=123)
-///     >>> GetSlot(config).to_json()
-///     '{"method":"getSlot","jsonrpc":"2.0","id":0,"params":[{"minContextSlot":123}]}'
+///     >>> GetSlotLeader(config).to_json()
+///     '{"method":"getSlotLeader","jsonrpc":"2.0","id":0,"params":[{"minContextSlot":123}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[skip_serializing_none]
