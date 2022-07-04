@@ -22,7 +22,7 @@ class RpcSignatureStatusConfig:
 class RpcSendTransactionConfig:
     def __init__(
         self,
-        skip_preflight: bool,
+        skip_preflight: bool = False,
         preflight_commitment: Optional[CommitmentLevel] = None,
         encoding: Optional[UiTransactionEncoding] = None,
         max_retries: Optional[int] = None,

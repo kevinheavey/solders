@@ -31,7 +31,7 @@ from solders.commitment_config import CommitmentLevel
 from solders.signature import Signature
 from solders.message import Message
 from solders.hash import Hash
-from solders.transasction import Transaction
+from solders.transaction import Transaction
 
 class GetAccountInfo:
     def __init__(self,

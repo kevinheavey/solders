@@ -1,6 +1,6 @@
 """These tests are mainly about getting mypy to check stuff, as it doesn't check doc examples."""
 
-from typing import List
+from typing import List, Union
 from solders.rpc.requests import (
     GetAccountInfo,
     GetBalance,
@@ -304,7 +304,7 @@ def test_get_multiple_accounts() -> None:
 
 def test_get_program_accounts() -> None:
     acc_info_config = RpcAccountInfoConfig.default()
-    filters = [10, Memcmp(offset=10, bytes_=b"123")]
+    filters: List[Union[int, Memcmp]] = [10, Memcmp(offset=10, bytes_=b"123")]
     config = RpcProgramAccountsConfig(acc_info_config, filters)
     req = GetProgramAccounts(Pubkey.default(), config)
     as_json = req.to_json()
@@ -494,7 +494,7 @@ def test_logs_subscribe() -> None:
 
 def test_program_subscribe() -> None:
     acc_info_config = RpcAccountInfoConfig.default()
-    filters = [10, Memcmp(offset=10, bytes_=b"123")]
+    filters: List[Union[int, Memcmp]] = [10, Memcmp(offset=10, bytes_=b"123")]
     config = RpcProgramAccountsConfig(acc_info_config, filters)
     req = ProgramSubscribe(Pubkey.default(), config)
     as_json = req.to_json()
@@ -587,7 +587,7 @@ def test_vote_unsubscribe() -> None:
 
 
 def test_batch() -> None:
-    reqs = [
+    reqs: List[Union[GetSignatureStatuses, RequestAirdrop]] = [
         GetSignatureStatuses([Signature.default()], RpcSignatureStatusConfig(True)),
         RequestAirdrop(Pubkey.default(), 1000),
     ]
