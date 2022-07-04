@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 /// Encoding options for transaction data.
 #[pyclass(module = "solders.transaction_status")]
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub enum UiTransactionEncoding {
     Binary, // Legacy. Retained for RPC backwards compatibility
     Base64,
@@ -25,6 +26,7 @@ impl Default for UiTransactionEncoding {
 pub enum TransactionDetails {
     Full,
     Signatures,
+    #[serde(rename = "none")]
     None_,
 }
 

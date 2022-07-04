@@ -55,11 +55,13 @@ impl RichcmpEqualityOnly for UiDataSliceConfig {}
 /// Encoding options for account data.
 #[pyclass(module = "solders.account_decoder")]
 #[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq, Hash)]
+#[serde(rename_all = "camelCase")]
 pub enum UiAccountEncoding {
     Binary, // Legacy. Retained for RPC backwards compatibility
     Base58,
     Base64,
     JsonParsed,
+    #[serde(rename = "base64+zstd")]
     Base64Zstd,
 }
 
