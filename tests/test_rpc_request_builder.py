@@ -267,6 +267,15 @@ def test_get_largest_accounts() -> None:
     req = GetLargestAccounts(commitment=commitment, filter_=filter_)
     as_json = req.to_json()
     assert GetLargestAccounts.from_json(as_json) == req
+    req2 = GetLargestAccounts()
+    as_json2 = req2.to_json()
+    assert GetLargestAccounts.from_json(as_json2) == req2
+    req3 = GetLargestAccounts(commitment=commitment)
+    as_json3 = req3.to_json()
+    assert GetLargestAccounts.from_json(as_json3) == req3
+    req4 = GetLargestAccounts(filter_=filter_)
+    as_json4 = req4.to_json()
+    assert GetLargestAccounts.from_json(as_json4) == req4
 
 
 def test_get_latest_blockhash() -> None:
