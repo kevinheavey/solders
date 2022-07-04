@@ -84,7 +84,12 @@ from solders.rpc.config import (
     RpcLeaderScheduleConfig,
     RpcEpochConfig,
     RpcLargestAccountsFilter,
+    RpcSupplyConfig,
+    RpcTokenAccountsFilterProgramId,
+    RpcProgramAccountsConfig,
+    RpcSignaturesForAddressConfig,
 )
+from solders.rpc.filter import Memcmp
 from solders.transaction_status import UiTransactionEncoding, TransactionDetails
 from solders.signature import Signature
 from solders.message import Message
@@ -281,10 +286,84 @@ def test_get_multiple_accounts() -> None:
     assert GetMultipleAccounts.from_json(as_json) == req
 
 
+def test_get_program_accounts() -> None:
+    acc_info_config = RpcAccountInfoConfig.default()
+    filters = [10, Memcmp(offset=10, bytes_=b"123")]
+    config = RpcProgramAccountsConfig(acc_info_config, filters)
+    req = GetProgramAccounts(Pubkey.default(), config)
+    as_json = req.to_json()
+    assert GetProgramAccounts.from_json(as_json) == req
+
+
+def test_get_recent_performance_samples() -> None:
+    req = GetRecentPerformanceSamples(5)
+    as_json = req.to_json()
+    assert GetRecentPerformanceSamples.from_json(as_json) == req
+
+
+def test_get_signatures_for_address() -> None:
+    config = RpcSignaturesForAddressConfig(limit=10)
+    req = GetSignaturesForAddress(Pubkey.default(), config)
+    as_json = req.to_json()
+    assert GetSignaturesForAddress.from_json(as_json) == req
+
+
 def test_get_signature_statuses() -> None:
     req = GetSignatureStatuses([Signature.default()], RpcSignatureStatusConfig(True))
     as_json = req.to_json()
     assert GetSignatureStatuses.from_json(as_json) == req
+
+
+def test_get_slot() -> None:
+    config = RpcContextConfig(min_context_slot=123)
+    req = GetSlot(config)
+    as_json = req.to_json()
+    assert GetSlot.from_json(as_json) == req
+
+
+def test_get_slot_leader() -> None:
+    config = RpcContextConfig(min_context_slot=123)
+    req = GetSlotLeader(config)
+    as_json = req.to_json()
+    assert GetSlotLeader.from_json(as_json) == req
+
+
+def test_get_slot_leaders() -> None:
+    req = GetSlotLeaders(100, 10)
+    as_json = req.to_json()
+    assert GetSlotLeaders.from_json(as_json) == req
+
+
+def test_get_stake_activation() -> None:
+    config = RpcEpochConfig(epoch=1234)
+    req = GetStakeActivation(Pubkey.default(), config)
+    as_json = req.to_json()
+    assert GetStakeActivation.from_json(as_json) == req
+
+
+def test_get_supply() -> None:
+    config = RpcSupplyConfig(exclude_non_circulating_accounts_list=True)
+    req = GetSupply(config)
+    as_json = req.to_json()
+    assert GetSupply.from_json(as_json) == req
+
+
+def test_get_token_account_balance() -> None:
+    config = RpcEpochConfig(epoch=1234)
+    req = GetTokenAccountBalance(Pubkey.default(), CommitmentLevel.Processed)
+    as_json = req.to_json()
+    assert GetTokenAccountBalance.from_json(as_json) == req
+
+
+def test_get_token_accounts_by_delegate() -> None:
+    program_filter = RpcTokenAccountsFilterProgramId(
+        Pubkey.from_string("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA")
+    )
+    config = RpcAccountInfoConfig(min_context_slot=1234)
+    req = GetTokenAccountsByDelegate(Pubkey.default(), program_filter, config)
+    assert req.filter_ == program_filter
+    as_json = req.to_json()
+    assert GetTokenAccountsByDelegate.from_json(as_json) == req
 
 
 def test_request_airdrop() -> None:
