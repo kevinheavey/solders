@@ -1023,11 +1023,10 @@ impl GetLatestBlockhash {
 
 request_boilerplate!(GetLatestBlockhash);
 
-#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct GetLeaderScheduleParams(
     #[serde(default)] Option<u64>,
-    #[serde(default)] Option<RpcLeaderScheduleConfig>,
+    #[serde(default, skip_serializing_if = "Option::is_none")] Option<RpcLeaderScheduleConfig>,
 );
 
 /// A ``GetLeaderSchedule`` request.
