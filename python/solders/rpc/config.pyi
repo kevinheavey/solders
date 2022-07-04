@@ -71,8 +71,8 @@ class RpcSimulateTransactionAccountsConfig:
 class RpcSimulateTransactionConfig:
     def __init__(
         self,
-        sig_verify: bool,
-        replace_recent_blockhash: bool,
+        sig_verify: bool = False,
+        replace_recent_blockhash: bool = False,
         commitment: Optional[CommitmentLevel] = None,
         encoding: Optional[UiTransactionEncoding] = None,
         accounts: Optional[RpcSimulateTransactionAccountsConfig] = None,
