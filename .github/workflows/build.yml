@@ -60,6 +60,7 @@ jobs:
       - name: Install built wheel
         run: |
           pip install ${{ env.name }} --no-index --find-links dist --force-reinstall
+          pip install pytest based58 typing-extensions pybip39
           pytest
       - name: Upload wheels
         uses: actions/upload-artifact@v2
