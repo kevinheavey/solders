@@ -391,7 +391,6 @@ def test_get_supply() -> None:
 
 
 def test_get_token_account_balance() -> None:
-    config = RpcEpochConfig(epoch=1234)
     req = GetTokenAccountBalance(Pubkey.default(), CommitmentLevel.Processed)
     as_json = req.to_json()
     assert GetTokenAccountBalance.from_json(as_json) == req
