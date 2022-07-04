@@ -101,7 +101,7 @@ from solders.rpc.config import (
     RpcTransactionLogsFilterMentions,
     RpcSignatureSubscribeConfig,
     RpcSimulateTransactionAccountsConfig,
-    RpcSimulateTransactionConfig
+    RpcSimulateTransactionConfig,
 )
 from solders.rpc.filter import Memcmp
 from solders.hash import Hash
@@ -138,7 +138,6 @@ def test_get_block() -> None:
     req = GetBlock(123, config)
     as_json = req.to_json()
     assert GetBlock.from_json(as_json) == req
-
 
 
 def test_get_block_height() -> None:
@@ -299,6 +298,7 @@ def test_get_leader_schedule() -> None:
     req4 = GetLeaderSchedule(123)
     as_json4 = req4.to_json()
     assert GetLeaderSchedule.from_json(as_json4) == req4
+
 
 def test_get_max_retransmit_slot() -> None:
     req = GetMaxRetransmitSlot(123)
@@ -490,6 +490,7 @@ def test_send_transaction() -> None:
     as_json = req.to_json()
     assert SendTransaction.from_json(as_json) == req
 
+
 def test_simulate_transaction() -> None:
     program_id = Pubkey.default()
     arbitrary_instruction_data = b"abc"
@@ -501,9 +502,13 @@ def test_simulate_transaction() -> None:
     blockhash = Hash.default()  # replace with a real blockhash
     tx = Transaction([payer], message, blockhash)
     account_encoding = UiAccountEncoding.Base64Zstd
-    accounts_config = RpcSimulateTransactionAccountsConfig([Pubkey.default()], account_encoding)
+    accounts_config = RpcSimulateTransactionAccountsConfig(
+        [Pubkey.default()], account_encoding
+    )
     commitment = CommitmentLevel.Confirmed
-    config = RpcSimulateTransactionConfig(commitment=commitment, accounts=accounts_config)
+    config = RpcSimulateTransactionConfig(
+        commitment=commitment, accounts=accounts_config
+    )
     req = SimulateTransaction(tx, config)
     as_json = req.to_json()
     assert SimulateTransaction.from_json(as_json) == req
