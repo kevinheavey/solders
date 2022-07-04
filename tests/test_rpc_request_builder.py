@@ -290,7 +290,15 @@ def test_get_leader_schedule() -> None:
     req = GetLeaderSchedule(123, config)
     as_json = req.to_json()
     assert GetLeaderSchedule.from_json(as_json) == req
-
+    req2 = GetLeaderSchedule()
+    as_json2 = req2.to_json()
+    assert GetLeaderSchedule.from_json(as_json2) == req2
+    req3 = GetLeaderSchedule(config=config)
+    as_json3 = req3.to_json()
+    assert GetLeaderSchedule.from_json(as_json3) == req3
+    req4 = GetLeaderSchedule(123)
+    as_json4 = req4.to_json()
+    assert GetLeaderSchedule.from_json(as_json4) == req4
 
 def test_get_max_retransmit_slot() -> None:
     req = GetMaxRetransmitSlot(123)
