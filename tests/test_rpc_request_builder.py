@@ -138,9 +138,7 @@ def test_get_block() -> None:
     req = GetBlock(123, config)
     as_json = req.to_json()
     assert GetBlock.from_json(as_json) == req
-    req2 = GetBlock(123)
-    as_json2 = req2.to_json()
-    assert GetBlock.from_json(as_json2) == req2
+
 
 
 def test_get_block_height() -> None:
@@ -168,6 +166,12 @@ def test_get_blocks() -> None:
     req = GetBlocks(123, commitment=CommitmentLevel.Processed)
     as_json = req.to_json()
     assert GetBlocks.from_json(as_json) == req
+    req2 = GetBlocks(123)
+    as_json2 = req2.to_json()
+    assert GetBlocks.from_json(as_json2) == req2
+    req3 = GetBlocks(123, 124)
+    as_json3 = req3.to_json()
+    assert GetBlocks.from_json(as_json3) == req3
 
 
 def test_get_blocks_with_limit() -> None:
