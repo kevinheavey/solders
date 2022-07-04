@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.0] - 2022-07-04
+
+### Added
+
+- Added an RPC request builder under `solders.rpc.requests` [(#4)](https://github.com/kevinheavey/solders/pull/4)
+
 ## [0.2.0] - 2022-06-13
 
 ### Added
