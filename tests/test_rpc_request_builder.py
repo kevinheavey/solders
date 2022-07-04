@@ -469,7 +469,8 @@ def test_minimum_ledger_slot() -> None:
 
 
 def test_request_airdrop() -> None:
-    req = RequestAirdrop(Pubkey.default(), 1000)
+    config = RpcRequestAirdropConfig(commitment=CommitmentLevel.Confirmed)
+    req = RequestAirdrop(Pubkey.default(), 1000, config)
     as_json = req.to_json()
     assert RequestAirdrop.from_json(as_json) == req
 
