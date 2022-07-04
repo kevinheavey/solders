@@ -25,7 +25,7 @@ from solders.rpc.config import (
     RpcSignatureSubscribeConfig,
     RpcTransactionLogsConfig,
     RpcTransactionLogsFilter,
-    RpcTransactionLogsFilterMentions
+    RpcTransactionLogsFilterMentions,
 )
 from solders.commitment_config import CommitmentLevel
 from solders.signature import Signature
@@ -34,7 +34,8 @@ from solders.hash import Hash
 from solders.transaction import Transaction
 
 class GetAccountInfo:
-    def __init__(self,
+    def __init__(
+        self,
         pubkey: Pubkey,
         config: Optional[RpcAccountInfoConfig] = None,
         id: Optional[int] = None,
@@ -57,7 +58,8 @@ class GetAccountInfo:
     def __hash__(self) -> int: ...
 
 class GetBalance:
-    def __init__(self,
+    def __init__(
+        self,
         pubkey: Pubkey,
         config: Optional[RpcContextConfig] = None,
         id: Optional[int] = None,
@@ -80,8 +82,11 @@ class GetBalance:
     def __hash__(self) -> int: ...
 
 class GetBlock:
-    def __init__(self,
-        slot: int, config: Optional[RpcBlockConfig] = None, id: Optional[int] = None
+    def __init__(
+        self,
+        slot: int,
+        config: Optional[RpcBlockConfig] = None,
+        id: Optional[int] = None,
     ): ...
     @property
     def slot(self) -> int: ...
@@ -101,8 +106,8 @@ class GetBlock:
     def __hash__(self) -> int: ...
 
 class GetBlockHeight:
-    def __init__(self,
-        config: Optional[RpcContextConfig] = None, id: Optional[int] = None
+    def __init__(
+        self, config: Optional[RpcContextConfig] = None, id: Optional[int] = None
     ): ...
     @property
     def config(self) -> Optional[RpcContextConfig]: ...
@@ -120,8 +125,10 @@ class GetBlockHeight:
     def __hash__(self) -> int: ...
 
 class GetBlockProduction:
-    def __init__(self,
-        config: Optional[RpcBlockProductionConfig] = None, id: Optional[int] = None
+    def __init__(
+        self,
+        config: Optional[RpcBlockProductionConfig] = None,
+        id: Optional[int] = None,
     ): ...
     @property
     def config(self) -> Optional[RpcBlockProductionConfig]: ...
@@ -139,7 +146,7 @@ class GetBlockProduction:
     def __hash__(self) -> int: ...
 
 class GetBlockCommitment:
-    def __init__(self,slot: int, id: Optional[int] = None): ...
+    def __init__(self, slot: int, id: Optional[int] = None): ...
     @property
     def slot(self) -> int: ...
     @property
@@ -156,7 +163,8 @@ class GetBlockCommitment:
     def __hash__(self) -> int: ...
 
 class GetBlocks:
-    def __init__(self,
+    def __init__(
+        self,
         start: int,
         end: Optional[int] = None,
         commitment: Optional[CommitmentLevel] = None,
@@ -182,7 +190,8 @@ class GetBlocks:
     def __hash__(self) -> int: ...
 
 class GetBlocksWithLimit:
-    def __init__(self,
+    def __init__(
+        self,
         start: int,
         limit: Optional[int] = None,
         commitment: Optional[CommitmentLevel] = None,
@@ -208,7 +217,7 @@ class GetBlocksWithLimit:
     def __hash__(self) -> int: ...
 
 class GetBlockTime:
-    def __init__(self,slot: int, id: Optional[int] = None): ...
+    def __init__(self, slot: int, id: Optional[int] = None): ...
     @property
     def slot(self) -> int: ...
     @property
@@ -225,8 +234,8 @@ class GetBlockTime:
     def __hash__(self) -> int: ...
 
 class GetEpochInfo:
-    def __init__(self,
-        config: Optional[RpcContextConfig] = None, id: Optional[int] = None
+    def __init__(
+        self, config: Optional[RpcContextConfig] = None, id: Optional[int] = None
     ): ...
     @property
     def config(self) -> Optional[RpcContextConfig]: ...
@@ -244,7 +253,8 @@ class GetEpochInfo:
     def __hash__(self) -> int: ...
 
 class GetFeeForMessage:
-    def __init__(self,
+    def __init__(
+        self,
         message: Message,
         commitment: Optional[CommitmentLevel] = None,
         id: Optional[int] = None,
@@ -282,8 +292,8 @@ class GetIdentity:
     def __hash__(self) -> int: ...
 
 class GetInflationGovernor:
-    def __init__(self,
-        commitment: Optional[CommitmentLevel] = None, id: Optional[int] = None
+    def __init__(
+        self, commitment: Optional[CommitmentLevel] = None, id: Optional[int] = None
     ): ...
     @property
     def commitment(self) -> Optional[CommitmentLevel]: ...
@@ -301,7 +311,8 @@ class GetInflationGovernor:
     def __hash__(self) -> int: ...
 
 class GetInflationReward:
-    def __init__(self,
+    def __init__(
+        self,
         addresses: Sequence[Pubkey],
         config: Optional[RpcEpochConfig] = None,
         id: Optional[int] = None,
@@ -324,7 +335,8 @@ class GetInflationReward:
     def __hash__(self) -> int: ...
 
 class GetLargestAccounts:
-    def __init__(self,
+    def __init__(
+        self,
         commitment: Optional[CommitmentLevel] = None,
         filter_: Optional[RpcLargestAccountsFilter] = None,
         id: Optional[int] = None,
@@ -347,8 +359,8 @@ class GetLargestAccounts:
     def __hash__(self) -> int: ...
 
 class GetLatestBlockhash:
-    def __init__(self,
-        config: Optional[RpcContextConfig] = None, id: Optional[int] = None
+    def __init__(
+        self, config: Optional[RpcContextConfig] = None, id: Optional[int] = None
     ): ...
     @property
     def config(self) -> Optional[RpcContextConfig]: ...
@@ -366,7 +378,8 @@ class GetLatestBlockhash:
     def __hash__(self) -> int: ...
 
 class GetLeaderSchedule:
-    def __init__(self,
+    def __init__(
+        self,
         slot: Optional[int] = None,
         config: Optional[RpcLeaderScheduleConfig] = None,
         id: Optional[int] = None,
@@ -389,7 +402,8 @@ class GetLeaderSchedule:
     def __hash__(self) -> int: ...
 
 class GetMinimumBalanceForRentExemption:
-    def __init__(self,
+    def __init__(
+        self,
         length: int,
         commitment: Optional[CommitmentLevel] = None,
         id: Optional[int] = None,
@@ -412,7 +426,8 @@ class GetMinimumBalanceForRentExemption:
     def __hash__(self) -> int: ...
 
 class GetMultipleAccounts:
-    def __init__(self,
+    def __init__(
+        self,
         accounts: Sequence[Pubkey],
         config: Optional[RpcAccountInfoConfig] = None,
         id: Optional[int] = None,
@@ -435,7 +450,8 @@ class GetMultipleAccounts:
     def __hash__(self) -> int: ...
 
 class GetProgramAccounts:
-    def __init__(self,
+    def __init__(
+        self,
         program: Pubkey,
         config: Optional[RpcProgramAccountsConfig] = None,
         id: Optional[int] = None,
@@ -458,7 +474,7 @@ class GetProgramAccounts:
     def __hash__(self) -> int: ...
 
 class GetRecentPerformanceSamples:
-    def __init__(self,limit: Optional[int] = None, id: Optional[int] = None): ...
+    def __init__(self, limit: Optional[int] = None, id: Optional[int] = None): ...
     @property
     def limit(self) -> Optional[int]: ...
     @property
@@ -475,7 +491,8 @@ class GetRecentPerformanceSamples:
     def __hash__(self) -> int: ...
 
 class GetSignaturesForAddress:
-    def __init__(self,
+    def __init__(
+        self,
         address: Pubkey,
         config: Optional[RpcSignaturesForAddressConfig] = None,
         id: Optional[int] = None,
@@ -498,7 +515,8 @@ class GetSignaturesForAddress:
     def __hash__(self) -> int: ...
 
 class GetSignatureStatuses:
-    def __init__(self,
+    def __init__(
+        self,
         signatures: Sequence[Signature],
         config: Optional[RpcSignatureStatusConfig] = None,
         id: Optional[int] = None,
@@ -521,8 +539,8 @@ class GetSignatureStatuses:
     def __hash__(self) -> int: ...
 
 class GetSlot:
-    def __init__(self,
-        config: Optional[RpcContextConfig] = None, id: Optional[int] = None
+    def __init__(
+        self, config: Optional[RpcContextConfig] = None, id: Optional[int] = None
     ): ...
     @property
     def config(self) -> Optional[RpcContextConfig]: ...
@@ -540,8 +558,8 @@ class GetSlot:
     def __hash__(self) -> int: ...
 
 class GetSlotLeader:
-    def __init__(self,
-        config: Optional[RpcContextConfig] = None, id: Optional[int] = None
+    def __init__(
+        self, config: Optional[RpcContextConfig] = None, id: Optional[int] = None
     ): ...
     @property
     def config(self) -> Optional[RpcContextConfig]: ...
@@ -559,7 +577,7 @@ class GetSlotLeader:
     def __hash__(self) -> int: ...
 
 class GetSlotLeaders:
-    def __init__(self,start: int, limit: int, id: Optional[int] = None): ...
+    def __init__(self, start: int, limit: int, id: Optional[int] = None): ...
     @property
     def start(self) -> int: ...
     @property
@@ -578,7 +596,8 @@ class GetSlotLeaders:
     def __hash__(self) -> int: ...
 
 class GetStakeActivation:
-    def __init__(self,
+    def __init__(
+        self,
         account: Pubkey,
         config: Optional[RpcEpochConfig] = None,
         id: Optional[int] = None,
@@ -601,8 +620,8 @@ class GetStakeActivation:
     def __hash__(self) -> int: ...
 
 class GetSupply:
-    def __init__(self,
-        config: Optional[RpcSupplyConfig] = None, id: Optional[int] = None
+    def __init__(
+        self, config: Optional[RpcSupplyConfig] = None, id: Optional[int] = None
     ): ...
     @property
     def config(self) -> Optional[RpcSupplyConfig]: ...
@@ -620,7 +639,8 @@ class GetSupply:
     def __hash__(self) -> int: ...
 
 class GetTokenAccountBalance:
-    def __init__(self,
+    def __init__(
+        self,
         account: Pubkey,
         commitment: Optional[CommitmentLevel] = None,
         id: Optional[int] = None,
@@ -643,7 +663,8 @@ class GetTokenAccountBalance:
     def __hash__(self) -> int: ...
 
 class GetTokenAccountsByDelegate:
-    def __init__(self,
+    def __init__(
+        self,
         account: Pubkey,
         filter_: Union[RpcTokenAccountsFilterMint, RpcTokenAccountsFilterProgramId],
         config: Optional[RpcAccountInfoConfig] = None,
@@ -652,7 +673,9 @@ class GetTokenAccountsByDelegate:
     @property
     def account(self) -> Pubkey: ...
     @property
-    def filter_(self) -> Union[RpcTokenAccountsFilterMint, RpcTokenAccountsFilterProgramId]: ...
+    def filter_(
+        self,
+    ) -> Union[RpcTokenAccountsFilterMint, RpcTokenAccountsFilterProgramId]: ...
     @property
     def config(self) -> Optional[RpcAccountInfoConfig]: ...
     @property
@@ -669,7 +692,8 @@ class GetTokenAccountsByDelegate:
     def __hash__(self) -> int: ...
 
 class GetTokenAccountsByOwner:
-    def __init__(self,
+    def __init__(
+        self,
         account: Pubkey,
         filter_: Union[RpcTokenAccountsFilterMint, RpcTokenAccountsFilterProgramId],
         config: Optional[RpcAccountInfoConfig] = None,
@@ -678,7 +702,9 @@ class GetTokenAccountsByOwner:
     @property
     def account(self) -> Pubkey: ...
     @property
-    def filter_(self) -> Union[RpcTokenAccountsFilterMint, RpcTokenAccountsFilterProgramId]: ...
+    def filter_(
+        self,
+    ) -> Union[RpcTokenAccountsFilterMint, RpcTokenAccountsFilterProgramId]: ...
     @property
     def config(self) -> Optional[RpcAccountInfoConfig]: ...
     @property
@@ -695,7 +721,8 @@ class GetTokenAccountsByOwner:
     def __hash__(self) -> int: ...
 
 class GetTokenLargestAccounts:
-    def __init__(self,
+    def __init__(
+        self,
         mint: Pubkey,
         commitment: Optional[CommitmentLevel] = None,
         id: Optional[int] = None,
@@ -718,7 +745,8 @@ class GetTokenLargestAccounts:
     def __hash__(self) -> int: ...
 
 class GetTokenSupply:
-    def __init__(self,
+    def __init__(
+        self,
         mint: Pubkey,
         commitment: Optional[CommitmentLevel] = None,
         id: Optional[int] = None,
@@ -741,7 +769,8 @@ class GetTokenSupply:
     def __hash__(self) -> int: ...
 
 class GetTransaction:
-    def __init__(self,
+    def __init__(
+        self,
         signature: Signature,
         config: Optional[RpcTransactionConfig] = None,
         id: Optional[int] = None,
@@ -764,8 +793,8 @@ class GetTransaction:
     def __hash__(self) -> int: ...
 
 class GetTransactionCount:
-    def __init__(self,
-        config: Optional[RpcContextConfig] = None, id: Optional[int] = None
+    def __init__(
+        self, config: Optional[RpcContextConfig] = None, id: Optional[int] = None
     ): ...
     @property
     def config(self) -> Optional[RpcContextConfig]: ...
@@ -783,8 +812,10 @@ class GetTransactionCount:
     def __hash__(self) -> int: ...
 
 class GetVoteAccounts:
-    def __init__(self,
-        config: Optional[RpcGetVoteAccountsConfig] = None, id: Optional[int] = None
+    def __init__(
+        self,
+        config: Optional[RpcGetVoteAccountsConfig] = None,
+        id: Optional[int] = None,
     ): ...
     @property
     def config(self) -> Optional[RpcGetVoteAccountsConfig]: ...
@@ -802,7 +833,8 @@ class GetVoteAccounts:
     def __hash__(self) -> int: ...
 
 class IsBlockhashValid:
-    def __init__(self,
+    def __init__(
+        self,
         blockhash: Hash,
         config: Optional[RpcContextConfig] = None,
         id: Optional[int] = None,
@@ -825,7 +857,8 @@ class IsBlockhashValid:
     def __hash__(self) -> int: ...
 
 class RequestAirdrop:
-    def __init__(self,
+    def __init__(
+        self,
         pubkey: Pubkey,
         lamports: int,
         config: Optional[RpcRequestAirdropConfig] = None,
@@ -851,7 +884,8 @@ class RequestAirdrop:
     def __hash__(self) -> int: ...
 
 class SendTransaction:
-    def __init__(self,
+    def __init__(
+        self,
         tx: Transaction,
         config: Optional[RpcSendTransactionConfig] = None,
         id: Optional[int] = None,
@@ -874,7 +908,8 @@ class SendTransaction:
     def __hash__(self) -> int: ...
 
 class SimulateTransaction:
-    def __init__(self,
+    def __init__(
+        self,
         tx: Transaction,
         config: Optional[RpcSimulateTransactionConfig] = None,
         id: Optional[int] = None,
@@ -897,7 +932,8 @@ class SimulateTransaction:
     def __hash__(self) -> int: ...
 
 class AccountSubscribe:
-    def __init__(self,
+    def __init__(
+        self,
         account: Pubkey,
         config: Optional[RpcAccountInfoConfig] = None,
         id: Optional[int] = None,
@@ -920,13 +956,16 @@ class AccountSubscribe:
     def __hash__(self) -> int: ...
 
 class BlockSubscribe:
-    def __init__(self,
+    def __init__(
+        self,
         filter_: Union[RpcBlockSubscribeFilter, RpcBlockSubscribeFilterMentions],
         config: Optional[RpcBlockSubscribeConfig] = None,
         id: Optional[int] = None,
     ): ...
     @property
-    def filter_(self) -> Union[RpcBlockSubscribeFilter, RpcBlockSubscribeFilterMentions]: ...
+    def filter_(
+        self,
+    ) -> Union[RpcBlockSubscribeFilter, RpcBlockSubscribeFilterMentions]: ...
     @property
     def config(self) -> Optional[RpcBlockSubscribeConfig]: ...
     @property
@@ -943,13 +982,16 @@ class BlockSubscribe:
     def __hash__(self) -> int: ...
 
 class LogsSubscribe:
-    def __init__(self,
+    def __init__(
+        self,
         filter_: Union[RpcTransactionLogsFilter, RpcTransactionLogsFilterMentions],
         config: Optional[RpcTransactionLogsConfig] = None,
         id: Optional[int] = None,
     ): ...
     @property
-    def filter_(self) -> Union[RpcTransactionLogsFilter, RpcTransactionLogsFilterMentions]: ...
+    def filter_(
+        self,
+    ) -> Union[RpcTransactionLogsFilter, RpcTransactionLogsFilterMentions]: ...
     @property
     def config(self) -> Optional[RpcTransactionLogsConfig]: ...
     @property
@@ -966,7 +1008,8 @@ class LogsSubscribe:
     def __hash__(self) -> int: ...
 
 class ProgramSubscribe:
-    def __init__(self,
+    def __init__(
+        self,
         program: Pubkey,
         config: Optional[RpcProgramAccountsConfig] = None,
         id: Optional[int] = None,
@@ -989,7 +1032,8 @@ class ProgramSubscribe:
     def __hash__(self) -> int: ...
 
 class SignatureSubscribe:
-    def __init__(self,
+    def __init__(
+        self,
         signature: Signature,
         config: Optional[RpcSignatureSubscribeConfig] = None,
         id: Optional[int] = None,
@@ -1012,7 +1056,7 @@ class SignatureSubscribe:
     def __hash__(self) -> int: ...
 
 class GetClusterNodes:
-    def __init__(self,id: Optional[int] = None): ...
+    def __init__(self, id: Optional[int] = None): ...
     @property
     def id(self) -> int: ...
     def to_json(self) -> str: ...
@@ -1027,7 +1071,7 @@ class GetClusterNodes:
     def __hash__(self) -> int: ...
 
 class GetEpochSchedule:
-    def __init__(self,id: Optional[int] = None): ...
+    def __init__(self, id: Optional[int] = None): ...
     @property
     def id(self) -> int: ...
     def to_json(self) -> str: ...
@@ -1042,7 +1086,7 @@ class GetEpochSchedule:
     def __hash__(self) -> int: ...
 
 class GetFirstAvailableBlock:
-    def __init__(self,id: Optional[int] = None): ...
+    def __init__(self, id: Optional[int] = None): ...
     @property
     def id(self) -> int: ...
     def to_json(self) -> str: ...
@@ -1057,7 +1101,7 @@ class GetFirstAvailableBlock:
     def __hash__(self) -> int: ...
 
 class GetGenesisHash:
-    def __init__(self,id: Optional[int] = None): ...
+    def __init__(self, id: Optional[int] = None): ...
     @property
     def id(self) -> int: ...
     def to_json(self) -> str: ...
@@ -1072,7 +1116,7 @@ class GetGenesisHash:
     def __hash__(self) -> int: ...
 
 class GetHealth:
-    def __init__(self,id: Optional[int] = None): ...
+    def __init__(self, id: Optional[int] = None): ...
     @property
     def id(self) -> int: ...
     def to_json(self) -> str: ...
@@ -1087,7 +1131,7 @@ class GetHealth:
     def __hash__(self) -> int: ...
 
 class GetHighestSnapshotSlot:
-    def __init__(self,id: Optional[int] = None): ...
+    def __init__(self, id: Optional[int] = None): ...
     @property
     def id(self) -> int: ...
     def to_json(self) -> str: ...
@@ -1102,7 +1146,7 @@ class GetHighestSnapshotSlot:
     def __hash__(self) -> int: ...
 
 class GetInflationRate:
-    def __init__(self,id: Optional[int] = None): ...
+    def __init__(self, id: Optional[int] = None): ...
     @property
     def id(self) -> int: ...
     def to_json(self) -> str: ...
@@ -1117,7 +1161,7 @@ class GetInflationRate:
     def __hash__(self) -> int: ...
 
 class GetMaxRetransmitSlot:
-    def __init__(self,id: Optional[int] = None): ...
+    def __init__(self, id: Optional[int] = None): ...
     @property
     def id(self) -> int: ...
     def to_json(self) -> str: ...
@@ -1132,7 +1176,7 @@ class GetMaxRetransmitSlot:
     def __hash__(self) -> int: ...
 
 class GetMaxShredInsertSlot:
-    def __init__(self,id: Optional[int] = None): ...
+    def __init__(self, id: Optional[int] = None): ...
     @property
     def id(self) -> int: ...
     def to_json(self) -> str: ...
@@ -1147,7 +1191,7 @@ class GetMaxShredInsertSlot:
     def __hash__(self) -> int: ...
 
 class GetVersion:
-    def __init__(self,id: Optional[int] = None): ...
+    def __init__(self, id: Optional[int] = None): ...
     @property
     def id(self) -> int: ...
     def to_json(self) -> str: ...
@@ -1177,7 +1221,7 @@ class MinimumLedgerSlot:
     def __hash__(self) -> int: ...
 
 class SlotSubscribe:
-    def __init__(self,id: Optional[int] = None): ...
+    def __init__(self, id: Optional[int] = None): ...
     @property
     def id(self) -> int: ...
     def to_json(self) -> str: ...
@@ -1192,7 +1236,7 @@ class SlotSubscribe:
     def __hash__(self) -> int: ...
 
 class SlotsUpdatesSubscribe:
-    def __init__(self,id: Optional[int] = None): ...
+    def __init__(self, id: Optional[int] = None): ...
     @property
     def id(self) -> int: ...
     def to_json(self) -> str: ...
@@ -1207,7 +1251,7 @@ class SlotsUpdatesSubscribe:
     def __hash__(self) -> int: ...
 
 class RootSubscribe:
-    def __init__(self,id: Optional[int] = None): ...
+    def __init__(self, id: Optional[int] = None): ...
     @property
     def id(self) -> int: ...
     def to_json(self) -> str: ...
@@ -1222,7 +1266,7 @@ class RootSubscribe:
     def __hash__(self) -> int: ...
 
 class VoteSubscribe:
-    def __init__(self,id: Optional[int] = None): ...
+    def __init__(self, id: Optional[int] = None): ...
     @property
     def id(self) -> int: ...
     def to_json(self) -> str: ...
@@ -1237,7 +1281,7 @@ class VoteSubscribe:
     def __hash__(self) -> int: ...
 
 class AccountUnsubscribe:
-    def __init__(self,subscription_id: int, id: Optional[int] = None): ...
+    def __init__(self, subscription_id: int, id: Optional[int] = None): ...
     @property
     def id(self) -> int: ...
     @property
@@ -1254,7 +1298,7 @@ class AccountUnsubscribe:
     def __hash__(self) -> int: ...
 
 class BlockUnsubscribe:
-    def __init__(self,subscription_id: int, id: Optional[int] = None): ...
+    def __init__(self, subscription_id: int, id: Optional[int] = None): ...
     @property
     def id(self) -> int: ...
     @property
@@ -1271,7 +1315,7 @@ class BlockUnsubscribe:
     def __hash__(self) -> int: ...
 
 class LogsUnsubscribe:
-    def __init__(self,subscription_id: int, id: Optional[int] = None): ...
+    def __init__(self, subscription_id: int, id: Optional[int] = None): ...
     @property
     def id(self) -> int: ...
     @property
@@ -1288,7 +1332,7 @@ class LogsUnsubscribe:
     def __hash__(self) -> int: ...
 
 class ProgramUnsubscribe:
-    def __init__(self,subscription_id: int, id: Optional[int] = None): ...
+    def __init__(self, subscription_id: int, id: Optional[int] = None): ...
     @property
     def id(self) -> int: ...
     @property
@@ -1305,7 +1349,7 @@ class ProgramUnsubscribe:
     def __hash__(self) -> int: ...
 
 class SignatureUnsubscribe:
-    def __init__(self,subscription_id: int, id: Optional[int] = None): ...
+    def __init__(self, subscription_id: int, id: Optional[int] = None): ...
     @property
     def id(self) -> int: ...
     @property
@@ -1322,7 +1366,7 @@ class SignatureUnsubscribe:
     def __hash__(self) -> int: ...
 
 class SlotUnsubscribe:
-    def __init__(self,subscription_id: int, id: Optional[int] = None): ...
+    def __init__(self, subscription_id: int, id: Optional[int] = None): ...
     @property
     def id(self) -> int: ...
     @property
@@ -1339,7 +1383,7 @@ class SlotUnsubscribe:
     def __hash__(self) -> int: ...
 
 class SlotsUpdatesUnsubscribe:
-    def __init__(self,subscription_id: int, id: Optional[int] = None): ...
+    def __init__(self, subscription_id: int, id: Optional[int] = None): ...
     @property
     def id(self) -> int: ...
     @property
@@ -1356,7 +1400,7 @@ class SlotsUpdatesUnsubscribe:
     def __hash__(self) -> int: ...
 
 class RootUnsubscribe:
-    def __init__(self,subscription_id: int, id: Optional[int] = None): ...
+    def __init__(self, subscription_id: int, id: Optional[int] = None): ...
     @property
     def id(self) -> int: ...
     @property
@@ -1373,7 +1417,7 @@ class RootUnsubscribe:
     def __hash__(self) -> int: ...
 
 class VoteUnsubscribe:
-    def __init__(self,subscription_id: int, id: Optional[int] = None): ...
+    def __init__(self, subscription_id: int, id: Optional[int] = None): ...
     @property
     def id(self) -> int: ...
     @property
