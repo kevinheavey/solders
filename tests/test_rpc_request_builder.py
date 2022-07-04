@@ -138,6 +138,9 @@ def test_get_block() -> None:
     req = GetBlock(123, config)
     as_json = req.to_json()
     assert GetBlock.from_json(as_json) == req
+    req2 = GetBlock(123)
+    as_json2 = req2.to_json()
+    assert GetBlock.from_json(as_json2) == req2
 
 
 def test_get_block_height() -> None:
