@@ -8,6 +8,8 @@ use pyo3::{
     create_exception,
     exceptions::{PyException, PyValueError},
     prelude::*,
+    type_object::PyTypeObject,
+    types::PyTuple,
 };
 extern crate base64;
 use crate::rpc::tmp_config::{
@@ -2863,6 +2865,83 @@ pub fn batch_from_json(raw: &str) -> PyResult<Vec<PyObject>> {
 }
 
 pub fn create_requests_mod(py: Python<'_>) -> PyResult<&PyModule> {
+    let typing = py.import("typing")?;
+    let union = typing.getattr("Union")?;
+    let alias_members = PyTuple::new(
+        py,
+        vec![
+            GetAccountInfo::type_object(py),
+            GetBalance::type_object(py),
+            GetBlock::type_object(py),
+            GetBlockHeight::type_object(py),
+            GetBlockProduction::type_object(py),
+            GetBlockCommitment::type_object(py),
+            GetBlocks::type_object(py),
+            GetBlocksWithLimit::type_object(py),
+            GetBlockTime::type_object(py),
+            GetClusterNodes::type_object(py),
+            GetEpochInfo::type_object(py),
+            GetEpochSchedule::type_object(py),
+            GetFeeForMessage::type_object(py),
+            GetFirstAvailableBlock::type_object(py),
+            GetGenesisHash::type_object(py),
+            GetHealth::type_object(py),
+            GetHighestSnapshotSlot::type_object(py),
+            GetIdentity::type_object(py),
+            GetInflationGovernor::type_object(py),
+            GetInflationRate::type_object(py),
+            GetInflationReward::type_object(py),
+            GetLargestAccounts::type_object(py),
+            GetLatestBlockhash::type_object(py),
+            GetLeaderSchedule::type_object(py),
+            GetMaxRetransmitSlot::type_object(py),
+            GetMaxShredInsertSlot::type_object(py),
+            GetMinimumBalanceForRentExemption::type_object(py),
+            GetMultipleAccounts::type_object(py),
+            GetProgramAccounts::type_object(py),
+            GetRecentPerformanceSamples::type_object(py),
+            GetSignaturesForAddress::type_object(py),
+            GetSignatureStatuses::type_object(py),
+            GetSlot::type_object(py),
+            GetSlotLeader::type_object(py),
+            GetSlotLeaders::type_object(py),
+            GetStakeActivation::type_object(py),
+            GetSupply::type_object(py),
+            GetTokenAccountBalance::type_object(py),
+            GetTokenAccountsByDelegate::type_object(py),
+            GetTokenAccountsByOwner::type_object(py),
+            GetTokenLargestAccounts::type_object(py),
+            GetTokenSupply::type_object(py),
+            GetTransaction::type_object(py),
+            GetTransactionCount::type_object(py),
+            GetVersion::type_object(py),
+            GetVoteAccounts::type_object(py),
+            IsBlockhashValid::type_object(py),
+            MinimumLedgerSlot::type_object(py),
+            RequestAirdrop::type_object(py),
+            SendTransaction::type_object(py),
+            AccountSubscribe::type_object(py),
+            BlockSubscribe::type_object(py),
+            LogsSubscribe::type_object(py),
+            ProgramSubscribe::type_object(py),
+            SignatureSubscribe::type_object(py),
+            SlotSubscribe::type_object(py),
+            SlotsUpdatesSubscribe::type_object(py),
+            RootSubscribe::type_object(py),
+            VoteSubscribe::type_object(py),
+            AccountUnsubscribe::type_object(py),
+            BlockUnsubscribe::type_object(py),
+            LogsUnsubscribe::type_object(py),
+            ProgramUnsubscribe::type_object(py),
+            SignatureUnsubscribe::type_object(py),
+            SimulateTransaction::type_object(py),
+            SlotUnsubscribe::type_object(py),
+            SlotsUpdatesUnsubscribe::type_object(py),
+            RootUnsubscribe::type_object(py),
+            VoteUnsubscribe::type_object(py),
+        ],
+    );
+    let body_alias = union.get_item(alias_members)?;
     let requests_mod = PyModule::new(py, "requests")?;
     requests_mod.add_class::<GetAccountInfo>()?;
     requests_mod.add_class::<GetBalance>()?;
@@ -2933,6 +3012,7 @@ pub fn create_requests_mod(py: Python<'_>) -> PyResult<&PyModule> {
     requests_mod.add_class::<SlotsUpdatesUnsubscribe>()?;
     requests_mod.add_class::<RootUnsubscribe>()?;
     requests_mod.add_class::<VoteUnsubscribe>()?;
+    requests_mod.add("Body", body_alias)?;
     let funcs = [
         wrap_pyfunction!(batch_to_json, requests_mod)?,
         wrap_pyfunction!(batch_from_json, requests_mod)?,
