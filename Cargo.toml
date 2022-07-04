@@ -1,6 +1,6 @@
 [package]
 name = "solders"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 include = ["src/*.rs", "/LICENSE", "/pyproject.toml"]
 description = "Python binding to the Solana Rust SDK"
