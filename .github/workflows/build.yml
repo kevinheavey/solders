@@ -85,6 +85,7 @@ jobs:
   linux:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         target: [x86_64, i686]
     steps:
@@ -115,6 +116,7 @@ jobs:
   musllinux:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         target:
           - x86_64-unknown-linux-musl
@@ -152,8 +154,9 @@ jobs:
   linux-cross:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        target: [aarch64, armv7, s390x, ppc64le, ppc64]
+        target: [aarch64, armv7, s390x, ppc64]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2

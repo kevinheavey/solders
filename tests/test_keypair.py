@@ -110,3 +110,8 @@ def test_from_seed_phrase_and_passphrase() -> None:
 def test_pickle() -> None:
     obj = Keypair()
     assert pickle.loads(pickle.dumps(obj)) == obj
+
+
+def test_json() -> None:
+    obj = Keypair()
+    assert Keypair.from_json(obj.to_json()) == obj

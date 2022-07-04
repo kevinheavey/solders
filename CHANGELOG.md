@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.0] - 2022-07-04
+
+### Added
+
+- Added an RPC request builder under `solders.rpc.requests` [(#4)](https://github.com/kevinheavey/solders/pull/4)
+  - Added related modules `solders.rpc.config`, `solders.rpc.filter`, `solders.account_decoder`, `solders.commitment_config` and `solders.transaction_status`.
+  - Added JSON support to most classes.
+
 ## [0.2.0] - 2022-06-13
 
 ### Added

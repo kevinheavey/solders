@@ -5,10 +5,11 @@ use crate::{
     PyErrWrapper, PyFromBytesGeneral, PyHash, RichcmpFull,
 };
 use pyo3::{create_exception, exceptions::PyException, prelude::*};
+use serde::{Deserialize, Serialize};
 use solana_sdk::pubkey::{
-    Pubkey as PubkeyOriginal, PubkeyError as PubkeyErrorOriginal, PUBKEY_BYTES,
+    ParsePubkeyError, Pubkey as PubkeyOriginal, PubkeyError as PubkeyErrorOriginal, PUBKEY_BYTES,
 };
-use solders_macros::{common_magic_methods, pyhash, richcmp_full};
+use solders_macros::{common_methods, pyhash, richcmp_full};
 
 create_exception!(
     solders,
@@ -36,12 +37,14 @@ impl From<PubkeyErrorOriginal> for PyErrWrapper {
 ///     '0101010101010101010101010101010101010101010101010101010101010101'
 ///
 #[pyclass(module = "solders.pubkey", subclass)]
-#[derive(Eq, PartialEq, Ord, PartialOrd, Debug, Default, Hash, Clone, Copy)]
+#[derive(
+    Eq, PartialEq, Ord, PartialOrd, Debug, Default, Hash, Clone, Copy, Serialize, Deserialize,
+)]
 pub struct Pubkey(pub PubkeyOriginal);
 
 #[pyhash]
 #[richcmp_full]
-#[common_magic_methods]
+#[common_methods]
 #[pymethods]
 impl Pubkey {
     #[classattr]
@@ -269,7 +272,7 @@ impl PyFromBytesGeneral for Pubkey {
         Ok(PubkeyOriginal::new(raw).into())
     }
 }
-impl CommonMethods for Pubkey {}
+impl CommonMethods<'_> for Pubkey {}
 
 impl AsRef<[u8]> for Pubkey {
     fn as_ref(&self) -> &[u8] {
@@ -280,5 +283,12 @@ impl AsRef<[u8]> for Pubkey {
 impl AsRef<PubkeyOriginal> for Pubkey {
     fn as_ref(&self) -> &PubkeyOriginal {
         &self.0
+    }
+}
+
+impl FromStr for Pubkey {
+    type Err = ParsePubkeyError;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        PubkeyOriginal::from_str(s).map(Pubkey::from)
     }
 }

@@ -1,8 +1,9 @@
 use std::str::FromStr;
 
 use pyo3::prelude::*;
-use solana_sdk::signature::{Signature as SignatureOriginal, SIGNATURE_BYTES};
-use solders_macros::{common_magic_methods, pyhash, richcmp_full};
+use serde::{Deserialize, Serialize};
+use solana_sdk::signature::{ParseSignatureError, Signature as SignatureOriginal, SIGNATURE_BYTES};
+use solders_macros::{common_methods, pyhash, richcmp_full};
 
 use crate::{
     handle_py_value_err, impl_display, pybytes_general_via_slice, CommonMethods, Pubkey,
@@ -10,7 +11,9 @@ use crate::{
 };
 
 #[pyclass(module = "solders.signature", subclass)]
-#[derive(Clone, Copy, Default, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
+#[derive(
+    Clone, Copy, Default, Eq, PartialEq, Ord, PartialOrd, Hash, Debug, Serialize, Deserialize,
+)]
 /// The ``Signature`` object is a wrapper around a raw bytes signature, typically
 /// returned by :meth:`~solders.keypair.Keypair.sign_message` or other similar methods.
 ///
@@ -21,7 +24,7 @@ pub struct Signature(SignatureOriginal);
 
 #[pyhash]
 #[richcmp_full]
-#[common_magic_methods]
+#[common_methods]
 #[pymethods]
 impl Signature {
     #[classattr]
@@ -76,7 +79,7 @@ impl Signature {
     ///     >>> assert Signature.from_string(str(sig)) == sig
     ///
     pub fn new_from_str(s: &str) -> PyResult<Self> {
-        handle_py_value_err(SignatureOriginal::from_str(s))
+        handle_py_value_err(Self::from_str(s))
     }
 
     /// Check if the signature is a valid signature created by the given pubkey on the given message.
@@ -135,7 +138,7 @@ impl PyFromBytesGeneral for Signature {
         Ok(SignatureOriginal::new(raw).into())
     }
 }
-impl CommonMethods for Signature {}
+impl CommonMethods<'_> for Signature {}
 impl RichcmpFull for Signature {}
 pybytes_general_via_slice!(Signature);
 
@@ -162,5 +165,12 @@ impl AsRef<[u8]> for Signature {
 impl AsRef<SignatureOriginal> for Signature {
     fn as_ref(&self) -> &SignatureOriginal {
         &self.0
+    }
+}
+
+impl FromStr for Signature {
+    type Err = ParseSignatureError;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        SignatureOriginal::from_str(s).map(Signature::from)
     }
 }

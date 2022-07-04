@@ -1,13 +1,38 @@
 use pyo3::{prelude::*, types::PyBytes};
+use serde::{Deserialize, Serialize};
 use solana_sdk::signer::{null_signer::NullSigner as NullSignerOriginal, Signer as SignerTrait};
-use solders_macros::{common_magic_methods, pyhash, richcmp_signer};
+use solders_macros::{common_methods, pyhash, richcmp_signer};
 
 use crate::{
     impl_display, impl_signer_hash, CommonMethods, Pubkey, PyBytesGeneral, PyFromBytesGeneral,
     PyHash, RichcmpSigner, Signature, SignerTraitWrapper, ToSignerOriginal,
 };
 
-#[derive(Clone, Debug, Default, PartialEq)]
+mod null_signer_serde {
+    use serde::{self, Deserialize, Deserializer, Serializer};
+    use solana_sdk::{
+        pubkey::Pubkey as PubkeyOriginal, signature::Signer,
+        signer::null_signer::NullSigner as NullSignerOriginal,
+    };
+
+    pub fn serialize<S>(ns: &NullSignerOriginal, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_bytes(&ns.try_pubkey().unwrap().to_bytes())
+    }
+
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<NullSignerOriginal, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let b = Vec::deserialize(deserializer)?;
+        let pubkey = PubkeyOriginal::new(&b);
+        Ok(NullSignerOriginal::new(&pubkey))
+    }
+}
+
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
 #[pyclass(module = "solders.null_signer", subclass)]
 /// A signer implementation that always produces :meth:`solders.signature.Signature.default()`.
 /// Used as a placeholder for absentee signers whose 'Pubkey` is required to construct
@@ -16,11 +41,11 @@ use crate::{
 /// Args:
 ///     pubkey (Pubkey): The pubkey of the signer.
 ///
-pub struct NullSigner(pub NullSignerOriginal);
+pub struct NullSigner(#[serde(with = "null_signer_serde")] pub NullSignerOriginal);
 
 #[pyhash]
 #[richcmp_signer]
-#[common_magic_methods]
+#[common_methods]
 #[pymethods]
 impl NullSigner {
     #[new]
@@ -88,7 +113,7 @@ impl PyFromBytesGeneral for NullSigner {
     }
 }
 
-impl CommonMethods for NullSigner {}
+impl CommonMethods<'_> for NullSigner {}
 
 impl From<NullSignerOriginal> for NullSigner {
     fn from(signer: NullSignerOriginal) -> Self {

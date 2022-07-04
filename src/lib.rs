@@ -1,4 +1,8 @@
+//! These docstrings are written for Python users.
+//!
+//! If you're viewing them on docs.rs, the formatting won't make much sense.
 use bincode::ErrorKind;
+use commitment_config::{CommitmentConfig, CommitmentLevel};
 use pyo3::{
     create_exception,
     exceptions::{PyException, PyTypeError, PyValueError},
@@ -6,6 +10,7 @@ use pyo3::{
     pyclass::CompareOp,
     types::PyBytes,
 };
+use rpc::create_rpc_mod;
 use serde::{Deserialize, Serialize};
 use solana_sdk::{
     instruction::Instruction as InstructionOriginal,
@@ -20,28 +25,35 @@ use std::{
 };
 use system_program::create_system_program_mod;
 use sysvar::create_sysvar_mod;
-mod pubkey;
-pub use pubkey::Pubkey;
-mod signer;
-pub use signer::{Signer, SignerError};
-mod signature;
-pub use signature::Signature;
-mod keypair;
-pub use keypair::Keypair;
-mod instruction;
-pub use instruction::{AccountMeta, CompiledInstruction, Instruction};
-mod hash;
-pub use hash::{Hash as SolderHash, ParseHashError};
-mod message;
-pub use message::{Message, MessageHeader};
-mod transaction;
-pub use transaction::{SanitizeError, Transaction, TransactionError};
-mod presigner;
-pub use presigner::Presigner;
-mod null_signer;
-pub use null_signer::NullSigner;
-mod system_program;
-mod sysvar;
+use transaction_status::create_transaction_status_mod;
+pub mod pubkey;
+use pubkey::Pubkey;
+pub mod signer;
+use signer::{Signer, SignerError};
+pub mod signature;
+use signature::Signature;
+pub mod keypair;
+use keypair::Keypair;
+pub mod instruction;
+use instruction::{AccountMeta, CompiledInstruction, Instruction};
+pub mod hash;
+use hash::{Hash as SolderHash, ParseHashError};
+pub mod message;
+use message::{Message, MessageHeader};
+pub mod transaction;
+use transaction::{SanitizeError, Transaction, TransactionError};
+pub mod presigner;
+use presigner::Presigner;
+pub mod null_signer;
+use null_signer::NullSigner;
+pub mod account_decoder;
+use account_decoder::create_account_decoder_mod;
+pub mod commitment_config;
+pub mod rpc;
+pub mod system_program;
+pub mod sysvar;
+mod tmp_account_decoder;
+pub mod transaction_status;
 
 struct PyErrWrapper(PyErr);
 
@@ -77,9 +89,22 @@ create_exception!(
     "Raised when the Rust bincode library returns an error during (de)serialization."
 );
 
+create_exception!(
+    solders,
+    CborError,
+    PyException,
+    "Raised when the Rust cbor library returns an error during (de)serialization."
+);
+
 impl From<Box<ErrorKind>> for PyErrWrapper {
     fn from(e: Box<ErrorKind>) -> Self {
         Self(BincodeError::new_err(e.to_string()))
+    }
+}
+
+impl From<serde_cbor::Error> for PyErrWrapper {
+    fn from(e: serde_cbor::Error) -> Self {
+        Self(CborError::new_err(e.to_string()))
     }
 }
 
@@ -224,7 +249,10 @@ pub(crate) use pybytes_general_for_pybytes_slice;
 macro_rules! pybytes_general_for_pybytes_bincode {
     ($ident:ident) => {
         impl crate::PyBytesGeneral for $ident {
-            fn pybytes_general<'a>(&self, py: pyo3::prelude::Python<'a>) -> &'a PyBytes {
+            fn pybytes_general<'a>(
+                &self,
+                py: pyo3::prelude::Python<'a>,
+            ) -> &'a pyo3::types::PyBytes {
                 self.pybytes_bincode(py)
             }
         }
@@ -233,9 +261,29 @@ macro_rules! pybytes_general_for_pybytes_bincode {
 
 pub(crate) use pybytes_general_for_pybytes_bincode;
 
+macro_rules! pybytes_general_for_pybytes_cbor {
+    ($ident:ident) => {
+        impl crate::PyBytesGeneral for $ident {
+            fn pybytes_general<'a>(
+                &self,
+                py: pyo3::prelude::Python<'a>,
+            ) -> &'a pyo3::types::PyBytes {
+                self.pybytes_cbor(py)
+            }
+        }
+    };
+}
+pub(crate) use pybytes_general_for_pybytes_cbor;
+
 pub trait PyBytesBincode: Serialize {
     fn pybytes_bincode<'a>(&self, py: Python<'a>) -> &'a PyBytes {
         PyBytes::new(py, &bincode::serialize(self).unwrap())
+    }
+}
+
+pub trait PyBytesCbor: Serialize + std::marker::Sized {
+    fn pybytes_cbor<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+        PyBytes::new(py, &serde_cbor::to_vec(self).unwrap())
     }
 }
 
@@ -258,8 +306,15 @@ macro_rules! pybytes_general_via_bincode {
         crate::pybytes_general_for_pybytes_bincode!($ident);
     };
 }
-
 pub(crate) use pybytes_general_via_bincode;
+
+macro_rules! pybytes_general_via_cbor {
+    ($ident:ident) => {
+        impl crate::PyBytesCbor for $ident {}
+        crate::pybytes_general_for_pybytes_cbor!($ident);
+    };
+}
+pub(crate) use pybytes_general_via_cbor;
 
 macro_rules! py_from_bytes_general_for_py_from_bytes_bincode {
     ($ident:ident) => {
@@ -270,8 +325,18 @@ macro_rules! py_from_bytes_general_for_py_from_bytes_bincode {
         }
     };
 }
-
 pub(crate) use py_from_bytes_general_for_py_from_bytes_bincode;
+
+macro_rules! py_from_bytes_general_for_py_from_bytes_cbor {
+    ($ident:ident) => {
+        impl crate::PyFromBytesGeneral for $ident {
+            fn py_from_bytes_general(raw: &[u8]) -> PyResult<Self> {
+                Self::py_from_bytes_cbor(raw)
+            }
+        }
+    };
+}
+pub(crate) use py_from_bytes_general_for_py_from_bytes_cbor;
 
 macro_rules! py_from_bytes_general_via_bincode {
     ($ident:ident) => {
@@ -288,14 +353,37 @@ pub trait PyFromBytesBincode<'b>: Deserialize<'b> {
     }
 }
 
+macro_rules! py_from_bytes_general_via_cbor {
+    ($ident:ident) => {
+        impl crate::PyFromBytesCbor<'_> for $ident {}
+        crate::py_from_bytes_general_for_py_from_bytes_cbor!($ident);
+    };
+}
+
+pub(crate) use py_from_bytes_general_via_cbor;
+
+pub trait PyFromBytesCbor<'b>: Deserialize<'b> {
+    fn py_from_bytes_cbor(raw: &'b [u8]) -> PyResult<Self> {
+        let deser = serde_cbor::from_slice::<Self>(raw);
+        handle_py_err(deser)
+    }
+}
+
 pub trait PyFromBytesGeneral: Sized {
     fn py_from_bytes_general(raw: &[u8]) -> PyResult<Self>;
 }
 
-pub trait CommonMethods:
-    fmt::Display + fmt::Debug + PyBytesGeneral + PyFromBytesGeneral + IntoPy<PyObject> + Clone
+pub trait CommonMethods<'a>:
+    fmt::Display
+    + fmt::Debug
+    + PyBytesGeneral
+    + PyFromBytesGeneral
+    + IntoPy<PyObject>
+    + Clone
+    + Serialize
+    + Deserialize<'a>
 {
-    fn pybytes<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+    fn pybytes<'b>(&self, py: Python<'b>) -> &'b PyBytes {
         self.pybytes_general(py)
     }
 
@@ -316,6 +404,14 @@ pub trait CommonMethods:
         let cloned = self.clone();
         let constructor = cloned.into_py(py).getattr(py, "from_bytes")?;
         Ok((constructor, (self.pybytes(py).to_object(py),).to_object(py)))
+    }
+
+    fn py_to_json(&self) -> String {
+        serde_json::to_string(self).unwrap()
+    }
+
+    fn py_from_json(raw: &'a str) -> PyResult<Self> {
+        serde_json::from_str(raw).map_err(to_py_err)
     }
 }
 
@@ -351,6 +447,13 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
     let errors_mod = PyModule::new(py, "errors")?;
     errors_mod.add("BincodeError", py.get_type::<BincodeError>())?;
     errors_mod.add("SignerError", py.get_type::<SignerError>())?;
+    errors_mod.add("CborError", py.get_type::<CborError>())?;
+    let rpc_mod = create_rpc_mod(py)?;
+    let commitment_config_mod = PyModule::new(py, "commitment_config")?;
+    commitment_config_mod.add_class::<CommitmentConfig>()?;
+    commitment_config_mod.add_class::<CommitmentLevel>()?;
+    let transaction_status_mod = create_transaction_status_mod(py)?;
+    let account_decoder_mod = create_account_decoder_mod(py)?;
     let submodules = [
         errors_mod,
         hash_mod,
@@ -364,6 +467,10 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
         transaction_mod,
         system_program_mod,
         sysvar_mod,
+        rpc_mod,
+        commitment_config_mod,
+        transaction_status_mod,
+        account_decoder_mod,
     ];
     let modules: HashMap<String, &PyModule> = submodules
         .iter()

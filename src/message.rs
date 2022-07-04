@@ -8,7 +8,7 @@ use solana_sdk::{
     },
     pubkey::Pubkey as PubkeyOriginal,
 };
-use solders_macros::{common_magic_methods, richcmp_eq_only};
+use solders_macros::{common_methods, richcmp_eq_only};
 
 use crate::{
     convert_instructions, convert_optional_pubkey, impl_display, py_from_bytes_general_via_bincode,
@@ -59,7 +59,7 @@ use crate::{
 pub struct MessageHeader(MessageHeaderOriginal);
 
 #[richcmp_eq_only]
-#[common_magic_methods]
+#[common_methods]
 #[pymethods]
 impl MessageHeader {
     #[classattr]
@@ -127,7 +127,7 @@ impl RichcmpEqualityOnly for MessageHeader {}
 pybytes_general_via_bincode!(MessageHeader);
 impl_display!(MessageHeader);
 py_from_bytes_general_via_bincode!(MessageHeader);
-impl CommonMethods for MessageHeader {}
+impl CommonMethods<'_> for MessageHeader {}
 
 #[pyclass(module = "solders.message", subclass)]
 #[derive(PartialEq, Eq, Debug, Clone, Default, Serialize, Deserialize)]
@@ -162,10 +162,10 @@ impl CommonMethods for MessageHeader {}
 ///     >>> blockhash = Hash.default()  # replace with a real blockhash
 ///     >>> tx = Transaction([payer], message, blockhash)
 ///
-pub struct Message(MessageOriginal);
+pub struct Message(pub MessageOriginal);
 
 #[richcmp_eq_only]
-#[common_magic_methods]
+#[common_methods]
 #[pymethods]
 impl Message {
     #[new]
@@ -526,7 +526,7 @@ impl PyBytesGeneral for Message {
 }
 impl_display!(Message);
 py_from_bytes_general_via_bincode!(Message);
-impl CommonMethods for Message {}
+impl CommonMethods<'_> for Message {}
 
 impl From<MessageOriginal> for Message {
     fn from(message: MessageOriginal) -> Self {

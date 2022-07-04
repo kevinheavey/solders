@@ -1400,3 +1400,8 @@ def test_sort_account_metas() -> None:
 def test_pickle() -> None:
     obj = Transaction.default()
     assert pickle.loads(pickle.dumps(obj)) == obj
+
+
+def test_json() -> None:
+    obj = Transaction.default()
+    assert Transaction.from_json(obj.to_json()) == obj

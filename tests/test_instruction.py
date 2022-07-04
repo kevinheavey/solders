@@ -73,3 +73,11 @@ def test_pickle_ix(ix: Instruction) -> None:
 
 def test_pickle_compiled_ix(compiled_ix: CompiledInstruction) -> None:
     assert pickle.loads(pickle.dumps(compiled_ix)) == compiled_ix
+
+
+def test_json_ix(ix: Instruction) -> None:
+    assert Instruction.from_json(ix.to_json()) == ix
+
+
+def test_json_compiled_ix(compiled_ix: CompiledInstruction) -> None:
+    assert CompiledInstruction.from_json(compiled_ix.to_json()) == compiled_ix

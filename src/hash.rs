@@ -1,11 +1,11 @@
 use std::str::FromStr;
 
 use pyo3::{create_exception, exceptions::PyException, prelude::*};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use solana_sdk::hash::{
     hash, Hash as HashOriginal, ParseHashError as ParseHashErrorOriginal, HASH_BYTES,
 };
-use solders_macros::{common_magic_methods, pyhash, richcmp_full};
+use solders_macros::{common_methods, pyhash, richcmp_full};
 
 use crate::{
     handle_py_err, impl_display, pybytes_general_via_slice, CommonMethods, PyBytesSlice,
@@ -31,12 +31,14 @@ impl From<ParseHashErrorOriginal> for PyErrWrapper {
 /// Args:
 ///     hash_bytes (bytes): the hashed bytes.
 ///
-#[derive(Clone, Copy, Default, Eq, PartialEq, Ord, PartialOrd, Hash, Debug, Deserialize)]
+#[derive(
+    Clone, Copy, Default, Eq, PartialEq, Ord, PartialOrd, Hash, Debug, Deserialize, Serialize,
+)]
 pub struct Hash(HashOriginal);
 
 #[pyhash]
 #[richcmp_full]
-#[common_magic_methods]
+#[common_methods]
 #[pymethods]
 impl Hash {
     #[classattr]
@@ -135,7 +137,7 @@ impl PyFromBytesGeneral for Hash {
 }
 
 pybytes_general_via_slice!(Hash);
-impl CommonMethods for Hash {}
+impl CommonMethods<'_> for Hash {}
 
 impl RichcmpFull for Hash {}
 
@@ -162,6 +164,13 @@ impl AsRef<HashOriginal> for Hash {
 impl AsRef<[u8]> for Hash {
     fn as_ref(&self) -> &[u8] {
         self.0.as_ref()
+    }
+}
+
+impl FromStr for Hash {
+    type Err = ParseHashErrorOriginal;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        HashOriginal::from_str(s).map(Hash::from)
     }
 }
 

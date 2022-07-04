@@ -220,3 +220,13 @@ def test_pickle_msg_header() -> None:
 def test_pickle_msg() -> None:
     obj = Message.default()
     assert pickle.loads(pickle.dumps(obj)) == obj
+
+
+def test_json_msg_header() -> None:
+    obj = MessageHeader.default()
+    assert MessageHeader.from_json(obj.to_json()) == obj
+
+
+def test_json_msg() -> None:
+    obj = Message.default()
+    assert Message.from_json(obj.to_json()) == obj

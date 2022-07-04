@@ -138,3 +138,10 @@ def test_pickle() -> None:
     ser = pickle.dumps(key)
     deser = pickle.loads(ser)
     assert deser == key
+
+
+def test_json() -> None:
+    key = Pubkey.new_unique()
+    ser = key.to_json()
+    deser = Pubkey.from_json(ser)
+    assert deser == key
