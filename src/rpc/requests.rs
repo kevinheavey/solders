@@ -909,13 +909,12 @@ impl GetInflationReward {
 request_boilerplate!(GetInflationReward);
 
 #[serde_as]
-#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct GetLargestAccountsParams(
     #[serde_as(as = "Option<FromInto<CommitmentConfig>>")]
     #[serde(default)]
     Option<CommitmentLevel>,
-    #[serde(default)] Option<RpcLargestAccountsFilter>,
+    #[serde(default, skip_serializing_if = "Option::is_none")] Option<RpcLargestAccountsFilter>,
 );
 
 /// A ``getLargestAccounts`` request.
