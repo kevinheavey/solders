@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.4.0] - Unreleased
+
+### Added
+
+Add `Account` class [(#7)](https://github.com/kevinheavey/solders/pull/7)
+
 ## [0.3.1] - 2022-07-04
 
 ### Fixed
