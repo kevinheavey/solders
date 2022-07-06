@@ -8,6 +8,7 @@ Modules:
 .. toctree::
    :maxdepth: 2
 
+   account
    account_decoder
    commitment_config
    errors

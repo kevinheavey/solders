@@ -1,6 +1,7 @@
 //! These docstrings are written for Python users.
 //!
 //! If you're viewing them on docs.rs, the formatting won't make much sense.
+use account::create_account_mod;
 use bincode::ErrorKind;
 use commitment_config::{CommitmentConfig, CommitmentLevel};
 use pyo3::{
@@ -48,6 +49,7 @@ pub mod null_signer;
 use null_signer::NullSigner;
 pub mod account_decoder;
 use account_decoder::create_account_decoder_mod;
+pub mod account;
 pub mod commitment_config;
 pub mod rpc;
 pub mod system_program;
@@ -454,6 +456,7 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
     commitment_config_mod.add_class::<CommitmentLevel>()?;
     let transaction_status_mod = create_transaction_status_mod(py)?;
     let account_decoder_mod = create_account_decoder_mod(py)?;
+    let account_mod = create_account_mod(py)?;
     let submodules = [
         errors_mod,
         hash_mod,
@@ -471,6 +474,7 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
         commitment_config_mod,
         transaction_status_mod,
         account_decoder_mod,
+        account_mod,
     ];
     let modules: HashMap<String, &PyModule> = submodules
         .iter()
