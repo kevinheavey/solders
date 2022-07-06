@@ -14,7 +14,7 @@ use crate::{
 ///     lamports (int): Lamports in the account.
 ///     data (bytes): Data held in this account.
 ///     owner (Pubkey): The program that owns this account. If executable, the program that loads this account.
-///     executable (bool): This account's data contains a loaded program (and is now read-only). Defaults to False.
+///     executable (bool): Whether this account's data contains a loaded program (and is now read-only). Defaults to False.
 ///     epoch_info (int): The epoch at which this account will next owe rent. Defaults to 0.
 ///
 #[pyclass(module = "solders.account", subclass)]
@@ -44,26 +44,31 @@ impl Account {
         .into()
     }
 
+    /// int: Lamports in the account.
     #[getter]
     pub fn lamports(&self) -> u64 {
         self.0.lamports
     }
 
+    /// bytes: Data held in this account.
     #[getter]
     pub fn data<'a>(&self, py: Python<'a>) -> &'a PyBytes {
         PyBytes::new(py, &self.0.data)
     }
 
+    /// Pubkey: The program that owns this account. If executable, the program that loads this account.
     #[getter]
     pub fn owner(&self) -> Pubkey {
         self.0.owner.into()
     }
 
+    /// Whether this account's data contains a loaded program (and is now read-only).
     #[getter]
     pub fn executable(&self) -> bool {
         self.0.executable
     }
 
+    /// int: The epoch at which this account will next owe rent.
     #[getter]
     pub fn rent_epoch(&self) -> Epoch {
         self.0.rent_epoch
