@@ -3,19 +3,19 @@ use std::fmt::Display;
 
 use pyo3::{prelude::*, types::PyBytes, PyClass};
 use serde::{Deserialize, Serialize};
+use serde_with::{serde_as, FromInto};
 use solders_macros::{common_methods, common_methods_rpc_resp};
 
 use crate::{
-    py_from_bytes_general_via_bincode, pybytes_general_via_bincode, to_py_err, CommonMethods,
-    PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly,
+    account::Account, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
+    tmp_account_decoder::UiAccount, to_py_err, CommonMethods, PyBytesBincode, PyFromBytesBincode,
+    RichcmpEqualityOnly,
 };
 // use solana_client::nonblocking::rpc_client;
 // use solana_client::rpc_response::Response;
 // use solana_rpc::rpc;
 
 // note: the `data` field of the error struct is always None
-
-// pub struct GetAccountInfoResp(Response<Option<Account>>);
 
 pub trait CommonMethodsRpcResp<'a>:
     std::fmt::Display
@@ -159,6 +159,10 @@ impl GetBlockCommitmentResp {
         }
     }
 }
+
+#[serde_as]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+pub struct GetAccountInfoResp(#[serde_as(as = "Option<FromInto<UiAccount>>")] Option<Account>);
 
 pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "responses")?;

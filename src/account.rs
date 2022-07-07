@@ -4,7 +4,10 @@ use solana_sdk::{account::Account as AccountOriginal, clock::Epoch};
 use solders_macros::{common_methods, richcmp_eq_only};
 
 use crate::{
-    impl_display, pubkey::Pubkey, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
+    impl_display,
+    pubkey::Pubkey,
+    py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
+    tmp_account_decoder::{UiAccount, UiAccountData, UiAccountEncoding},
     CommonMethods, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly,
 };
 
@@ -96,6 +99,25 @@ impl RichcmpEqualityOnly for Account {}
 impl From<AccountOriginal> for Account {
     fn from(a: AccountOriginal) -> Self {
         Self(a)
+    }
+}
+
+impl From<UiAccount> for Account {
+    fn from(acc: UiAccount) -> Self {
+        acc.decode::<AccountOriginal>().unwrap().into()
+    }
+}
+
+impl From<Account> for UiAccount {
+    fn from(acc: Account) -> Self {
+        let underlying = acc.0;
+        Self {
+            lamports: underlying.lamports,
+            data: UiAccountData::Binary(base64::encode(underlying.data), UiAccountEncoding::Base64),
+            owner: underlying.owner.to_string(),
+            executable: underlying.executable,
+            rent_epoch: underlying.rent_epoch,
+        }
     }
 }
 
