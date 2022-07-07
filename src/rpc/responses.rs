@@ -4,6 +4,7 @@ use std::fmt::Display;
 use pyo3::{prelude::*, types::PyBytes, PyClass};
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, FromInto};
+use solana_sdk::clock::Slot;
 use solders_macros::{common_methods, common_methods_rpc_resp};
 
 use crate::{
@@ -107,6 +108,33 @@ pybytes_general_via_bincode!(RpcError);
 py_from_bytes_general_via_bincode!(RpcError);
 impl<'a> CommonMethods<'a> for RpcError {}
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct RpcResponseContext {
+    #[pyo3(get)]
+    pub slot: Slot,
+}
+
+#[common_methods]
+#[pymethods]
+impl RpcResponseContext {
+    #[new]
+    pub fn new(slot: Slot) -> Self {
+        Self { slot }
+    }
+}
+
+impl RichcmpEqualityOnly for RpcResponseContext {}
+impl Display for RpcResponseContext {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+pybytes_general_via_bincode!(RpcResponseContext);
+py_from_bytes_general_via_bincode!(RpcResponseContext);
+impl<'a> CommonMethods<'a> for RpcResponseContext {}
+
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 #[serde(untagged)]
 pub enum Resp<T: PyClass + IntoPy<PyObject>> {
@@ -162,10 +190,38 @@ impl GetBlockCommitmentResp {
 
 #[serde_as]
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-pub struct GetAccountInfoResp(#[serde_as(as = "Option<FromInto<UiAccount>>")] Option<Account>);
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetAccountInfoResp {
+    context: RpcResponseContext,
+    #[serde_as(as = "Option<FromInto<UiAccount>>")]
+    value: Option<Account>,
+}
+
+resp_traits!(GetAccountInfoResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetAccountInfoResp {
+    #[new]
+    pub fn new(value: Option<Account>, context: RpcResponseContext) -> Self {
+        Self { value, context }
+    }
+
+    #[getter]
+    pub fn value(&self) -> Option<Account> {
+        self.value.clone()
+    }
+
+    #[getter]
+    pub fn context(&self) -> RpcResponseContext {
+        self.context.clone()
+    }
+}
 
 pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "responses")?;
+    m.add_class::<RpcResponseContext>()?;
+    m.add_class::<GetAccountInfoResp>()?;
     m.add_class::<GetBlockCommitmentResp>()?;
     Ok(m)
 }
