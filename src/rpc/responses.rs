@@ -1,6 +1,14 @@
 #![allow(clippy::large_enum_variant)]
-use pyo3::{prelude::*, PyClass};
+use std::fmt::Display;
+
+use pyo3::{prelude::*, types::PyBytes, PyClass};
 use serde::{Deserialize, Serialize};
+use solders_macros::{common_methods, common_methods_rpc_resp};
+
+use crate::{
+    py_from_bytes_general_via_bincode, pybytes_general_via_bincode, to_py_err, CommonMethods,
+    PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly,
+};
 // use solana_client::nonblocking::rpc_client;
 // use solana_client::rpc_response::Response;
 // use solana_rpc::rpc;
@@ -8,6 +16,63 @@ use serde::{Deserialize, Serialize};
 // note: the `data` field of the error struct is always None
 
 // pub struct GetAccountInfoResp(Response<Option<Account>>);
+
+pub trait CommonMethodsRpcResp<'a>:
+    std::fmt::Display
+    + std::fmt::Debug
+    + PyBytesBincode
+    + PyFromBytesBincode<'a>
+    + IntoPy<PyObject>
+    + Clone
+    + Serialize
+    + Deserialize<'a>
+    + PyClass
+{
+    fn pybytes<'b>(&self, py: Python<'b>) -> &'b PyBytes {
+        self.pybytes_bincode(py)
+    }
+
+    fn pystr(&self) -> String {
+        self.to_string()
+    }
+    fn pyrepr(&self) -> String {
+        format!("{:#?}", self)
+    }
+
+    fn py_from_bytes(raw: &'a [u8]) -> PyResult<Self> {
+        Self::py_from_bytes_bincode(raw)
+    }
+
+    fn pyreduce(&self) -> PyResult<(PyObject, PyObject)> {
+        let gil = Python::acquire_gil();
+        let py = gil.python();
+        let cloned = self.clone();
+        let constructor = cloned.into_py(py).getattr(py, "from_bytes")?;
+        Ok((constructor, (self.pybytes(py).to_object(py),).to_object(py)))
+    }
+
+    fn py_to_json(&self) -> String {
+        serde_json::to_string(self).unwrap()
+    }
+
+    fn py_from_json(raw: &'a str) -> PyResult<Resp<Self>> {
+        serde_json::from_str(raw).map_err(to_py_err)
+    }
+}
+
+macro_rules! resp_traits {
+    ($name:ident) => {
+        impl PyBytesBincode for $name {}
+        impl PyFromBytesBincode<'_> for $name {}
+        impl RichcmpEqualityOnly for $name {}
+        impl Display for $name {
+            fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+                write!(f, "{:?}", self)
+            }
+        }
+        impl<'a> CommonMethodsRpcResp<'a> for $name {}
+    };
+}
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[pyclass]
@@ -20,6 +85,7 @@ pub struct RpcError {
     pub message: String,
 }
 
+#[common_methods]
 #[pymethods]
 impl RpcError {
     #[new]
@@ -31,20 +97,30 @@ impl RpcError {
     }
 }
 
+impl RichcmpEqualityOnly for RpcError {}
+impl Display for RpcError {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+pybytes_general_via_bincode!(RpcError);
+py_from_bytes_general_via_bincode!(RpcError);
+impl<'a> CommonMethods<'a> for RpcError {}
+
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 #[serde(untagged)]
 pub enum Resp<T: PyClass + IntoPy<PyObject>> {
-    Error {
-        #[serde(skip)]
-        jsonrpc: crate::rpc::requests::V2,
-        error: RpcError,
-        #[serde(skip)]
-        id: u64,
-    },
     Result {
         #[serde(skip)]
         jsonrpc: crate::rpc::requests::V2,
         result: T,
+        #[serde(skip)]
+        id: u64,
+    },
+    Error {
+        #[serde(skip)]
+        jsonrpc: crate::rpc::requests::V2,
+        error: RpcError,
         #[serde(skip)]
         id: u64,
     },
@@ -62,7 +138,7 @@ impl<T: PyClass + IntoPy<PyObject>> IntoPy<PyObject> for Resp<T> {
 // The one in solana_client isn't clonable
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
-#[pyclass]
+#[pyclass(module = "solders.rpc.responses", subclass)]
 pub struct GetBlockCommitmentResp {
     #[pyo3(get)]
     pub commitment: Option<[u64; 32]>,
@@ -70,6 +146,9 @@ pub struct GetBlockCommitmentResp {
     pub total_stake: u64,
 }
 
+resp_traits!(GetBlockCommitmentResp);
+
+#[common_methods_rpc_resp]
 #[pymethods]
 impl GetBlockCommitmentResp {
     #[new]
@@ -77,36 +156,6 @@ impl GetBlockCommitmentResp {
         Self {
             commitment,
             total_stake,
-        }
-    }
-
-    pub fn __repr__(&self) -> String {
-        format!("{:?}", self)
-    }
-
-    #[staticmethod]
-    pub fn from_json(raw: &str) -> Resp<Self> {
-        serde_json::from_str(raw).unwrap()
-    }
-}
-
-#[derive(FromPyObject, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub enum GetBlockCommitmentWrapper {
-    #[serde(skip)]
-    Id(u64),
-    Error(RpcError),
-    Result(GetBlockCommitmentResp),
-    #[serde(skip, alias = "jsonrpc")]
-    Jsonrpc(String),
-}
-
-impl IntoPy<PyObject> for GetBlockCommitmentWrapper {
-    fn into_py(self, py: Python<'_>) -> PyObject {
-        match self {
-            Self::Error(e) => e.into_py(py),
-            Self::Result(r) => r.into_py(py),
-            _ => panic!("Unreachable"),
         }
     }
 }

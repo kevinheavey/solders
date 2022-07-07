@@ -1391,9 +1391,9 @@ dependencies = [
 
 [[package]]
 name = "solders-macros"
-version = "0.5.0"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0d4b649bef22b404407b666e1f17e9f06333d9fdb743e7f3695509037ad313c8"
+checksum = "a845407fd576d7c607eff3e40ab97a435a3e20f7e493bad6a24621d3c8069cf6"
 dependencies = [
  "proc-macro2",
  "quote",
