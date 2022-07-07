@@ -25,9 +25,6 @@ def test_get_account_info() -> None:
   "id": 1
 }"""
     parsed = GetAccountInfoResp.from_json(raw)
-    assert parsed.value.data == b58decode(
-        b"11116bv5nS2h3y12kD1yUKeMZvGcKLSjQgX6BeV7u1FrjeJcKfsHRTPuR3oZ1EioKtYGiYxpxMG5vpbZLsbcBYBEmZZcMKaSoGx9JZeAuWf"
-    )
     context = RpcResponseContext(slot=1)
     value = Account(
         data=b58decode(
@@ -38,4 +35,13 @@ def test_get_account_info() -> None:
         owner=Pubkey.from_string("11111111111111111111111111111111"),
         rent_epoch=2,
     )
+    assert parsed == GetAccountInfoResp(context=context, value=value)
+
+
+def test_get_account_info_null() -> None:
+    raw = '{"jsonrpc":"2.0","result":{"context":{"apiVersion":"1.10.26","slot":146423291},"value":null},"id":1}'
+    parsed = GetAccountInfoResp.from_json(raw)
+    assert parsed.value is None
+    context = RpcResponseContext(slot=146423291, api_version="1.10.26")
+    value = None
     assert parsed == GetAccountInfoResp(context=context, value=value)

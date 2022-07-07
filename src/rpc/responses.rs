@@ -114,14 +114,17 @@ impl<'a> CommonMethods<'a> for RpcError {}
 pub struct RpcResponseContext {
     #[pyo3(get)]
     pub slot: Slot,
+    #[pyo3(get)]
+    #[serde(skip_serializing_if = "Option::is_none", default)]
+    pub api_version: Option<String>,
 }
 
 #[common_methods]
 #[pymethods]
 impl RpcResponseContext {
     #[new]
-    pub fn new(slot: Slot) -> Self {
-        Self { slot }
+    pub fn new(slot: Slot, api_version: Option<String>) -> Self {
+        Self { slot, api_version }
     }
 }
 
