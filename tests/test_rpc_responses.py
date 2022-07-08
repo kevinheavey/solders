@@ -1,4 +1,4 @@
-from solders.rpc.responses import GetAccountInfoResp, RpcResponseContext
+from solders.rpc.responses import GetAccountInfoResp, RpcResponseContext, RpcError
 from solders.account import Account
 from solders.pubkey import Pubkey
 from based58 import b58decode
@@ -45,3 +45,10 @@ def test_get_account_info_null() -> None:
     context = RpcResponseContext(slot=146423291, api_version="1.10.26")
     value = None
     assert parsed == GetAccountInfoResp(context=context, value=value)
+
+
+def test_get_account_info_error() -> None:
+    raw = '{"jsonrpc":"2.0","error":{"code":-32602,"message":"Invalid param: WrongSize"},"id":1}'
+    parsed = GetAccountInfoResp.from_json(raw)
+    error = RpcError(code=-32602, message="Invalid param: WrongSize")
+    assert parsed == error

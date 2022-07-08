@@ -5,7 +5,7 @@ use pyo3::{prelude::*, types::PyBytes, PyClass};
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, FromInto};
 use solana_sdk::clock::Slot;
-use solders_macros::{common_methods, common_methods_rpc_resp};
+use solders_macros::{common_methods, common_methods_rpc_resp, richcmp_eq_only};
 
 use crate::{
     account::Account, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
@@ -76,7 +76,7 @@ macro_rules! resp_traits {
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[pyclass]
+#[pyclass(module = "solders.rpc.responses", subclass)]
 pub struct RpcError {
     /// Code
     #[pyo3(get)]
@@ -86,6 +86,7 @@ pub struct RpcError {
     pub message: String,
 }
 
+#[richcmp_eq_only]
 #[common_methods]
 #[pymethods]
 impl RpcError {
@@ -119,6 +120,7 @@ pub struct RpcResponseContext {
     pub api_version: Option<String>,
 }
 
+#[richcmp_eq_only]
 #[common_methods]
 #[pymethods]
 impl RpcResponseContext {
@@ -224,6 +226,7 @@ impl GetAccountInfoResp {
 pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "responses")?;
     m.add_class::<RpcResponseContext>()?;
+    m.add_class::<RpcError>()?;
     m.add_class::<GetAccountInfoResp>()?;
     m.add_class::<GetBlockCommitmentResp>()?;
     Ok(m)
