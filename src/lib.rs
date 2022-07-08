@@ -55,6 +55,7 @@ pub mod rpc;
 pub mod system_program;
 pub mod sysvar;
 mod tmp_account_decoder;
+mod tmp_transaction_status;
 pub mod transaction_status;
 
 struct PyErrWrapper(PyErr);
