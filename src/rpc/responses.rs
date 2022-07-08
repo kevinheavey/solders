@@ -8,9 +8,10 @@ use solana_sdk::clock::Slot;
 use solders_macros::{common_methods, common_methods_rpc_resp, richcmp_eq_only};
 
 use crate::{
-    account::Account, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
-    tmp_account_decoder::UiAccount, to_py_err, CommonMethods, PyBytesBincode, PyFromBytesBincode,
-    RichcmpEqualityOnly,
+    account::{Account, AccountJSON},
+    py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
+    tmp_account_decoder::UiAccount,
+    to_py_err, CommonMethods, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly,
 };
 // use solana_client::nonblocking::rpc_client;
 // use solana_client::rpc_response::Response;
@@ -197,7 +198,9 @@ impl GetBlockCommitmentResp {
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
 pub struct GetAccountInfoResp {
+    #[pyo3(get)]
     context: RpcResponseContext,
+    #[pyo3(get)]
     #[serde_as(as = "Option<FromInto<UiAccount>>")]
     value: Option<Account>,
 }
@@ -211,9 +214,31 @@ impl GetAccountInfoResp {
     pub fn new(value: Option<Account>, context: RpcResponseContext) -> Self {
         Self { value, context }
     }
+}
+
+#[serde_as]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetAccountInfoRespJsonParsed {
+    #[pyo3(get)]
+    context: RpcResponseContext,
+    #[pyo3(get)]
+    #[serde_as(as = "Option<FromInto<UiAccount>>")]
+    value: Option<AccountJSON>,
+}
+
+resp_traits!(GetAccountInfoRespJsonParsed);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetAccountInfoRespJsonParsed {
+    #[new]
+    pub fn new(value: Option<AccountJSON>, context: RpcResponseContext) -> Self {
+        Self { value, context }
+    }
 
     #[getter]
-    pub fn value(&self) -> Option<Account> {
+    pub fn value(&self) -> Option<AccountJSON> {
         self.value.clone()
     }
 
@@ -228,6 +253,7 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<RpcResponseContext>()?;
     m.add_class::<RpcError>()?;
     m.add_class::<GetAccountInfoResp>()?;
+    m.add_class::<GetAccountInfoRespJsonParsed>()?;
     m.add_class::<GetBlockCommitmentResp>()?;
     Ok(m)
 }

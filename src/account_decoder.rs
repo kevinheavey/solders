@@ -1,9 +1,20 @@
-use crate::tmp_account_decoder::UiDataSliceConfig as UiDataSliceConfigOriginal;
+use std::{fmt::Display, str::FromStr};
+
+use crate::{
+    tmp_account_decoder::{
+        ParsedAccount as ParsedAccountOriginal, UiDataSliceConfig as UiDataSliceConfigOriginal,
+    },
+    to_py_err, CommonMethods,
+};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
-use solders_macros::richcmp_eq_only;
+use serde_json::Value;
+use solders_macros::{common_methods, richcmp_eq_only};
 
-use crate::RichcmpEqualityOnly;
+use crate::{
+    py_from_bytes_general_via_bincode, pybytes_general_via_bincode, PyBytesBincode,
+    PyFromBytesBincode, RichcmpEqualityOnly,
+};
 
 /// Configuration object for limiting returned account data.
 ///
@@ -65,9 +76,67 @@ pub enum UiAccountEncoding {
     Base64Zstd,
 }
 
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[pyclass(module = "solders.account_decoder")]
+pub struct ParsedAccount(ParsedAccountOriginal);
+
+impl RichcmpEqualityOnly for ParsedAccount {}
+impl Display for ParsedAccount {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+pybytes_general_via_bincode!(ParsedAccount);
+py_from_bytes_general_via_bincode!(ParsedAccount);
+impl<'a> CommonMethods<'a> for ParsedAccount {}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl ParsedAccount {
+    #[new]
+    pub fn new(program: &str, parsed: &str, space: u64) -> PyResult<Self> {
+        let value = Value::from_str(parsed).map_err(to_py_err)?;
+        Ok(ParsedAccountOriginal {
+            program: program.to_owned(),
+            parsed: value,
+            space,
+        }
+        .into())
+    }
+
+    #[getter]
+    pub fn program(&self) -> String {
+        self.0.program.clone()
+    }
+
+    #[getter]
+    pub fn parsed(&self) -> String {
+        self.0.parsed.to_string()
+    }
+
+    #[getter]
+    pub fn space(&self) -> u64 {
+        self.0.space
+    }
+}
+
+impl From<ParsedAccountOriginal> for ParsedAccount {
+    fn from(p: ParsedAccountOriginal) -> Self {
+        Self(p)
+    }
+}
+
+impl From<ParsedAccount> for ParsedAccountOriginal {
+    fn from(p: ParsedAccount) -> Self {
+        p.0
+    }
+}
+
 pub fn create_account_decoder_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "account_decoder")?;
     m.add_class::<UiDataSliceConfig>()?;
     m.add_class::<UiAccountEncoding>()?;
+    m.add_class::<ParsedAccount>()?;
     Ok(m)
 }
