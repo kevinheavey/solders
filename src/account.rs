@@ -250,6 +250,5 @@ pub(crate) fn create_account_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "account")?;
     m.add_class::<Account>()?;
     m.add_class::<AccountJSON>()?;
-    m.add_class::<ParsedAccount>()?;
     Ok(m)
 }

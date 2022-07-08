@@ -169,31 +169,6 @@ impl<T: PyClass + IntoPy<PyObject>> IntoPy<PyObject> for Resp<T> {
     }
 }
 
-// The one in solana_client isn't clonable
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "camelCase")]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetBlockCommitmentResp {
-    #[pyo3(get)]
-    pub commitment: Option<[u64; 32]>,
-    #[pyo3(get)]
-    pub total_stake: u64,
-}
-
-resp_traits!(GetBlockCommitmentResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetBlockCommitmentResp {
-    #[new]
-    pub fn new(commitment: Option<[u64; 32]>, total_stake: u64) -> Self {
-        Self {
-            commitment,
-            total_stake,
-        }
-    }
-}
-
 #[serde_as]
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
@@ -219,7 +194,7 @@ impl GetAccountInfoResp {
 #[serde_as]
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetAccountInfoRespJsonParsed {
+pub struct GetAccountInfoJsonParsedResp {
     #[pyo3(get)]
     context: RpcResponseContext,
     #[pyo3(get)]
@@ -227,24 +202,60 @@ pub struct GetAccountInfoRespJsonParsed {
     value: Option<AccountJSON>,
 }
 
-resp_traits!(GetAccountInfoRespJsonParsed);
+resp_traits!(GetAccountInfoJsonParsedResp);
 
 #[common_methods_rpc_resp]
 #[pymethods]
-impl GetAccountInfoRespJsonParsed {
+impl GetAccountInfoJsonParsedResp {
     #[new]
     pub fn new(value: Option<AccountJSON>, context: RpcResponseContext) -> Self {
         Self { value, context }
     }
+}
 
-    #[getter]
-    pub fn value(&self) -> Option<AccountJSON> {
-        self.value.clone()
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetBalanceResp {
+    #[pyo3(get)]
+    pub context: RpcResponseContext,
+    #[pyo3(get)]
+    pub value: u64,
+}
+
+resp_traits!(GetBalanceResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetBalanceResp {
+    #[new]
+    pub fn new(value: u64, context: RpcResponseContext) -> Self {
+        Self { value, context }
     }
+}
 
-    #[getter]
-    pub fn context(&self) -> RpcResponseContext {
-        self.context.clone()
+// The one in solana_client isn't clonable
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetBlockCommitmentResp {
+    #[pyo3(get)]
+    pub commitment: Option<[u64; 32]>,
+    #[pyo3(get)]
+    pub total_stake: u64,
+}
+
+resp_traits!(GetBlockCommitmentResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetBlockCommitmentResp {
+    #[new]
+    pub fn new(commitment: Option<[u64; 32]>, total_stake: u64) -> Self {
+        Self {
+            commitment,
+            total_stake,
+        }
     }
 }
 
@@ -253,7 +264,8 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<RpcResponseContext>()?;
     m.add_class::<RpcError>()?;
     m.add_class::<GetAccountInfoResp>()?;
-    m.add_class::<GetAccountInfoRespJsonParsed>()?;
+    m.add_class::<GetAccountInfoJsonParsedResp>()?;
+    m.add_class::<GetBalanceResp>()?;
     m.add_class::<GetBlockCommitmentResp>()?;
     Ok(m)
 }

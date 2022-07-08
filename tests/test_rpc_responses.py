@@ -1,11 +1,13 @@
 from solders.rpc.responses import (
     GetAccountInfoResp,
-    GetAccountInfoRespJsonParsed,
+    GetAccountInfoJsonParsedResp,
+    GetBalanceResp,
     RpcResponseContext,
     RpcError,
 )
-from solders.account import Account, ParsedAccount, AccountJSON
+from solders.account import Account, AccountJSON
 from solders.pubkey import Pubkey
+from solders.account_decoder import ParsedAccount
 from based58 import b58decode
 
 
@@ -61,9 +63,29 @@ def test_get_account_info_error() -> None:
 
 def test_get_account_info_json_parsed() -> None:
     raw = '{"jsonrpc":"2.0","result":{"context":{"apiVersion":"1.10.25","slot":140702417},"value":{"data":{"parsed":{"info":{"isNative":false,"mint":"EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v","owner":"vines1vzrYbzLMRdu58ou5XTby4qAqVRLmqo36NKPTg","state":"initialized","tokenAmount":{"amount":"36010000000","decimals":6,"uiAmount":36010.0,"uiAmountString":"36010"}},"type":"account"},"program":"spl-token","space":165},"executable":false,"lamports":2039280,"owner":"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA","rentEpoch":325}},"id":1}'
-    parsed = GetAccountInfoRespJsonParsed.from_json(raw)
-    parsed_account = ParsedAccount(program="spl-token", space=165, parsed='{"info":{"isNative":false,"mint":"EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v","owner":"vines1vzrYbzLMRdu58ou5XTby4qAqVRLmqo36NKPTg","state":"initialized","tokenAmount":{"amount":"36010000000","decimals":6,"uiAmount":36010.0,"uiAmountString":"36010"}},"type":"account"}')
+    parsed = GetAccountInfoJsonParsedResp.from_json(raw)
+    parsed_account = ParsedAccount(
+        program="spl-token",
+        space=165,
+        parsed='{"info":{"isNative":false,"mint":"EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v","owner":"vines1vzrYbzLMRdu58ou5XTby4qAqVRLmqo36NKPTg","state":"initialized","tokenAmount":{"amount":"36010000000","decimals":6,"uiAmount":36010.0,"uiAmountString":"36010"}},"type":"account"}',
+    )
     assert parsed.value.data == parsed_account
-    account_json = AccountJSON(lamports=2039280, data=parsed_account, owner=Pubkey.from_string("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"), executable=False, rent_epoch=325)
+    account_json = AccountJSON(
+        lamports=2039280,
+        data=parsed_account,
+        owner=Pubkey.from_string("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"),
+        executable=False,
+        rent_epoch=325,
+    )
     context = RpcResponseContext(slot=140702417, api_version="1.10.25")
-    assert parsed == GetAccountInfoRespJsonParsed(context=context, value=account_json)
+    assert parsed == GetAccountInfoJsonParsedResp(context=context, value=account_json)
+
+
+def test_get_balance_resp() -> None:
+    raw = """{
+"jsonrpc": "2.0",
+"result": { "context": { "slot": 1 }, "value": 0 },
+"id": 1
+}"""
+    parsed = GetBalanceResp.from_json(raw)
+    assert parsed == GetBalanceResp(value=0, context=RpcResponseContext(slot=1))
