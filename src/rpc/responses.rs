@@ -1,17 +1,20 @@
-#![allow(clippy::large_enum_variant)]
+#![allow(clippy::large_enum_variant, clippy::too_many_arguments)]
 use std::fmt::Display;
 
 use pyo3::{prelude::*, types::PyBytes, PyClass};
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, FromInto};
-use solana_sdk::clock::Slot;
+use solana_sdk::clock::{Slot, UnixTimestamp};
 use solders_macros::{common_methods, common_methods_rpc_resp, richcmp_eq_only};
 
 use crate::{
     account::{Account, AccountJSON},
     py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
+    signature::Signature,
     tmp_account_decoder::UiAccount,
-    to_py_err, CommonMethods, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly,
+    to_py_err,
+    transaction_status::{EncodedTransactionWithStatusMeta, Rewards},
+    CommonMethods, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly, SolderHash,
 };
 // use solana_client::nonblocking::rpc_client;
 // use solana_client::rpc_response::Response;
@@ -255,6 +258,52 @@ impl GetBlockCommitmentResp {
         Self {
             commitment,
             total_stake,
+        }
+    }
+}
+
+#[serde_as]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetBlockResp {
+    pub previous_blockhash: SolderHash,
+    pub blockhash: SolderHash,
+    pub parent_slot: Slot,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub transactions: Option<Vec<EncodedTransactionWithStatusMeta>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub signatures: Option<Vec<Signature>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub rewards: Option<Rewards>,
+    pub block_time: Option<UnixTimestamp>,
+    pub block_height: Option<u64>,
+}
+
+resp_traits!(GetBlockResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetBlockResp {
+    #[new]
+    pub fn new(
+        previous_blockhash: SolderHash,
+        blockhash: SolderHash,
+        parent_slot: Slot,
+        transactions: Option<Vec<EncodedTransactionWithStatusMeta>>,
+        signatures: Option<Vec<Signature>>,
+        rewards: Option<Rewards>,
+        block_time: Option<UnixTimestamp>,
+        block_height: Option<u64>,
+    ) -> Self {
+        Self {
+            previous_blockhash,
+            blockhash,
+            parent_slot,
+            transactions,
+            signatures,
+            rewards,
+            block_time,
+            block_height,
         }
     }
 }
