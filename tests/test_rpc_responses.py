@@ -43,6 +43,8 @@ def test_get_account_info() -> None:
         rent_epoch=2,
     )
     assert parsed == GetAccountInfoResp(context=context, value=value)
+    # It's good to test some properties in case we forget to add them
+    assert parsed.value.rent_epoch == 2
 
 
 def test_get_account_info_null() -> None:
@@ -79,6 +81,8 @@ def test_get_account_info_json_parsed() -> None:
     )
     context = RpcResponseContext(slot=140702417, api_version="1.10.25")
     assert parsed == GetAccountInfoJsonParsedResp(context=context, value=account_json)
+    assert parsed.context.slot == 140702417
+    assert parsed.value.data.program == "spl-token"
 
 
 def test_get_balance_resp() -> None:
