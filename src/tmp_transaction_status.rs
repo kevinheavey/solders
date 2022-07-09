@@ -2,7 +2,6 @@ use crate::tmp_account_decoder::UiTokenAmount;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use solana_sdk::{
-    clock::{Slot, UnixTimestamp},
     message::MessageHeader,
     transaction::{Result as TransactionResult, TransactionError, TransactionVersion},
     transaction_context::TransactionReturnData,

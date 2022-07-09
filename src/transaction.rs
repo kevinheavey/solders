@@ -583,7 +583,7 @@ impl AsRef<TransactionOriginal> for Transaction {
     }
 }
 
-/// Type that serializes to the string "legacy"
+/// Transaction version type that serializes to the string "legacy"
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 #[pyclass(module = "solders.transaction")]
@@ -630,4 +630,13 @@ impl From<TransactionVersionOriginal> for TransactionVersion {
             TransactionVersionOriginal::Number(n) => Self::Number(n),
         }
     }
+}
+
+pub(crate) fn create_transaction_mod(py: Python<'_>) -> PyResult<&PyModule> {
+    let m = PyModule::new(py, "transaction")?;
+    m.add_class::<Transaction>()?;
+    m.add_class::<Legacy>()?;
+    m.add("SanitizeError", py.get_type::<SanitizeError>())?;
+    m.add("TransactionError", py.get_type::<TransactionError>())?;
+    Ok(m)
 }
