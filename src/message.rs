@@ -123,6 +123,12 @@ impl From<MessageHeaderOriginal> for MessageHeader {
     }
 }
 
+impl From<MessageHeader> for MessageHeaderOriginal {
+    fn from(h: MessageHeader) -> Self {
+        h.0
+    }
+}
+
 impl RichcmpEqualityOnly for MessageHeader {}
 pybytes_general_via_bincode!(MessageHeader);
 impl_display!(MessageHeader);
