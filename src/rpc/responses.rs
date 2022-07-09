@@ -267,18 +267,26 @@ impl GetBlockCommitmentResp {
 #[pyclass(module = "solders.rpc.responses", subclass)]
 pub struct GetBlockResp {
     #[serde_as(as = "DisplayFromStr")]
+    #[pyo3(get)]
     pub previous_blockhash: SolderHash,
     #[serde_as(as = "DisplayFromStr")]
+    #[pyo3(get)]
     pub blockhash: SolderHash,
+    #[pyo3(get)]
     pub parent_slot: Slot,
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[pyo3(get)]
     pub transactions: Option<Vec<EncodedTransactionWithStatusMeta>>,
     #[serde_as(as = "Option<Vec<DisplayFromStr>>")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[pyo3(get)]
     pub signatures: Option<Vec<Signature>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[pyo3(get)]
     pub rewards: Option<Rewards>,
+    #[pyo3(get)]
     pub block_time: Option<UnixTimestamp>,
+    #[pyo3(get)]
     pub block_height: Option<u64>,
 }
 
@@ -318,6 +326,7 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<GetAccountInfoResp>()?;
     m.add_class::<GetAccountInfoJsonParsedResp>()?;
     m.add_class::<GetBalanceResp>()?;
+    m.add_class::<GetBlockResp>()?;
     m.add_class::<GetBlockCommitmentResp>()?;
     Ok(m)
 }
