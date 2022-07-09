@@ -3,7 +3,9 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use solana_sdk::{
     message::MessageHeader,
-    transaction::{Result as TransactionResult, TransactionError, TransactionVersion},
+    transaction::{
+        Result as TransactionResult, TransactionError, TransactionVersion, VersionedTransaction,
+    },
     transaction_context::TransactionReturnData,
 };
 
@@ -144,6 +146,34 @@ pub enum EncodedTransaction {
     LegacyBinary(String), // Old way of expressing base-58, retained for RPC backwards compatibility
     Binary(String, TransactionBinaryEncoding),
     Json(UiTransaction),
+}
+
+impl EncodedTransaction {
+    pub fn decode(&self) -> Option<VersionedTransaction> {
+        let (blob, encoding) = match self {
+            Self::Json(_) => return None,
+            Self::LegacyBinary(blob) => (blob, TransactionBinaryEncoding::Base58),
+            Self::Binary(blob, encoding) => (blob, *encoding),
+        };
+
+        let transaction: Option<VersionedTransaction> = match encoding {
+            TransactionBinaryEncoding::Base58 => bs58::decode(blob)
+                .into_vec()
+                .ok()
+                .and_then(|bytes| bincode::deserialize(&bytes).ok()),
+            TransactionBinaryEncoding::Base64 => base64::decode(blob)
+                .ok()
+                .and_then(|bytes| bincode::deserialize(&bytes).ok()),
+        };
+
+        transaction.filter(|transaction| {
+            transaction
+                .sanitize(
+                    true, // require_static_program_ids
+                )
+                .is_ok()
+        })
+    }
 }
 
 pub type Rewards = Vec<Reward>;
