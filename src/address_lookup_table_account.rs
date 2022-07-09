@@ -8,7 +8,7 @@ use solders_macros::{common_methods, richcmp_eq_only};
 
 use crate::{
     impl_display, pubkey::Pubkey, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
-    CommonMethods, RichcmpEqualityOnly,
+    CommonMethods, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly,
 };
 
 #[derive(Serialize, Deserialize)]
@@ -66,4 +66,10 @@ impl From<AddressLookupTableAccount> for AddressLookupTableAccountOriginal {
     fn from(a: AddressLookupTableAccount) -> Self {
         a.0
     }
+}
+
+pub(crate) fn create_address_lookup_table_account_mod(py: Python<'_>) -> PyResult<&PyModule> {
+    let m = PyModule::new(py, "address_lookup_table_account")?;
+    m.add_class::<AddressLookupTableAccount>()?;
+    Ok(m)
 }
