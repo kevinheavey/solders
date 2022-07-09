@@ -6,8 +6,9 @@ use solana_sdk::{
     sanitize::{Sanitize, SanitizeError as SanitizeErrorOriginal},
     signature::Signature as SignatureOriginal,
     transaction::{
-        get_nonce_pubkey_from_instruction, uses_durable_nonce, Transaction as TransactionOriginal,
-        TransactionError as TransactionErrorOriginal,
+        get_nonce_pubkey_from_instruction, uses_durable_nonce, Legacy as LegacyOriginal,
+        Transaction as TransactionOriginal, TransactionError as TransactionErrorOriginal,
+        TransactionVersion as TransactionVersionOriginal,
     },
 };
 use solders_macros::{common_methods, richcmp_eq_only};
@@ -579,5 +580,54 @@ impl From<TransactionOriginal> for Transaction {
 impl AsRef<TransactionOriginal> for Transaction {
     fn as_ref(&self) -> &TransactionOriginal {
         &self.0
+    }
+}
+
+/// Type that serializes to the string "legacy"
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+#[pyclass(module = "solders.transaction")]
+pub enum Legacy {
+    Legacy,
+}
+
+impl From<Legacy> for LegacyOriginal {
+    fn from(x: Legacy) -> Self {
+        match x {
+            Legacy::Legacy => Self::Legacy,
+        }
+    }
+}
+
+impl From<LegacyOriginal> for Legacy {
+    fn from(x: LegacyOriginal) -> Self {
+        match x {
+            LegacyOriginal::Legacy => Self::Legacy,
+        }
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, FromPyObject)]
+#[serde(rename_all = "camelCase", untagged)]
+pub enum TransactionVersion {
+    Legacy(Legacy),
+    Number(u8),
+}
+
+impl From<TransactionVersion> for TransactionVersionOriginal {
+    fn from(v: TransactionVersion) -> Self {
+        match v {
+            TransactionVersion::Legacy(x) => Self::Legacy(x.into()),
+            TransactionVersion::Number(n) => Self::Number(n),
+        }
+    }
+}
+
+impl From<TransactionVersionOriginal> for TransactionVersion {
+    fn from(v: TransactionVersionOriginal) -> Self {
+        match v {
+            TransactionVersionOriginal::Legacy(x) => Self::Legacy(x.into()),
+            TransactionVersionOriginal::Number(n) => Self::Number(n),
+        }
     }
 }
