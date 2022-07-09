@@ -3,7 +3,7 @@ use std::fmt::Display;
 
 use pyo3::{prelude::*, types::PyBytes, PyClass};
 use serde::{Deserialize, Serialize};
-use serde_with::{serde_as, FromInto};
+use serde_with::{serde_as, DisplayFromStr, FromInto};
 use solana_sdk::clock::{Slot, UnixTimestamp};
 use solders_macros::{common_methods, common_methods_rpc_resp, richcmp_eq_only};
 
@@ -266,11 +266,14 @@ impl GetBlockCommitmentResp {
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
 pub struct GetBlockResp {
+    #[serde_as(as = "DisplayFromStr")]
     pub previous_blockhash: SolderHash,
+    #[serde_as(as = "DisplayFromStr")]
     pub blockhash: SolderHash,
     pub parent_slot: Slot,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub transactions: Option<Vec<EncodedTransactionWithStatusMeta>>,
+    #[serde_as(as = "Option<Vec<DisplayFromStr>>")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub signatures: Option<Vec<Signature>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
