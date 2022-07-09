@@ -359,6 +359,18 @@ pub enum EncodedTransaction {
     Json(UiTransaction),
 }
 
+impl IntoPy<PyObject> for EncodedTransaction {
+    fn into_py(self, py: Python<'_>) -> PyObject {
+        match self {
+            Self::LegacyBinary(..) | Self::Binary(..) => EncodedTransactionOriginal::from(self)
+                .decode()
+                .unwrap()
+                .into_py(py),
+            Self::Json(u) => u.into_py(py),
+        }
+    }
+}
+
 impl From<EncodedTransactionOriginal> for EncodedTransaction {
     fn from(e: EncodedTransactionOriginal) -> Self {
         match e {
@@ -403,16 +415,34 @@ pub struct EncodedTransactionWithStatusMeta(EncodedTransactionWithStatusMetaOrig
 #[pymethods]
 impl EncodedTransactionWithStatusMeta {
     #[new]
-    fn new(
+    pub fn new(
         transaction: EncodedTransaction,
         meta: Option<UiTransactionStatusMeta>,
         version: Option<TransactionVersion>,
     ) -> Self {
-        Self(EncodedTransactionWithStatusMetaOriginal {
+        EncodedTransactionWithStatusMetaOriginal {
             transaction: transaction.into(),
             meta: meta.map(|m| m.into()),
             version: version.map(|v| v.into()),
-        })
+        }
+        .into()
+    }
+
+    #[getter]
+    pub fn transaction(&self) -> EncodedTransaction {
+        self.0.transaction.into()
+    }
+}
+
+impl From<EncodedTransactionWithStatusMeta> for EncodedTransactionWithStatusMetaOriginal {
+    fn from(e: EncodedTransactionWithStatusMeta) -> Self {
+        e.0
+    }
+}
+
+impl From<EncodedTransactionWithStatusMetaOriginal> for EncodedTransactionWithStatusMeta {
+    fn from(e: EncodedTransactionWithStatusMetaOriginal) -> Self {
+        Self(e)
     }
 }
 
