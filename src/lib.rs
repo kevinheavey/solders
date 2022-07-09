@@ -2,6 +2,7 @@
 //!
 //! If you're viewing them on docs.rs, the formatting won't make much sense.
 use account::create_account_mod;
+use address_lookup_table_account::create_address_lookup_table_account_mod;
 use bincode::ErrorKind;
 use commitment_config::{CommitmentConfig, CommitmentLevel};
 use pyo3::{
@@ -50,6 +51,7 @@ use null_signer::NullSigner;
 pub mod account_decoder;
 use account_decoder::create_account_decoder_mod;
 pub mod account;
+pub mod address_lookup_table_account;
 pub mod commitment_config;
 pub mod rpc;
 pub mod system_program;
@@ -455,6 +457,7 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
     let transaction_status_mod = create_transaction_status_mod(py)?;
     let account_decoder_mod = create_account_decoder_mod(py)?;
     let account_mod = create_account_mod(py)?;
+    let address_lookup_table_account_mod = create_address_lookup_table_account_mod(py)?;
     let submodules = [
         errors_mod,
         hash_mod,
@@ -473,6 +476,7 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
         transaction_status_mod,
         account_decoder_mod,
         account_mod,
+        address_lookup_table_account_mod,
     ];
     let modules: HashMap<String, &PyModule> = submodules
         .iter()
