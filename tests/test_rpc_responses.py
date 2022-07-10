@@ -1,10 +1,13 @@
+from pathlib import Path
 from solders.rpc.responses import (
     GetAccountInfoResp,
     GetAccountInfoJsonParsedResp,
     GetBalanceResp,
+    GetBlockResp,
     RpcResponseContext,
     RpcError,
 )
+from solders.hash import Hash
 from solders.account import Account, AccountJSON
 from solders.pubkey import Pubkey
 from solders.account_decoder import ParsedAccount
@@ -93,3 +96,13 @@ def test_get_balance_resp() -> None:
 }"""
     parsed = GetBalanceResp.from_json(raw)
     assert parsed == GetBalanceResp(value=0, context=RpcResponseContext(slot=1))
+
+def test_get_block_resp_json() -> None:
+    raw = (Path(__file__).parent / "data/get_block_json_encoding.json").read_text()
+    parsed = GetBlockResp.from_json(raw)
+    assert parsed.block_height == 139015678
+    assert parsed.block_time == 1657486664
+    assert isinstance(parsed.blockhash, Hash)
+    assert parsed.parent_slot == 147078734
+    assert isinstance(parsed.previous_blockhash, Hash)
+    
