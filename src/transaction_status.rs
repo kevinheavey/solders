@@ -432,6 +432,16 @@ impl EncodedTransactionWithStatusMeta {
     pub fn transaction(&self) -> EncodedTransaction {
         self.0.transaction.clone().into()
     }
+
+    #[getter]
+    pub fn meta(&self) -> Option<UiTransactionStatusMeta> {
+        self.0.meta.clone().map(|t| t.into())
+    }
+
+    #[getter]
+    pub fn version(&self) -> Option<TransactionVersion> {
+        self.0.version.clone().map(|v| v.into())
+    }
 }
 
 impl From<EncodedTransactionWithStatusMeta> for EncodedTransactionWithStatusMetaOriginal {
