@@ -264,6 +264,7 @@ impl GetBlockCommitmentResp {
 
 #[serde_as]
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
 #[pyclass(module = "solders.rpc.responses", subclass)]
 pub struct GetBlockResp {
     #[serde_as(as = "DisplayFromStr")]
