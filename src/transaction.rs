@@ -97,6 +97,21 @@ impl VersionedTransaction {
         ))
     }
 
+    #[getter]
+    pub fn message(&self) -> VersionedMessage {
+        self.0.message.clone().into()
+    }
+
+    #[getter]
+    pub fn signatures(&self) -> Vec<Signature> {
+        self.0
+            .signatures
+            .clone()
+            .into_iter()
+            .map(Signature::from)
+            .collect()
+    }
+
     /// Create a fully-signed transaction from a message and its signatures.
     ///
     /// Args:
@@ -122,7 +137,7 @@ impl VersionedTransaction {
     ///     >>> assert tx == Transaction.populate(tx.message, tx.signatures)
     ///
     #[staticmethod]
-    pub fn populate(signatures: Vec<Signature>, message: VersionedMessage) -> Self {
+    pub fn populate(message: VersionedMessage, signatures: Vec<Signature>) -> Self {
         VersionedTransactionOriginal {
             signatures: signatures.into_iter().map(|s| s.into()).collect(),
             message: message.into(),
@@ -159,6 +174,16 @@ impl VersionedTransaction {
     /// Verify the transaction and return a list of verification results
     pub fn verify_with_results(&self) -> Vec<bool> {
         self.0.verify_with_results()
+    }
+
+    #[staticmethod]
+    #[pyo3(name = "default")]
+    /// Return a new default transaction.
+    ///
+    /// Returns:
+    ///     VersionedTransaction: The default transaction.
+    pub fn new_default() -> Self {
+        Self::default()
     }
 }
 
