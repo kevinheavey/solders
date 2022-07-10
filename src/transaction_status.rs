@@ -1,8 +1,10 @@
+use std::fmt::Display;
 use std::str::FromStr;
 
 use crate::{
     message::MessageHeader,
     pubkey::Pubkey,
+    py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
     signature::Signature,
     tmp_transaction_status::{
         EncodedTransaction as EncodedTransactionOriginal,
@@ -19,11 +21,25 @@ use crate::{
         UiTransactionStatusMeta as UiTransactionStatusMetaOriginal,
     },
     transaction::{TransactionVersion, VersionedTransaction},
-    SolderHash,
+    CommonMethods, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly, SolderHash,
 };
-use pyo3::prelude::*;
+use pyo3::{prelude::*, types::PyBytes};
 use serde::{Deserialize, Serialize};
-use solders_macros::enum_original_mapping;
+use solders_macros::{common_methods, enum_original_mapping, richcmp_eq_only};
+
+macro_rules! transaction_status_boilerplate {
+    ($name:ident) => {
+        impl RichcmpEqualityOnly for $name {}
+        impl Display for $name {
+            fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+                write!(f, "{:?}", self)
+            }
+        }
+        pybytes_general_via_bincode!($name);
+        py_from_bytes_general_via_bincode!($name);
+        impl<'a> CommonMethods<'a> for $name {}
+    };
+}
 
 /// Encoding options for transaction data.
 #[pyclass(module = "solders.transaction_status")]
@@ -73,6 +89,38 @@ pub enum TransactionBinaryEncoding {
 #[pyclass(module = "solders.transaction_status", subclass)]
 pub struct UiCompiledInstruction(UiCompiledInstructionOriginal);
 
+transaction_status_boilerplate!(UiCompiledInstruction);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl UiCompiledInstruction {
+    #[new]
+    fn new(program_id_index: u8, accounts: Vec<u8>, data: String) -> Self {
+        UiCompiledInstructionOriginal {
+            program_id_index,
+            accounts,
+            data,
+        }
+        .into()
+    }
+
+    #[getter]
+    pub fn program_id_index(&self) -> u8 {
+        self.0.program_id_index
+    }
+
+    #[getter]
+    pub fn accounts<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+        PyBytes::new(py, &self.0.accounts)
+    }
+
+    #[getter]
+    pub fn data(&self) -> String {
+        self.0.data.clone()
+    }
+}
+
 impl From<UiCompiledInstruction> for UiCompiledInstructionOriginal {
     fn from(u: UiCompiledInstruction) -> Self {
         u.0
@@ -87,6 +135,38 @@ impl From<UiCompiledInstructionOriginal> for UiCompiledInstruction {
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[pyclass(module = "solders.transaction_status", subclass)]
 pub struct UiAddressTableLookup(UiAddressTableLookupOriginal);
+
+transaction_status_boilerplate!(UiAddressTableLookup);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl UiAddressTableLookup {
+    #[new]
+    fn new(account_key: String, writable_indexes: Vec<u8>, readonly_indexes: Vec<u8>) -> Self {
+        UiAddressTableLookupOriginal {
+            account_key,
+            writable_indexes,
+            readonly_indexes,
+        }
+        .into()
+    }
+
+    #[getter]
+    pub fn account_key(&self) -> String {
+        self.0.account_key.clone()
+    }
+
+    #[getter]
+    pub fn writable_indexes<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+        PyBytes::new(py, &self.0.writable_indexes)
+    }
+
+    #[getter]
+    pub fn readonly_indexes<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+        PyBytes::new(py, &self.0.readonly_indexes)
+    }
+}
 
 impl From<UiAddressTableLookupOriginal> for UiAddressTableLookup {
     fn from(u: UiAddressTableLookupOriginal) -> Self {
@@ -123,6 +203,43 @@ impl UiRawMessage {
                 .map(|v| v.into_iter().map(|a| a.into()).collect()),
         }
         .into()
+    }
+
+    #[getter]
+    pub fn header(&self) -> MessageHeader {
+        self.0.header.into()
+    }
+
+    #[getter]
+    pub fn account_keys(&self) -> Vec<Pubkey> {
+        self.0
+            .account_keys
+            .iter()
+            .map(|s| Pubkey::from_str(s).unwrap())
+            .collect()
+    }
+
+    #[getter]
+    pub fn recent_blockhash(&self) -> SolderHash {
+        SolderHash::from_str(&self.0.recent_blockhash).unwrap()
+    }
+
+    #[getter]
+    pub fn instructions(&self) -> Vec<UiCompiledInstruction> {
+        self.0
+            .instructions
+            .clone()
+            .into_iter()
+            .map(|ix| ix.into())
+            .collect()
+    }
+
+    #[getter]
+    pub fn address_table_lookups(&self) -> Option<Vec<UiAddressTableLookup>> {
+        self.0
+            .address_table_lookups
+            .clone()
+            .map(|v| v.into_iter().map(UiAddressTableLookup::from).collect())
     }
 }
 
