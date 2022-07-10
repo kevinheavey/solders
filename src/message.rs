@@ -682,7 +682,12 @@ impl MessageV0 {
 
     #[getter]
     pub fn account_keys(&self) -> Vec<Pubkey> {
-        self.0.account_keys.into_iter().map(|p| p.into()).collect()
+        self.0
+            .account_keys
+            .clone()
+            .into_iter()
+            .map(|p| p.into())
+            .collect()
     }
 
     #[getter]
@@ -692,13 +697,19 @@ impl MessageV0 {
 
     #[getter]
     pub fn instructions(&self) -> Vec<CompiledInstruction> {
-        self.0.instructions.into_iter().map(|p| p.into()).collect()
+        self.0
+            .instructions
+            .clone()
+            .into_iter()
+            .map(|p| p.into())
+            .collect()
     }
 
     #[getter]
     pub fn address_table_lookups(&self) -> Vec<MessageAddressTableLookup> {
         self.0
             .address_table_lookups
+            .clone()
             .into_iter()
             .map(|p| p.into())
             .collect()
@@ -753,13 +764,13 @@ impl MessageV0 {
     /// Returns true if the account at the specified index signed this
     /// message.
     pub fn is_signer(&self, index: usize) -> bool {
-        VersionedMessageOriginal::from(*self).is_signer(index)
+        VersionedMessageOriginal::from(self.clone()).is_signer(index)
     }
 
     /// Returns true if the account at the specified index is not invoked as a
     /// program or, if invoked, is passed to a program.
     pub fn is_non_loader_key(&self, key_index: usize) -> bool {
-        VersionedMessageOriginal::from(*self).is_non_loader_key(key_index)
+        VersionedMessageOriginal::from(self.clone()).is_non_loader_key(key_index)
     }
 
     /// Compute the blake3 hash of this transaction's message.
@@ -767,7 +778,7 @@ impl MessageV0 {
     /// Returns:
     ///     Hash: The blake3 hash.
     pub fn hash(&self) -> SolderHash {
-        VersionedMessageOriginal::from(*self).hash().into()
+        VersionedMessageOriginal::from(self.clone()).hash().into()
     }
 
     #[staticmethod]
@@ -792,11 +803,20 @@ impl From<MessageV0> for MessageV0Original {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize, FromPyObject)]
 #[serde(from = "VersionedMessageOriginal", into = "VersionedMessageOriginal")]
 pub enum VersionedMessage {
     Legacy(Message),
     V0(MessageV0),
+}
+
+impl IntoPy<PyObject> for VersionedMessage {
+    fn into_py(self, py: Python<'_>) -> PyObject {
+        match self {
+            Self::Legacy(m) => m.into_py(py),
+            Self::V0(m) => m.into_py(py),
+        }
+    }
 }
 
 impl From<VersionedMessageOriginal> for VersionedMessage {
