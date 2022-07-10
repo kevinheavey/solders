@@ -1,5 +1,6 @@
 use pyo3::{create_exception, exceptions::PyException, prelude::*, types::PyBytes};
 use serde::{Deserialize, Serialize};
+use serde_with::{serde_as, FromInto};
 use solana_sdk::{
     address_lookup_table_account::AddressLookupTableAccount as AddressLookupTableAccountOriginal,
     instruction::CompiledInstruction as CompiledInstructionOriginal,
@@ -19,7 +20,7 @@ use solders_macros::{common_methods, richcmp_eq_only};
 
 use crate::{
     address_lookup_table_account::AddressLookupTableAccount, convert_instructions,
-    convert_optional_pubkey, impl_display, py_from_bytes_general_via_bincode,
+    convert_optional_pubkey, handle_py_err, impl_display, py_from_bytes_general_via_bincode,
     pybytes_general_via_bincode, CommonMethods, CompiledInstruction, Instruction, Pubkey,
     PyBytesBincode, PyBytesGeneral, PyErrWrapper, PyFromBytesBincode, RichcmpEqualityOnly,
     SolderHash,
@@ -613,6 +614,7 @@ create_exception!(
     "Raised when an error is encountered in compiling a message."
 );
 
+#[serde_as]
 #[pyclass(module = "solders.message", subclass)]
 #[derive(PartialEq, Eq, Debug, Clone, Default, Serialize, Deserialize)]
 /// A Solana transaction message (v0).
@@ -640,7 +642,7 @@ create_exception!(
 ///     >>> blockhash = Hash.default()  # replace with a real blockhash
 ///     >>> tx = Transaction([payer], message, blockhash)
 ///
-pub struct MessageV0(pub MessageV0Original);
+pub struct MessageV0(#[serde_as(as = "FromInto<VersionedMessage>")] pub MessageV0Original);
 
 impl RichcmpEqualityOnly for MessageV0 {}
 pybytes_general_via_bincode!(MessageV0);
@@ -673,6 +675,35 @@ impl MessageV0 {
         .into()
     }
 
+    #[getter]
+    pub fn header(&self) -> MessageHeader {
+        self.0.header.into()
+    }
+
+    #[getter]
+    pub fn account_keys(&self) -> Vec<Pubkey> {
+        self.0.account_keys.into_iter().map(|p| p.into()).collect()
+    }
+
+    #[getter]
+    pub fn recent_blockhash(&self) -> SolderHash {
+        self.0.recent_blockhash.into()
+    }
+
+    #[getter]
+    pub fn instructions(&self) -> Vec<CompiledInstruction> {
+        self.0.instructions.into_iter().map(|p| p.into()).collect()
+    }
+
+    #[getter]
+    pub fn address_table_lookups(&self) -> Vec<MessageAddressTableLookup> {
+        self.0
+            .address_table_lookups
+            .into_iter()
+            .map(|p| p.into())
+            .collect()
+    }
+
     #[staticmethod]
     pub fn try_compile(
         payer: &Pubkey,
@@ -701,6 +732,23 @@ impl MessageV0 {
             |v| Ok(v.into()),
         )
     }
+
+    /// Sanitize message fields and compiled instruction indexes.
+    pub fn sanitize(&self, reject_dynamic_program_ids: bool) -> PyResult<()> {
+        handle_py_err(self.0.sanitize(reject_dynamic_program_ids))
+    }
+
+    /// Returns true if the account at the specified index is called as a program by an instruction
+    pub fn is_key_called_as_program(&self, key_index: usize) -> bool {
+        self.0.is_key_called_as_program(key_index)
+    }
+
+    /// Returns true if the account at the specified index was requested as writable.
+    /// Before loading addresses, we can't demote write locks for dynamically loaded
+    /// addresses so this should not be used by the runtime.
+    pub fn is_maybe_writable(&self, key_index: usize) -> bool {
+        self.0.is_maybe_writable(key_index)
+    }
 }
 
 impl From<MessageV0Original> for MessageV0 {
@@ -709,12 +757,63 @@ impl From<MessageV0Original> for MessageV0 {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+impl From<MessageV0> for MessageV0Original {
+    fn from(m: MessageV0) -> Self {
+        m.0
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
+#[serde(from = "VersionedMessageOriginal", into = "VersionedMessageOriginal")]
 pub enum VersionedMessage {
     Legacy(Message),
     V0(MessageV0),
 }
 
-// impl From<VersionedMessageOriginal> for VersionedMessage {
-//     fn from
-// }
+impl From<VersionedMessageOriginal> for VersionedMessage {
+    fn from(v: VersionedMessageOriginal) -> Self {
+        match v {
+            VersionedMessageOriginal::Legacy(m) => Self::Legacy(m.into()),
+            VersionedMessageOriginal::V0(m) => Self::V0(m.into()),
+        }
+    }
+}
+
+impl From<VersionedMessage> for VersionedMessageOriginal {
+    fn from(v: VersionedMessage) -> Self {
+        match v {
+            VersionedMessage::Legacy(m) => Self::Legacy(m.into()),
+            VersionedMessage::V0(m) => Self::V0(m.into()),
+        }
+    }
+}
+
+impl From<MessageV0> for VersionedMessage {
+    fn from(m: MessageV0) -> Self {
+        Self::V0(m)
+    }
+}
+
+impl From<VersionedMessage> for MessageV0 {
+    fn from(v: VersionedMessage) -> Self {
+        match v {
+            VersionedMessage::V0(m) => m,
+            _ => unreachable!(),
+        }
+    }
+}
+
+impl From<MessageV0Original> for VersionedMessage {
+    fn from(m: MessageV0Original) -> Self {
+        Self::V0(m.into())
+    }
+}
+
+impl From<VersionedMessage> for MessageV0Original {
+    fn from(v: VersionedMessage) -> Self {
+        match v {
+            VersionedMessage::V0(m) => m.into(),
+            _ => unreachable!(),
+        }
+    }
+}
