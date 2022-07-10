@@ -641,24 +641,29 @@ create_exception!(
 /// on-chain address lookup tables
 ///
 /// Args:
+///     header (MessageHeader): The message header, identifying signed and read-only `account_keys`.
+///         Header values only describe static `account_keys`, they do not describe
+///         any additional account keys loaded via address table lookups.
+///     account_keys (Sequence[Pubkey]): List of accounts loaded by this transaction.
+///     recent_blockhash (Hash): Hash of a recent block.
 ///     instructions (Sequence[Instruction]): The instructions to include in the message.
-///     payer (Optional[Pubkey]): The fee payer. Defaults to ``None``.
+///     address_table_lookups (Sequence[MessageAddressTableLookup]): List of address table lookups used to load additional accounts
+///         for this transaction.
 ///
 /// Example:
-///     >>> from solders.message import MessageV0
-///     >>> from solders.keypair import Keypair
-///     >>> from solders.instruction import Instruction
+///     >>> from solders.message import MessageV0, MessageHeader, MessageAddressTableLookup
+///     >>> from solders.instruction import CompiledInstruction
 ///     >>> from solders.hash import Hash
-///     >>> from solders.transaction import Transaction
 ///     >>> from solders.pubkey import Pubkey
 ///     >>> program_id = Pubkey.default()
 ///     >>> arbitrary_instruction_data = bytes([1])
 ///     >>> accounts = []
-///     >>> instruction = Instruction(program_id, arbitrary_instruction_data, accounts)
-///     >>> payer = Keypair()
-///     >>> message = Message([instruction], payer.pubkey())
+///     >>> instructions=[CompiledInstruction(program_id_index=4, accounts=bytes([1, 2, 3, 5, 6]), data=bytes([]))]
+///     >>> account_keys = [Pubkey.new_unique()]
+///     >>> header = MessageHeader(1, 0, 0)
+///     >>> lookups = [MessageAddressTableLookup(Pubkey.new_unique(), bytes([1, 2, 3]), bytes([0]))]
 ///     >>> blockhash = Hash.default()  # replace with a real blockhash
-///     >>> tx = Transaction([payer], message, blockhash)
+///     >>> message = MessageV0(header, account_keys, blockhash, instructions, lookups)
 ///
 pub struct MessageV0(#[serde_as(as = "FromInto<VersionedMessage>")] pub MessageV0Original);
 
@@ -733,6 +738,33 @@ impl MessageV0 {
             .collect()
     }
 
+    /// Create a signable transaction message from a ``payer`` public key, ``recent_blockhash``,
+    /// list of ``instructions``, and a list of ``address_lookup_table_accounts``.
+    ///
+    /// Args:
+    ///     payer (Pubkey): The fee payer.
+    ///     instructions (Sequence[Instruction]): The instructions to include in the message.
+    ///     address_table_lookups (Sequence[MessageAddressTableLookup]): List of address table lookups used to load additional accounts
+    ///         for this transaction.
+    ///     recent_blockhash (Hash): Hash of a recent block.
+    ///
+    /// Example:
+    ///     >>> from solders.pubkey import Pubkey
+    ///     >>> from solders.instruction import Instruction, AccountMeta
+    ///     >>> from solders.message import Message
+    ///     >>> from solders.address_lookup_table_account import AddressLookupTableAccount
+    ///     >>> from solders.hash import Hash
+    ///     >>> keys = [Pubkey.new_unique() for i in range(7)]
+    ///     >>> payer = keys[0]
+    ///     >>> program_id = keys[6]
+    ///     >>> ix_accounts = [AccountMeta(keys[1], True, True), AccountMeta(keys[2], True, False), AccountMeta(keys[3], False, True),AccountMeta(keys[4], False, True),AccountMeta(keys[5], False, False),]
+    ///     >>> instructions = [Instruction(program_id, bytes([]), ix_accounts)]
+    ///     >>> lookup_acc0 = AddressLookupTableAccount(key=Pubkey.new_unique(), addresses=[keys[4], keys[5], keys[6]])
+    ///     >>> lookup_acc1 = AddressLookupTableAccount(key=Pubkey.new_unique(), addresses=[])
+    ///     >>> lookup_accs = [lookup_acc0, lookup_acc1]
+    ///     >>> recent_blockhash = Hash.new_unique()
+    ///     >>> msg = MessageV0.try_compile(payer, instructions, lookup_accs, recent_blockhash)
+    ///
     #[staticmethod]
     pub fn try_compile(
         payer: &Pubkey,

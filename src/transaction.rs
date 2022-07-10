@@ -97,11 +97,13 @@ impl VersionedTransaction {
         ))
     }
 
+    /// Message | MessageV0: The transaction message.
     #[getter]
     pub fn message(&self) -> VersionedMessage {
         self.0.message.clone().into()
     }
 
+    /// List[Signature]: The transaction signatures.
     #[getter]
     pub fn signatures(&self) -> Vec<Signature> {
         self.0
@@ -123,18 +125,19 @@ impl VersionedTransaction {
     ///
     /// Example:
     ///
-    ///     >>> from solders.keypair import Keypair
-    ///     >>> from solders.instruction import Instruction
-    ///     >>> from solders.transaction import VersionedTransaction
     ///     >>> from solders.pubkey import Pubkey
-    ///     >>> program_id = Pubkey.default()
-    ///     >>> arbitrary_instruction_data = bytes([1])
-    ///     >>> accounts = []
-    ///     >>> instruction = Instruction(program_id, arbitrary_instruction_data, accounts)
+    ///     >>> from solders.instruction import Instruction
+    ///     >>> from solders.message import MessageV0
+    ///     >>> from solders.hash import Hash
+    ///     >>> from solders.keypair import Keypair
+    ///     >>> from solders.transaction import VersionedTransaction
     ///     >>> payer = Keypair()
-    ///     >>> blockhash = Hash.default()  # replace with a real blockhash
-    ///     >>> tx = VersionedTransaction.new_signed_with_payer([instruction], payer.pubkey(), [payer], blockhash);
-    ///     >>> assert tx == Transaction.populate(tx.message, tx.signatures)
+    ///     >>> program_id = Pubkey.default()
+    ///     >>> instructions = [Instruction(program_id, bytes([]), [])]
+    ///     >>> recent_blockhash = Hash.new_unique()
+    ///     >>> message = MessageV0.try_compile(payer.pubkey(), instructions, [], recent_blockhash)
+    ///     >>> tx = VersionedTransaction(message, [payer])
+    ///     >>> assert VersionedTransaction.populate(message, tx.signatures) == tx
     ///
     #[staticmethod]
     pub fn populate(message: VersionedMessage, signatures: Vec<Signature>) -> Self {
