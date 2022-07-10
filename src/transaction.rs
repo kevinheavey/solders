@@ -16,10 +16,11 @@ use solders_macros::{common_methods, richcmp_eq_only};
 
 use crate::{
     convert_instructions, convert_optional_pubkey, handle_py_err, impl_display,
-    message::VersionedMessage, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
-    signer::SignerVec, CommonMethods, CompiledInstruction, Instruction, Message, Pubkey,
-    PyBytesBincode, PyErrWrapper, PyFromBytesBincode, RichcmpEqualityOnly, Signature, Signer,
-    SolderHash,
+    message::{Message, VersionedMessage},
+    py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
+    signer::SignerVec,
+    CommonMethods, CompiledInstruction, Instruction, Pubkey, PyBytesBincode, PyErrWrapper,
+    PyFromBytesBincode, RichcmpEqualityOnly, Signature, Signer, SolderHash,
 };
 
 create_exception!(

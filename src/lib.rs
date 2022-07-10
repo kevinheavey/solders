@@ -41,7 +41,7 @@ use instruction::{AccountMeta, CompiledInstruction, Instruction};
 pub mod hash;
 use hash::{Hash as SolderHash, ParseHashError};
 pub mod message;
-use message::{create_message_mod, Message, MessageHeader};
+use message::create_message_mod;
 pub mod transaction;
 use transaction::create_transaction_mod;
 pub mod presigner;

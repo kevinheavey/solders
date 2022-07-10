@@ -1,10 +1,10 @@
 #![allow(deprecated)]
 use crate::{
     commitment_config::{CommitmentConfig, CommitmentLevel},
+    message::Message,
     py_from_bytes_general_via_cbor, pybytes_general_via_cbor, to_py_err,
     transaction::Transaction,
-    CommonMethods, Message, Pubkey, PyBytesCbor, PyErrWrapper, PyFromBytesCbor,
-    RichcmpEqualityOnly,
+    CommonMethods, Pubkey, PyBytesCbor, PyErrWrapper, PyFromBytesCbor, RichcmpEqualityOnly,
 };
 use pyo3::{
     create_exception,
