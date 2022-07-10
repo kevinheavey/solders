@@ -749,6 +749,35 @@ impl MessageV0 {
     pub fn is_maybe_writable(&self, key_index: usize) -> bool {
         self.0.is_maybe_writable(key_index)
     }
+
+    /// Returns true if the account at the specified index signed this
+    /// message.
+    pub fn is_signer(&self, index: usize) -> bool {
+        VersionedMessageOriginal::from(*self).is_signer(index)
+    }
+
+    /// Returns true if the account at the specified index is not invoked as a
+    /// program or, if invoked, is passed to a program.
+    pub fn is_non_loader_key(&self, key_index: usize) -> bool {
+        VersionedMessageOriginal::from(*self).is_non_loader_key(key_index)
+    }
+
+    /// Compute the blake3 hash of this transaction's message.
+    ///
+    /// Returns:
+    ///     Hash: The blake3 hash.
+    pub fn hash(&self) -> SolderHash {
+        VersionedMessageOriginal::from(*self).hash().into()
+    }
+
+    #[staticmethod]
+    /// Compute the blake3 hash of a raw transaction message.
+    ///
+    /// Returns:
+    ///     Hash: The blake3 hash.
+    pub fn hash_raw_message(message_bytes: &[u8]) -> SolderHash {
+        VersionedMessageOriginal::hash_raw_message(message_bytes).into()
+    }
 }
 
 impl From<MessageV0Original> for MessageV0 {
@@ -798,6 +827,21 @@ impl From<VersionedMessage> for MessageV0 {
     fn from(v: VersionedMessage) -> Self {
         match v {
             VersionedMessage::V0(m) => m,
+            _ => unreachable!(),
+        }
+    }
+}
+
+impl From<MessageV0> for VersionedMessageOriginal {
+    fn from(m: MessageV0) -> Self {
+        Self::V0(m.into())
+    }
+}
+
+impl From<VersionedMessageOriginal> for MessageV0 {
+    fn from(v: VersionedMessageOriginal) -> Self {
+        match v {
+            VersionedMessageOriginal::V0(m) => m.into(),
             _ => unreachable!(),
         }
     }
