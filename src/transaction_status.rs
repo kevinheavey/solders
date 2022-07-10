@@ -18,7 +18,7 @@ use crate::{
         UiRawMessage as UiRawMessageOriginal, UiTransaction as UiTransactionOriginal,
         UiTransactionStatusMeta as UiTransactionStatusMetaOriginal,
     },
-    transaction::TransactionVersion,
+    transaction::{TransactionVersion, VersionedTransaction},
     SolderHash,
 };
 use pyo3::prelude::*;
@@ -362,10 +362,10 @@ pub enum EncodedTransaction {
 impl IntoPy<PyObject> for EncodedTransaction {
     fn into_py(self, py: Python<'_>) -> PyObject {
         match self {
-            Self::LegacyBinary(..) | Self::Binary(..) => EncodedTransactionOriginal::from(self)
-                .decode()
-                .unwrap()
-                .into_py(py),
+            Self::LegacyBinary(..) | Self::Binary(..) => {
+                VersionedTransaction::from(EncodedTransactionOriginal::from(self).decode().unwrap())
+                    .into_py(py)
+            }
             Self::Json(u) => u.into_py(py),
         }
     }
@@ -430,7 +430,7 @@ impl EncodedTransactionWithStatusMeta {
 
     #[getter]
     pub fn transaction(&self) -> EncodedTransaction {
-        self.0.transaction.into()
+        self.0.transaction.clone().into()
     }
 }
 
