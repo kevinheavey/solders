@@ -52,7 +52,12 @@ impl AddressLookupTableAccount {
 
     #[getter]
     pub fn addresses(&self) -> Vec<Pubkey> {
-        self.0.addresses.into_iter().map(|a| a.into()).collect()
+        self.0
+            .addresses
+            .clone()
+            .into_iter()
+            .map(|a| a.into())
+            .collect()
     }
 }
 
