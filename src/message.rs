@@ -807,6 +807,16 @@ impl MessageV0 {
     pub fn hash_raw_message(message_bytes: &[u8]) -> SolderHash {
         VersionedMessageOriginal::hash_raw_message(message_bytes).into()
     }
+
+    #[staticmethod]
+    #[pyo3(name = "default")]
+    /// Create a new default ``MessageV0``.
+    ///
+    /// Returns:
+    ///     MessageV0: default ``MessageV0``.
+    pub fn new_default() -> Self {
+        Self::default()
+    }
 }
 
 impl From<MessageV0Original> for MessageV0 {
