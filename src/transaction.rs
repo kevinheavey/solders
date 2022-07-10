@@ -9,15 +9,17 @@ use solana_sdk::{
         get_nonce_pubkey_from_instruction, uses_durable_nonce, Legacy as LegacyOriginal,
         Transaction as TransactionOriginal, TransactionError as TransactionErrorOriginal,
         TransactionVersion as TransactionVersionOriginal,
+        VersionedTransaction as VersionedTransactionOriginal,
     },
 };
 use solders_macros::{common_methods, richcmp_eq_only};
 
 use crate::{
     convert_instructions, convert_optional_pubkey, handle_py_err, impl_display,
-    py_from_bytes_general_via_bincode, pybytes_general_via_bincode, signer::SignerVec,
-    CommonMethods, CompiledInstruction, Instruction, Message, Pubkey, PyBytesBincode, PyErrWrapper,
-    PyFromBytesBincode, RichcmpEqualityOnly, Signature, Signer, SolderHash,
+    message::VersionedMessage, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
+    signer::SignerVec, CommonMethods, CompiledInstruction, Instruction, Message, Pubkey,
+    PyBytesBincode, PyErrWrapper, PyFromBytesBincode, RichcmpEqualityOnly, Signature, Signer,
+    SolderHash,
 };
 
 create_exception!(
@@ -43,6 +45,119 @@ create_exception!(
 impl From<SanitizeErrorOriginal> for PyErrWrapper {
     fn from(e: SanitizeErrorOriginal) -> Self {
         Self(SanitizeError::new_err(e.to_string()))
+    }
+}
+
+/// An atomic transaction
+///
+/// The ``__init__`` method signs a versioned message to
+/// create a signed transaction.
+///
+/// Args:
+///     message (Message | MessageV0): The message to sign.
+///     keypairs (Sequence[Keypair | Presigner]): The keypairs that are to sign the transaction.
+#[derive(Debug, PartialEq, Default, Eq, Clone, Serialize, Deserialize)]
+#[pyclass(module = "solders.transaction", subclass)]
+pub struct VersionedTransaction(VersionedTransactionOriginal);
+
+impl From<VersionedTransactionOriginal> for VersionedTransaction {
+    fn from(v: VersionedTransactionOriginal) -> Self {
+        Self(v)
+    }
+}
+
+impl From<VersionedTransaction> for VersionedTransactionOriginal {
+    fn from(v: VersionedTransaction) -> Self {
+        v.0
+    }
+}
+
+impl From<Transaction> for VersionedTransaction {
+    fn from(t: Transaction) -> Self {
+        VersionedTransactionOriginal::from(TransactionOriginal::from(t)).into()
+    }
+}
+
+impl RichcmpEqualityOnly for VersionedTransaction {}
+pybytes_general_via_bincode!(VersionedTransaction);
+py_from_bytes_general_via_bincode!(VersionedTransaction);
+impl_display!(VersionedTransaction);
+impl CommonMethods<'_> for VersionedTransaction {}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl VersionedTransaction {
+    #[new]
+    pub fn new(message: VersionedMessage, keypairs: Vec<Signer>) -> PyResult<Self> {
+        handle_py_err(VersionedTransactionOriginal::try_new(
+            message.into(),
+            &SignerVec(keypairs),
+        ))
+    }
+
+    /// Create a fully-signed transaction from a message and its signatures.
+    ///
+    /// Args:
+    ///     message (Message | MessageV0): The transaction message.
+    ///     signatures (Sequence[Signature]): The message's signatures.
+    ///
+    /// Returns:
+    ///     Transaction: The signed transaction.
+    ///
+    /// Example:
+    ///
+    ///     >>> from solders.keypair import Keypair
+    ///     >>> from solders.instruction import Instruction
+    ///     >>> from solders.transaction import VersionedTransaction
+    ///     >>> from solders.pubkey import Pubkey
+    ///     >>> program_id = Pubkey.default()
+    ///     >>> arbitrary_instruction_data = bytes([1])
+    ///     >>> accounts = []
+    ///     >>> instruction = Instruction(program_id, arbitrary_instruction_data, accounts)
+    ///     >>> payer = Keypair()
+    ///     >>> blockhash = Hash.default()  # replace with a real blockhash
+    ///     >>> tx = VersionedTransaction.new_signed_with_payer([instruction], payer.pubkey(), [payer], blockhash);
+    ///     >>> assert tx == Transaction.populate(tx.message, tx.signatures)
+    ///
+    #[staticmethod]
+    pub fn populate(signatures: Vec<Signature>, message: VersionedMessage) -> Self {
+        VersionedTransactionOriginal {
+            signatures: signatures.into_iter().map(|s| s.into()).collect(),
+            message: message.into(),
+        }
+        .into()
+    }
+
+    /// Sanity checks the Transaction properties.
+    pub fn sanitize(&self, require_static_program_ids: bool) -> PyResult<()> {
+        handle_py_err(self.0.sanitize(require_static_program_ids))
+    }
+
+    /// Returns the version of the transaction.
+    ///
+    /// Returns:
+    ///     Legacy | int: Transaction version.
+    pub fn version(&self) -> TransactionVersion {
+        self.0.version().into()
+    }
+
+    /// Returns a legacy transaction if the transaction message is legacy.
+    ///
+    /// Returns:
+    ///     Optional[Transaction]: The legacy transaction.
+    pub fn into_legacy_transaction(&self) -> Option<Transaction> {
+        self.0.clone().into_legacy_transaction().map(|t| t.into())
+    }
+
+    /// Verify the transaction and hash its message
+    pub fn verify_and_hash_message(&self) -> PyResult<SolderHash> {
+        handle_py_err(self.0.verify_and_hash_message())
+    }
+
+    /// Verify the transaction and return a list of verification results
+    pub fn verify_with_results(&self) -> Vec<bool> {
+        self.0.verify_with_results()
     }
 }
 
@@ -577,6 +692,12 @@ impl From<TransactionOriginal> for Transaction {
     }
 }
 
+impl From<Transaction> for TransactionOriginal {
+    fn from(tx: Transaction) -> Self {
+        tx.0
+    }
+}
+
 impl AsRef<TransactionOriginal> for Transaction {
     fn as_ref(&self) -> &TransactionOriginal {
         &self.0
@@ -614,6 +735,15 @@ pub enum TransactionVersion {
     Number(u8),
 }
 
+impl IntoPy<PyObject> for TransactionVersion {
+    fn into_py(self, py: Python<'_>) -> PyObject {
+        match self {
+            Self::Legacy(v) => v.into_py(py),
+            Self::Number(v) => v.into_py(py),
+        }
+    }
+}
+
 impl From<TransactionVersion> for TransactionVersionOriginal {
     fn from(v: TransactionVersion) -> Self {
         match v {
@@ -635,6 +765,7 @@ impl From<TransactionVersionOriginal> for TransactionVersion {
 pub(crate) fn create_transaction_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "transaction")?;
     m.add_class::<Transaction>()?;
+    m.add_class::<VersionedTransaction>()?;
     m.add_class::<Legacy>()?;
     m.add("SanitizeError", py.get_type::<SanitizeError>())?;
     m.add("TransactionError", py.get_type::<TransactionError>())?;
