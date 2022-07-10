@@ -2,6 +2,7 @@ from typing import ClassVar, Sequence, Optional, List
 from solders.instruction import Instruction, CompiledInstruction
 from solders.pubkey import Pubkey
 from solders.hash import Hash
+from solders.address_lookup_table_account import AddressLookupTableAccount
 
 class MessageHeader:
     LENGTH: ClassVar[int]
@@ -92,7 +93,9 @@ class Message:
     def from_json(raw: str) -> "Message": ...
 
 class MessageAddressTableLookup:
-    def __init__(account_key: Pubkey, writable_indexes: bytes, readonly_indexes: bytes) -> None: ...
+    def __init__(
+        self, account_key: Pubkey, writable_indexes: bytes, readonly_indexes: bytes
+    ) -> None: ...
     def __bytes__(self) -> bytes: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
@@ -119,10 +122,12 @@ class MessageV0:
         address_table_lookups: Sequence[MessageAddressTableLookup],
     ) -> None: ...
     @staticmethod
-    def try_compile(payer: Pubkey,
+    def try_compile(
+        payer: Pubkey,
         instructions: Sequence[Instruction],
         address_lookup_table_accounts: Sequence[AddressLookupTableAccount],
-        recent_blockhash: Hash,) -> "MessageV0": ...
+        recent_blockhash: Hash,
+    ) -> "MessageV0": ...
     @property
     def header(self) -> MessageHeader: ...
     @property
