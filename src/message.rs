@@ -593,6 +593,24 @@ impl MessageAddressTableLookup {
         }
         .into()
     }
+
+    /// Pubkey: Address lookup table account key.
+    #[getter]
+    pub fn account_key(&self) -> Pubkey {
+        self.0.account_key.into()
+    }
+
+    /// bytes: List of u8 indexes used to load writable account addresses, represented as bytes.
+    #[getter]
+    pub fn writable_indexes<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+        PyBytes::new(py, &self.0.writable_indexes)
+    }
+
+    /// bytes: List of u8 indexes used to load readonly account addresses, represented as bytes.
+    #[getter]
+    pub fn readonly_indexes<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+        PyBytes::new(py, &self.0.readonly_indexes)
+    }
 }
 
 impl From<MessageAddressTableLookupOriginal> for MessageAddressTableLookup {
