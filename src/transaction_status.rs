@@ -25,6 +25,7 @@ use crate::{
 };
 use pyo3::{prelude::*, types::PyBytes};
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use solders_macros::{common_methods, enum_original_mapping, richcmp_eq_only};
 
 macro_rules! transaction_status_boilerplate {
@@ -184,6 +185,10 @@ impl From<UiAddressTableLookup> for UiAddressTableLookupOriginal {
 #[pyclass(module = "solders.transaction_status", subclass)]
 pub struct UiRawMessage(UiRawMessageOriginal);
 
+transaction_status_boilerplate!(UiRawMessage);
+
+#[richcmp_eq_only]
+#[common_methods]
 #[pymethods]
 impl UiRawMessage {
     #[new]
@@ -260,6 +265,38 @@ impl From<UiRawMessage> for UiRawMessageOriginal {
 #[pyclass(module = "solders.transaction_status", subclass)]
 pub struct ParsedAccount(ParsedAccountOriginal);
 
+transaction_status_boilerplate!(ParsedAccount);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl ParsedAccount {
+    #[new]
+    fn new(pubkey: Pubkey, writable: bool, signer: bool) -> Self {
+        ParsedAccountOriginal {
+            pubkey: pubkey.to_string(),
+            writable,
+            signer,
+        }
+        .into()
+    }
+
+    #[getter]
+    pub fn pubkey(&self) -> Pubkey {
+        Pubkey::from_str(&self.0.pubkey).unwrap()
+    }
+
+    #[getter]
+    pub fn writable(&self) -> bool {
+        self.0.writable
+    }
+
+    #[getter]
+    pub fn signer(&self) -> bool {
+        self.0.signer
+    }
+}
+
 impl From<ParsedAccountOriginal> for ParsedAccount {
     fn from(p: ParsedAccountOriginal) -> Self {
         Self(p)
@@ -276,6 +313,38 @@ impl From<ParsedAccount> for ParsedAccountOriginal {
 #[pyclass(module = "solders.transaction_status", subclass)]
 pub struct ParsedInstruction(ParsedInstructionOriginal);
 
+transaction_status_boilerplate!(ParsedInstruction);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl ParsedInstruction {
+    #[new]
+    fn new(program: String, program_id: Pubkey, parsed: &str) -> Self {
+        ParsedInstructionOriginal {
+            program,
+            program_id: program_id.to_string(),
+            parsed: Value::from_str(parsed).unwrap(),
+        }
+        .into()
+    }
+
+    #[getter]
+    pub fn program(&self) -> String {
+        self.0.program.clone()
+    }
+
+    #[getter]
+    pub fn program_id(&self) -> Pubkey {
+        Pubkey::from_str(&self.0.program_id).unwrap()
+    }
+
+    #[getter]
+    pub fn parsed(&self) -> String {
+        self.0.parsed.to_string()
+    }
+}
+
 impl From<ParsedInstructionOriginal> for ParsedInstruction {
     fn from(p: ParsedInstructionOriginal) -> Self {
         Self(p)
@@ -291,6 +360,43 @@ impl From<ParsedInstruction> for ParsedInstructionOriginal {
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[pyclass(module = "solders.transaction_status", subclass)]
 pub struct UiPartiallyDecodedInstruction(UiPartiallyDecodedInstructionOriginal);
+
+transaction_status_boilerplate!(UiPartiallyDecodedInstruction);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl UiPartiallyDecodedInstruction {
+    #[new]
+    fn new(program_id: Pubkey, accounts: Vec<Pubkey>, data: String) -> Self {
+        UiPartiallyDecodedInstructionOriginal {
+            program_id: program_id.to_string(),
+            accounts: accounts.into_iter().map(|a| a.to_string()).collect(),
+            data,
+        }
+        .into()
+    }
+
+    #[getter]
+    pub fn program_id(&self) -> Pubkey {
+        Pubkey::from_str(&self.0.program_id).unwrap()
+    }
+
+    #[getter]
+    pub fn accounts(&self) -> Vec<Pubkey> {
+        self.0
+            .accounts
+            .clone()
+            .into_iter()
+            .map(|a| Pubkey::from_str(&a).unwrap())
+            .collect()
+    }
+
+    #[getter]
+    pub fn data(&self) -> String {
+        self.0.data.clone()
+    }
+}
 
 impl From<UiPartiallyDecodedInstructionOriginal> for UiPartiallyDecodedInstruction {
     fn from(p: UiPartiallyDecodedInstructionOriginal) -> Self {
@@ -309,6 +415,15 @@ impl From<UiPartiallyDecodedInstruction> for UiPartiallyDecodedInstructionOrigin
 pub enum UiParsedInstruction {
     Parsed(ParsedInstruction),
     PartiallyDecoded(UiPartiallyDecodedInstruction),
+}
+
+impl IntoPy<PyObject> for UiParsedInstruction {
+    fn into_py(self, py: Python<'_>) -> PyObject {
+        match self {
+            Self::Parsed(m) => m.into_py(py),
+            Self::PartiallyDecoded(m) => m.into_py(py),
+        }
+    }
 }
 
 impl From<UiParsedInstruction> for UiParsedInstructionOriginal {
@@ -337,6 +452,15 @@ pub enum UiInstruction {
     Parsed(UiParsedInstruction),
 }
 
+impl IntoPy<PyObject> for UiInstruction {
+    fn into_py(self, py: Python<'_>) -> PyObject {
+        match self {
+            Self::Compiled(m) => m.into_py(py),
+            Self::Parsed(m) => m.into_py(py),
+        }
+    }
+}
+
 impl From<UiInstruction> for UiInstructionOriginal {
     fn from(ix: UiInstruction) -> Self {
         match ix {
@@ -360,6 +484,10 @@ impl From<UiInstructionOriginal> for UiInstruction {
 #[pyclass(module = "solders.transaction_status", subclass)]
 pub struct UiParsedMessage(UiParsedMessageOriginal);
 
+transaction_status_boilerplate!(UiParsedMessage);
+
+#[richcmp_eq_only]
+#[common_methods]
 #[pymethods]
 impl UiParsedMessage {
     #[new]
@@ -377,6 +505,39 @@ impl UiParsedMessage {
                 .map(|v| v.into_iter().map(|a| a.into()).collect()),
         }
         .into()
+    }
+
+    #[getter]
+    pub fn account_keys(&self) -> Vec<ParsedAccount> {
+        self.0
+            .account_keys
+            .clone()
+            .into_iter()
+            .map(|p| p.into())
+            .collect()
+    }
+
+    #[getter]
+    pub fn recent_blockhash(&self) -> SolderHash {
+        SolderHash::from_str(&self.0.recent_blockhash).unwrap()
+    }
+
+    #[getter]
+    pub fn instructions(&self) -> Vec<UiInstruction> {
+        self.0
+            .instructions
+            .clone()
+            .into_iter()
+            .map(|ix| ix.into())
+            .collect()
+    }
+
+    #[getter]
+    pub fn address_table_lookups(&self) -> Option<Vec<UiAddressTableLookup>> {
+        self.0
+            .address_table_lookups
+            .clone()
+            .map(|v| v.into_iter().map(|a| a.into()).collect())
     }
 }
 
@@ -430,6 +591,10 @@ impl IntoPy<PyObject> for UiMessage {
 #[pyclass(module = "solders.transaction_status", subclass)]
 pub struct UiTransaction(UiTransactionOriginal);
 
+transaction_status_boilerplate!(UiTransaction);
+
+#[richcmp_eq_only]
+#[common_methods]
 #[pymethods]
 impl UiTransaction {
     #[new]
@@ -529,6 +694,10 @@ impl From<UiTransactionStatusMetaOriginal> for UiTransactionStatusMeta {
 #[pyclass(module = "solders.transaction_status", subclass)]
 pub struct EncodedTransactionWithStatusMeta(EncodedTransactionWithStatusMetaOriginal);
 
+transaction_status_boilerplate!(EncodedTransactionWithStatusMeta);
+
+#[richcmp_eq_only]
+#[common_methods]
 #[pymethods]
 impl EncodedTransactionWithStatusMeta {
     #[new]
