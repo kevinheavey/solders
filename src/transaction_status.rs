@@ -20,7 +20,7 @@ use crate::{
         UiRawMessage as UiRawMessageOriginal, UiTransaction as UiTransactionOriginal,
         UiTransactionStatusMeta as UiTransactionStatusMetaOriginal,
     },
-    transaction::{TransactionVersion, VersionedTransaction},
+    transaction::{TransactionError, TransactionVersion, VersionedTransaction},
     CommonMethods, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly, SolderHash,
 };
 use pyo3::{prelude::*, types::PyBytes};
@@ -677,6 +677,47 @@ impl From<EncodedTransaction> for EncodedTransactionOriginal {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[pyclass(module = "solders.transaction_status", subclass)]
 pub struct UiTransactionStatusMeta(UiTransactionStatusMetaOriginal);
+
+transaction_status_boilerplate!(UiTransactionStatusMeta);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl UiTransactionStatusMeta {
+    #[new]
+    pub fn new(
+        err: Option<TransactionError>,
+        fee: u64,
+        pre_balances: Vec<u64>,
+        post_balances: Vec<u64>,
+        inner_instructions: Option<Vec<UiInnerInstructions>>,
+        log_messages: Option<Vec<String>>,
+        pre_token_balances: Option<Vec<UiTransactionTokenBalance>>,
+        post_token_balances: Option<Vec<UiTransactionTokenBalance>>,
+        rewards: Option<Rewards>,
+        loaded_addresses: Option<UiLoadedAddresses>,
+        return_data: Option<TransactionReturnData>,
+    ) -> Self {
+        UiTransactionStatusMetaOriginal {
+            err: err.into(),
+            status: Ok(()),
+            fee,
+            pre_balances,
+            post_balances,
+            inner_instructions: inner_instructions
+                .map(|v| v.into_iter().map(|ix| ix.into()).collect()),
+            log_messages,
+            pre_token_balances: pre_token_balances
+                .map(|v| v.into_iter().map(|bal| ix.into()).collect()),
+            post_token_balances: post_token_balances
+                .map(|v| v.into_iter().map(|bal| ix.into()).collect()),
+            rewards: rewards.map(|v| v.into_iter().map(|r| r.into()).collect()),
+            loaded_addresses: loaded_addresses.map(|a| a.into()),
+            return_data: return_data.map(|r| r.into()),
+        }
+        .into()
+    }
+}
 
 impl From<UiTransactionStatusMeta> for UiTransactionStatusMetaOriginal {
     fn from(m: UiTransactionStatusMeta) -> Self {
