@@ -152,7 +152,7 @@ impl From<RpcFilterTypeOriginal> for RpcFilterType {
     }
 }
 
-pub fn create_filter_mod(py: Python<'_>) -> PyResult<&PyModule> {
+pub(crate) fn create_filter_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "filter")?;
     m.add_class::<MemcmpEncoding>()?;
     m.add_class::<Memcmp>()?;
