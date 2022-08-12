@@ -7,7 +7,6 @@ license = "Apache"
 
 [tool.poetry.dependencies]
 python = "^3.7"
-typing-extensions = "^4.2.0"
 
 [tool.poetry.dev-dependencies]
 maturin = "^0.12.16"
@@ -39,6 +38,9 @@ classifiers = [
     "Programming Language :: Rust",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
+]
+dependencies = [
+    "typing-extensions>=4.2.0"
 ]
 
 [project.urls]
