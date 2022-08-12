@@ -39,9 +39,7 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
-dependencies = [
-    "typing-extensions>=4.2.0"
-]
+dependencies = ["typing-extensions >=4.2.0"]
 
 [project.urls]
 homepage = "https://github.com/kevinheavey/solders"
