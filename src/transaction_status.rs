@@ -13,12 +13,13 @@ use crate::{
         Reward as RewardOriginal, TransactionBinaryEncoding as TransactionBinaryEncodingOriginal,
         UiAddressTableLookup as UiAddressTableLookupOriginal,
         UiCompiledInstruction as UiCompiledInstructionOriginal,
-        UiInstruction as UiInstructionOriginal, UiMessage as UiMessageOriginal,
+        UiInnerInstructions as UiInnerInstructionsOriginal, UiInstruction as UiInstructionOriginal,
+        UiLoadedAddresses, UiMessage as UiMessageOriginal,
         UiParsedInstruction as UiParsedInstructionOriginal,
         UiParsedMessage as UiParsedMessageOriginal,
         UiPartiallyDecodedInstruction as UiPartiallyDecodedInstructionOriginal,
         UiRawMessage as UiRawMessageOriginal, UiTransaction as UiTransactionOriginal,
-        UiTransactionStatusMeta as UiTransactionStatusMetaOriginal,
+        UiTransactionStatusMeta as UiTransactionStatusMetaOriginal, UiTransactionTokenBalance,
     },
     transaction::{TransactionError, TransactionVersion, VersionedTransaction},
     CommonMethods, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly, SolderHash,
@@ -26,6 +27,7 @@ use crate::{
 use pyo3::{prelude::*, types::PyBytes};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use solana_sdk::transaction_context::TransactionReturnData;
 use solders_macros::{common_methods, enum_original_mapping, richcmp_eq_only};
 
 macro_rules! transaction_status_boilerplate {
@@ -670,6 +672,53 @@ impl From<EncodedTransaction> for EncodedTransactionOriginal {
             EncodedTransaction::Binary(s, b) => Self::Binary(s, b.into()),
             EncodedTransaction::Json(t) => Self::Json(t.into()),
         }
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[pyclass(module = "solders.transaction_status", subclass)]
+pub struct UiInnerInstructions(UiInnerInstructionsOriginal);
+
+transaction_status_boilerplate!(UiInnerInstructions);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl UiInnerInstructions {
+    #[new]
+    pub fn new(index: u8, instructions: Vec<UiInstruction>) -> Self {
+        UiInnerInstructionsOriginal {
+            index,
+            instructions: instructions.into_iter().map(|ix| ix.into()).collect(),
+        }
+        .into()
+    }
+
+    #[getter]
+    pub fn index(&self) -> u8 {
+        self.0.index
+    }
+
+    #[getter]
+    pub fn instructions(&self) -> Vec<UiInstruction> {
+        self.0
+            .instructions
+            .clone()
+            .into_iter()
+            .map(|ix| ix.into())
+            .collect()
+    }
+}
+
+impl From<UiInnerInstructions> for UiInnerInstructionsOriginal {
+    fn from(ixs: UiInnerInstructions) -> Self {
+        ixs.0
+    }
+}
+
+impl From<UiInnerInstructionsOriginal> for UiInnerInstructions {
+    fn from(ixs: UiInnerInstructionsOriginal) -> Self {
+        Self(ixs)
     }
 }
 
