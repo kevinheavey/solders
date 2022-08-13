@@ -1,13 +1,12 @@
 [tool.poetry]
 name = "solders"
-version = "0.3.1"
+version = "0.4.0"
 description = "Python bindings for Solana Rust tools"
 authors = ["kevinheavey <kevinheavey123@gmail.com>"]
 license = "Apache"
 
 [tool.poetry.dependencies]
 python = "^3.7"
-typing-extensions = "^4.2.0"
 
 [tool.poetry.dev-dependencies]
 maturin = "^0.12.16"
@@ -30,7 +29,7 @@ build-backend = "maturin"
 
 [project]
 name = "solders"
-version = "0.3.1"
+version = "0.4.0"
 description = "Python binding to the Solana Rust SDK"
 authors = [ {name = "kevinheavey", email = "kevinheavey123@gmail.com"} ]
 license = {file = "LICENSE"}
@@ -40,6 +39,7 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
+dependencies = ["typing-extensions >=4.2.0"]
 
 [project.urls]
 homepage = "https://github.com/kevinheavey/solders"
