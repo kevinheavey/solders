@@ -3,9 +3,11 @@ use std::{fmt::Display, str::FromStr};
 use crate::{
     tmp_account_decoder::{
         ParsedAccount as ParsedAccountOriginal, UiDataSliceConfig as UiDataSliceConfigOriginal,
+        UiTokenAmount as UiTokenAmountOriginal,
     },
     to_py_err, CommonMethods,
 };
+use derive_more::{From, Into};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -23,7 +25,7 @@ use crate::{
 ///     length (int): Return only this many bytes.
 ///
 #[pyclass(module = "solders.account_decoder")]
-#[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq, Hash)]
+#[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq, Hash, From, Into)]
 pub struct UiDataSliceConfig(UiDataSliceConfigOriginal);
 
 #[richcmp_eq_only]
@@ -49,18 +51,6 @@ impl UiDataSliceConfig {
     }
 }
 
-impl From<UiDataSliceConfigOriginal> for UiDataSliceConfig {
-    fn from(u: UiDataSliceConfigOriginal) -> Self {
-        Self(u)
-    }
-}
-
-impl From<UiDataSliceConfig> for UiDataSliceConfigOriginal {
-    fn from(u: UiDataSliceConfig) -> Self {
-        u.0
-    }
-}
-
 impl RichcmpEqualityOnly for UiDataSliceConfig {}
 
 /// Encoding options for account data.
@@ -76,7 +66,7 @@ pub enum UiAccountEncoding {
     Base64Zstd,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, From, Into)]
 #[pyclass(module = "solders.account_decoder")]
 pub struct ParsedAccount(ParsedAccountOriginal);
 
@@ -121,15 +111,58 @@ impl ParsedAccount {
     }
 }
 
-impl From<ParsedAccountOriginal> for ParsedAccount {
-    fn from(p: ParsedAccountOriginal) -> Self {
-        Self(p)
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, From, Into)]
+#[pyclass(module = "solders.account_decoder")]
+pub struct UiTokenAmount(UiTokenAmountOriginal);
+
+impl RichcmpEqualityOnly for UiTokenAmount {}
+impl Display for UiTokenAmount {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "{:?}", self)
     }
 }
+pybytes_general_via_bincode!(UiTokenAmount);
+py_from_bytes_general_via_bincode!(UiTokenAmount);
+impl<'a> CommonMethods<'a> for UiTokenAmount {}
 
-impl From<ParsedAccount> for ParsedAccountOriginal {
-    fn from(p: ParsedAccount) -> Self {
-        p.0
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl UiTokenAmount {
+    #[new]
+    pub fn new(
+        ui_amount: Option<f64>,
+        decimals: u8,
+        amount: String,
+        ui_amount_string: String,
+    ) -> PyResult<Self> {
+        Ok(UiTokenAmountOriginal {
+            ui_amount,
+            decimals,
+            amount,
+            ui_amount_string,
+        }
+        .into())
+    }
+
+    #[getter]
+    pub fn ui_amount(&self) -> Option<f64> {
+        self.0.ui_amount
+    }
+
+    #[getter]
+    pub fn decimals(&self) -> u8 {
+        self.0.decimals
+    }
+
+    #[getter]
+    pub fn amount(&self) -> String {
+        self.0.amount
+    }
+
+    #[getter]
+    pub fn ui_amount_string(&self) -> String {
+        self.0.ui_amount_string
     }
 }
 
@@ -138,5 +171,6 @@ pub fn create_account_decoder_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<UiDataSliceConfig>()?;
     m.add_class::<UiAccountEncoding>()?;
     m.add_class::<ParsedAccount>()?;
+    m.add_class::<UiTokenAmount>()?;
     Ok(m)
 }
