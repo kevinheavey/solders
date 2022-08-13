@@ -700,6 +700,17 @@ impl UiTransactionTokenBalance {
     }
 }
 
+#[pyclass(module = "solders.transaction_status")]
+#[enum_original_mapping(RewardTypeOriginal)]
+#[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq, Hash)]
+#[serde(rename_all = "camelCase")]
+pub enum RewardType {
+    Fee,
+    Rent,
+    Staking,
+    Voting,
+}
+
 /// A duplicate representation of TransactionStatusMeta with `err` field
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.transaction_status", subclass)]
@@ -789,11 +800,40 @@ impl EncodedTransactionWithStatusMeta {
 #[pyclass(module = "solders.transaction_status")]
 #[enum_original_mapping(RewardTypeOriginal)]
 #[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq, Hash)]
-pub enum RewardType {
-    Fee,
-    Rent,
-    Staking,
-    Voting,
+pub enum TransactionErrorFieldless {
+    AccountInUse,
+    AccountLoadedTwice,
+    AccountNotFound,
+    ProgramAccountNotFound,
+    InsufficientFundsForFee,
+    InvalidAccountForFee,
+    AlreadyProcessed,
+    BlockhashNotFound,
+    CallChainTooDeep,
+    MissingSignatureForFee,
+    InvalidAccountIndex,
+    SignatureFailure,
+    InvalidProgramForExecution,
+    SanitizeFailure,
+    ClusterMaintenance,
+    AccountBorrowOutstanding,
+    WouldExceedMaxBlockCostLimit,
+    UnsupportedVersion,
+    InvalidWritableAccount,
+    WouldExceedMaxAccountCostLimit,
+    WouldExceedAccountDataBlockLimit,
+    TooManyAccountLocks,
+    AddressLookupTableNotFound,
+    InvalidAddressLookupTableOwner,
+    InvalidAddressLookupTableData,
+    InvalidAddressLookupTableIndex,
+    InvalidRentPayingAccount,
+    WouldExceedMaxVoteCostLimit,
+    WouldExceedAccountDataTotalLimit,
+
+    InstructionError(u8, InstructionError),
+    DuplicateInstruction(u8),
+    InsufficientFundsForRent { account_index: u8 },
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
