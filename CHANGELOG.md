@@ -1,10 +1,14 @@
 # Changelog
 
-## [0.4.0] - Unreleased
+## [0.4.0] - 2022-08-13
 
 ### Added
 
 Add `Account` class [(#7)](https://github.com/kevinheavey/solders/pull/7)
+
+### Fixed
+
+Fix misspecified `typing_extensions` dependency [(#8)](https://github.com/kevinheavey/solders/pull/8)
 
 ## [0.3.1] - 2022-07-04
 
