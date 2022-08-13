@@ -12,11 +12,12 @@ use crate::{
         EncodedTransaction as EncodedTransactionOriginal,
         EncodedTransactionWithStatusMeta as EncodedTransactionWithStatusMetaOriginal,
         ParsedAccount as ParsedAccountOriginal, ParsedInstruction as ParsedInstructionOriginal,
-        Reward as RewardOriginal, TransactionBinaryEncoding as TransactionBinaryEncodingOriginal,
+        Reward as RewardOriginal, RewardType as RewardTypeOriginal,
+        TransactionBinaryEncoding as TransactionBinaryEncodingOriginal,
         UiAddressTableLookup as UiAddressTableLookupOriginal,
         UiCompiledInstruction as UiCompiledInstructionOriginal,
         UiInnerInstructions as UiInnerInstructionsOriginal, UiInstruction as UiInstructionOriginal,
-        UiLoadedAddresses, UiMessage as UiMessageOriginal,
+        UiLoadedAddresses as UiLoadedAddressesOriginal, UiMessage as UiMessageOriginal,
         UiParsedInstruction as UiParsedInstructionOriginal,
         UiParsedMessage as UiParsedMessageOriginal,
         UiPartiallyDecodedInstruction as UiPartiallyDecodedInstructionOriginal,
@@ -621,6 +622,32 @@ impl UiInnerInstructions {
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.transaction_status", subclass)]
+pub struct UiLoadedAddresses(UiLoadedAddressesOriginal);
+
+transaction_status_boilerplate!(UiLoadedAddresses);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl UiLoadedAddresses {
+    #[new]
+    pub fn new(writable: Vec<String>, readonly: Vec<String>) -> Self {
+        UiLoadedAddressesOriginal { writable, readonly }.into()
+    }
+
+    #[getter]
+    pub fn writable(&self) -> Vec<String> {
+        self.0.writable
+    }
+
+    #[getter]
+    pub fn readonly(&self) -> Vec<String> {
+        self.0.readonly
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
+#[pyclass(module = "solders.transaction_status", subclass)]
 pub struct UiTransactionTokenBalance(UiTransactionTokenBalanceOriginal);
 
 transaction_status_boilerplate!(UiTransactionTokenBalance);
@@ -759,9 +786,44 @@ impl EncodedTransactionWithStatusMeta {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[pyclass(module = "solders.transaction_status")]
+#[enum_original_mapping(RewardTypeOriginal)]
+#[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq, Hash)]
+pub enum RewardType {
+    Fee,
+    Rent,
+    Staking,
+    Voting,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.transaction_status", subclass)]
 pub struct Reward(RewardOriginal);
+
+transaction_status_boilerplate!(Reward);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl Reward {
+    #[new]
+    pub fn new(
+        pubkey: String,
+        lamports: i64,
+        post_balance: u64, // Account balance in lamports after `lamports` was applied
+        reward_type: Option<RewardType>,
+        commission: Option<u8>,
+    ) -> Self {
+        RewardOriginal {
+            pubkey,
+            lamports,
+            post_balance,
+            reward_type: reward_type.map(|r| r.into()),
+            commission,
+        }
+        .into()
+    }
+}
 
 pub type Rewards = Vec<Reward>;
 
