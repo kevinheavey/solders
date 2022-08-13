@@ -1,3 +1,4 @@
+use derive_more::{From, Into};
 use std::fmt::Display;
 use std::str::FromStr;
 
@@ -88,7 +89,7 @@ pub enum TransactionBinaryEncoding {
     Base64,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.transaction_status", subclass)]
 pub struct UiCompiledInstruction(UiCompiledInstructionOriginal);
 
@@ -124,18 +125,7 @@ impl UiCompiledInstruction {
     }
 }
 
-impl From<UiCompiledInstruction> for UiCompiledInstructionOriginal {
-    fn from(u: UiCompiledInstruction) -> Self {
-        u.0
-    }
-}
-
-impl From<UiCompiledInstructionOriginal> for UiCompiledInstruction {
-    fn from(u: UiCompiledInstructionOriginal) -> Self {
-        Self(u)
-    }
-}
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.transaction_status", subclass)]
 pub struct UiAddressTableLookup(UiAddressTableLookupOriginal);
 
@@ -171,19 +161,8 @@ impl UiAddressTableLookup {
     }
 }
 
-impl From<UiAddressTableLookupOriginal> for UiAddressTableLookup {
-    fn from(u: UiAddressTableLookupOriginal) -> Self {
-        Self(u)
-    }
-}
-
-impl From<UiAddressTableLookup> for UiAddressTableLookupOriginal {
-    fn from(u: UiAddressTableLookup) -> Self {
-        u.0
-    }
-}
 /// A duplicate representation of a Message, in raw format, for pretty JSON serialization
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.transaction_status", subclass)]
 pub struct UiRawMessage(UiRawMessageOriginal);
 
@@ -250,20 +229,8 @@ impl UiRawMessage {
     }
 }
 
-impl From<UiRawMessageOriginal> for UiRawMessage {
-    fn from(m: UiRawMessageOriginal) -> Self {
-        Self(m)
-    }
-}
-
-impl From<UiRawMessage> for UiRawMessageOriginal {
-    fn from(m: UiRawMessage) -> Self {
-        m.0
-    }
-}
-
 /// A duplicate representation of a Message, in raw format, for pretty JSON serialization
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.transaction_status", subclass)]
 pub struct ParsedAccount(ParsedAccountOriginal);
 
@@ -299,19 +266,7 @@ impl ParsedAccount {
     }
 }
 
-impl From<ParsedAccountOriginal> for ParsedAccount {
-    fn from(p: ParsedAccountOriginal) -> Self {
-        Self(p)
-    }
-}
-
-impl From<ParsedAccount> for ParsedAccountOriginal {
-    fn from(p: ParsedAccount) -> Self {
-        p.0
-    }
-}
-
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.transaction_status", subclass)]
 pub struct ParsedInstruction(ParsedInstructionOriginal);
 
@@ -347,19 +302,7 @@ impl ParsedInstruction {
     }
 }
 
-impl From<ParsedInstructionOriginal> for ParsedInstruction {
-    fn from(p: ParsedInstructionOriginal) -> Self {
-        Self(p)
-    }
-}
-
-impl From<ParsedInstruction> for ParsedInstructionOriginal {
-    fn from(p: ParsedInstruction) -> Self {
-        p.0
-    }
-}
-
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.transaction_status", subclass)]
 pub struct UiPartiallyDecodedInstruction(UiPartiallyDecodedInstructionOriginal);
 
@@ -397,18 +340,6 @@ impl UiPartiallyDecodedInstruction {
     #[getter]
     pub fn data(&self) -> String {
         self.0.data.clone()
-    }
-}
-
-impl From<UiPartiallyDecodedInstructionOriginal> for UiPartiallyDecodedInstruction {
-    fn from(p: UiPartiallyDecodedInstructionOriginal) -> Self {
-        Self(p)
-    }
-}
-
-impl From<UiPartiallyDecodedInstruction> for UiPartiallyDecodedInstructionOriginal {
-    fn from(p: UiPartiallyDecodedInstruction) -> Self {
-        p.0
     }
 }
 
@@ -482,7 +413,7 @@ impl From<UiInstructionOriginal> for UiInstruction {
 }
 
 /// A duplicate representation of a Message, in raw format, for pretty JSON serialization
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.transaction_status", subclass)]
 pub struct UiParsedMessage(UiParsedMessageOriginal);
 
@@ -543,18 +474,6 @@ impl UiParsedMessage {
     }
 }
 
-impl From<UiParsedMessageOriginal> for UiParsedMessage {
-    fn from(m: UiParsedMessageOriginal) -> Self {
-        Self(m)
-    }
-}
-
-impl From<UiParsedMessage> for UiParsedMessageOriginal {
-    fn from(m: UiParsedMessage) -> Self {
-        m.0
-    }
-}
-
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, FromPyObject)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum UiMessage {
@@ -589,7 +508,7 @@ impl IntoPy<PyObject> for UiMessage {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.transaction_status", subclass)]
 pub struct UiTransaction(UiTransactionOriginal);
 
@@ -620,18 +539,6 @@ impl UiTransaction {
     #[getter]
     pub fn message(&self) -> UiMessage {
         self.0.message.clone().into()
-    }
-}
-
-impl From<UiTransactionOriginal> for UiTransaction {
-    fn from(t: UiTransactionOriginal) -> Self {
-        Self(t)
-    }
-}
-
-impl From<UiTransaction> for UiTransactionOriginal {
-    fn from(t: UiTransaction) -> Self {
-        t.0
     }
 }
 
@@ -675,7 +582,7 @@ impl From<EncodedTransaction> for EncodedTransactionOriginal {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.transaction_status", subclass)]
 pub struct UiInnerInstructions(UiInnerInstructionsOriginal);
 
@@ -710,20 +617,8 @@ impl UiInnerInstructions {
     }
 }
 
-impl From<UiInnerInstructions> for UiInnerInstructionsOriginal {
-    fn from(ixs: UiInnerInstructions) -> Self {
-        ixs.0
-    }
-}
-
-impl From<UiInnerInstructionsOriginal> for UiInnerInstructions {
-    fn from(ixs: UiInnerInstructionsOriginal) -> Self {
-        Self(ixs)
-    }
-}
-
 /// A duplicate representation of TransactionStatusMeta with `err` field
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.transaction_status", subclass)]
 pub struct UiTransactionStatusMeta(UiTransactionStatusMetaOriginal);
 
@@ -768,19 +663,7 @@ impl UiTransactionStatusMeta {
     }
 }
 
-impl From<UiTransactionStatusMeta> for UiTransactionStatusMetaOriginal {
-    fn from(m: UiTransactionStatusMeta) -> Self {
-        m.0
-    }
-}
-
-impl From<UiTransactionStatusMetaOriginal> for UiTransactionStatusMeta {
-    fn from(m: UiTransactionStatusMetaOriginal) -> Self {
-        Self(m)
-    }
-}
-
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.transaction_status", subclass)]
 pub struct EncodedTransactionWithStatusMeta(EncodedTransactionWithStatusMetaOriginal);
 
@@ -817,18 +700,6 @@ impl EncodedTransactionWithStatusMeta {
     #[getter]
     pub fn version(&self) -> Option<TransactionVersion> {
         self.0.version.clone().map(|v| v.into())
-    }
-}
-
-impl From<EncodedTransactionWithStatusMeta> for EncodedTransactionWithStatusMetaOriginal {
-    fn from(e: EncodedTransactionWithStatusMeta) -> Self {
-        e.0
-    }
-}
-
-impl From<EncodedTransactionWithStatusMetaOriginal> for EncodedTransactionWithStatusMeta {
-    fn from(e: EncodedTransactionWithStatusMetaOriginal) -> Self {
-        Self(e)
     }
 }
 
