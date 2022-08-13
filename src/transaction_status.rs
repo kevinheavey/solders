@@ -3,6 +3,7 @@ use std::fmt::Display;
 use std::str::FromStr;
 
 use crate::{
+    account_decoder::UiTokenAmount,
     message::MessageHeader,
     pubkey::Pubkey,
     py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
@@ -20,7 +21,8 @@ use crate::{
         UiParsedMessage as UiParsedMessageOriginal,
         UiPartiallyDecodedInstruction as UiPartiallyDecodedInstructionOriginal,
         UiRawMessage as UiRawMessageOriginal, UiTransaction as UiTransactionOriginal,
-        UiTransactionStatusMeta as UiTransactionStatusMetaOriginal, UiTransactionTokenBalance,
+        UiTransactionStatusMeta as UiTransactionStatusMetaOriginal,
+        UiTransactionTokenBalance as UiTransactionTokenBalanceOriginal,
     },
     transaction::{TransactionError, TransactionVersion, VersionedTransaction},
     CommonMethods, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly, SolderHash,
@@ -617,6 +619,60 @@ impl UiInnerInstructions {
     }
 }
 
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
+#[pyclass(module = "solders.transaction_status", subclass)]
+pub struct UiTransactionTokenBalance(UiTransactionTokenBalanceOriginal);
+
+transaction_status_boilerplate!(UiTransactionTokenBalance);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl UiTransactionTokenBalance {
+    #[new]
+    pub fn new(
+        account_index: u8,
+        mint: String,
+        ui_token_amount: UiTokenAmount,
+        owner: Option<String>,
+        program_id: Option<String>,
+    ) -> Self {
+        UiTransactionTokenBalanceOriginal {
+            account_index,
+            mint,
+            ui_token_amount: ui_token_amount.into(),
+            owner,
+            program_id,
+        }
+        .into()
+    }
+
+    #[getter]
+    pub fn account_index(&self) -> u8 {
+        self.0.account_index
+    }
+
+    #[getter]
+    pub fn mint(&self) -> String {
+        self.0.mint
+    }
+
+    #[getter]
+    pub fn ui_token_amount(&self) -> UiTokenAmount {
+        self.0.ui_token_amount.into()
+    }
+
+    #[getter]
+    pub fn owner(&self) -> Option<String> {
+        self.0.owner
+    }
+
+    #[getter]
+    pub fn program_id(&self) -> Option<String> {
+        self.0.program_id
+    }
+}
+
 /// A duplicate representation of TransactionStatusMeta with `err` field
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.transaction_status", subclass)]
@@ -652,9 +708,9 @@ impl UiTransactionStatusMeta {
                 .map(|v| v.into_iter().map(|ix| ix.into()).collect()),
             log_messages,
             pre_token_balances: pre_token_balances
-                .map(|v| v.into_iter().map(|bal| ix.into()).collect()),
+                .map(|v| v.into_iter().map(|bal| bal.into()).collect()),
             post_token_balances: post_token_balances
-                .map(|v| v.into_iter().map(|bal| ix.into()).collect()),
+                .map(|v| v.into_iter().map(|bal| bal.into()).collect()),
             rewards: rewards.map(|v| v.into_iter().map(|r| r.into()).collect()),
             loaded_addresses: loaded_addresses.map(|a| a.into()),
             return_data: return_data.map(|r| r.into()),
