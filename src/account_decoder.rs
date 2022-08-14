@@ -157,12 +157,12 @@ impl UiTokenAmount {
 
     #[getter]
     pub fn amount(&self) -> String {
-        self.0.amount
+        self.0.amount.clone()
     }
 
     #[getter]
     pub fn ui_amount_string(&self) -> String {
-        self.0.ui_amount_string
+        self.0.ui_amount_string.clone()
     }
 }
 
