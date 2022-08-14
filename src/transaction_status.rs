@@ -25,7 +25,7 @@ use crate::{
         UiTransactionStatusMeta as UiTransactionStatusMetaOriginal,
         UiTransactionTokenBalance as UiTransactionTokenBalanceOriginal,
     },
-    transaction::{TransactionError, TransactionVersion, VersionedTransaction},
+    transaction::{TransactionVersion, VersionedTransaction},
     CommonMethods, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly, SolderHash,
 };
 use pyo3::{prelude::*, types::PyBytes};
@@ -34,7 +34,7 @@ use serde_json::Value;
 use solana_sdk::{
     instruction::InstructionError as InstructionErrorOriginal,
     transaction::TransactionError as TransactionErrorOriginal,
-    transaction_context::TransactionReturnData,
+    transaction_context::TransactionReturnData as TransactionReturnDataOriginal,
 };
 use solders_macros::{common_methods, enum_original_mapping, richcmp_eq_only};
 
@@ -641,12 +641,12 @@ impl UiLoadedAddresses {
 
     #[getter]
     pub fn writable(&self) -> Vec<String> {
-        self.0.writable
+        self.0.writable.clone()
     }
 
     #[getter]
     pub fn readonly(&self) -> Vec<String> {
-        self.0.readonly
+        self.0.readonly.clone()
     }
 }
 
@@ -685,22 +685,22 @@ impl UiTransactionTokenBalance {
 
     #[getter]
     pub fn mint(&self) -> String {
-        self.0.mint
+        self.0.mint.clone()
     }
 
     #[getter]
     pub fn ui_token_amount(&self) -> UiTokenAmount {
-        self.0.ui_token_amount.into()
+        self.0.ui_token_amount.clone().into()
     }
 
     #[getter]
     pub fn owner(&self) -> Option<String> {
-        self.0.owner
+        self.0.owner.clone()
     }
 
     #[getter]
     pub fn program_id(&self) -> Option<String> {
-        self.0.program_id
+        self.0.program_id.clone()
     }
 }
 
@@ -715,11 +715,39 @@ pub enum RewardType {
     Voting,
 }
 
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
+#[pyclass(module = "solders.transaction_status", subclass)]
+pub struct TransactionReturnData(TransactionReturnDataOriginal);
+transaction_status_boilerplate!(TransactionReturnData);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl TransactionReturnData {
+    #[new]
+    fn new(program_id: Pubkey, data: Vec<u8>) -> Self {
+        TransactionReturnDataOriginal {
+            program_id: program_id.into(),
+            data,
+        }
+        .into()
+    }
+
+    #[getter]
+    pub fn program_id(&self) -> Pubkey {
+        self.0.program_id.into()
+    }
+
+    #[getter]
+    pub fn data<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+        PyBytes::new(py, &self.0.data)
+    }
+}
+
 /// A duplicate representation of TransactionStatusMeta with `err` field
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.transaction_status", subclass)]
 pub struct UiTransactionStatusMeta(UiTransactionStatusMetaOriginal);
-
 transaction_status_boilerplate!(UiTransactionStatusMeta);
 
 #[richcmp_eq_only]
@@ -728,7 +756,7 @@ transaction_status_boilerplate!(UiTransactionStatusMeta);
 impl UiTransactionStatusMeta {
     #[new]
     pub fn new(
-        err: Option<TransactionError>,
+        err: Option<TransactionErrorWrapper>,
         fee: u64,
         pre_balances: Vec<u64>,
         post_balances: Vec<u64>,
@@ -741,7 +769,7 @@ impl UiTransactionStatusMeta {
         return_data: Option<TransactionReturnData>,
     ) -> Self {
         UiTransactionStatusMetaOriginal {
-            err: err.into(),
+            err: err.map(|e| e.into()),
             status: Ok(()),
             fee,
             pre_balances,
@@ -836,7 +864,7 @@ impl InstructionErrorBorshIO {
 
     #[getter]
     pub fn value(&self) -> String {
-        self.0
+        self.0.clone()
     }
 }
 
@@ -1180,7 +1208,7 @@ impl TransactionErrorInstructionError {
 
     #[getter]
     pub fn err(&self) -> InstructionErrorWrapper {
-        self.0 .1
+        self.0 .1.clone()
     }
 }
 
@@ -1490,5 +1518,29 @@ pub fn create_transaction_status_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "transaction_status")?;
     m.add_class::<TransactionDetails>()?;
     m.add_class::<UiTransactionEncoding>()?;
+    m.add_class::<TransactionBinaryEncoding>()?;
+    m.add_class::<UiCompiledInstruction>()?;
+    m.add_class::<UiAddressTableLookup>()?;
+    m.add_class::<UiRawMessage>()?;
+    m.add_class::<ParsedAccount>()?;
+    m.add_class::<ParsedInstruction>()?;
+    m.add_class::<UiPartiallyDecodedInstruction>()?;
+    m.add_class::<UiParsedMessage>()?;
+    m.add_class::<UiTransaction>()?;
+    m.add_class::<UiInnerInstructions>()?;
+    m.add_class::<UiLoadedAddresses>()?;
+    m.add_class::<UiTransactionTokenBalance>()?;
+    m.add_class::<RewardType>()?;
+    m.add_class::<TransactionReturnData>()?;
+    m.add_class::<UiTransactionStatusMeta>()?;
+    m.add_class::<EncodedTransactionWithStatusMeta>()?;
+    m.add_class::<InstructionErrorCustom>()?;
+    m.add_class::<InstructionErrorBorshIO>()?;
+    m.add_class::<InstructionErrorFieldless>()?;
+    m.add_class::<TransactionErrorInstructionError>()?;
+    m.add_class::<TransactionErrorDuplicateInstruction>()?;
+    m.add_class::<TransactionErrorInsufficientFundsForRent>()?;
+    m.add_class::<TransactionErrorFieldless>()?;
+    m.add_class::<Reward>()?;
     Ok(m)
 }
