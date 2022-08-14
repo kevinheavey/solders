@@ -531,7 +531,7 @@ impl RpcGetVoteAccountsConfig {
 }
 
 /// Filter for ``getLargestAccounts``.
-#[pyclass]
+#[pyclass(module = "solders.rpc.config")]
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub enum RpcLargestAccountsFilter {
@@ -835,7 +835,8 @@ impl RpcProgramAccountsConfig {
 
 /// Fieldless filters for ``logsSubscribe``.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[pyclass]
+#[serde(rename_all = "camelCase")]
+#[pyclass(module = "solders.rpc.config")]
 pub enum RpcTransactionLogsFilter {
     All,
     AllWithVotes,
@@ -847,7 +848,7 @@ pub enum RpcTransactionLogsFilter {
 ///     pubkey (Pubkey): Subscribe to all transactions that mention the provided Pubkey.
 ///
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[pyclass]
+#[pyclass(module = "solders.rpc.config", subclass)]
 pub struct RpcTransactionLogsFilterMentions(Vec<String>);
 
 #[richcmp_eq_only]
@@ -953,7 +954,7 @@ impl RpcTransactionLogsConfig {
 ///     mint (Pubkey):  Pubkey of the specific token Mint to limit accounts to.
 ///
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[pyclass]
+#[pyclass(module = "solders.rpc.config", subclass)]
 pub struct RpcTokenAccountsFilterMint(Pubkey);
 
 #[richcmp_eq_only]
@@ -982,7 +983,7 @@ impl RichcmpEqualityOnly for RpcTokenAccountsFilterMint {}
 ///     program_id (Pubkey):   Pubkey of the Token program that owns the accounts.
 ///
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[pyclass]
+#[pyclass(module = "solders.rpc.config", subclass)]
 pub struct RpcTokenAccountsFilterProgramId(Pubkey);
 
 #[richcmp_eq_only]
@@ -1092,7 +1093,7 @@ impl RpcSignatureSubscribeConfig {
 /// Filter for ``blockSubscribe``.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-#[pyclass]
+#[pyclass(module = "solders.rpc.config")]
 pub enum RpcBlockSubscribeFilter {
     All,
 }
@@ -1103,7 +1104,7 @@ pub enum RpcBlockSubscribeFilter {
 ///     pubkey (Pubkey): Return only transactions that mention the provided pubkey.
 ///
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[pyclass]
+#[pyclass(module = "solders.rpc.config", subclass)]
 pub struct RpcBlockSubscribeFilterMentions(String);
 
 #[richcmp_eq_only]
