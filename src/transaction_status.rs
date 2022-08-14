@@ -29,7 +29,11 @@ use crate::{
     transaction::{TransactionVersion, VersionedTransaction},
     CommonMethods, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly, SolderHash,
 };
-use pyo3::{prelude::*, types::PyBytes};
+use pyo3::{
+    prelude::*,
+    type_object::PyTypeObject,
+    types::{PyBytes, PyString, PyTuple},
+};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use solana_sdk::{
@@ -757,7 +761,7 @@ transaction_status_boilerplate!(UiTransactionStatusMeta);
 impl UiTransactionStatusMeta {
     #[new]
     pub fn new(
-        err: Option<TransactionErrorWrapper>,
+        err: Option<TransactionErrorType>,
         fee: u64,
         pre_balances: Vec<u64>,
         post_balances: Vec<u64>,
@@ -925,24 +929,24 @@ pub enum InstructionErrorFieldless {
 }
 
 #[derive(FromPyObject, Clone, PartialEq, Serialize, Deserialize, Debug)]
-pub enum InstructionErrorWrapper {
+pub enum InstructionErrorType {
     Fieldless(InstructionErrorFieldless),
     Custom(InstructionErrorCustom),
     BorshIO(InstructionErrorBorshIO),
 }
 
-impl Default for InstructionErrorWrapper {
+impl Default for InstructionErrorType {
     fn default() -> Self {
         Self::Fieldless(InstructionErrorFieldless::GenericError)
     }
 }
 
-impl From<InstructionErrorWrapper> for InstructionErrorOriginal {
-    fn from(w: InstructionErrorWrapper) -> Self {
+impl From<InstructionErrorType> for InstructionErrorOriginal {
+    fn from(w: InstructionErrorType) -> Self {
         match w {
-            InstructionErrorWrapper::Custom(custom) => Self::Custom(custom.0),
-            InstructionErrorWrapper::BorshIO(borsh_io) => Self::BorshIoError(borsh_io.0),
-            InstructionErrorWrapper::Fieldless(f) => match f {
+            InstructionErrorType::Custom(custom) => Self::Custom(custom.0),
+            InstructionErrorType::BorshIO(borsh_io) => Self::BorshIoError(borsh_io.0),
+            InstructionErrorType::Fieldless(f) => match f {
                 InstructionErrorFieldless::GenericError => Self::GenericError,
                 InstructionErrorFieldless::InvalidArgument => Self::InvalidArgument,
                 InstructionErrorFieldless::InvalidInstructionData => Self::InvalidInstructionData,
@@ -1018,7 +1022,7 @@ impl From<InstructionErrorWrapper> for InstructionErrorOriginal {
     }
 }
 
-impl From<InstructionErrorOriginal> for InstructionErrorWrapper {
+impl From<InstructionErrorOriginal> for InstructionErrorType {
     fn from(e: InstructionErrorOriginal) -> Self {
         match e {
             InstructionErrorOriginal::Custom(code) => Self::Custom(InstructionErrorCustom(code)),
@@ -1179,7 +1183,7 @@ impl From<InstructionErrorOriginal> for InstructionErrorWrapper {
     }
 }
 
-impl IntoPy<PyObject> for InstructionErrorWrapper {
+impl IntoPy<PyObject> for InstructionErrorType {
     fn into_py(self, py: Python<'_>) -> PyObject {
         match self {
             Self::Fieldless(f) => f.into_py(py),
@@ -1191,14 +1195,14 @@ impl IntoPy<PyObject> for InstructionErrorWrapper {
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.transaction_status", subclass)]
-pub struct TransactionErrorInstructionError(pub (u8, InstructionErrorWrapper));
+pub struct TransactionErrorInstructionError(pub (u8, InstructionErrorType));
 transaction_status_boilerplate!(TransactionErrorInstructionError);
 
 #[richcmp_eq_only]
 #[pymethods]
 impl TransactionErrorInstructionError {
     #[new]
-    pub fn new(index: u8, err: InstructionErrorWrapper) -> Self {
+    pub fn new(index: u8, err: InstructionErrorType) -> Self {
         Self((index, err))
     }
 
@@ -1208,7 +1212,7 @@ impl TransactionErrorInstructionError {
     }
 
     #[getter]
-    pub fn err(&self) -> InstructionErrorWrapper {
+    pub fn err(&self) -> InstructionErrorType {
         self.0 .1.clone()
     }
 }
@@ -1284,32 +1288,30 @@ pub enum TransactionErrorFieldless {
 }
 
 #[derive(FromPyObject, Clone, PartialEq, Serialize, Deserialize, Debug)]
-pub enum TransactionErrorWrapper {
+pub enum TransactionErrorType {
     Fieldless(TransactionErrorFieldless),
     InstructionError(TransactionErrorInstructionError),
     DuplicateInstruction(TransactionErrorDuplicateInstruction),
     InsufficientFundsForRent(TransactionErrorInsufficientFundsForRent),
 }
 
-impl Default for TransactionErrorWrapper {
+impl Default for TransactionErrorType {
     fn default() -> Self {
         Self::Fieldless(TransactionErrorFieldless::AccountInUse)
     }
 }
 
-impl From<TransactionErrorWrapper> for TransactionErrorOriginal {
-    fn from(w: TransactionErrorWrapper) -> Self {
+impl From<TransactionErrorType> for TransactionErrorOriginal {
+    fn from(w: TransactionErrorType) -> Self {
         match w {
-            TransactionErrorWrapper::InstructionError(e) => {
+            TransactionErrorType::InstructionError(e) => {
                 Self::InstructionError(e.0 .0, e.0 .1.into())
             }
-            TransactionErrorWrapper::DuplicateInstruction(e) => Self::DuplicateInstruction(e.0),
-            TransactionErrorWrapper::InsufficientFundsForRent(e) => {
-                Self::InsufficientFundsForRent {
-                    account_index: e.account_index,
-                }
-            }
-            TransactionErrorWrapper::Fieldless(f) => match f {
+            TransactionErrorType::DuplicateInstruction(e) => Self::DuplicateInstruction(e.0),
+            TransactionErrorType::InsufficientFundsForRent(e) => Self::InsufficientFundsForRent {
+                account_index: e.account_index,
+            },
+            TransactionErrorType::Fieldless(f) => match f {
                 TransactionErrorFieldless::AccountInUse => Self::AccountInUse,
                 TransactionErrorFieldless::AccountLoadedTwice => Self::AccountLoadedTwice,
                 TransactionErrorFieldless::AccountNotFound => Self::AccountNotFound,
@@ -1368,7 +1370,7 @@ impl From<TransactionErrorWrapper> for TransactionErrorOriginal {
     }
 }
 
-impl From<TransactionErrorOriginal> for TransactionErrorWrapper {
+impl From<TransactionErrorOriginal> for TransactionErrorType {
     fn from(w: TransactionErrorOriginal) -> Self {
         match w {
             TransactionErrorOriginal::InstructionError(index, err) => {
@@ -1473,7 +1475,7 @@ impl From<TransactionErrorOriginal> for TransactionErrorWrapper {
     }
 }
 
-impl IntoPy<PyObject> for TransactionErrorWrapper {
+impl IntoPy<PyObject> for TransactionErrorType {
     fn into_py(self, py: Python<'_>) -> PyObject {
         match self {
             Self::Fieldless(f) => f.into_py(py),
@@ -1543,5 +1545,50 @@ pub fn create_transaction_status_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<TransactionErrorInsufficientFundsForRent>()?;
     m.add_class::<TransactionErrorFieldless>()?;
     m.add_class::<Reward>()?;
+    let typing = py.import("typing")?;
+    let union = typing.getattr("Union")?;
+    let tuple = typing.getattr("Tuple")?;
+    let ui_parsed_instruction_members = vec![
+        ParsedInstruction::type_object(py),
+        UiPartiallyDecodedInstruction::type_object(py),
+    ];
+    m.add(
+        "UiParsedInstruction",
+        union.get_item(PyTuple::new(py, ui_parsed_instruction_members.clone()))?,
+    )?;
+    let mut ui_instruction_members = vec![UiCompiledInstruction::type_object(py)];
+    ui_instruction_members.extend(ui_parsed_instruction_members);
+    m.add(
+        "UiInstruction",
+        union.get_item(PyTuple::new(py, ui_instruction_members))?,
+    )?;
+    m.add(
+        "UiMessage",
+        union.get_item(PyTuple::new(
+            py,
+            vec![
+                UiParsedMessage::type_object(py),
+                UiRawMessage::type_object(py),
+            ],
+        ))?,
+    )?;
+    let binary_type = tuple.get_item(PyTuple::new(
+        py,
+        vec![
+            PyString::type_object(py),
+            TransactionBinaryEncoding::type_object(py),
+        ],
+    ))?;
+    m.add(
+        "EncodedTransaction",
+        union.get_item(PyTuple::new(
+            py,
+            vec![
+                PyString::type_object(py).as_ref(),
+                binary_type,
+                UiTransaction::type_object(py).as_ref(),
+            ],
+        ))?,
+    )?;
     Ok(m)
 }
