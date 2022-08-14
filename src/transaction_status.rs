@@ -1,3 +1,4 @@
+#![allow(clippy::too_many_arguments)]
 use derive_more::{From, Into};
 use std::fmt::Display;
 use std::str::FromStr;
