@@ -31,7 +31,6 @@ class TransactionBinaryEncoding:
     def __repr__(self) -> str: ...
     def __eq__(self, o: object) -> bool: ...
 
-
 class UiCompiledInstruction:
     def __init__(self, program_id_index: int, accounts: bytes, data: str) -> None: ...
     @property
@@ -52,7 +51,9 @@ class UiCompiledInstruction:
     def from_json(raw: str) -> "UiCompiledInstruction": ...
 
 class UiAddressTableLookup:
-    def __init__(self, account_key: str, writable_indexes: bytes, readonly_indexes: bytes) -> None: ...
+    def __init__(
+        self, account_key: str, writable_indexes: bytes, readonly_indexes: bytes
+    ) -> None: ...
     @property
     def account_key(self) -> str: ...
     @property
@@ -71,12 +72,14 @@ class UiAddressTableLookup:
     def from_json(raw: str) -> "UiAddressTableLookup": ...
 
 class UiRawMessage:
-    def __init__(self, 
-    header: MessageHeader,
+    def __init__(
+        self,
+        header: MessageHeader,
         account_keys: Sequence[Pubkey],
         recent_blockhash: Hash,
         instructions: Sequence[UiCompiledInstruction],
-        address_table_lookups: Optional[Sequence[UiAddressTableLookup]] = None) -> None: ...
+        address_table_lookups: Optional[Sequence[UiAddressTableLookup]] = None,
+    ) -> None: ...
     @property
     def header(self) -> MessageHeader: ...
     @property

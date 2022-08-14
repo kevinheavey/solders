@@ -97,6 +97,7 @@ def test_get_balance_resp() -> None:
     parsed = GetBalanceResp.from_json(raw)
     assert parsed == GetBalanceResp(value=0, context=RpcResponseContext(slot=1))
 
+
 def test_get_block_resp_json() -> None:
     raw = (Path(__file__).parent / "data/get_block_json_encoding.json").read_text()
     parsed = GetBlockResp.from_json(raw)
@@ -105,4 +106,3 @@ def test_get_block_resp_json() -> None:
     assert isinstance(parsed.blockhash, Hash)
     assert parsed.parent_slot == 147078734
     assert isinstance(parsed.previous_blockhash, Hash)
-    
