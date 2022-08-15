@@ -36,23 +36,14 @@ class GetBlockCommitmentResp:
     ) -> None: ...
 
 class GetBlockResp:
-
     previous_blockhash: Hash
-
     blockhash: Hash
-
     parent_slot: int
-
     transactions: Optional[List[EncodedTransactionWithStatusMeta]]
-
     signatures: Optional[List[Signature]]
-
     rewards: Optional[Rewards]
-
     block_time: Optional[int]
-
     block_height: Optional[int]
-
     def __init__(
         self,
         previous_blockhash: Hash,
