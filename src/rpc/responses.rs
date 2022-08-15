@@ -331,6 +331,7 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let union = typing.getattr("Union")?;
     let typevar = typing.getattr("TypeVar")?;
     let t = typevar.call1(("T",))?;
+    m.add("T", t)?;
     m.add(
         "Resp",
         union.get_item(PyTuple::new(
