@@ -1503,20 +1503,45 @@ transaction_status_boilerplate!(Reward);
 impl Reward {
     #[new]
     pub fn new(
-        pubkey: String,
+        pubkey: Pubkey,
         lamports: i64,
         post_balance: u64, // Account balance in lamports after `lamports` was applied
         reward_type: Option<RewardType>,
         commission: Option<u8>,
     ) -> Self {
         RewardOriginal {
-            pubkey,
+            pubkey: pubkey.to_string(),
             lamports,
             post_balance,
             reward_type: reward_type.map(|r| r.into()),
             commission,
         }
         .into()
+    }
+
+    #[getter]
+    pub fn pubkey(&self) -> Pubkey {
+        Pubkey::from_str(&self.0.pubkey).unwrap()
+    }
+
+    #[getter]
+    pub fn lamports(&self) -> i64 {
+        self.0.lamports
+    }
+
+    #[getter]
+    pub fn post_balance(&self) -> u64 {
+        self.0.post_balance
+    }
+
+    #[getter]
+    pub fn reward_type(&self) -> Option<RewardType> {
+        self.0.reward_type.map(|r| r.into())
+    }
+
+    #[getter]
+    pub fn commission(&self) -> Option<u8> {
+        self.0.commission
     }
 }
 
