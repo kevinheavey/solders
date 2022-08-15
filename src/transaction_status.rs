@@ -148,9 +148,9 @@ transaction_status_boilerplate!(UiAddressTableLookup);
 #[pymethods]
 impl UiAddressTableLookup {
     #[new]
-    fn new(account_key: String, writable_indexes: Vec<u8>, readonly_indexes: Vec<u8>) -> Self {
+    fn new(account_key: Pubkey, writable_indexes: Vec<u8>, readonly_indexes: Vec<u8>) -> Self {
         UiAddressTableLookupOriginal {
-            account_key,
+            account_key: account_key.to_string(),
             writable_indexes,
             readonly_indexes,
         }
@@ -158,8 +158,8 @@ impl UiAddressTableLookup {
     }
 
     #[getter]
-    pub fn account_key(&self) -> String {
-        self.0.account_key.clone()
+    pub fn account_key(&self) -> Pubkey {
+        Pubkey::from_str(&self.0.account_key).unwrap()
     }
 
     #[getter]
@@ -640,18 +640,30 @@ transaction_status_boilerplate!(UiLoadedAddresses);
 #[pymethods]
 impl UiLoadedAddresses {
     #[new]
-    pub fn new(writable: Vec<String>, readonly: Vec<String>) -> Self {
-        UiLoadedAddressesOriginal { writable, readonly }.into()
+    pub fn new(writable: Vec<Pubkey>, readonly: Vec<Pubkey>) -> Self {
+        UiLoadedAddressesOriginal {
+            writable: writable.iter().map(|x| x.to_string()).collect(),
+            readonly: readonly.iter().map(|x| x.to_string()).collect(),
+        }
+        .into()
     }
 
     #[getter]
-    pub fn writable(&self) -> Vec<String> {
-        self.0.writable.clone()
+    pub fn writable(&self) -> Vec<Pubkey> {
+        self.0
+            .writable
+            .iter()
+            .map(|x| Pubkey::from_str(x).unwrap())
+            .collect()
     }
 
     #[getter]
-    pub fn readonly(&self) -> Vec<String> {
-        self.0.readonly.clone()
+    pub fn readonly(&self) -> Vec<Pubkey> {
+        self.0
+            .readonly
+            .iter()
+            .map(|x| Pubkey::from_str(x).unwrap())
+            .collect()
     }
 }
 
@@ -668,17 +680,17 @@ impl UiTransactionTokenBalance {
     #[new]
     pub fn new(
         account_index: u8,
-        mint: String,
+        mint: Pubkey,
         ui_token_amount: UiTokenAmount,
-        owner: Option<String>,
-        program_id: Option<String>,
+        owner: Option<Pubkey>,
+        program_id: Option<Pubkey>,
     ) -> Self {
         UiTransactionTokenBalanceOriginal {
             account_index,
-            mint,
+            mint: mint.to_string(),
             ui_token_amount: ui_token_amount.into(),
-            owner,
-            program_id,
+            owner: owner.map(|x| x.to_string()),
+            program_id: program_id.map(|x| x.to_string()),
         }
         .into()
     }
@@ -689,8 +701,8 @@ impl UiTransactionTokenBalance {
     }
 
     #[getter]
-    pub fn mint(&self) -> String {
-        self.0.mint.clone()
+    pub fn mint(&self) -> Pubkey {
+        Pubkey::from_str(&self.0.mint).unwrap()
     }
 
     #[getter]
@@ -699,13 +711,16 @@ impl UiTransactionTokenBalance {
     }
 
     #[getter]
-    pub fn owner(&self) -> Option<String> {
-        self.0.owner.clone()
+    pub fn owner(&self) -> Option<Pubkey> {
+        self.0.owner.clone().map(|x| Pubkey::from_str(&x).unwrap())
     }
 
     #[getter]
-    pub fn program_id(&self) -> Option<String> {
-        self.0.program_id.clone()
+    pub fn program_id(&self) -> Option<Pubkey> {
+        self.0
+            .clone()
+            .program_id
+            .map(|x| Pubkey::from_str(&x).unwrap())
     }
 }
 
