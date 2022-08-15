@@ -1,4 +1,5 @@
 from pathlib import Path
+from pytest import mark
 from solders.rpc.responses import (
     GetAccountInfoResp,
     GetAccountInfoJsonParsedResp,
@@ -98,8 +99,16 @@ def test_get_balance_resp() -> None:
     assert parsed == GetBalanceResp(value=0, context=RpcResponseContext(slot=1))
 
 
-def test_get_block_resp_json() -> None:
-    raw = (Path(__file__).parent / "data/get_block_json_encoding.json").read_text()
+@mark.parametrize(
+    "path",
+    [
+        "get_block_json_encoding.json",
+        "get_block_base64_encoding.json",
+        "get_block_json_parsed_encoding.json",
+    ],
+)
+def test_get_block_resp(path: str) -> None:
+    raw = (Path(__file__).parent / "data" / path).read_text()
     parsed = GetBlockResp.from_json(raw)
     assert parsed.block_height == 139015678
     assert parsed.block_time == 1657486664
