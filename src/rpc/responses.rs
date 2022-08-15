@@ -1,7 +1,12 @@
 #![allow(clippy::large_enum_variant, clippy::too_many_arguments)]
 use std::fmt::Display;
 
-use pyo3::{prelude::*, types::PyBytes, PyClass};
+use pyo3::{
+    prelude::*,
+    type_object::PyTypeObject,
+    types::{PyBytes, PyTuple},
+    PyClass,
+};
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, DisplayFromStr, FromInto};
 use solana_sdk::clock::{Slot, UnixTimestamp};
@@ -322,6 +327,17 @@ impl GetBlockResp {
 
 pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "responses")?;
+    let typing = py.import("typing")?;
+    let union = typing.getattr("Union")?;
+    let typevar = typing.getattr("TypeVar")?;
+    let t = typevar.call1(("T",))?;
+    m.add(
+        "Resp",
+        union.get_item(PyTuple::new(
+            py,
+            vec![RpcError::type_object(py).as_ref(), t],
+        ))?,
+    )?;
     m.add_class::<RpcResponseContext>()?;
     m.add_class::<RpcError>()?;
     m.add_class::<GetAccountInfoResp>()?;
