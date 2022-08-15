@@ -138,3 +138,277 @@ class ParsedInstruction:
     def to_json(self) -> str: ...
     @staticmethod
     def from_json(raw: str) -> "ParsedInstruction": ...
+
+class UiPartiallyDecodedInstruction:
+    def __init__(
+        self, program_id: Pubkey, accounts: Sequence[Pubkey], data: str
+    ) -> None: ...
+    @property
+    def program_id(self) -> Pubkey: ...
+    @property
+    def accounts(self) -> List[Pubkey]: ...
+    @property
+    def data(self) -> str: ...
+    def __str__(self) -> str: ...
+    def __repr__(self) -> str: ...
+    def __bytes__(self) -> bytes: ...
+    def __richcmp__(self, other: "UiPartiallyDecodedInstruction", op: int) -> bool: ...
+    def __hash__(self) -> int: ...
+    @staticmethod
+    def from_bytes(raw: bytes) -> "UiPartiallyDecodedInstruction": ...
+    def to_json(self) -> str: ...
+    @staticmethod
+    def from_json(raw: str) -> "UiPartiallyDecodedInstruction": ...
+
+class UiParsedMessage:
+    def __init__(
+        account_keys: Sequence[ParsedAccount],
+        recent_blockhash: Hash,
+        instructions: Sequence[UiInstruction],
+        address_table_lookups: Optional[Sequence[UiAddressTableLookup]],
+    ) -> None: ...
+    @property
+    def account_keys(self) -> Sequence[ParsedAccount]: ...
+    @property
+    def recent_blockhash(self) -> Hash: ...
+    @property
+    def instructions(self) -> Sequence[UiInstruction]: ...
+    @property
+    def address_table_lookups(self) -> Optional[Sequence[UiAddressTableLookup]]: ...
+
+class UiTransaction:
+    def __init__(signatures: Sequence[Signature], message: UiMessage) -> None: ...
+    @property
+    def signatures(self) -> Sequence[Signature]: ...
+    @property
+    def message(self) -> UiMessage: ...
+
+class UiInnerInstructions:
+    def __init__(index: int, instructions: Sequence[UiInstruction]) -> None: ...
+    @property
+    def index(self) -> int: ...
+    @property
+    def instructions(self) -> Sequence[UiInstruction]: ...
+
+class UiLoadedAddresses:
+    def __init__(writable: Sequence[str], readonly: Sequence[str]) -> None: ...
+    @property
+    def writable(self) -> Sequence[str]: ...
+    @property
+    def readonly(self) -> Sequence[str]: ...
+
+class UiTransactionTokenBalance:
+    def __init__(
+        account_index: int,
+        mint: str,
+        ui_token_amount: UiTokenAmount,
+        owner: Optional[str],
+        program_id: Optional[str],
+    ) -> None: ...
+    @property
+    def account_index(self) -> int: ...
+    @property
+    def mint(self) -> str: ...
+    @property
+    def ui_token_amount(self) -> UiTokenAmount: ...
+    @property
+    def owner(self) -> Optional[str]: ...
+    @property
+    def program_id(self) -> Optional[str]: ...
+
+class RewardType:
+    Fee: "RewardType"
+    Rent: "RewardType"
+    Staking: "RewardType"
+    Voting: "RewardType"
+    def __int__(self) -> int: ...
+    def __str__(self) -> str: ...
+    def __repr__(self) -> str: ...
+    def __eq__(self, o: object) -> bool: ...
+
+class TransactionReturnData:
+    def __init__(program_id: Pubkey, data: Sequence[int]) -> None: ...
+    @property
+    def program_id(self) -> Pubkey: ...
+    @property
+    def data(self) -> bytes: ...
+
+class UiTransactionStatusMeta:
+    def __init__(
+        err: Optional[TransactionErrorType],
+        fee: int,
+        pre_balances: Sequence[int],
+        post_balances: Sequence[int],
+        inner_instructions: Optional[Sequence[UiInnerInstructions]],
+        log_messages: Optional[Sequence[str]],
+        pre_token_balances: Optional[Sequence[UiTransactionTokenBalance]],
+        post_token_balances: Optional[Sequence[UiTransactionTokenBalance]],
+        rewards: Optional[Rewards],
+        loaded_addresses: Optional[UiLoadedAddresses],
+        return_data: Optional[TransactionReturnData],
+    ) -> None: ...
+
+class EncodedTransactionWithStatusMeta:
+    def __init__(
+        transaction: EncodedTransaction,
+        meta: Optional[UiTransactionStatusMeta],
+        version: Optional[TransactionVersion],
+    ) -> None: ...
+    @property
+    def transaction(self) -> EncodedTransaction: ...
+    @property
+    def meta(self) -> Optional[UiTransactionStatusMeta]: ...
+    @property
+    def version(self) -> Optional[TransactionVersion]: ...
+
+class InstructionErrorCustom:
+    def __init__(code: int) -> None: ...
+    @property
+    def code(self) -> int: ...
+
+class InstructionErrorBorshIO:
+    def __init__(value: str) -> None: ...
+    @property
+    def value(self) -> str: ...
+
+class InstructionErrorFieldless:
+    GenericError: "InstructionErrorFieldless"
+    InvalidArgument: "InstructionErrorFieldless"
+    InvalidInstructionData: "InstructionErrorFieldless"
+    InvalidAccountData: "InstructionErrorFieldless"
+    AccountDataTooSmall: "InstructionErrorFieldless"
+    InsufficientFunds: "InstructionErrorFieldless"
+    IncorrectProgramId: "InstructionErrorFieldless"
+    MissingRequiredSignature: "InstructionErrorFieldless"
+    AccountAlreadyInitialized: "InstructionErrorFieldless"
+    UninitializedAccount: "InstructionErrorFieldless"
+    UnbalancedInstruction: "InstructionErrorFieldless"
+    ModifiedProgramId: "InstructionErrorFieldless"
+    ExternalAccountLamportSpend: "InstructionErrorFieldless"
+    ExternalAccountDataModified: "InstructionErrorFieldless"
+    ReadonlyLamportChange: "InstructionErrorFieldless"
+    ReadonlyDataModified: "InstructionErrorFieldless"
+    DuplicateAccountIndex: "InstructionErrorFieldless"
+    ExecutableModified: "InstructionErrorFieldless"
+    RentEpochModified: "InstructionErrorFieldless"
+    NotEnoughAccountKeys: "InstructionErrorFieldless"
+    AccountDataSizeChanged: "InstructionErrorFieldless"
+    AccountNotExecutable: "InstructionErrorFieldless"
+    AccountBorrowFailed: "InstructionErrorFieldless"
+    AccountBorrowOutstanding: "InstructionErrorFieldless"
+    DuplicateAccountOutOfSync: "InstructionErrorFieldless"
+    InvalidError: "InstructionErrorFieldless"
+    ExecutableDataModified: "InstructionErrorFieldless"
+    ExecutableLamportChange: "InstructionErrorFieldless"
+    ExecutableAccountNotRentExempt: "InstructionErrorFieldless"
+    UnsupportedProgramId: "InstructionErrorFieldless"
+    CallDepth: "InstructionErrorFieldless"
+    MissingAccount: "InstructionErrorFieldless"
+    ReentrancyNotAllowed: "InstructionErrorFieldless"
+    MaxSeedLengthExceeded: "InstructionErrorFieldless"
+    InvalidSeeds: "InstructionErrorFieldless"
+    InvalidRealloc: "InstructionErrorFieldless"
+    ComputationalBudgetExceeded: "InstructionErrorFieldless"
+    PrivilegeEscalation: "InstructionErrorFieldless"
+    ProgramEnvironmentSetupFailure: "InstructionErrorFieldless"
+    ProgramFailedToComplete: "InstructionErrorFieldless"
+    ProgramFailedToCompile: "InstructionErrorFieldless"
+    Immutable: "InstructionErrorFieldless"
+    IncorrectAuthority: "InstructionErrorFieldless"
+    AccountNotRentExempt: "InstructionErrorFieldless"
+    InvalidAccountOwner: "InstructionErrorFieldless"
+    ArithmeticOverflow: "InstructionErrorFieldless"
+    UnsupportedSysvar: "InstructionErrorFieldless"
+    IllegalOwner: "InstructionErrorFieldless"
+    MaxAccountsDataSizeExceeded: "InstructionErrorFieldless"
+    ActiveVoteAccountClose: "InstructionErrorFieldless"
+    def __int__(self) -> int: ...
+    def __str__(self) -> str: ...
+    def __repr__(self) -> str: ...
+    def __eq__(self, o: object) -> bool: ...
+
+class TransactionErrorInstructionError:
+    def __init__(index: int, err: InstructionErrorType) -> None: ...
+    @property
+    def index(self) -> int: ...
+    @property
+    def err(self) -> InstructionErrorType: ...
+
+class TransactionErrorDuplicateInstruction:
+    def __init__(index: int) -> None: ...
+    @property
+    def index(self) -> int: ...
+
+class TransactionErrorInsufficientFundsForRent:
+    account_index: int
+    def __init__(account_index: int) -> None: ...
+
+class TransactionErrorFieldless:
+    AccountInUse: "TransactionErrorFieldless"
+    AccountLoadedTwice: "TransactionErrorFieldless"
+    AccountNotFound: "TransactionErrorFieldless"
+    ProgramAccountNotFound: "TransactionErrorFieldless"
+    InsufficientFundsForFee: "TransactionErrorFieldless"
+    InvalidAccountForFee: "TransactionErrorFieldless"
+    AlreadyProcessed: "TransactionErrorFieldless"
+    BlockhashNotFound: "TransactionErrorFieldless"
+    CallChainTooDeep: "TransactionErrorFieldless"
+    MissingSignatureForFee: "TransactionErrorFieldless"
+    InvalidAccountIndex: "TransactionErrorFieldless"
+    SignatureFailure: "TransactionErrorFieldless"
+    InvalidProgramForExecution: "TransactionErrorFieldless"
+    SanitizeFailure: "TransactionErrorFieldless"
+    ClusterMaintenance: "TransactionErrorFieldless"
+    AccountBorrowOutstanding: "TransactionErrorFieldless"
+    WouldExceedMaxBlockCostLimit: "TransactionErrorFieldless"
+    UnsupportedVersion: "TransactionErrorFieldless"
+    InvalidWritableAccount: "TransactionErrorFieldless"
+    WouldExceedMaxAccountCostLimit: "TransactionErrorFieldless"
+    WouldExceedAccountDataBlockLimit: "TransactionErrorFieldless"
+    TooManyAccountLocks: "TransactionErrorFieldless"
+    AddressLookupTableNotFound: "TransactionErrorFieldless"
+    InvalidAddressLookupTableOwner: "TransactionErrorFieldless"
+    InvalidAddressLookupTableData: "TransactionErrorFieldless"
+    InvalidAddressLookupTableIndex: "TransactionErrorFieldless"
+    InvalidRentPayingAccount: "TransactionErrorFieldless"
+    WouldExceedMaxVoteCostLimit: "TransactionErrorFieldless"
+    WouldExceedAccountDataTotalLimit: "TransactionErrorFieldless"
+    def __int__(self) -> int: ...
+    def __str__(self) -> str: ...
+    def __repr__(self) -> str: ...
+    def __eq__(self, o: object) -> bool: ...
+
+UiParsedInstruction = Union[ParsedInstruction, UiPartiallyDecodedInstruction]
+UiInstruction = Union[UiParsedInstruction, UiCompiledInstruction]
+UiMessage = Union[UiParsedMessage, UiRawMessage]
+EncodedTransaction = Union[str, Tuple[str, TransactionBinaryEncoding], UiTransaction]
+InstructionErrorType = Union[
+    InstructionErrorFieldless,
+    InstructionErrorCustom,
+    InstructionErrorBorshIO,
+]
+TransactionErrorType = Union[
+    TransactionErrorFieldless,
+    TransactionErrorInstructionError,
+    TransactionErrorDuplicateInstruction,
+    TransactionErrorInsufficientFundsForRent,
+]
+
+class Reward:
+    def __init__(
+        pubkey: Pubkey,
+        lamports: int,
+        post_balance: int,
+        reward_type: Optional[RewardType] = None,
+        commission: Optional[int] = None,
+    ) -> None: ...
+    @property
+    def pubkey(self) -> Pubkey: ...
+    @property
+    def lamports(self) -> int: ...
+    @property
+    def post_balance(self) -> int: ...
+    @property
+    def reward_type(self) -> Optional[RewardType]: ...
+    @property
+    def commission(self) -> Optional[int]: ...
