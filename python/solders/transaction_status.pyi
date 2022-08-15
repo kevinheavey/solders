@@ -4,6 +4,7 @@ from solders.pubkey import Pubkey
 from solders.message import MessageHeader
 from solders.signature import Signature
 from solders.account_decoder import UiTokenAmount
+from solders.transaction import TransactionVersion
 
 class UiTransactionEncoding:
     Binary: "UiTransactionEncoding"

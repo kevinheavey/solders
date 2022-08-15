@@ -1,5 +1,11 @@
 #![allow(deprecated)]
-use pyo3::{create_exception, exceptions::PyException, prelude::*, types::PyBytes};
+use pyo3::{
+    create_exception,
+    exceptions::PyException,
+    prelude::*,
+    type_object::PyTypeObject,
+    types::{PyBytes, PyInt, PyTuple},
+};
 use serde::{Deserialize, Serialize};
 use solana_sdk::{
     pubkey::Pubkey as PubkeyOriginal,
@@ -798,5 +804,14 @@ pub(crate) fn create_transaction_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<Legacy>()?;
     m.add("SanitizeError", py.get_type::<SanitizeError>())?;
     m.add("TransactionError", py.get_type::<TransactionError>())?;
+    let typing = py.import("typing")?;
+    let union = typing.getattr("Union")?;
+    m.add(
+        "TransactionVersion",
+        union.get_item(PyTuple::new(
+            py,
+            vec![Legacy::type_object(py), PyInt::type_object(py)],
+        ))?,
+    )?;
     Ok(m)
 }
