@@ -841,6 +841,7 @@ pub struct InstructionErrorCustom(pub u32);
 transaction_status_boilerplate!(InstructionErrorCustom);
 
 #[richcmp_eq_only]
+#[common_methods]
 #[pymethods]
 impl InstructionErrorCustom {
     #[new]
@@ -860,6 +861,7 @@ pub struct InstructionErrorBorshIO(pub String);
 transaction_status_boilerplate!(InstructionErrorBorshIO);
 
 #[richcmp_eq_only]
+#[common_methods]
 #[pymethods]
 impl InstructionErrorBorshIO {
     #[new]
@@ -1199,6 +1201,7 @@ pub struct TransactionErrorInstructionError(pub (u8, InstructionErrorType));
 transaction_status_boilerplate!(TransactionErrorInstructionError);
 
 #[richcmp_eq_only]
+#[common_methods]
 #[pymethods]
 impl TransactionErrorInstructionError {
     #[new]
@@ -1223,6 +1226,7 @@ pub struct TransactionErrorDuplicateInstruction(pub u8);
 transaction_status_boilerplate!(TransactionErrorDuplicateInstruction);
 
 #[richcmp_eq_only]
+#[common_methods]
 #[pymethods]
 impl TransactionErrorDuplicateInstruction {
     #[new]
@@ -1245,6 +1249,7 @@ pub struct TransactionErrorInsufficientFundsForRent {
 transaction_status_boilerplate!(TransactionErrorInsufficientFundsForRent);
 
 #[richcmp_eq_only]
+#[common_methods]
 #[pymethods]
 impl TransactionErrorInsufficientFundsForRent {
     #[new]
