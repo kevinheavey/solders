@@ -1,4 +1,4 @@
-from typing import Sequence, List, Optional
+from typing import Sequence, List, Optional, TypeVar
 from solders.hash import Hash
 from solders.account import Account, AccountJSON
 from solders.transaction_status import EncodedTransactionWithStatusMeta
@@ -8,6 +8,13 @@ class RpcResponseContext:
     slot: int
     api_version: Optional[str]
     def __init__(self, slot: int, api_version: Optional[str] = None) -> None: ...
+
+class RpcError:
+    code: int
+    message: str
+    def __init__(self, code: int, message: str) -> None: ...
+
+Resp = Union[RpcError, TypeVar("T")]
 
 class GetAccountInfoResp:
     context: RpcResponseContext
