@@ -1590,5 +1590,28 @@ pub fn create_transaction_status_mod(py: Python<'_>) -> PyResult<&PyModule> {
             ],
         ))?,
     )?;
+    m.add(
+        "InstructionErrorType",
+        union.get_item(PyTuple::new(
+            py,
+            vec![
+                InstructionErrorFieldless::type_object(py),
+                InstructionErrorCustom::type_object(py),
+                InstructionErrorBorshIO::type_object(py),
+            ],
+        ))?,
+    )?;
+    m.add(
+        "TransactionErrorType",
+        union.get_item(PyTuple::new(
+            py,
+            vec![
+                TransactionErrorFieldless::type_object(py),
+                TransactionErrorInstructionError::type_object(py),
+                TransactionErrorDuplicateInstruction::type_object(py),
+                TransactionErrorInsufficientFundsForRent::type_object(py),
+            ],
+        ))?,
+    )?;
     Ok(m)
 }
