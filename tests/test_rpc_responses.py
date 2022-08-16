@@ -18,6 +18,13 @@ from solders.hash import Hash
 from solders.account import Account, AccountJSON
 from solders.pubkey import Pubkey
 from solders.account_decoder import ParsedAccount
+from solders.signature import Signature
+from solders.transaction_status import (
+    Reward,
+    RewardType,
+    UiTransactionStatusMeta,
+    UiLoadedAddresses,
+)
 from based58 import b58decode
 
 
@@ -216,7 +223,60 @@ def test_get_block_commitment_resp() -> None:
 def test_get_block_resp(path: str) -> None:
     raw = (Path(__file__).parent / "data" / path).read_text()
     parsed = GetBlockResp.from_json(raw)
+    # pub transactions: Option<Vec<EncodedTransactionWithStatusMeta>>,
     assert isinstance(parsed, GetBlockResp)
+    assert isinstance(parsed.previous_blockhash, Hash)
+    assert parsed.rewards is not None
+    parsed.rewards[0] == Reward(
+        pubkey=Pubkey.from_string("8vio2CKbM54Pfo7LZrRVZdopDxBYMtoBx2YXgfh2rBo6"),
+        commission=None,
+        lamports=-125,
+        post_balance=2020030,
+        reward_type=RewardType.Rent,
+    )
+    transactions = parsed.transactions
+    tx = transactions[0]
+    meta = tx.meta
+    expected_meta = UiTransactionStatusMeta(
+        err=None,
+        fee=5000,
+        pre_balances=[
+            1002554666275,
+            100000000000,
+            1169280,
+            143487360,
+            1,
+        ],
+        post_balances=[
+            1002554661275,
+            100000000000,
+            1169280,
+            143487360,
+            1,
+        ],
+        inner_instructions=[],
+        log_messages=[
+            "Program Vote111111111111111111111111111111111111111 invoke [1]",
+            "Program Vote111111111111111111111111111111111111111 success",
+        ],
+        pre_token_balances=[],
+        post_token_balances=[],
+        rewards=[],
+        loaded_addresses=UiLoadedAddresses([], []),
+        return_data=None,
+    )
+    version = tx.version
+    assert meta == expected_meta
+    # TODO fix EncodedTransaction type conversion
+    assert version is None  # always None in the test data
+    assert parsed.signatures is None  # always None in the test data
+    if "json" in path:
+        assert tx.transaction.signatures is not None
+        assert tx.transaction.signatures[0] == Signature.from_string(
+            "2DtNjd9uPve3HHHNroiKoNByaGZ1jgRKqsQGzh4JPcE2NjmVvbYuxJMNfAUgecQnLYqfxSgdKjvj3LNigLZeAx2N"
+        )
+    else:
+        assert tx.transaction.signatures is None
     assert parsed.block_height == 139015678
     assert parsed.block_time == 1657486664
     assert isinstance(parsed.blockhash, Hash)
