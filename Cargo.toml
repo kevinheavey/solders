@@ -29,6 +29,8 @@ thiserror = "^1.0.31"
 bs58 = "^0.4.0"
 zstd = "0.11.2"
 derive_more = "0.99.17"
+solana-client = "1.11.5"
+solana-rpc = "1.11.5"
 
 [package.metadata.maturin]
 python-source = "python"

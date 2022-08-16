@@ -21,9 +21,9 @@ use crate::{
     transaction_status::{EncodedTransactionWithStatusMeta, Rewards},
     CommonMethods, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly, SolderHash,
 };
-// use solana_client::nonblocking::rpc_client;
-// use solana_client::rpc_response::Response;
-// use solana_rpc::rpc;
+use solana_client::nonblocking::rpc_client;
+use solana_client::rpc_response::Response;
+use solana_rpc::rpc;
 
 // note: the `data` field of the error struct is always None
 
@@ -267,6 +267,26 @@ impl GetBlockCommitmentResp {
     }
 }
 
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetBlockHeightResp(u64);
+
+resp_traits!(GetBlockHeightResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetBlockHeightResp {
+    #[new]
+    pub fn new(height: u64) -> Self {
+        Self(height)
+    }
+
+    #[getter]
+    pub fn height(&self) -> u64 {
+        self.0
+    }
+}
+
 #[serde_as]
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -346,5 +366,6 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<GetBalanceResp>()?;
     m.add_class::<GetBlockResp>()?;
     m.add_class::<GetBlockCommitmentResp>()?;
+    m.add_class::<GetBlockHeightResp>()?;
     Ok(m)
 }
