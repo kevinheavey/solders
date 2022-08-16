@@ -1,6 +1,8 @@
 #![allow(clippy::large_enum_variant, clippy::too_many_arguments)]
+use std::collections::HashMap;
 use std::fmt::Display;
 
+use derive_more::{Display, From, Into};
 use pyo3::{
     prelude::*,
     type_object::PyTypeObject,
@@ -21,8 +23,10 @@ use crate::{
     transaction_status::{EncodedTransactionWithStatusMeta, Rewards},
     CommonMethods, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly, SolderHash,
 };
-use solana_client::nonblocking::rpc_client;
-use solana_client::rpc_response::Response;
+use solana_client::rpc_response::{
+    RpcBlockProduction as RpcBlockProductionOriginal,
+    RpcBlockProductionRange as RpcBlockProductionRangeOriginal,
+};
 use solana_rpc::rpc;
 
 // note: the `data` field of the error struct is always None
@@ -287,6 +291,105 @@ impl GetBlockHeightResp {
     }
 }
 
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct RpcBlockProductionRange(RpcBlockProductionRangeOriginal);
+
+impl RichcmpEqualityOnly for RpcBlockProductionRange {}
+impl Display for RpcBlockProductionRange {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+pybytes_general_via_bincode!(RpcBlockProductionRange);
+py_from_bytes_general_via_bincode!(RpcBlockProductionRange);
+impl<'a> CommonMethods<'a> for RpcBlockProductionRange {}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl RpcBlockProductionRange {
+    #[new]
+    pub fn new(first_slot: u64, last_slot: u64) -> Self {
+        RpcBlockProductionRangeOriginal {
+            first_slot,
+            last_slot,
+        }
+        .into()
+    }
+
+    #[getter]
+    pub fn first_slot(&self) -> u64 {
+        self.0.first_slot
+    }
+
+    #[getter]
+    pub fn last_slot(&self) -> u64 {
+        self.0.last_slot
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct RpcBlockProduction(RpcBlockProductionOriginal);
+
+impl RichcmpEqualityOnly for RpcBlockProduction {}
+impl Display for RpcBlockProduction {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+pybytes_general_via_bincode!(RpcBlockProduction);
+py_from_bytes_general_via_bincode!(RpcBlockProduction);
+impl<'a> CommonMethods<'a> for RpcBlockProduction {}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl RpcBlockProduction {
+    #[new]
+    pub fn new(
+        by_identity: HashMap<String, (usize, usize)>,
+        range: RpcBlockProductionRange,
+    ) -> Self {
+        RpcBlockProductionOriginal {
+            by_identity,
+            range: range.into(),
+        }
+        .into()
+    }
+
+    #[getter]
+    pub fn by_identity(&self) -> HashMap<String, (usize, usize)> {
+        self.0.by_identity.clone()
+    }
+
+    #[getter]
+    pub fn range(&self) -> RpcBlockProductionRange {
+        self.0.range.clone().into()
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetBlockProductionResp {
+    #[pyo3(get)]
+    context: RpcResponseContext,
+    #[pyo3(get)]
+    value: RpcBlockProduction,
+}
+
+resp_traits!(GetBlockProductionResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetBlockProductionResp {
+    #[new]
+    pub fn new(value: RpcBlockProduction, context: RpcResponseContext) -> Self {
+        Self { value, context }
+    }
+}
+
 #[serde_as]
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -364,6 +467,9 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<GetAccountInfoResp>()?;
     m.add_class::<GetAccountInfoJsonParsedResp>()?;
     m.add_class::<GetBalanceResp>()?;
+    m.add_class::<RpcBlockProduction>()?;
+    m.add_class::<RpcBlockProductionRange>()?;
+    m.add_class::<GetBlockProductionResp>()?;
     m.add_class::<GetBlockResp>()?;
     m.add_class::<GetBlockCommitmentResp>()?;
     m.add_class::<GetBlockHeightResp>()?;
