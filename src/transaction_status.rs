@@ -942,7 +942,7 @@ pub enum InstructionErrorFieldless {
     UnsupportedSysvar,
     IllegalOwner,
     MaxAccountsDataSizeExceeded,
-    ActiveVoteAccountClose,
+    MaxAccountsExceeded,
 }
 
 #[derive(FromPyObject, Clone, PartialEq, Serialize, Deserialize, Debug)]
@@ -1033,7 +1033,7 @@ impl From<InstructionErrorType> for InstructionErrorOriginal {
                 InstructionErrorFieldless::MaxAccountsDataSizeExceeded => {
                     Self::MaxAccountsDataSizeExceeded
                 }
-                InstructionErrorFieldless::ActiveVoteAccountClose => Self::ActiveVoteAccountClose,
+                InstructionErrorFieldless::MaxAccountsExceeded => Self::MaxAccountsExceeded,
             },
         }
     }
@@ -1193,8 +1193,8 @@ impl From<InstructionErrorOriginal> for InstructionErrorType {
             InstructionErrorOriginal::MaxAccountsDataSizeExceeded => {
                 Self::Fieldless(InstructionErrorFieldless::MaxAccountsDataSizeExceeded)
             }
-            InstructionErrorOriginal::ActiveVoteAccountClose => {
-                Self::Fieldless(InstructionErrorFieldless::ActiveVoteAccountClose)
+            InstructionErrorOriginal::MaxAccountsExceeded => {
+                Self::Fieldless(InstructionErrorFieldless::MaxAccountsExceeded)
             }
         }
     }
