@@ -1,8 +1,8 @@
 #![allow(clippy::large_enum_variant, clippy::too_many_arguments)]
-use std::collections::HashMap;
 use std::fmt::Display;
+use std::{collections::HashMap, str::FromStr};
 
-use derive_more::{Display, From, Into};
+use derive_more::{From, Into};
 use pyo3::{
     prelude::*,
     type_object::PyTypeObject,
@@ -16,6 +16,7 @@ use solders_macros::{common_methods, common_methods_rpc_resp, richcmp_eq_only};
 
 use crate::{
     account::{Account, AccountJSON},
+    pubkey::Pubkey,
     py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
     signature::Signature,
     tmp_account_decoder::UiAccount,
@@ -349,19 +350,27 @@ impl<'a> CommonMethods<'a> for RpcBlockProduction {}
 impl RpcBlockProduction {
     #[new]
     pub fn new(
-        by_identity: HashMap<String, (usize, usize)>,
+        by_identity: HashMap<Pubkey, (usize, usize)>,
         range: RpcBlockProductionRange,
     ) -> Self {
         RpcBlockProductionOriginal {
-            by_identity,
+            by_identity: by_identity
+                .into_iter()
+                .map(|(k, v)| (k.to_string(), v))
+                .collect(),
             range: range.into(),
         }
         .into()
     }
 
     #[getter]
-    pub fn by_identity(&self) -> HashMap<String, (usize, usize)> {
-        self.0.by_identity.clone()
+    pub fn by_identity(&self) -> HashMap<Pubkey, (usize, usize)> {
+        self.0
+            .by_identity
+            .clone()
+            .into_iter()
+            .map(|(k, v)| (Pubkey::from_str(&k).unwrap(), v))
+            .collect()
     }
 
     #[getter]

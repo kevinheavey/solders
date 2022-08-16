@@ -4,6 +4,7 @@ from solders.hash import Hash
 from solders.account import Account, AccountJSON
 from solders.transaction_status import EncodedTransactionWithStatusMeta, Reward
 from solders.signature import Signature
+from solders.pubkey import Pubkey
 
 class RpcResponseContext:
     slot: int
@@ -123,11 +124,11 @@ class RpcBlockProductionRange:
 class RpcBlockProduction:
     def __init__(
         self,
-        by_identity: Dict[str, Tuple[int, int]],
+        by_identity: Dict[Pubkey, Tuple[int, int]],
         range: RpcBlockProductionRange,
     ) -> None: ...
     @property
-    def by_identity(self) -> Dict[str, Tuple[int, int]]: ...
+    def by_identity(self) -> Dict[Pubkey, Tuple[int, int]]: ...
     @property
     def range(self) -> RpcBlockProductionRange: ...
     def to_json(self) -> str: ...
