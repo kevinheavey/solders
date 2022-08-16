@@ -10,6 +10,7 @@ from solders.rpc.responses import (
     RpcBlockProductionRange,
     GetBlockProductionResp,
     GetBlockHeightResp,
+    GetBlocksResp,
     RpcResponseContext,
     RpcError,
 )
@@ -221,3 +222,9 @@ def test_get_block_resp(path: str) -> None:
     assert isinstance(parsed.blockhash, Hash)
     assert parsed.parent_slot == 147078734
     assert isinstance(parsed.previous_blockhash, Hash)
+
+
+def test_get_blocks_resp() -> None:
+    raw = '{ "jsonrpc": "2.0", "result": [5, 6, 7, 8, 9, 10], "id": 1 }'
+    parsed = GetBlocksResp.from_json(raw)
+    assert parsed.blocks == [5, 6, 7, 8, 9, 10]

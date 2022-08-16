@@ -457,6 +457,26 @@ impl GetBlockResp {
     }
 }
 
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetBlocksResp(Vec<u64>);
+
+resp_traits!(GetBlocksResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetBlocksResp {
+    #[new]
+    pub fn new(blocks: Vec<u64>) -> Self {
+        Self(blocks)
+    }
+
+    #[getter]
+    pub fn blocks(&self) -> Vec<u64> {
+        self.0.clone()
+    }
+}
+
 pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "responses")?;
     let typing = py.import("typing")?;
@@ -482,5 +502,6 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<GetBlockResp>()?;
     m.add_class::<GetBlockCommitmentResp>()?;
     m.add_class::<GetBlockHeightResp>()?;
+    m.add_class::<GetBlocksResp>()?;
     Ok(m)
 }
