@@ -6,6 +6,10 @@ from solders.rpc.responses import (
     GetBalanceResp,
     GetBlockResp,
     GetBlockCommitmentResp,
+    RpcBlockProduction,
+    RpcBlockProductionRange,
+    GetBlockProductionResp,
+    GetBlockHeightResp,
     RpcResponseContext,
     RpcError,
 )
@@ -67,7 +71,7 @@ def test_get_account_info_null() -> None:
 def test_get_account_info_error() -> None:
     raw = '{"jsonrpc":"2.0","error":{"code":-32602,"message":"Invalid param: WrongSize"},"id":1}'
     parsed = GetAccountInfoResp.from_json(raw)
-    assert isinstance(parsed, GetAccountInfoResp)
+    assert isinstance(parsed, RpcError)
     error = RpcError(code=-32602, message="Invalid param: WrongSize")
     assert parsed == error
 
@@ -105,6 +109,99 @@ def test_get_balance_resp() -> None:
     parsed = GetBalanceResp.from_json(raw)
     assert isinstance(parsed, GetBalanceResp)
     assert parsed == GetBalanceResp(value=0, context=RpcResponseContext(slot=1))
+
+
+def test_get_block_production_resp() -> None:
+    raw = """{
+  "jsonrpc": "2.0",
+  "result": {
+    "context": {
+      "slot": 9887
+    },
+    "value": {
+      "byIdentity": {
+        "85iYT5RuzRTDgjyRa3cP8SYhM2j21fj7NhfJ3peu1DPr": [9888, 9886]
+      },
+      "range": {
+        "firstSlot": 0,
+        "lastSlot": 9887
+      }
+    }
+  },
+  "id": 1
+}"""
+    parsed = GetBlockProductionResp.from_json(raw)
+    expected = GetBlockProductionResp(
+        RpcBlockProduction(
+            {
+                Pubkey.from_string("85iYT5RuzRTDgjyRa3cP8SYhM2j21fj7NhfJ3peu1DPr"): (
+                    9888,
+                    9886,
+                )
+            },
+            RpcBlockProductionRange(0, 9887),
+        ),
+        RpcResponseContext(9887),
+    )
+
+
+def test_get_block_height_resp() -> None:
+    raw = '{ "jsonrpc": "2.0", "result": 1233, "id": 1 }'
+    parsed = GetBlockHeightResp.from_json(raw)
+    assert parsed.height == 1233
+
+
+def test_get_block_commitment_resp() -> None:
+    raw = """{
+  "jsonrpc": "2.0",
+  "result": {
+    "commitment": [
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 10, 32
+    ],
+    "totalStake": 42
+  },
+  "id": 1
+}"""
+    parsed = GetBlockCommitmentResp.from_json(raw)
+    expected = GetBlockCommitmentResp(
+        [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            10,
+            32,
+        ],
+        42,
+    )
+    assert parsed == expected
 
 
 @mark.parametrize(
