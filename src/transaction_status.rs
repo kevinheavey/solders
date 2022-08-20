@@ -1632,7 +1632,6 @@ pub fn create_transaction_status_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<Reward>()?;
     let typing = py.import("typing")?;
     let union = typing.getattr("Union")?;
-    let tuple = typing.getattr("Tuple")?;
     let ui_parsed_instruction_members = vec![
         ParsedInstruction::type_object(py),
         UiPartiallyDecodedInstruction::type_object(py),
