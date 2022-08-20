@@ -27,6 +27,7 @@ use crate::{
 use solana_client::rpc_response::{
     RpcBlockProduction as RpcBlockProductionOriginal,
     RpcBlockProductionRange as RpcBlockProductionRangeOriginal,
+    RpcContactInfo as RpcContactInfoOriginal,
 };
 use solana_rpc::rpc;
 
@@ -89,6 +90,20 @@ macro_rules! resp_traits {
     };
 }
 
+macro_rules! response_data_boilerplate {
+    ($name:ident) => {
+        impl RichcmpEqualityOnly for $name {}
+        impl Display for $name {
+            fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+                write!(f, "{:?}", self)
+            }
+        }
+        pybytes_general_via_bincode!($name);
+        py_from_bytes_general_via_bincode!($name);
+        impl<'a> CommonMethods<'a> for $name {}
+    };
+}
+
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
 pub struct RpcError {
@@ -113,15 +128,7 @@ impl RpcError {
     }
 }
 
-impl RichcmpEqualityOnly for RpcError {}
-impl Display for RpcError {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "{:?}", self)
-    }
-}
-pybytes_general_via_bincode!(RpcError);
-py_from_bytes_general_via_bincode!(RpcError);
-impl<'a> CommonMethods<'a> for RpcError {}
+response_data_boilerplate!(RpcError);
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -144,15 +151,7 @@ impl RpcResponseContext {
     }
 }
 
-impl RichcmpEqualityOnly for RpcResponseContext {}
-impl Display for RpcResponseContext {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "{:?}", self)
-    }
-}
-pybytes_general_via_bincode!(RpcResponseContext);
-py_from_bytes_general_via_bincode!(RpcResponseContext);
-impl<'a> CommonMethods<'a> for RpcResponseContext {}
+response_data_boilerplate!(RpcResponseContext);
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 #[serde(untagged)]
@@ -296,15 +295,7 @@ impl GetBlockHeightResp {
 #[pyclass(module = "solders.rpc.responses", subclass)]
 pub struct RpcBlockProductionRange(RpcBlockProductionRangeOriginal);
 
-impl RichcmpEqualityOnly for RpcBlockProductionRange {}
-impl Display for RpcBlockProductionRange {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "{:?}", self)
-    }
-}
-pybytes_general_via_bincode!(RpcBlockProductionRange);
-py_from_bytes_general_via_bincode!(RpcBlockProductionRange);
-impl<'a> CommonMethods<'a> for RpcBlockProductionRange {}
+response_data_boilerplate!(RpcBlockProductionRange);
 
 #[richcmp_eq_only]
 #[common_methods]
@@ -334,15 +325,7 @@ impl RpcBlockProductionRange {
 #[pyclass(module = "solders.rpc.responses", subclass)]
 pub struct RpcBlockProduction(RpcBlockProductionOriginal);
 
-impl RichcmpEqualityOnly for RpcBlockProduction {}
-impl Display for RpcBlockProduction {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "{:?}", self)
-    }
-}
-pybytes_general_via_bincode!(RpcBlockProduction);
-py_from_bytes_general_via_bincode!(RpcBlockProduction);
-impl<'a> CommonMethods<'a> for RpcBlockProduction {}
+response_data_boilerplate!(RpcBlockProduction);
 
 #[richcmp_eq_only]
 #[common_methods]
@@ -494,6 +477,117 @@ impl GetBlockTimeResp {
 
     #[getter]
     pub fn time(&self) -> Option<u64> {
+        self.0
+    }
+}
+
+// the one in solana_client doesn't derive Eq or PartialEq
+#[serde_as]
+#[derive(Serialize, Deserialize, Eq, PartialEq, Clone, Debug)]
+#[serde(rename_all = "camelCase")]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct RpcContactInfo {
+    #[pyo3(get)]
+    #[serde_as(as = "DisplayFromStr")]
+    pub pubkey: Pubkey,
+    #[pyo3(get)]
+    pub gossip: Option<String>,
+    #[pyo3(get)]
+    pub tpu: Option<String>,
+    #[pyo3(get)]
+    pub rpc: Option<String>,
+    #[pyo3(get)]
+    pub version: Option<String>,
+    #[pyo3(get)]
+    pub feature_set: Option<u32>,
+    #[pyo3(get)]
+    pub shred_version: Option<u16>,
+}
+
+response_data_boilerplate!(RpcContactInfo);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl RpcContactInfo {
+    #[new]
+    pub fn new(
+        pubkey: Pubkey,
+        gossip: Option<String>,
+        tpu: Option<String>,
+        rpc: Option<String>,
+        version: Option<String>,
+        feature_set: Option<u32>,
+        shred_version: Option<u16>,
+    ) -> Self {
+        Self {
+            pubkey,
+            gossip,
+            tpu,
+            rpc,
+            version,
+            feature_set,
+            shred_version,
+        }
+    }
+}
+
+impl From<RpcContactInfo> for RpcContactInfoOriginal {
+    fn from(r: RpcContactInfo) -> Self {
+        let RpcContactInfo {
+            version,
+            feature_set,
+            shred_version,
+            ..
+        } = r;
+        Self {
+            pubkey: r.pubkey.to_string(),
+            gossip: r.gossip.map(|x| x.parse().unwrap()),
+            tpu: r.tpu.map(|x| x.parse().unwrap()),
+            rpc: r.rpc.map(|x| x.parse().unwrap()),
+            version,
+            feature_set,
+            shred_version,
+        }
+    }
+}
+
+impl From<RpcContactInfoOriginal> for RpcContactInfo {
+    fn from(r: RpcContactInfoOriginal) -> Self {
+        let RpcContactInfoOriginal {
+            version,
+            feature_set,
+            shred_version,
+            ..
+        } = r;
+        Self {
+            pubkey: r.pubkey.parse().unwrap(),
+            gossip: r.gossip.map(|x| x.to_string()),
+            tpu: r.tpu.map(|x| x.to_string()),
+            rpc: r.tpu.map(|x| x.to_string()),
+            version,
+            feature_set,
+            shred_version,
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetClusterNodesResp(Vec<RpcContactInfo>);
+
+resp_traits!(GetClusterNodesResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetClusterNodesResp {
+    #[new]
+    pub fn new(nodes: Vec<RpcContactInfo>) -> Self {
+        Self(nodes)
+    }
+
+    #[getter]
+    pub fn nodes(&self) -> Vec<RpcContactInfo> {
         self.0.clone()
     }
 }
@@ -525,5 +619,7 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<GetBlockHeightResp>()?;
     m.add_class::<GetBlocksResp>()?;
     m.add_class::<GetBlockTimeResp>()?;
+    m.add_class::<RpcContactInfo>()?;
+    m.add_class::<GetClusterNodesResp>()?;
     Ok(m)
 }

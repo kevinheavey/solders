@@ -12,7 +12,9 @@ from solders.rpc.responses import (
     GetBlockHeightResp,
     GetBlocksResp,
     GetBlockTimeResp,
+    GetClusterNodesResp,
     RpcResponseContext,
+    RpcContactInfo,
     RpcError,
 )
 from solders.hash import Hash
@@ -376,3 +378,30 @@ def test_get_block_time_resp() -> None:
     parsed = GetBlockTimeResp.from_json(raw)
     assert isinstance(parsed, GetBlockTimeResp)
     assert parsed.time == 1574721591
+
+
+def test_get_cluster_nodes_resp() -> None:
+    raw = """{
+  "jsonrpc": "2.0",
+  "result": [
+    {
+      "gossip": "10.239.6.48:8001",
+      "pubkey": "9QzsJf7LPLj8GkXbYT3LFDKqsj2hHG7TA3xinJHu8epQ",
+      "rpc": "10.239.6.48:8899",
+      "tpu": "10.239.6.48:8856",
+      "version": "1.0.0 c375ce1f"
+    }
+  ],
+  "id": 1
+}"""
+    parsed = GetClusterNodesResp.from_json(raw)
+    assert isinstance(parsed, GetClusterNodesResp)
+    assert parsed.nodes == [
+        RpcContactInfo(
+            pubkey=Pubkey.from_string("9QzsJf7LPLj8GkXbYT3LFDKqsj2hHG7TA3xinJHu8epQ"),
+            gossip="10.239.6.48:8001",
+            tpu="10.239.6.48:8856",
+            rpc="10.239.6.48:8899",
+            version="1.0.0 c375ce1f",
+        )
+    ]
