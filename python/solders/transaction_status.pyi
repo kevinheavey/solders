@@ -4,7 +4,7 @@ from solders.pubkey import Pubkey
 from solders.message import MessageHeader
 from solders.signature import Signature
 from solders.account_decoder import UiTokenAmount
-from solders.transaction import TransactionVersion
+from solders.transaction import TransactionVersion, VersionedTransaction
 
 class UiTransactionEncoding:
     Binary: "UiTransactionEncoding"
@@ -390,12 +390,12 @@ class UiTransactionStatusMeta:
 class EncodedTransactionWithStatusMeta:
     def __init__(
         self,
-        transaction: EncodedTransaction,
+        transaction: EncodedVersionedTransaction,
         meta: Optional[UiTransactionStatusMeta],
         version: Optional[TransactionVersion],
     ) -> None: ...
     @property
-    def transaction(self) -> EncodedTransaction: ...
+    def transaction(self) -> EncodedVersionedTransaction: ...
     @property
     def meta(self) -> Optional[UiTransactionStatusMeta]: ...
     @property
@@ -599,7 +599,7 @@ class TransactionErrorFieldless:
 UiParsedInstruction = Union[ParsedInstruction, UiPartiallyDecodedInstruction]
 UiInstruction = Union[UiParsedInstruction, UiCompiledInstruction]
 UiMessage = Union[UiParsedMessage, UiRawMessage]
-EncodedTransaction = Union[str, Tuple[str, TransactionBinaryEncoding], UiTransaction]
+EncodedVersionedTransaction = Union[VersionedTransaction, UiTransaction]
 InstructionErrorType = Union[
     InstructionErrorFieldless,
     InstructionErrorCustom,

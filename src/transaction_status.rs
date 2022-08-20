@@ -1,5 +1,6 @@
 #![allow(clippy::too_many_arguments)]
 use derive_more::{From, Into};
+extern crate base64;
 use std::fmt::Display;
 use std::str::FromStr;
 
@@ -32,7 +33,7 @@ use crate::{
 use pyo3::{
     prelude::*,
     type_object::PyTypeObject,
-    types::{PyBytes, PyString, PyTuple},
+    types::{PyBytes, PyTuple},
 };
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -556,19 +557,58 @@ impl UiTransaction {
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, FromPyObject)]
 #[serde(rename_all = "camelCase", untagged)]
+pub enum EncodedVersionedTransaction {
+    Binary(VersionedTransaction),
+    Json(UiTransaction),
+}
+
+impl From<EncodedTransaction> for EncodedVersionedTransaction {
+    fn from(e: EncodedTransaction) -> Self {
+        match e {
+            EncodedTransaction::LegacyBinary(..) | EncodedTransaction::Binary(..) => Self::Binary(
+                VersionedTransaction::from(EncodedTransactionOriginal::from(e).decode().unwrap()),
+            ),
+            EncodedTransaction::Json(u) => Self::Json(u),
+        }
+    }
+}
+
+impl From<EncodedVersionedTransaction> for EncodedTransaction {
+    fn from(e: EncodedVersionedTransaction) -> Self {
+        match e {
+            EncodedVersionedTransaction::Binary(v) => Self::Binary(
+                base64::encode(bincode::serialize(&v).unwrap()),
+                TransactionBinaryEncoding::Base64,
+            ),
+            EncodedVersionedTransaction::Json(u) => Self::Json(u),
+        }
+    }
+}
+
+impl From<EncodedVersionedTransaction> for EncodedTransactionOriginal {
+    fn from(e: EncodedVersionedTransaction) -> Self {
+        EncodedTransaction::from(e).into()
+    }
+}
+
+impl From<EncodedTransactionOriginal> for EncodedVersionedTransaction {
+    fn from(e: EncodedTransactionOriginal) -> Self {
+        EncodedTransaction::from(e).into()
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, FromPyObject)]
+#[serde(rename_all = "camelCase", untagged)]
 pub enum EncodedTransaction {
     LegacyBinary(String), // Old way of expressing base-58, retained for RPC backwards compatibility
     Binary(String, TransactionBinaryEncoding),
     Json(UiTransaction),
 }
 
-impl IntoPy<PyObject> for EncodedTransaction {
+impl IntoPy<PyObject> for EncodedVersionedTransaction {
     fn into_py(self, py: Python<'_>) -> PyObject {
         match self {
-            Self::LegacyBinary(..) | Self::Binary(..) => {
-                VersionedTransaction::from(EncodedTransactionOriginal::from(self).decode().unwrap())
-                    .into_py(py)
-            }
+            Self::Binary(b) => b.into_py(py),
             Self::Json(u) => u.into_py(py),
         }
     }
@@ -821,7 +861,7 @@ transaction_status_boilerplate!(EncodedTransactionWithStatusMeta);
 impl EncodedTransactionWithStatusMeta {
     #[new]
     pub fn new(
-        transaction: EncodedTransaction,
+        transaction: EncodedVersionedTransaction,
         meta: Option<UiTransactionStatusMeta>,
         version: Option<TransactionVersion>,
     ) -> Self {
@@ -834,7 +874,7 @@ impl EncodedTransactionWithStatusMeta {
     }
 
     #[getter]
-    pub fn transaction(&self) -> EncodedTransaction {
+    pub fn transaction(&self) -> EncodedVersionedTransaction {
         self.0.transaction.clone().into()
     }
 
@@ -1617,21 +1657,13 @@ pub fn create_transaction_status_mod(py: Python<'_>) -> PyResult<&PyModule> {
             ],
         ))?,
     )?;
-    let binary_type = tuple.get_item(PyTuple::new(
-        py,
-        vec![
-            PyString::type_object(py),
-            TransactionBinaryEncoding::type_object(py),
-        ],
-    ))?;
     m.add(
-        "EncodedTransaction",
+        "EncodedVersionedTransaction",
         union.get_item(PyTuple::new(
             py,
             vec![
-                PyString::type_object(py).as_ref(),
-                binary_type,
-                UiTransaction::type_object(py).as_ref(),
+                VersionedTransaction::type_object(py),
+                UiTransaction::type_object(py),
             ],
         ))?,
     )?;
