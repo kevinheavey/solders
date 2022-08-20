@@ -25,7 +25,13 @@ from solders.transaction_status import (
     UiTransactionStatusMeta,
     UiLoadedAddresses,
     UiTransaction,
+    UiRawMessage,
+    UiParsedMessage,
+    UiCompiledInstruction,
+    ParsedAccount as ParsedAccountTxStatus,
+    ParsedInstruction,
 )
+from solders.message import MessageHeader, Message
 from solders.transaction import VersionedTransaction
 from based58 import b58decode
 
@@ -273,15 +279,83 @@ def test_get_block_resp(path: str) -> None:
     assert meta == expected_meta
     assert version is None  # always None in the test data
     assert parsed.signatures is None  # always None in the test data
-    if "json" in path:
-        assert isinstance(tx.transaction, UiTransaction)
-        assert tx.transaction.signatures is not None
-        assert tx.transaction.signatures[0] == Signature.from_string(
-            "2DtNjd9uPve3HHHNroiKoNByaGZ1jgRKqsQGzh4JPcE2NjmVvbYuxJMNfAUgecQnLYqfxSgdKjvj3LNigLZeAx2N"
-        )
+    expected_signature = Signature.from_string(
+        "2DtNjd9uPve3HHHNroiKoNByaGZ1jgRKqsQGzh4JPcE2NjmVvbYuxJMNfAUgecQnLYqfxSgdKjvj3LNigLZeAx2N"
+    )
+    assert tx.transaction.signatures[0] == expected_signature
+    expected_account_keys = [
+        Pubkey.from_string(
+            "dv1ZAGvdsz5hHLwWXsVnM94hWf1pjbKVau1QVkaMJ92",
+        ),
+        Pubkey.from_string(
+            "5ZWgXcyqrrNpQHCme5SdC5hCeYb2o3fEJhF7Gok3bTVN",
+        ),
+        Pubkey.from_string(
+            "SysvarC1ock11111111111111111111111111111111",
+        ),
+        Pubkey.from_string(
+            "SysvarS1otHashes111111111111111111111111111",
+        ),
+        Pubkey.from_string(
+            "Vote111111111111111111111111111111111111111",
+        ),
+    ]
+    encoded_tx = tx.transaction
+    msg = encoded_tx.message
+    assert msg.recent_blockhash == Hash.from_string(
+        "BeSgJqfSEkmtQ6S42d2Y7qUXdfLSaXeS9DHQYqw1MLxe"
+    )
+    if "_json_" in path:
+        assert isinstance(msg, (UiParsedMessage, UiRawMessage))
+        assert msg.address_table_lookups is None
+        assert isinstance(encoded_tx, UiTransaction)
+        if "parsed" in path:
+            assert isinstance(msg, UiParsedMessage)
+            writable_vals = [True, True, False, False, False]
+            signer_vals = [True, False, False, False, False]
+            expected_parsed_accounts = [
+                ParsedAccountTxStatus(pubkey, writable, signer)
+                for pubkey, writable, signer in zip(
+                    expected_account_keys, writable_vals, signer_vals
+                )
+            ]
+            assert msg.account_keys == expected_parsed_accounts
+            json_data = '{"info":{"clockSysvar":"SysvarC1ock11111111111111111111111111111111","slotHashesSysvar":"SysvarS1otHashes111111111111111111111111111","vote":{"hash":"RgNYwznrTfJZXsPkoWFPzvx4iRPV2GBvjA1LFkyzv9L","slots":[147078734],"timestamp":1657486664},"voteAccount":"5ZWgXcyqrrNpQHCme5SdC5hCeYb2o3fEJhF7Gok3bTVN","voteAuthority":"dv1ZAGvdsz5hHLwWXsVnM94hWf1pjbKVau1QVkaMJ92"},"type":"vote"}'
+            assert msg.instructions == [
+                ParsedInstruction(
+                    program="vote",
+                    program_id=expected_account_keys[-1],
+                    parsed=json_data,
+                )
+            ]
+            assert msg.instructions
+        else:
+            assert isinstance(msg, UiRawMessage)
+            assert msg.account_keys == expected_account_keys
+            assert msg.address_table_lookups is None
+            assert msg.header == MessageHeader(
+                num_required_signatures=1,
+                num_readonly_signed_accounts=0,
+                num_readonly_unsigned_accounts=3,
+            )
+            assert msg.instructions == [
+                UiCompiledInstruction(
+                    program_id_index=4,
+                    accounts=bytes(
+                        [
+                            1,
+                            3,
+                            2,
+                            0,
+                        ]
+                    ),
+                    data="2ZjTR1vUs2pHXyTM33S8Pve4vipY8gLSFTQspocWzMPFfownBTgtTPgwAqQh2vZ7jok9PFA5FG8WmdP8yWP",
+                )
+            ]
     else:
-        assert isinstance(tx.transaction, VersionedTransaction)
-        assert tx.transaction.signatures is None
+        assert isinstance(encoded_tx, VersionedTransaction)
+        assert isinstance(msg, Message)
+        # don't need so many assertions here since we already have tests for Message
     assert parsed.block_height == 139015678
     assert parsed.block_time == 1657486664
     assert isinstance(parsed.blockhash, Hash)
