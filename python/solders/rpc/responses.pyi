@@ -1,10 +1,14 @@
 from __future__ import annotations
-from typing import Sequence, List, Optional, TypeVar, Union
+from typing import Sequence, List, Optional, TypeVar, Union, Tuple, Dict
 from solders.hash import Hash
 from solders.account import Account, AccountJSON
-from solders.transaction_status import EncodedTransactionWithStatusMeta, Reward
+from solders.transaction_status import (
+    EncodedTransactionWithStatusMeta,
+    Reward,
+)
 from solders.signature import Signature
 from solders.pubkey import Pubkey
+from solders.transaction import VersionedTransaction
 
 class RpcResponseContext:
     slot: int

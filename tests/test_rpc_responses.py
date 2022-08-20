@@ -24,7 +24,9 @@ from solders.transaction_status import (
     RewardType,
     UiTransactionStatusMeta,
     UiLoadedAddresses,
+    UiTransaction,
 )
+from solders.transaction import VersionedTransaction
 from based58 import b58decode
 
 
@@ -156,6 +158,7 @@ def test_get_block_production_resp() -> None:
 def test_get_block_height_resp() -> None:
     raw = '{ "jsonrpc": "2.0", "result": 1233, "id": 1 }'
     parsed = GetBlockHeightResp.from_json(raw)
+    assert isinstance(parsed, GetBlockHeightResp)
     assert parsed.height == 1233
 
 
@@ -235,6 +238,7 @@ def test_get_block_resp(path: str) -> None:
         reward_type=RewardType.Rent,
     )
     transactions = parsed.transactions
+    assert transactions is not None
     tx = transactions[0]
     meta = tx.meta
     expected_meta = UiTransactionStatusMeta(
@@ -267,15 +271,16 @@ def test_get_block_resp(path: str) -> None:
     )
     version = tx.version
     assert meta == expected_meta
-    # TODO fix EncodedTransaction type conversion
     assert version is None  # always None in the test data
     assert parsed.signatures is None  # always None in the test data
     if "json" in path:
+        assert isinstance(tx.transaction, UiTransaction)
         assert tx.transaction.signatures is not None
         assert tx.transaction.signatures[0] == Signature.from_string(
             "2DtNjd9uPve3HHHNroiKoNByaGZ1jgRKqsQGzh4JPcE2NjmVvbYuxJMNfAUgecQnLYqfxSgdKjvj3LNigLZeAx2N"
         )
     else:
+        assert isinstance(tx.transaction, VersionedTransaction)
         assert tx.transaction.signatures is None
     assert parsed.block_height == 139015678
     assert parsed.block_time == 1657486664
@@ -287,4 +292,5 @@ def test_get_block_resp(path: str) -> None:
 def test_get_blocks_resp() -> None:
     raw = '{ "jsonrpc": "2.0", "result": [5, 6, 7, 8, 9, 10], "id": 1 }'
     parsed = GetBlocksResp.from_json(raw)
+    assert isinstance(parsed, GetBlocksResp)
     assert parsed.blocks == [5, 6, 7, 8, 9, 10]
