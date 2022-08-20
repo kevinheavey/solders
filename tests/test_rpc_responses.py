@@ -11,6 +11,7 @@ from solders.rpc.responses import (
     GetBlockProductionResp,
     GetBlockHeightResp,
     GetBlocksResp,
+    GetBlockTimeResp,
     RpcResponseContext,
     RpcError,
 )
@@ -368,3 +369,10 @@ def test_get_blocks_resp() -> None:
     parsed = GetBlocksResp.from_json(raw)
     assert isinstance(parsed, GetBlocksResp)
     assert parsed.blocks == [5, 6, 7, 8, 9, 10]
+
+
+def test_get_block_time_resp() -> None:
+    raw = '{ "jsonrpc": "2.0", "result": 1574721591, "id": 1 }'
+    parsed = GetBlockTimeResp.from_json(raw)
+    assert isinstance(parsed, GetBlockTimeResp)
+    assert parsed.time == 1574721591
