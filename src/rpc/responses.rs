@@ -11,7 +11,10 @@ use pyo3::{
 };
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, DisplayFromStr, FromInto};
-use solana_sdk::clock::{Slot, UnixTimestamp};
+use solana_sdk::{
+    clock::{Epoch, Slot, UnixTimestamp},
+    epoch_info::EpochInfo as EpochInfoOriginal,
+};
 use solders_macros::{common_methods, common_methods_rpc_resp, richcmp_eq_only};
 
 use crate::{
@@ -572,10 +575,96 @@ impl From<RpcContactInfoOriginal> for RpcContactInfo {
     }
 }
 
+// the one in solana_client doesn't derive Eq or PartialEq
+#[serde_as]
+#[derive(Serialize, Deserialize, Eq, PartialEq, Clone, Debug)]
+#[serde(rename_all = "camelCase")]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct EpochInfo {
+    #[pyo3(get)]
+    pub epoch: Epoch,
+    #[pyo3(get)]
+    pub slot_index: u64,
+    #[pyo3(get)]
+    pub slots_in_epoch: u64,
+    #[pyo3(get)]
+    pub absolute_slot: Slot,
+    #[pyo3(get)]
+    pub block_height: u64,
+    #[pyo3(get)]
+    pub transaction_count: Option<u64>,
+}
+response_data_boilerplate!(EpochInfo);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl EpochInfo {
+    #[new]
+    pub fn new(
+        epoch: Epoch,
+        slot_index: u64,
+        slots_in_epoch: u64,
+        absolute_slot: Slot,
+        block_height: u64,
+        transaction_count: Option<u64>,
+    ) -> Self {
+        Self {
+            epoch,
+            slot_index,
+            slots_in_epoch,
+            absolute_slot,
+            block_height,
+            transaction_count,
+        }
+    }
+}
+
+impl From<EpochInfo> for EpochInfoOriginal {
+    fn from(e: EpochInfo) -> Self {
+        let EpochInfo {
+            epoch,
+            slot_index,
+            slots_in_epoch,
+            absolute_slot,
+            block_height,
+            transaction_count,
+        } = e;
+        Self {
+            epoch,
+            slot_index,
+            slots_in_epoch,
+            absolute_slot,
+            block_height,
+            transaction_count,
+        }
+    }
+}
+
+impl From<EpochInfoOriginal> for EpochInfo {
+    fn from(e: EpochInfoOriginal) -> Self {
+        let EpochInfoOriginal {
+            epoch,
+            slot_index,
+            slots_in_epoch,
+            absolute_slot,
+            block_height,
+            transaction_count,
+        } = e;
+        Self {
+            epoch,
+            slot_index,
+            slots_in_epoch,
+            absolute_slot,
+            block_height,
+            transaction_count,
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
 pub struct GetClusterNodesResp(Vec<RpcContactInfo>);
-
 resp_traits!(GetClusterNodesResp);
 
 #[common_methods_rpc_resp]
@@ -588,6 +677,25 @@ impl GetClusterNodesResp {
 
     #[getter]
     pub fn nodes(&self) -> Vec<RpcContactInfo> {
+        self.0.clone()
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetEpochInfoResp(EpochInfo);
+resp_traits!(GetEpochInfoResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetEpochInfoResp {
+    #[new]
+    pub fn new(info: EpochInfo) -> Self {
+        Self(info)
+    }
+
+    #[getter]
+    pub fn info(&self) -> EpochInfo {
         self.0.clone()
     }
 }
@@ -621,5 +729,7 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<GetBlockTimeResp>()?;
     m.add_class::<RpcContactInfo>()?;
     m.add_class::<GetClusterNodesResp>()?;
+    m.add_class::<EpochInfo>()?;
+    m.add_class::<GetEpochInfoResp>()?;
     Ok(m)
 }

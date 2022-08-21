@@ -13,8 +13,10 @@ from solders.rpc.responses import (
     GetBlocksResp,
     GetBlockTimeResp,
     GetClusterNodesResp,
+    GetEpochInfoResp,
     RpcResponseContext,
     RpcContactInfo,
+    EpochInfo,
     RpcError,
 )
 from solders.hash import Hash
@@ -405,3 +407,28 @@ def test_get_cluster_nodes_resp() -> None:
             version="1.0.0 c375ce1f",
         )
     ]
+
+
+def test_get_epoch_info_resp() -> None:
+    raw = """{
+  "jsonrpc": "2.0",
+  "result": {
+    "absoluteSlot": 166598,
+    "blockHeight": 166500,
+    "epoch": 27,
+    "slotIndex": 2790,
+    "slotsInEpoch": 8192,
+    "transactionCount": 22661093
+  },
+  "id": 1
+}"""
+    parsed = GetEpochInfoResp.from_json(raw)
+    assert isinstance(parsed, GetEpochInfoResp)
+    assert parsed.info == EpochInfo(
+        absolute_slot=166598,
+        block_height=166500,
+        epoch=27,
+        slot_index=2790,
+        slots_in_epoch=8192,
+        transaction_count=22661093,
+    )
