@@ -17,6 +17,7 @@ from solders.rpc.responses import (
     GetEpochScheduleResp,
     GetFeeForMessageResp,
     GetFirstAvailableBlockResp,
+    GetGenesisHashResp,
     RpcResponseContext,
     RpcContactInfo,
     EpochInfo,
@@ -480,3 +481,16 @@ def test_get_first_available_block_resp() -> None:
     parsed = GetFirstAvailableBlockResp.from_json(raw)
     assert isinstance(parsed, GetFirstAvailableBlockResp)
     assert parsed.slot == 250000
+
+
+def test_get_genesis_hash_resp() -> None:
+    raw = """{
+  "jsonrpc": "2.0",
+  "result": "GH7ome3EiwEr7tu9JuTh2dpYWBJK3z69Xm1ZE3MEE6JC",
+  "id": 1
+}"""
+    parsed = GetGenesisHashResp.from_json(raw)
+    assert isinstance(parsed, GetGenesisHashResp)
+    assert parsed.value == Hash.from_string(
+        "GH7ome3EiwEr7tu9JuTh2dpYWBJK3z69Xm1ZE3MEE6JC"
+    )

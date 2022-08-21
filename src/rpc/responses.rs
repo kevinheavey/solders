@@ -760,6 +760,27 @@ impl GetFirstAvailableBlockResp {
     }
 }
 
+#[serde_as]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetGenesisHashResp(#[serde_as(as = "DisplayFromStr")] SolderHash);
+
+resp_traits!(GetGenesisHashResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetGenesisHashResp {
+    #[new]
+    pub fn new(value: SolderHash) -> Self {
+        Self(value)
+    }
+
+    #[getter]
+    pub fn value(&self) -> SolderHash {
+        self.0
+    }
+}
+
 pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "responses")?;
     let typing = py.import("typing")?;
@@ -794,5 +815,6 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<GetEpochScheduleResp>()?;
     m.add_class::<GetFeeForMessageResp>()?;
     m.add_class::<GetFirstAvailableBlockResp>()?;
+    m.add_class::<GetGenesisHashResp>()?;
     Ok(m)
 }
