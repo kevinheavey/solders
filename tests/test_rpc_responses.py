@@ -16,6 +16,7 @@ from solders.rpc.responses import (
     GetEpochInfoResp,
     GetEpochScheduleResp,
     GetFeeForMessageResp,
+    GetFirstAvailableBlockResp,
     RpcResponseContext,
     RpcContactInfo,
     EpochInfo,
@@ -472,3 +473,10 @@ def test_get_fee_for_message_resp() -> None:
     assert parsed == GetFeeForMessageResp(
         value=5000, context=RpcResponseContext(slot=5068)
     )
+
+
+def test_get_first_available_block_resp() -> None:
+    raw = '{ "jsonrpc": "2.0", "result": 250000, "id": 1 }'
+    parsed = GetFirstAvailableBlockResp.from_json(raw)
+    assert isinstance(parsed, GetFirstAvailableBlockResp)
+    assert parsed.slot == 250000
