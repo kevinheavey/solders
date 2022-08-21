@@ -18,6 +18,7 @@ from solders.rpc.responses import (
     GetFeeForMessageResp,
     GetFirstAvailableBlockResp,
     GetGenesisHashResp,
+    GetHealthResp,
     RpcResponseContext,
     RpcContactInfo,
     EpochInfo,
@@ -494,3 +495,18 @@ def test_get_genesis_hash_resp() -> None:
     assert parsed.value == Hash.from_string(
         "GH7ome3EiwEr7tu9JuTh2dpYWBJK3z69Xm1ZE3MEE6JC"
     )
+
+
+def test_get_health_resp() -> None:
+    raw = """{
+  "jsonrpc": "2.0",
+  "error": {
+    "code": -32005,
+    "message": "Node is unhealthy",
+    "data": {}
+  },
+  "id": 1
+}"""
+    parsed = GetHealthResp.from_json(raw)
+    assert isinstance(parsed, GetHealthResp)
+    assert parsed.health == raw

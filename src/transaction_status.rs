@@ -785,7 +785,7 @@ transaction_status_boilerplate!(TransactionReturnData);
 #[pymethods]
 impl TransactionReturnData {
     #[new]
-    fn new(program_id: Pubkey, data: Vec<u8>) -> Self {
+    pub fn new(program_id: Pubkey, data: Vec<u8>) -> Self {
         TransactionReturnDataOriginal {
             program_id: program_id.into(),
             data,
@@ -889,7 +889,7 @@ impl EncodedTransactionWithStatusMeta {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.transaction_status", subclass)]
 pub struct InstructionErrorCustom(pub u32);
 
@@ -910,7 +910,7 @@ impl InstructionErrorCustom {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.transaction_status", subclass)]
 pub struct InstructionErrorBorshIO(pub String);
 transaction_status_boilerplate!(InstructionErrorBorshIO);
@@ -985,7 +985,7 @@ pub enum InstructionErrorFieldless {
     MaxAccountsExceeded,
 }
 
-#[derive(FromPyObject, Clone, PartialEq, Serialize, Deserialize, Debug)]
+#[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug)]
 pub enum InstructionErrorType {
     Fieldless(InstructionErrorFieldless),
     Custom(InstructionErrorCustom),
@@ -1250,7 +1250,7 @@ impl IntoPy<PyObject> for InstructionErrorType {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.transaction_status", subclass)]
 pub struct TransactionErrorInstructionError(pub (u8, InstructionErrorType));
 transaction_status_boilerplate!(TransactionErrorInstructionError);
@@ -1275,7 +1275,7 @@ impl TransactionErrorInstructionError {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.transaction_status", subclass)]
 pub struct TransactionErrorDuplicateInstruction(pub u8);
 transaction_status_boilerplate!(TransactionErrorDuplicateInstruction);
@@ -1295,7 +1295,7 @@ impl TransactionErrorDuplicateInstruction {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.transaction_status", subclass)]
 pub struct TransactionErrorInsufficientFundsForRent {
     #[pyo3(get)]
@@ -1347,7 +1347,7 @@ pub enum TransactionErrorFieldless {
     WouldExceedAccountDataTotalLimit,
 }
 
-#[derive(FromPyObject, Clone, PartialEq, Serialize, Deserialize, Debug)]
+#[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug)]
 pub enum TransactionErrorType {
     Fieldless(TransactionErrorFieldless),
     InstructionError(TransactionErrorInstructionError),

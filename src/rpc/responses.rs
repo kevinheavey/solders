@@ -14,10 +14,12 @@ use serde_with::{serde_as, DisplayFromStr, FromInto};
 use solana_sdk::{
     clock::{Epoch, Slot, UnixTimestamp},
     epoch_info::EpochInfo as EpochInfoOriginal,
+    transaction_context::TransactionReturnData as TransactionReturnDataOriginal,
 };
 use solders_macros::{common_methods, common_methods_rpc_resp, richcmp_eq_only};
 
 use crate::epoch_schedule::EpochSchedule;
+use crate::transaction_status::{TransactionErrorType, TransactionReturnData};
 use crate::{
     account::{Account, AccountJSON},
     pubkey::Pubkey,
@@ -31,7 +33,7 @@ use crate::{
 use solana_client::rpc_response::{
     RpcBlockProduction as RpcBlockProductionOriginal,
     RpcBlockProductionRange as RpcBlockProductionRangeOriginal,
-    RpcContactInfo as RpcContactInfoOriginal,
+    RpcContactInfo as RpcContactInfoOriginal, RpcTransactionReturnData,
 };
 use solana_rpc::rpc;
 
@@ -117,6 +119,9 @@ pub struct RpcError {
     /// Message
     #[pyo3(get)]
     pub message: String,
+    #[pyo3(get)]
+    /// Data
+    pub data: Option<RpcCustomError>,
 }
 
 #[richcmp_eq_only]
@@ -781,6 +786,85 @@ impl GetGenesisHashResp {
     }
 }
 
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetHealthResp(String);
+
+resp_traits!(GetHealthResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetHealthResp {
+    #[new]
+    pub fn new(health: String) -> Self {
+        Self(health)
+    }
+
+    #[getter]
+    pub fn health(&self) -> String {
+        self.0.clone()
+    }
+}
+
+impl From<TransactionReturnData> for RpcTransactionReturnData {
+    fn from(t: TransactionReturnData) -> Self {
+        TransactionReturnDataOriginal::from(t).into()
+    }
+}
+
+impl From<RpcTransactionReturnData> for TransactionReturnData {
+    fn from(r: RpcTransactionReturnData) -> Self {
+        Self::new(
+            r.program_id.parse().unwrap(),
+            base64::decode(r.data.0).unwrap(),
+        )
+    }
+}
+
+// the one in solana_client doesn't derive Eq
+#[serde_as]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct RpcSimulateTransactionResult {
+    #[pyo3(get)]
+    pub err: Option<TransactionErrorType>,
+    #[pyo3(get)]
+    pub logs: Option<Vec<String>>,
+    #[serde_as(as = "Option<Vec<Option<FromInto<UiAccount>>>>")]
+    #[pyo3(get)]
+    pub accounts: Option<Vec<Option<Account>>>,
+    #[pyo3(get)]
+    pub units_consumed: Option<u64>,
+    #[serde_as(as = "Option<FromInto<RpcTransactionReturnData>>")]
+    #[pyo3(get)]
+    pub return_data: Option<TransactionReturnData>,
+}
+
+response_data_boilerplate!(RpcSimulateTransactionResult);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl RpcSimulateTransactionResult {
+    #[new]
+    pub fn new(
+        err: Option<TransactionErrorType>,
+        logs: Option<Vec<String>>,
+        accounts: Option<Vec<Option<Account>>>,
+        units_consumed: Option<u64>,
+        return_data: Option<TransactionReturnData>,
+    ) -> Self {
+        Self {
+            err,
+            logs,
+            accounts,
+            units_consumed,
+            return_data,
+        }
+    }
+}
+
 pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "responses")?;
     let typing = py.import("typing")?;
@@ -816,5 +900,6 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<GetFeeForMessageResp>()?;
     m.add_class::<GetFirstAvailableBlockResp>()?;
     m.add_class::<GetGenesisHashResp>()?;
+    m.add_class::<GetHealthResp>()?;
     Ok(m)
 }
