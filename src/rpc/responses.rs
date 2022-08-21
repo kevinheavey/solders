@@ -17,6 +17,7 @@ use solana_sdk::{
 };
 use solders_macros::{common_methods, common_methods_rpc_resp, richcmp_eq_only};
 
+use crate::epoch_schedule::EpochSchedule;
 use crate::{
     account::{Account, AccountJSON},
     pubkey::Pubkey,
@@ -700,6 +701,25 @@ impl GetEpochInfoResp {
     }
 }
 
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetEpochScheduleResp(EpochSchedule);
+resp_traits!(GetEpochScheduleResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetEpochScheduleResp {
+    #[new]
+    pub fn new(schedule: EpochSchedule) -> Self {
+        Self(schedule)
+    }
+
+    #[getter]
+    pub fn schedule(&self) -> EpochSchedule {
+        self.0.clone()
+    }
+}
+
 pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "responses")?;
     let typing = py.import("typing")?;
@@ -731,5 +751,6 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<GetClusterNodesResp>()?;
     m.add_class::<EpochInfo>()?;
     m.add_class::<GetEpochInfoResp>()?;
+    m.add_class::<GetEpochScheduleResp>()?;
     Ok(m)
 }

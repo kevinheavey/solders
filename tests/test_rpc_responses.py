@@ -14,6 +14,7 @@ from solders.rpc.responses import (
     GetBlockTimeResp,
     GetClusterNodesResp,
     GetEpochInfoResp,
+    GetEpochScheduleResp,
     RpcResponseContext,
     RpcContactInfo,
     EpochInfo,
@@ -21,6 +22,7 @@ from solders.rpc.responses import (
 )
 from solders.hash import Hash
 from solders.account import Account, AccountJSON
+from solders.epoch_schedule import EpochSchedule
 from solders.pubkey import Pubkey
 from solders.account_decoder import ParsedAccount
 from solders.signature import Signature
@@ -432,3 +434,27 @@ def test_get_epoch_info_resp() -> None:
         slots_in_epoch=8192,
         transaction_count=22661093,
     )
+
+
+def test_get_epoch_schedule_resp() -> None:
+    raw = """{
+  "jsonrpc": "2.0",
+  "result": {
+    "firstNormalEpoch": 8,
+    "firstNormalSlot": 8160,
+    "leaderScheduleSlotOffset": 8192,
+    "slotsPerEpoch": 8192,
+    "warmup": true
+  },
+  "id": 1
+}"""
+    parsed = GetEpochScheduleResp.from_json(raw)
+    assert isinstance(parsed, GetEpochScheduleResp)
+    schedule = parsed.schedule
+    assert schedule == EpochSchedule(
+        slots_per_epoch=8192,
+    )
+    assert schedule.first_normal_epoch == 8
+    assert schedule.first_normal_slot == 8160
+    assert schedule.leader_schedule_slot_offset == 8192
+    assert schedule.warmup is True

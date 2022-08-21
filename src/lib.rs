@@ -53,12 +53,14 @@ use account_decoder::create_account_decoder_mod;
 pub mod account;
 pub mod address_lookup_table_account;
 pub mod commitment_config;
+pub mod epoch_schedule;
 pub mod rpc;
 pub mod system_program;
 pub mod sysvar;
 mod tmp_account_decoder;
 mod tmp_transaction_status;
 pub mod transaction_status;
+use epoch_schedule::create_epoch_schedule_mod;
 
 struct PyErrWrapper(PyErr);
 
@@ -455,6 +457,7 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
     let transaction_status_mod = create_transaction_status_mod(py)?;
     let account_decoder_mod = create_account_decoder_mod(py)?;
     let account_mod = create_account_mod(py)?;
+    let epoch_schedule_mod = create_epoch_schedule_mod(py)?;
     let address_lookup_table_account_mod = create_address_lookup_table_account_mod(py)?;
     let submodules = [
         errors_mod,
@@ -475,6 +478,7 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
         account_decoder_mod,
         account_mod,
         address_lookup_table_account_mod,
+        epoch_schedule_mod,
     ];
     let modules: HashMap<String, &PyModule> = submodules
         .iter()
