@@ -720,6 +720,26 @@ impl GetEpochScheduleResp {
     }
 }
 
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetFeeForMessageResp {
+    #[pyo3(get)]
+    context: RpcResponseContext,
+    #[pyo3(get)]
+    value: Option<u64>,
+}
+
+resp_traits!(GetFeeForMessageResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetFeeForMessageResp {
+    #[new]
+    pub fn new(value: Option<u64>, context: RpcResponseContext) -> Self {
+        Self { value, context }
+    }
+}
+
 pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "responses")?;
     let typing = py.import("typing")?;
@@ -752,5 +772,6 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<EpochInfo>()?;
     m.add_class::<GetEpochInfoResp>()?;
     m.add_class::<GetEpochScheduleResp>()?;
+    m.add_class::<GetFeeForMessageResp>()?;
     Ok(m)
 }

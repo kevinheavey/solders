@@ -15,6 +15,7 @@ from solders.rpc.responses import (
     GetClusterNodesResp,
     GetEpochInfoResp,
     GetEpochScheduleResp,
+    GetFeeForMessageResp,
     RpcResponseContext,
     RpcContactInfo,
     EpochInfo,
@@ -458,3 +459,16 @@ def test_get_epoch_schedule_resp() -> None:
     assert schedule.first_normal_slot == 8160
     assert schedule.leader_schedule_slot_offset == 8192
     assert schedule.warmup is True
+
+
+def test_get_fee_for_message_resp() -> None:
+    raw = """{
+  "jsonrpc": "2.0",
+  "result": { "context": { "slot": 5068 }, "value": 5000 },
+  "id": 1
+}"""
+    parsed = GetFeeForMessageResp.from_json(raw)
+    assert isinstance(parsed, GetFeeForMessageResp)
+    assert parsed == GetFeeForMessageResp(
+        value=5000, context=RpcResponseContext(slot=5068)
+    )
