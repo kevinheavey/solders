@@ -8,7 +8,6 @@ use crate::{
     account_decoder::UiTokenAmount,
     message::MessageHeader,
     pubkey::Pubkey,
-    py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
     signature::Signature,
     tmp_transaction_status::{
         EncodedTransaction as EncodedTransactionOriginal,
@@ -52,11 +51,13 @@ macro_rules! transaction_status_boilerplate {
                 write!(f, "{:?}", self)
             }
         }
-        pybytes_general_via_bincode!($name);
-        py_from_bytes_general_via_bincode!($name);
+        crate::pybytes_general_via_bincode!($name);
+        crate::py_from_bytes_general_via_bincode!($name);
         impl<'a> CommonMethods<'a> for $name {}
     };
 }
+
+pub(crate) use transaction_status_boilerplate;
 
 /// Encoding options for transaction data.
 #[pyclass(module = "solders.transaction_status")]

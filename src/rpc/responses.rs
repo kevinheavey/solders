@@ -37,6 +37,8 @@ use solana_client::rpc_response::{
 };
 use solana_rpc::rpc;
 
+use super::errors::RpcCustomError;
+
 // note: the `data` field of the error struct is always None
 
 pub trait CommonMethodsRpcResp<'a>:
@@ -129,10 +131,11 @@ pub struct RpcError {
 #[pymethods]
 impl RpcError {
     #[new]
-    pub fn new(code: i64, message: &str) -> Self {
+    pub fn new(code: i64, message: &str, data: Option<RpcCustomError>) -> Self {
         Self {
             code,
             message: message.to_string(),
+            data,
         }
     }
 }

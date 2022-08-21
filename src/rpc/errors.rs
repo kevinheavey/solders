@@ -1,7 +1,15 @@
-use crate::transaction_status_boilerplate;
+use crate::{
+    transaction_status::{transaction_status_boilerplate, TransactionErrorType},
+    CommonMethods, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly,
+};
 use derive_more::{From, Into};
-use pyo3::prelude::*;
+use pyo3::{prelude::*, type_object::PyTypeObject, types::PyTuple};
+use serde::{Deserialize, Serialize};
+use solana_sdk::slot_history::Slot;
 use solders_macros::{common_methods, richcmp_eq_only};
+use std::fmt::Display;
+
+use super::responses::RpcSimulateTransactionResult;
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.rpc.errors", subclass)]
@@ -88,7 +96,7 @@ transaction_status_boilerplate!(NodeUnhealthy);
 impl NodeUnhealthy {
     #[new]
     pub fn new(num_slots_behind: Option<Slot>) -> Self {
-        slot.into()
+        num_slots_behind.into()
     }
 }
 
@@ -96,7 +104,7 @@ impl NodeUnhealthy {
 #[pyclass(module = "solders.rpc.errors", subclass)]
 pub struct TransactionPrecompileVerificationFailure(TransactionErrorType);
 
-transaction_status_boilerplate!(NodeUnhealthy);
+transaction_status_boilerplate!(TransactionPrecompileVerificationFailure);
 
 #[richcmp_eq_only]
 #[common_methods]
@@ -104,12 +112,12 @@ transaction_status_boilerplate!(NodeUnhealthy);
 impl TransactionPrecompileVerificationFailure {
     #[new]
     pub fn new(error: TransactionErrorType) -> Self {
-        slot.into()
+        error.into()
     }
 
     #[getter]
     pub fn error(&self) -> TransactionErrorType {
-        self.0
+        self.0.clone()
     }
 }
 
@@ -244,7 +252,7 @@ impl UnsupportedTransactionVersion {
 
     #[getter]
     pub fn value(&self) -> u8 {
-        self.into()
+        self.0
     }
 }
 
@@ -258,10 +266,70 @@ pub enum RpcCustomError {
     TransactionPrecompileVerificationFailure(TransactionPrecompileVerificationFailure),
     SlotSkipped(SlotSkipped),
     LongTermStorageSlotSkipped(LongTermStorageSlotSkipped),
-    BlockCleanedUp(BlockCleanedUp),
     KeyExcludedFromSecondaryIndex(KeyExcludedFromSecondaryIndex),
     ScanError(ScanError),
     BlockStatusNotAvailableYet(BlockStatusNotAvailableYet),
     MinContextSlotNotReached(MinContextSlotNotReached),
     UnsupportedTransactionVersion(UnsupportedTransactionVersion),
+}
+
+impl IntoPy<PyObject> for RpcCustomError {
+    fn into_py(self, py: Python<'_>) -> PyObject {
+        match self {
+            Self::BlockCleanedUp(x) => x.into_py(py),
+            Self::SendTransactionPreflightFailure(x) => x.into_py(py),
+            Self::BlockNotAvailable(x) => x.into_py(py),
+            Self::NodeUnhealthy(x) => x.into_py(py),
+            Self::TransactionPrecompileVerificationFailure(x) => x.into_py(py),
+            Self::SlotSkipped(x) => x.into_py(py),
+            Self::LongTermStorageSlotSkipped(x) => x.into_py(py),
+            Self::KeyExcludedFromSecondaryIndex(x) => x.into_py(py),
+            Self::ScanError(x) => x.into_py(py),
+            Self::BlockStatusNotAvailableYet(x) => x.into_py(py),
+            Self::MinContextSlotNotReached(x) => x.into_py(py),
+            Self::UnsupportedTransactionVersion(x) => x.into_py(py),
+            Self::Fieldless(x) => x.into_py(py),
+        }
+    }
+}
+
+pub(crate) fn create_errors_mod(py: Python<'_>) -> PyResult<&PyModule> {
+    let m = PyModule::new(py, "errors")?;
+    m.add_class::<RpcCustomErrorFieldless>()?;
+    m.add_class::<BlockCleanedUp>()?;
+    m.add_class::<SendTransactionPreflightFailure>()?;
+    m.add_class::<BlockNotAvailable>()?;
+    m.add_class::<NodeUnhealthy>()?;
+    m.add_class::<TransactionPrecompileVerificationFailure>()?;
+    m.add_class::<SlotSkipped>()?;
+    m.add_class::<LongTermStorageSlotSkipped>()?;
+    m.add_class::<BlockCleanedUp>()?;
+    m.add_class::<KeyExcludedFromSecondaryIndex>()?;
+    m.add_class::<ScanError>()?;
+    m.add_class::<BlockStatusNotAvailableYet>()?;
+    m.add_class::<MinContextSlotNotReached>()?;
+    m.add_class::<UnsupportedTransactionVersion>()?;
+    let typing = py.import("typing")?;
+    let union = typing.getattr("Union")?;
+    let union_members = vec![
+        RpcCustomErrorFieldless::type_object(py),
+        BlockCleanedUp::type_object(py),
+        SendTransactionPreflightFailure::type_object(py),
+        BlockNotAvailable::type_object(py),
+        NodeUnhealthy::type_object(py),
+        TransactionPrecompileVerificationFailure::type_object(py),
+        SlotSkipped::type_object(py),
+        LongTermStorageSlotSkipped::type_object(py),
+        BlockCleanedUp::type_object(py),
+        KeyExcludedFromSecondaryIndex::type_object(py),
+        ScanError::type_object(py),
+        BlockStatusNotAvailableYet::type_object(py),
+        MinContextSlotNotReached::type_object(py),
+        UnsupportedTransactionVersion::type_object(py),
+    ];
+    m.add(
+        "RpcCustomError",
+        union.get_item(PyTuple::new(py, union_members))?,
+    )?;
+    Ok(m)
 }
