@@ -1,5 +1,6 @@
 use std::str::FromStr;
 
+use derive_more::{From, Into};
 use pyo3::{prelude::*, types::PyBytes};
 use serde::{Deserialize, Serialize};
 use solana_sdk::{account::Account as AccountOriginal, clock::Epoch};
@@ -24,7 +25,7 @@ use crate::{
 ///     epoch_info (int): The epoch at which this account will next owe rent. Defaults to 0.
 ///
 #[pyclass(module = "solders.account", subclass)]
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Default)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Default, From, Into)]
 pub struct Account(AccountOriginal);
 
 #[richcmp_eq_only]
@@ -98,12 +99,6 @@ py_from_bytes_general_via_bincode!(Account);
 
 impl CommonMethods<'_> for Account {}
 impl RichcmpEqualityOnly for Account {}
-
-impl From<AccountOriginal> for Account {
-    fn from(a: AccountOriginal) -> Self {
-        Self(a)
-    }
-}
 
 impl From<UiAccount> for Account {
     fn from(acc: UiAccount) -> Self {

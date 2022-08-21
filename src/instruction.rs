@@ -1,5 +1,6 @@
 use std::hash::Hasher;
 
+use derive_more::{From, Into};
 use pyo3::{prelude::*, types::PyBytes};
 use serde::{Deserialize, Serialize};
 use solana_sdk::{
@@ -45,7 +46,7 @@ use crate::{
 ///     >>> instruction = Instruction(program_id, instruction_data, accs)
 ///
 #[pyclass(module = "solders.instruction", subclass)]
-#[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
+#[derive(PartialEq, Debug, Clone, Serialize, Deserialize, From, Into)]
 pub struct AccountMeta(AccountMetaOriginal);
 #[pyhash]
 #[richcmp_eq_only]
@@ -98,19 +99,6 @@ py_from_bytes_general_via_bincode!(AccountMeta);
 impl CommonMethods<'_> for AccountMeta {}
 
 impl PyHash for AccountMeta {}
-
-impl From<AccountMetaOriginal> for AccountMeta {
-    fn from(am: AccountMetaOriginal) -> Self {
-        Self(am)
-    }
-}
-
-impl From<AccountMeta> for AccountMetaOriginal {
-    fn from(am: AccountMeta) -> Self {
-        am.0
-    }
-}
-
 impl_display!(AccountMeta);
 
 #[allow(clippy::derive_hash_xor_eq)]
@@ -184,7 +172,7 @@ impl std::hash::Hash for AccountMeta {
 ///     data (bytes): Opaque data passed to the program for its own interpretation.
 ///     accounts (list[AccountMeta]): Metadata describing accounts that should be passed to the program.
 ///
-#[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
+#[derive(PartialEq, Debug, Clone, Serialize, Deserialize, From, Into)]
 pub struct Instruction(pub InstructionOriginal);
 
 #[richcmp_eq_only]
@@ -261,18 +249,6 @@ impl CommonMethods<'_> for Instruction {}
 
 impl_display!(Instruction);
 
-impl From<InstructionOriginal> for Instruction {
-    fn from(ix: InstructionOriginal) -> Self {
-        Self(ix)
-    }
-}
-
-impl From<Instruction> for InstructionOriginal {
-    fn from(ix: Instruction) -> InstructionOriginal {
-        ix.0
-    }
-}
-
 impl AsRef<InstructionOriginal> for Instruction {
     fn as_ref(&self) -> &InstructionOriginal {
         &self.0
@@ -293,7 +269,7 @@ impl AsRef<InstructionOriginal> for Instruction {
 ///         which accounts to pass to the program.
 ///
 #[pyclass(module = "solders.instruction", subclass)]
-#[derive(PartialEq, Eq, Debug, Clone, Serialize, Deserialize)]
+#[derive(PartialEq, Eq, Debug, Clone, Serialize, Deserialize, From, Into)]
 pub struct CompiledInstruction(CompiledInstructionOriginal);
 
 #[richcmp_eq_only]
@@ -362,18 +338,6 @@ py_from_bytes_general_via_bincode!(CompiledInstruction);
 impl CommonMethods<'_> for CompiledInstruction {}
 
 impl_display!(CompiledInstruction);
-
-impl From<CompiledInstructionOriginal> for CompiledInstruction {
-    fn from(ix: CompiledInstructionOriginal) -> Self {
-        Self(ix)
-    }
-}
-
-impl From<CompiledInstruction> for CompiledInstructionOriginal {
-    fn from(ix: CompiledInstruction) -> Self {
-        ix.0
-    }
-}
 
 impl AsRef<CompiledInstructionOriginal> for CompiledInstruction {
     fn as_ref(&self) -> &CompiledInstructionOriginal {

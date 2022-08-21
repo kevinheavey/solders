@@ -1,3 +1,4 @@
+use derive_more::{From, Into};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use solana_sdk::{
@@ -19,7 +20,7 @@ struct AddressLookupTableAccountOriginalDef {
 }
 
 /// The definition of address lookup table accounts as used by ``MessageV0``.
-#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.address_lookup_table_account", subclass)]
 pub struct AddressLookupTableAccount(
     #[serde(with = "AddressLookupTableAccountOriginalDef")] AddressLookupTableAccountOriginal,
@@ -58,18 +59,6 @@ impl AddressLookupTableAccount {
             .into_iter()
             .map(|a| a.into())
             .collect()
-    }
-}
-
-impl From<AddressLookupTableAccountOriginal> for AddressLookupTableAccount {
-    fn from(a: AddressLookupTableAccountOriginal) -> Self {
-        Self(a)
-    }
-}
-
-impl From<AddressLookupTableAccount> for AddressLookupTableAccountOriginal {
-    fn from(a: AddressLookupTableAccount) -> Self {
-        a.0
     }
 }
 

@@ -7,6 +7,7 @@ use solana_sdk::signer::{
     Signer as SignerTrait,
 };
 use solders_macros::{common_methods, pyhash, richcmp_signer};
+use derive_more::{From, Into};
 
 use crate::{
     handle_py_value_err, impl_display, impl_signer_hash, pubkey::Pubkey, signature::Signature,
@@ -35,7 +36,7 @@ mod keypair_serde {
 }
 
 #[pyclass(module = "solders.keypair", subclass)]
-#[derive(PartialEq, Debug, Serialize, Deserialize)]
+#[derive(PartialEq, Debug, Serialize, Deserialize, From, Into)]
 /// A vanilla Ed25519 key pair.
 ///
 /// Calling ``Keypair()`` creates a new, random ``Keypair``.
@@ -248,18 +249,6 @@ impl_display!(Keypair);
 impl Default for Keypair {
     fn default() -> Self {
         Self::new()
-    }
-}
-
-impl From<KeypairOriginal> for Keypair {
-    fn from(keypair: KeypairOriginal) -> Self {
-        Self(keypair)
-    }
-}
-
-impl From<Keypair> for KeypairOriginal {
-    fn from(k: Keypair) -> Self {
-        k.0
     }
 }
 

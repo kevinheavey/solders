@@ -1,3 +1,4 @@
+use derive_more::{From, Into};
 use pyo3::{create_exception, exceptions::PyException, prelude::*, types::PyBytes};
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, FromInto};
@@ -27,7 +28,7 @@ use crate::{
 };
 
 #[pyclass(module = "solders.message", subclass)]
-#[derive(PartialEq, Eq, Debug, Default, Serialize, Deserialize, Clone)]
+#[derive(PartialEq, Eq, Debug, Default, Serialize, Deserialize, Clone, From, Into)]
 /// Describes the organization of a :class:`Message`'s account keys.
 ///
 /// Every :class:`~solders.instruction.Instruction` specifies which accounts it may reference, or
@@ -127,18 +128,6 @@ impl MessageHeader {
     }
 }
 
-impl From<MessageHeaderOriginal> for MessageHeader {
-    fn from(h: MessageHeaderOriginal) -> Self {
-        Self(h)
-    }
-}
-
-impl From<MessageHeader> for MessageHeaderOriginal {
-    fn from(h: MessageHeader) -> Self {
-        h.0
-    }
-}
-
 impl RichcmpEqualityOnly for MessageHeader {}
 pybytes_general_via_bincode!(MessageHeader);
 impl_display!(MessageHeader);
@@ -146,7 +135,7 @@ py_from_bytes_general_via_bincode!(MessageHeader);
 impl CommonMethods<'_> for MessageHeader {}
 
 #[pyclass(module = "solders.message", subclass)]
-#[derive(PartialEq, Eq, Debug, Clone, Default, Serialize, Deserialize)]
+#[derive(PartialEq, Eq, Debug, Clone, Default, Serialize, Deserialize, From, Into)]
 /// A Solana transaction message.
 ///
 /// Some constructors accept an optional `payer`, the account responsible for
@@ -544,18 +533,6 @@ impl_display!(Message);
 py_from_bytes_general_via_bincode!(Message);
 impl CommonMethods<'_> for Message {}
 
-impl From<MessageOriginal> for Message {
-    fn from(message: MessageOriginal) -> Self {
-        Self(message)
-    }
-}
-
-impl From<Message> for MessageOriginal {
-    fn from(message: Message) -> Self {
-        message.0
-    }
-}
-
 impl From<&Message> for MessageOriginal {
     fn from(message: &Message) -> Self {
         message.0.clone()
@@ -563,7 +540,7 @@ impl From<&Message> for MessageOriginal {
 }
 
 #[pyclass(module = "solders.message", subclass)]
-#[derive(PartialEq, Eq, Debug, Clone, Default, Serialize, Deserialize)]
+#[derive(PartialEq, Eq, Debug, Clone, Default, Serialize, Deserialize, From, Into)]
 /// Address table lookups describe an on-chain address lookup table to use
 /// for loading more readonly and writable accounts in a single tx.
 ///
@@ -613,18 +590,6 @@ impl MessageAddressTableLookup {
     }
 }
 
-impl From<MessageAddressTableLookupOriginal> for MessageAddressTableLookup {
-    fn from(m: MessageAddressTableLookupOriginal) -> Self {
-        Self(m)
-    }
-}
-
-impl From<MessageAddressTableLookup> for MessageAddressTableLookupOriginal {
-    fn from(m: MessageAddressTableLookup) -> Self {
-        m.0
-    }
-}
-
 create_exception!(
     solders,
     CompileError,
@@ -634,7 +599,7 @@ create_exception!(
 
 #[serde_as]
 #[pyclass(module = "solders.message", subclass)]
-#[derive(PartialEq, Eq, Debug, Clone, Default, Serialize, Deserialize)]
+#[derive(PartialEq, Eq, Debug, Clone, Default, Serialize, Deserialize, From, Into)]
 /// A Solana transaction message (v0).
 ///
 /// This message format supports succinct account loading with
@@ -848,18 +813,6 @@ impl MessageV0 {
     ///     MessageV0: default ``MessageV0``.
     pub fn new_default() -> Self {
         Self::default()
-    }
-}
-
-impl From<MessageV0Original> for MessageV0 {
-    fn from(m: MessageV0Original) -> Self {
-        Self(m)
-    }
-}
-
-impl From<MessageV0> for MessageV0Original {
-    fn from(m: MessageV0) -> Self {
-        m.0
     }
 }
 

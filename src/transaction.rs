@@ -1,4 +1,5 @@
 #![allow(deprecated)]
+use derive_more::{From, Into};
 use pyo3::{
     create_exception,
     exceptions::PyException,
@@ -63,21 +64,9 @@ impl From<SanitizeErrorOriginal> for PyErrWrapper {
 /// Args:
 ///     message (Message | MessageV0): The message to sign.
 ///     keypairs (Sequence[Keypair | Presigner]): The keypairs that are to sign the transaction.
-#[derive(Debug, PartialEq, Default, Eq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Default, Eq, Clone, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.transaction", subclass)]
 pub struct VersionedTransaction(VersionedTransactionOriginal);
-
-impl From<VersionedTransactionOriginal> for VersionedTransaction {
-    fn from(v: VersionedTransactionOriginal) -> Self {
-        Self(v)
-    }
-}
-
-impl From<VersionedTransaction> for VersionedTransactionOriginal {
-    fn from(v: VersionedTransaction) -> Self {
-        v.0
-    }
-}
 
 impl From<Transaction> for VersionedTransaction {
     fn from(t: Transaction) -> Self {
@@ -197,7 +186,7 @@ impl VersionedTransaction {
 }
 
 #[pyclass(module = "solders.transaction", subclass)]
-#[derive(Debug, PartialEq, Default, Eq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Default, Eq, Clone, Serialize, Deserialize, From, Into)]
 /// An atomically-commited sequence of instructions.
 ///
 /// While :class:`~solders.instruction.Instruction`\s are the basic unit of computation in Solana,
@@ -720,18 +709,6 @@ pybytes_general_via_bincode!(Transaction);
 py_from_bytes_general_via_bincode!(Transaction);
 impl_display!(Transaction);
 impl CommonMethods<'_> for Transaction {}
-
-impl From<TransactionOriginal> for Transaction {
-    fn from(tx: TransactionOriginal) -> Self {
-        Self(tx)
-    }
-}
-
-impl From<Transaction> for TransactionOriginal {
-    fn from(tx: Transaction) -> Self {
-        tx.0
-    }
-}
 
 impl AsRef<TransactionOriginal> for Transaction {
     fn as_ref(&self) -> &TransactionOriginal {
