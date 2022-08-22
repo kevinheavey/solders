@@ -33,7 +33,8 @@ use crate::{
 use solana_client::rpc_response::{
     RpcBlockProduction as RpcBlockProductionOriginal,
     RpcBlockProductionRange as RpcBlockProductionRangeOriginal,
-    RpcContactInfo as RpcContactInfoOriginal, RpcTransactionReturnData,
+    RpcContactInfo as RpcContactInfoOriginal, RpcSnapshotSlotInfo as RpcSnapshotSlotInfoOriginal,
+    RpcTransactionReturnData,
 };
 use solana_rpc::rpc;
 
@@ -869,6 +870,51 @@ impl RpcSimulateTransactionResult {
     }
 }
 
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct RpcSnapshotSlotInfo(RpcSnapshotSlotInfoOriginal);
+
+response_data_boilerplate!(RpcSnapshotSlotInfo);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl RpcSnapshotSlotInfo {
+    #[new]
+    pub fn new(full: Slot, incremental: Option<Slot>) -> Self {
+        RpcSnapshotSlotInfoOriginal { full, incremental }.into()
+    }
+
+    #[getter]
+    pub fn full(&self) -> Slot {
+        self.0.full
+    }
+
+    #[getter]
+    pub fn incremental(&self) -> Option<Slot> {
+        self.0.incremental
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetHighestSnapshotSlotResp(RpcSnapshotSlotInfo);
+resp_traits!(GetHighestSnapshotSlotResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetHighestSnapshotSlotResp {
+    #[new]
+    pub fn new(info: RpcSnapshotSlotInfo) -> Self {
+        Self(info)
+    }
+
+    #[getter]
+    pub fn info(&self) -> RpcSnapshotSlotInfo {
+        self.0.clone()
+    }
+}
+
 pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "responses")?;
     let typing = py.import("typing")?;
@@ -906,5 +952,7 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<GetGenesisHashResp>()?;
     m.add_class::<GetHealthResp>()?;
     m.add_class::<RpcSimulateTransactionResult>()?;
+    m.add_class::<RpcSnapshotSlotInfo>()?;
+    m.add_class::<GetHighestSnapshotSlotResp>()?;
     Ok(m)
 }

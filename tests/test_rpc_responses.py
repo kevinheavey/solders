@@ -19,6 +19,8 @@ from solders.rpc.responses import (
     GetFirstAvailableBlockResp,
     GetGenesisHashResp,
     GetHealthResp,
+    GetHighestSnapshotSlotResp,
+    RpcSnapshotSlotInfo,
     RpcResponseContext,
     RpcContactInfo,
     EpochInfo,
@@ -538,3 +540,10 @@ def test_get_health_additional_info() -> None:
     parsed = GetHealthResp.from_json(raw)
     assert isinstance(parsed, RpcError)
     assert parsed.data == NodeUnhealthy(42)
+
+
+def test_get_highest_snapshot_slot() -> None:
+    raw = '{ "jsonrpc": "2.0", "result": { "full": 100, "incremental": 110 }, "id": 1 }'
+    parsed = GetHighestSnapshotSlotResp.from_json(raw)
+    assert isinstance(parsed, GetHighestSnapshotSlotResp)
+    assert parsed.info == RpcSnapshotSlotInfo(full=100, incremental=110)
