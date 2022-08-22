@@ -34,7 +34,7 @@ use solana_client::rpc_response::{
     RpcBlockProduction as RpcBlockProductionOriginal,
     RpcBlockProductionRange as RpcBlockProductionRangeOriginal,
     RpcContactInfo as RpcContactInfoOriginal, RpcInflationGovernor as RpcInflationGovernorOriginal,
-    RpcInflationRate as RpcInflationRateOriginal,
+    RpcInflationRate as RpcInflationRateOriginal, RpcInflationReward as RpcInflationRewardOriginal,
     RpcSnapshotSlotInfo as RpcSnapshotSlotInfoOriginal, RpcTransactionReturnData,
 };
 use solana_rpc::rpc;
@@ -1068,8 +1068,7 @@ impl RpcInflationRate {
     }
 }
 
-#[serde_as]
-#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone, From, Into)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
 pub struct GetInflationRateResp(RpcInflationRate);
 resp_traits!(GetInflationRateResp);
@@ -1084,6 +1083,74 @@ impl GetInflationRateResp {
 
     #[getter]
     pub fn rate(&self) -> RpcInflationRate {
+        self.0.clone()
+    }
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, From, Into)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct RpcInflationReward(RpcInflationRewardOriginal);
+
+response_data_boilerplate!(RpcInflationReward);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl RpcInflationReward {
+    #[new]
+    pub fn new(
+        epoch: Epoch,
+        effective_slot: Slot,
+        amount: u64,
+        post_balance: u64,
+        commission: Option<u8>,
+    ) -> Self {
+        RpcInflationRewardOriginal {
+            epoch,
+            effective_slot,
+            amount,
+            post_balance,
+            commission,
+        }
+        .into()
+    }
+    #[getter]
+    pub fn epoch(&self) -> Epoch {
+        self.0.epoch
+    }
+    #[getter]
+    pub fn effective_slot(&self) -> Slot {
+        self.0.effective_slot
+    }
+    #[getter]
+    pub fn amount(&self) -> u64 {
+        self.0.amount
+    }
+    #[getter]
+    pub fn post_balance(&self) -> u64 {
+        self.0.post_balance
+    }
+    #[getter]
+    pub fn commission(&self) -> Option<u8> {
+        self.0.commission
+    }
+}
+
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone, Eq, From, Into)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetInflationRewardResp(Vec<Option<RpcInflationReward>>);
+resp_traits!(GetInflationRewardResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetInflationRewardResp {
+    #[new]
+    pub fn new(rewards: Vec<Option<RpcInflationReward>>) -> Self {
+        Self(rewards)
+    }
+
+    #[getter]
+    pub fn rewards(&self) -> Vec<Option<RpcInflationReward>> {
         self.0.clone()
     }
 }
@@ -1133,5 +1200,7 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<GetInflationGovernorResp>()?;
     m.add_class::<RpcInflationRate>()?;
     m.add_class::<GetInflationRateResp>()?;
+    m.add_class::<RpcInflationReward>()?;
+    m.add_class::<GetInflationRewardResp>()?;
     Ok(m)
 }
