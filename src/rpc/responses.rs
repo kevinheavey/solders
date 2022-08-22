@@ -33,8 +33,9 @@ use crate::{
 use solana_client::rpc_response::{
     RpcBlockProduction as RpcBlockProductionOriginal,
     RpcBlockProductionRange as RpcBlockProductionRangeOriginal,
-    RpcContactInfo as RpcContactInfoOriginal, RpcSnapshotSlotInfo as RpcSnapshotSlotInfoOriginal,
-    RpcTransactionReturnData, RpcInflationGovernor as RpcInflationGovernorOriginal
+    RpcContactInfo as RpcContactInfoOriginal, RpcInflationGovernor as RpcInflationGovernorOriginal,
+    RpcInflationRate as RpcInflationRateOriginal,
+    RpcSnapshotSlotInfo as RpcSnapshotSlotInfoOriginal, RpcTransactionReturnData,
 };
 use solana_rpc::rpc;
 
@@ -958,7 +959,6 @@ impl GetIdentityResp {
     }
 }
 
-// the one in solana_client doesn't derive Eq
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, From, Into)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
 pub struct RpcInflationGovernor(RpcInflationGovernorOriginal);
@@ -983,19 +983,30 @@ impl RpcInflationGovernor {
             taper,
             foundation,
             foundation_term,
-        }.into()
+        }
+        .into()
     }
 
     #[getter]
-    pub fn initial(&self) -> f64 { self.0.initial}
+    pub fn initial(&self) -> f64 {
+        self.0.initial
+    }
     #[getter]
-    pub fn terminal(&self) -> f64 { self.0.terminal}
+    pub fn terminal(&self) -> f64 {
+        self.0.terminal
+    }
     #[getter]
-    pub fn taper(&self) -> f64 { self.0.taper}
+    pub fn taper(&self) -> f64 {
+        self.0.taper
+    }
     #[getter]
-    pub fn foundation(&self) -> f64 { self.0.foundation}
+    pub fn foundation(&self) -> f64 {
+        self.0.foundation
+    }
     #[getter]
-    pub fn foundation_term(&self) -> f64 { self.0.foundation_term}
+    pub fn foundation_term(&self) -> f64 {
+        self.0.foundation_term
+    }
 }
 
 #[serde_as]
@@ -1014,6 +1025,65 @@ impl GetInflationGovernorResp {
 
     #[getter]
     pub fn governor(&self) -> RpcInflationGovernor {
+        self.0.clone()
+    }
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, From, Into)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct RpcInflationRate(RpcInflationRateOriginal);
+
+response_data_boilerplate!(RpcInflationRate);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl RpcInflationRate {
+    #[new]
+    pub fn new(total: f64, validator: f64, foundation: f64, epoch: Epoch) -> Self {
+        RpcInflationRateOriginal {
+            total,
+            validator,
+            foundation,
+            epoch,
+        }
+        .into()
+    }
+
+    #[getter]
+    pub fn total(&self) -> f64 {
+        self.0.total
+    }
+    #[getter]
+    pub fn validator(&self) -> f64 {
+        self.0.validator
+    }
+    #[getter]
+    pub fn foundation(&self) -> f64 {
+        self.0.foundation
+    }
+    #[getter]
+    pub fn epoch(&self) -> Epoch {
+        self.0.epoch
+    }
+}
+
+#[serde_as]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetInflationRateResp(RpcInflationRate);
+resp_traits!(GetInflationRateResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetInflationRateResp {
+    #[new]
+    pub fn new(rate: RpcInflationRate) -> Self {
+        Self(rate)
+    }
+
+    #[getter]
+    pub fn rate(&self) -> RpcInflationRate {
         self.0.clone()
     }
 }
@@ -1061,5 +1131,7 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<GetIdentityResp>()?;
     m.add_class::<RpcInflationGovernor>()?;
     m.add_class::<GetInflationGovernorResp>()?;
+    m.add_class::<RpcInflationRate>()?;
+    m.add_class::<GetInflationRateResp>()?;
     Ok(m)
 }

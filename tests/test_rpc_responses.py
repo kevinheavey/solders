@@ -22,11 +22,13 @@ from solders.rpc.responses import (
     GetHighestSnapshotSlotResp,
     GetIdentityResp,
     GetInflationGovernorResp,
+    GetInflationRateResp,
     RpcSnapshotSlotInfo,
     RpcResponseContext,
     RpcContactInfo,
     RpcIdentity,
     RpcInflationGovernor,
+    RpcInflationRate,
     EpochInfo,
     RpcError,
 )
@@ -582,4 +584,22 @@ def test_get_inflation_governor() -> None:
     assert isinstance(parsed, GetInflationGovernorResp)
     assert parsed.governor == RpcInflationGovernor(
         initial=0.15, terminal=0.015, taper=0.15, foundation=0.05, foundation_term=7
+    )
+
+
+def test_get_inflation_rate() -> None:
+    raw = """{
+  "jsonrpc": "2.0",
+  "result": {
+    "epoch": 100,
+    "foundation": 0.001,
+    "total": 0.149,
+    "validator": 0.148
+  },
+  "id": 1
+}"""
+    parsed = GetInflationRateResp.from_json(raw)
+    assert isinstance(parsed, GetInflationRateResp)
+    assert parsed.rate == RpcInflationRate(
+        total=0.149, validator=0.148, foundation=0.001, epoch=100
     )
