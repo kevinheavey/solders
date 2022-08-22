@@ -1253,6 +1253,30 @@ impl GetLatestBlockhashResp {
     }
 }
 
+type RpcLeaderSchedule = Option<HashMap<Pubkey, Vec<usize>>>;
+
+#[serde_as]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone, Eq, From, Into)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetLeaderScheduleResp(
+    #[serde_as(as = "Option<HashMap<DisplayFromStr, _>>")] RpcLeaderSchedule,
+);
+resp_traits!(GetLeaderScheduleResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetLeaderScheduleResp {
+    #[new]
+    pub fn new(schedule: RpcLeaderSchedule) -> Self {
+        Self(schedule)
+    }
+
+    #[getter]
+    pub fn schedule(&self) -> RpcLeaderSchedule {
+        self.0.clone()
+    }
+}
+
 pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "responses")?;
     let typing = py.import("typing")?;
@@ -1304,5 +1328,6 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<GetLargestAccountsResp>()?;
     m.add_class::<RpcBlockhash>()?;
     m.add_class::<GetLatestBlockhashResp>()?;
+    m.add_class::<GetLeaderScheduleResp>()?;
     Ok(m)
 }
