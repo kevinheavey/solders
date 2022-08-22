@@ -31,6 +31,7 @@ use crate::{
     CommonMethods, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly, SolderHash,
 };
 use solana_client::rpc_response::{
+    RpcAccountBalance as RpcAccountBalanceOriginal,
     RpcBlockProduction as RpcBlockProductionOriginal,
     RpcBlockProductionRange as RpcBlockProductionRangeOriginal,
     RpcContactInfo as RpcContactInfoOriginal, RpcInflationGovernor as RpcInflationGovernorOriginal,
@@ -1155,6 +1156,56 @@ impl GetInflationRewardResp {
     }
 }
 
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, From, Into)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct RpcAccountBalance(RpcAccountBalanceOriginal);
+
+response_data_boilerplate!(RpcAccountBalance);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl RpcAccountBalance {
+    #[new]
+    pub fn new(address: Pubkey, lamports: u64) -> Self {
+        RpcAccountBalanceOriginal {
+            address: address.to_string(),
+            lamports,
+        }
+        .into()
+    }
+    #[getter]
+    pub fn address(&self) -> Pubkey {
+        Pubkey::from_str(&self.0.address).unwrap()
+    }
+
+    #[getter]
+    pub fn lamports(&self) -> u64 {
+        self.0.lamports
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetLargestAccountsResp {
+    #[pyo3(get)]
+    pub context: RpcResponseContext,
+    #[pyo3(get)]
+    pub value: Vec<RpcAccountBalance>,
+}
+
+resp_traits!(GetLargestAccountsResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetLargestAccountsResp {
+    #[new]
+    pub fn new(value: Vec<RpcAccountBalance>, context: RpcResponseContext) -> Self {
+        Self { value, context }
+    }
+}
+
 pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "responses")?;
     let typing = py.import("typing")?;
@@ -1202,5 +1253,7 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<GetInflationRateResp>()?;
     m.add_class::<RpcInflationReward>()?;
     m.add_class::<GetInflationRewardResp>()?;
+    m.add_class::<RpcAccountBalance>()?;
+    m.add_class::<GetLargestAccountsResp>()?;
     Ok(m)
 }
