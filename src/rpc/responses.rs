@@ -1297,6 +1297,26 @@ impl GetMaxRetransmitSlotResp {
     }
 }
 
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetMaxShredInsertSlotResp(u64);
+
+resp_traits!(GetMaxShredInsertSlotResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetMaxShredInsertSlotResp {
+    #[new]
+    pub fn new(slot: u64) -> Self {
+        Self(slot)
+    }
+
+    #[getter]
+    pub fn slot(&self) -> u64 {
+        self.0
+    }
+}
+
 pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "responses")?;
     let typing = py.import("typing")?;
@@ -1350,5 +1370,6 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<GetLatestBlockhashResp>()?;
     m.add_class::<GetLeaderScheduleResp>()?;
     m.add_class::<GetMaxRetransmitSlotResp>()?;
+    m.add_class::<GetMaxShredInsertSlotResp>()?;
     Ok(m)
 }
