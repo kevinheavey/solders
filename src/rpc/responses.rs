@@ -1337,6 +1337,28 @@ impl GetMinimumBalanceForRentExemption {
     }
 }
 
+#[serde_as]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetMultipleAccountsResp {
+    #[pyo3(get)]
+    context: RpcResponseContext,
+    #[pyo3(get)]
+    #[serde_as(as = "Vec<Option<FromInto<UiAccount>>>")]
+    value: Vec<Option<Account>>,
+}
+
+resp_traits!(GetMultipleAccountsResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetMultipleAccountsResp {
+    #[new]
+    pub fn new(value: Vec<Option<Account>>, context: RpcResponseContext) -> Self {
+        Self { value, context }
+    }
+}
+
 pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "responses")?;
     let typing = py.import("typing")?;
@@ -1392,5 +1414,6 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<GetMaxRetransmitSlotResp>()?;
     m.add_class::<GetMaxShredInsertSlotResp>()?;
     m.add_class::<GetMinimumBalanceForRentExemption>()?;
+    m.add_class::<GetMultipleAccountsResp>()?;
     Ok(m)
 }

@@ -30,6 +30,7 @@ from solders.rpc.responses import (
     GetMaxRetransmitSlotResp,
     GetMaxShredInsertSlotResp,
     GetMinimumBalanceForRentExemption,
+    GetMultipleAccountsResp,
     RpcSnapshotSlotInfo,
     RpcResponseContext,
     RpcContactInfo,
@@ -64,6 +65,7 @@ from solders.transaction_status import (
 from solders.message import MessageHeader, Message
 from solders.transaction import VersionedTransaction
 from based58 import b58decode
+from base64 import b64decode
 
 
 def test_get_account_info() -> None:
@@ -856,3 +858,98 @@ def test_get_minimum_balance_for_tent_exemption() -> None:
     parsed = GetMinimumBalanceForRentExemption.from_json(raw)
     assert isinstance(parsed, GetMinimumBalanceForRentExemption)
     assert parsed.slot == 500
+
+
+def test_get_multiple_accounts_base64() -> None:
+    raw = """{
+  "jsonrpc": "2.0",
+  "result": {
+    "context": {
+      "slot": 1
+    },
+    "value": [
+      {
+        "data": ["AAAAAAEAAAACtzNsyJrW0g==", "base64"],
+        "executable": false,
+        "lamports": 1000000000,
+        "owner": "11111111111111111111111111111111",
+        "rentEpoch": 2
+      },
+      {
+        "data": ["", "base64"],
+        "executable": false,
+        "lamports": 5000000000,
+        "owner": "11111111111111111111111111111111",
+        "rentEpoch": 2
+      }
+    ]
+  },
+  "id": 1
+}"""
+    parsed = GetMultipleAccountsResp.from_json(raw)
+    assert isinstance(parsed, GetMultipleAccountsResp)
+    val = parsed.value
+    assert val[0] == Account(
+        lamports=1000000000,
+        owner=Pubkey.from_string("11111111111111111111111111111111"),
+        executable=False,
+        rent_epoch=2,
+        data=b64decode("AAAAAAEAAAACtzNsyJrW0g=="),
+    )
+    assert val[1] == Account(
+        lamports=5000000000,
+        owner=Pubkey.from_string("11111111111111111111111111111111"),
+        executable=False,
+        rent_epoch=2,
+        data=b"",
+    )
+
+
+def test_get_multiple_accounts_base58() -> None:
+    raw = """{
+  "jsonrpc": "2.0",
+  "result": {
+    "context": {
+      "slot": 1
+    },
+    "value": [
+      {
+        "data": [
+          "11116bv5nS2h3y12kD1yUKeMZvGcKLSjQgX6BeV7u1FrjeJcKfsHRTPuR3oZ1EioKtYGiYxpxMG5vpbZLsbcBYBEmZZcMKaSoGx9JZeAuWf",
+          "base58"
+        ],
+        "executable": false,
+        "lamports": 1000000000,
+        "owner": "11111111111111111111111111111111",
+        "rentEpoch": 2
+      },
+      {
+        "data": ["", "base58"],
+        "executable": false,
+        "lamports": 5000000000,
+        "owner": "11111111111111111111111111111111",
+        "rentEpoch": 2
+      }
+    ]
+  },
+  "id": 1
+}"""
+    parsed = GetMultipleAccountsResp.from_json(raw)
+    assert isinstance(parsed, GetMultipleAccountsResp)
+    val = parsed.value
+    assert val[0] == Account(
+        lamports=1000000000,
+        owner=Pubkey.from_string("11111111111111111111111111111111"),
+        executable=False,
+        rent_epoch=2,
+        data=b58decode(
+            b"11116bv5nS2h3y12kD1yUKeMZvGcKLSjQgX6BeV7u1FrjeJcKfsHRTPuR3oZ1EioKtYGiYxpxMG5vpbZLsbcBYBEmZZcMKaSoGx9JZeAuWf"
+        ),
+    )
+    assert val[1] == Account(
+        lamports=5000000000,
+        owner=Pubkey.from_string("11111111111111111111111111111111"),
+        executable=False,
+        rent_epoch=2,
+        data=b"",
+    )
