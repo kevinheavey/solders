@@ -1206,6 +1206,53 @@ impl GetLargestAccountsResp {
     }
 }
 
+// the one in solana_client doesn't derive Eq
+#[serde_as]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct RpcBlockhash {
+    #[serde_as(as = "DisplayFromStr")]
+    pub blockhash: SolderHash,
+    pub last_valid_block_height: u64,
+}
+
+response_data_boilerplate!(RpcBlockhash);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl RpcBlockhash {
+    #[new]
+    pub fn new(blockhash: SolderHash, last_valid_block_height: u64) -> Self {
+        RpcBlockhash {
+            blockhash,
+            last_valid_block_height,
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetLatestBlockhashResp {
+    #[pyo3(get)]
+    pub context: RpcResponseContext,
+    #[pyo3(get)]
+    pub value: RpcBlockhash,
+}
+
+resp_traits!(GetLatestBlockhashResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetLatestBlockhashResp {
+    #[new]
+    pub fn new(value: RpcBlockhash, context: RpcResponseContext) -> Self {
+        Self { value, context }
+    }
+}
+
 pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "responses")?;
     let typing = py.import("typing")?;
@@ -1255,5 +1302,7 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<GetInflationRewardResp>()?;
     m.add_class::<RpcAccountBalance>()?;
     m.add_class::<GetLargestAccountsResp>()?;
+    m.add_class::<RpcBlockhash>()?;
+    m.add_class::<GetLatestBlockhashResp>()?;
     Ok(m)
 }

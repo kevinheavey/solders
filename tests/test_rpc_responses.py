@@ -25,6 +25,7 @@ from solders.rpc.responses import (
     GetInflationRateResp,
     GetInflationRewardResp,
     GetLargestAccountsResp,
+    GetLatestBlockhashResp,
     RpcSnapshotSlotInfo,
     RpcResponseContext,
     RpcContactInfo,
@@ -33,6 +34,7 @@ from solders.rpc.responses import (
     RpcInflationRate,
     RpcInflationReward,
     RpcAccountBalance,
+    RpcBlockhash,
     EpochInfo,
     RpcError,
 )
@@ -721,4 +723,26 @@ def test_get_largest_accounts() -> None:
     assert isinstance(parsed, GetLargestAccountsResp)
     assert parsed.value[0] == RpcAccountBalance(
         Pubkey.from_string("99P8ZgtJYe1buSK8JXkvpLh8xPsCFuLYhz9hQFNw93WJ"), 999974
+    )
+
+
+def test_get_inflation_reward() -> None:
+    raw = """{
+  "jsonrpc": "2.0",
+  "result": {
+    "context": {
+      "slot": 2792
+    },
+    "value": {
+      "blockhash": "EkSnNWid2cvwEVnVx9aBqawnmiCNiDgp3gUdkDPTKN1N",
+      "lastValidBlockHeight": 3090
+    }
+  },
+  "id": 1
+}"""
+    parsed = GetLatestBlockhashResp.from_json(raw)
+    assert isinstance(parsed, GetLatestBlockhashResp)
+    assert parsed.value == RpcBlockhash(
+        blockhash=Hash.from_string("EkSnNWid2cvwEVnVx9aBqawnmiCNiDgp3gUdkDPTKN1N"),
+        last_valid_block_height=3090,
     )
