@@ -34,7 +34,7 @@ use solana_client::rpc_response::{
     RpcBlockProduction as RpcBlockProductionOriginal,
     RpcBlockProductionRange as RpcBlockProductionRangeOriginal,
     RpcContactInfo as RpcContactInfoOriginal, RpcSnapshotSlotInfo as RpcSnapshotSlotInfoOriginal,
-    RpcTransactionReturnData,
+    RpcTransactionReturnData, RpcInflationGovernor as RpcInflationGovernorOriginal
 };
 use solana_rpc::rpc;
 
@@ -959,21 +959,9 @@ impl GetIdentityResp {
 }
 
 // the one in solana_client doesn't derive Eq
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
-#[serde(rename_all = "camelCase")]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, From, Into)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct RpcInflationGovernor {
-    #[pyo3(get)]
-    pub initial: f64,
-    #[pyo3(get)]
-    pub terminal: f64,
-    #[pyo3(get)]
-    pub taper: f64,
-    #[pyo3(get)]
-    pub foundation: f64,
-    #[pyo3(get)]
-    pub foundation_term: f64,
-}
+pub struct RpcInflationGovernor(RpcInflationGovernorOriginal);
 
 response_data_boilerplate!(RpcInflationGovernor);
 
@@ -989,14 +977,25 @@ impl RpcInflationGovernor {
         foundation: f64,
         foundation_term: f64,
     ) -> Self {
-        Self {
+        RpcInflationGovernorOriginal {
             initial,
             terminal,
             taper,
             foundation,
             foundation_term,
-        }
+        }.into()
     }
+
+    #[getter]
+    pub fn initial(&self) -> f64 { self.0.initial}
+    #[getter]
+    pub fn terminal(&self) -> f64 { self.0.terminal}
+    #[getter]
+    pub fn taper(&self) -> f64 { self.0.taper}
+    #[getter]
+    pub fn foundation(&self) -> f64 { self.0.foundation}
+    #[getter]
+    pub fn foundation_term(&self) -> f64 { self.0.foundation_term}
 }
 
 #[serde_as]
