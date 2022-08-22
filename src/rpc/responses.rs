@@ -919,7 +919,6 @@ impl GetHighestSnapshotSlotResp {
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
 pub struct GetIdentityResp(#[serde_as(as = "DisplayFromStr")] Pubkey);
-
 resp_traits!(GetIdentityResp);
 
 #[common_methods_rpc_resp]
@@ -933,6 +932,67 @@ impl GetIdentityResp {
     #[getter]
     pub fn identity(&self) -> Pubkey {
         self.0
+    }
+}
+
+// the one in solana_client doesn't derive Eq
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
+#[serde(rename_all = "camelCase")]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct RpcInflationGovernor {
+    #[pyo3(get)]
+    pub initial: f64,
+    #[pyo3(get)]
+    pub terminal: f64,
+    #[pyo3(get)]
+    pub taper: f64,
+    #[pyo3(get)]
+    pub foundation: f64,
+    #[pyo3(get)]
+    pub foundation_term: f64,
+}
+
+response_data_boilerplate!(RpcInflationGovernor);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl RpcInflationGovernor {
+    #[new]
+    pub fn new(
+        initial: f64,
+        terminal: f64,
+        taper: f64,
+        foundation: f64,
+        foundation_term: f64,
+    ) -> Self {
+        Self {
+            initial,
+            terminal,
+            taper,
+            foundation,
+            foundation_term,
+        }
+    }
+}
+
+#[serde_as]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetInflationGovernorResp(RpcInflationGovernor);
+resp_traits!(GetInflationGovernorResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetInflationGovernorResp {
+    #[new]
+    pub fn new(governor: RpcInflationGovernor) -> Self {
+        Self(governor)
+    }
+
+    #[getter]
+    pub fn governor(&self) -> RpcInflationGovernor {
+        self.0.clone()
     }
 }
 
@@ -976,5 +1036,7 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<RpcSnapshotSlotInfo>()?;
     m.add_class::<GetHighestSnapshotSlotResp>()?;
     m.add_class::<GetIdentityResp>()?;
+    m.add_class::<RpcInflationGovernor>()?;
+    m.add_class::<GetInflationGovernorResp>()?;
     Ok(m)
 }

@@ -21,9 +21,11 @@ from solders.rpc.responses import (
     GetHealthResp,
     GetHighestSnapshotSlotResp,
     GetIdentityResp,
+    GetInflationGovernorResp,
     RpcSnapshotSlotInfo,
     RpcResponseContext,
     RpcContactInfo,
+    RpcInflationGovernor,
     EpochInfo,
     RpcError,
 )
@@ -560,4 +562,23 @@ def test_get_identity() -> None:
     assert isinstance(parsed, GetIdentityResp)
     assert parsed == GetIdentityResp(
         Pubkey.from_string("2r1F4iWqVcb8M1DbAjQuFpebkQHY9hcVU4WuW2DJBppN")
+    )
+
+
+def test_get_inflation_governor() -> None:
+    raw = """{
+  "jsonrpc": "2.0",
+  "result": {
+    "foundation": 0.05,
+    "foundationTerm": 7,
+    "initial": 0.15,
+    "taper": 0.15,
+    "terminal": 0.015
+  },
+  "id": 1
+}"""
+    parsed = GetInflationGovernorResp.from_json(raw)
+    assert isinstance(parsed, GetInflationGovernorResp)
+    assert parsed.governor == RpcInflationGovernor(
+        initial=0.15, terminal=0.015, taper=0.15, foundation=0.05, foundation_term=7
     )
