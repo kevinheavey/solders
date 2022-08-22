@@ -1317,6 +1317,26 @@ impl GetMaxShredInsertSlotResp {
     }
 }
 
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetMinimumBalanceForRentExemption(u64);
+
+resp_traits!(GetMinimumBalanceForRentExemption);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetMinimumBalanceForRentExemption {
+    #[new]
+    pub fn new(slot: u64) -> Self {
+        Self(slot)
+    }
+
+    #[getter]
+    pub fn slot(&self) -> u64 {
+        self.0
+    }
+}
+
 pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "responses")?;
     let typing = py.import("typing")?;
@@ -1371,5 +1391,6 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<GetLeaderScheduleResp>()?;
     m.add_class::<GetMaxRetransmitSlotResp>()?;
     m.add_class::<GetMaxShredInsertSlotResp>()?;
+    m.add_class::<GetMinimumBalanceForRentExemption>()?;
     Ok(m)
 }

@@ -29,6 +29,7 @@ from solders.rpc.responses import (
     GetLeaderScheduleResp,
     GetMaxRetransmitSlotResp,
     GetMaxShredInsertSlotResp,
+    GetMinimumBalanceForRentExemption,
     RpcSnapshotSlotInfo,
     RpcResponseContext,
     RpcContactInfo,
@@ -848,3 +849,10 @@ def test_get_max_shred_insert_slot() -> None:
     parsed = GetMaxShredInsertSlotResp.from_json(raw)
     assert isinstance(parsed, GetMaxShredInsertSlotResp)
     assert parsed.slot == 1234
+
+
+def test_get_minimum_balance_for_tent_exemption() -> None:
+    raw = '{ "jsonrpc": "2.0", "result": 500, "id": 1 }'
+    parsed = GetMinimumBalanceForRentExemption.from_json(raw)
+    assert isinstance(parsed, GetMinimumBalanceForRentExemption)
+    assert parsed.slot == 500
