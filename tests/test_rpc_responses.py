@@ -31,6 +31,8 @@ from solders.rpc.responses import (
     GetMaxShredInsertSlotResp,
     GetMinimumBalanceForRentExemption,
     GetMultipleAccountsResp,
+    GetProgramAccountsWithContextResp,
+    GetProgramAccountsWithoutContextResp,
     RpcSnapshotSlotInfo,
     RpcResponseContext,
     RpcContactInfo,
@@ -40,6 +42,7 @@ from solders.rpc.responses import (
     RpcInflationReward,
     RpcAccountBalance,
     RpcBlockhash,
+    RpcKeyedAccount,
     EpochInfo,
     RpcError,
 )
@@ -732,7 +735,7 @@ def test_get_largest_accounts() -> None:
     )
 
 
-def test_get_inflation_reward() -> None:
+def test_get_latest_blockhash() -> None:
     raw = """{
   "jsonrpc": "2.0",
   "result": {
@@ -953,3 +956,41 @@ def test_get_multiple_accounts_base58() -> None:
         rent_epoch=2,
         data=b"",
     )
+
+
+def test_get_program_accounts_without_context() -> None:
+    raw = """{
+  "jsonrpc": "2.0",
+  "result": [
+    {
+      "account": {
+        "data": "2R9jLfiAQ9bgdcw6h8s44439",
+        "executable": false,
+        "lamports": 15298080,
+        "owner": "4Nd1mBQtrMJVYVfKf2PJy9NZUZdTAsp7D4xWLs4gDB4T",
+        "rentEpoch": 28
+      },
+      "pubkey": "CxELquR1gPP8wHe33gZ4QxqGB3sZ9RSwsJ2KshVewkFY"
+    }
+  ],
+  "id": 1
+}"""
+    parsed = GetProgramAccountsWithoutContextResp.from_json(raw)
+    assert isinstance(parsed, GetProgramAccountsWithoutContextResp)
+    assert parsed.accounts[0] == RpcKeyedAccount(
+        account=Account(
+            data=b58decode(b"2R9jLfiAQ9bgdcw6h8s44439"),
+            executable=False,
+            lamports=15298080,
+            owner=Pubkey.from_string("4Nd1mBQtrMJVYVfKf2PJy9NZUZdTAsp7D4xWLs4gDB4T"),
+            rent_epoch=28,
+        ),
+        pubkey=Pubkey.from_string("CxELquR1gPP8wHe33gZ4QxqGB3sZ9RSwsJ2KshVewkFY"),
+    )
+
+
+def test_get_program_accounts_with_context() -> None:
+    raw = '{"jsonrpc":"2.0","result":{"context":{"apiVersion":"1.10.34","slot":156892898},"value":[]},"id":1}'
+    parsed = GetProgramAccountsWithContextResp.from_json(raw)
+    assert isinstance(parsed, GetProgramAccountsWithContextResp)
+    assert parsed.value == []

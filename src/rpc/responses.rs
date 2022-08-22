@@ -1359,6 +1359,73 @@ impl GetMultipleAccountsResp {
     }
 }
 
+// the one in solana_client uses UiAccount from account_decoder which currently isn't portable
+#[serde_as]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+#[serde(rename_all = "camelCase")]
+pub struct RpcKeyedAccount {
+    #[serde_as(as = "DisplayFromStr")]
+    #[pyo3(get)]
+    pub pubkey: Pubkey,
+    #[serde_as(as = "FromInto<UiAccount>")]
+    #[pyo3(get)]
+    pub account: Account,
+}
+
+response_data_boilerplate!(RpcKeyedAccount);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl RpcKeyedAccount {
+    #[new]
+    pub fn new(pubkey: Pubkey, account: Account) -> Self {
+        Self { pubkey, account }
+    }
+}
+
+#[serde_as]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetProgramAccountsWithContextResp {
+    #[pyo3(get)]
+    context: RpcResponseContext,
+    #[pyo3(get)]
+    value: Vec<RpcKeyedAccount>,
+}
+
+resp_traits!(GetProgramAccountsWithContextResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetProgramAccountsWithContextResp {
+    #[new]
+    pub fn new(value: Vec<RpcKeyedAccount>, context: RpcResponseContext) -> Self {
+        Self { value, context }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetProgramAccountsWithoutContextResp(Vec<RpcKeyedAccount>);
+
+resp_traits!(GetProgramAccountsWithoutContextResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetProgramAccountsWithoutContextResp {
+    #[new]
+    pub fn new(accounts: Vec<RpcKeyedAccount>) -> Self {
+        Self(accounts)
+    }
+
+    #[getter]
+    pub fn accounts(&self) -> Vec<RpcKeyedAccount> {
+        self.0.clone()
+    }
+}
+
 pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "responses")?;
     let typing = py.import("typing")?;
@@ -1415,5 +1482,8 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<GetMaxShredInsertSlotResp>()?;
     m.add_class::<GetMinimumBalanceForRentExemption>()?;
     m.add_class::<GetMultipleAccountsResp>()?;
+    m.add_class::<RpcKeyedAccount>()?;
+    m.add_class::<GetProgramAccountsWithContextResp>()?;
+    m.add_class::<GetProgramAccountsWithoutContextResp>()?;
     Ok(m)
 }
