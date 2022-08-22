@@ -25,6 +25,7 @@ from solders.rpc.responses import (
     RpcSnapshotSlotInfo,
     RpcResponseContext,
     RpcContactInfo,
+    RpcIdentity,
     RpcInflationGovernor,
     EpochInfo,
     RpcError,
@@ -560,7 +561,7 @@ def test_get_identity() -> None:
 }"""
     parsed = GetIdentityResp.from_json(raw)
     assert isinstance(parsed, GetIdentityResp)
-    assert parsed == GetIdentityResp(
+    assert parsed.value == RpcIdentity(
         Pubkey.from_string("2r1F4iWqVcb8M1DbAjQuFpebkQHY9hcVU4WuW2DJBppN")
     )
 

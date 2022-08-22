@@ -915,23 +915,46 @@ impl GetHighestSnapshotSlotResp {
     }
 }
 
+// the one in solana_client doesn't derive Eq
 #[serde_as]
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetIdentityResp(#[serde_as(as = "DisplayFromStr")] Pubkey);
+pub struct RpcIdentity {
+    /// The current node identity pubkey
+    #[serde_as(as = "DisplayFromStr")]
+    #[pyo3(get)]
+    pub identity: Pubkey,
+}
+
+response_data_boilerplate!(RpcIdentity);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl RpcIdentity {
+    #[new]
+    pub fn new(identity: Pubkey) -> Self {
+        RpcIdentity { identity }
+    }
+}
+
+#[serde_as]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetIdentityResp(RpcIdentity);
 resp_traits!(GetIdentityResp);
 
 #[common_methods_rpc_resp]
 #[pymethods]
 impl GetIdentityResp {
     #[new]
-    pub fn new(identity: Pubkey) -> Self {
-        Self(identity)
+    pub fn new(value: RpcIdentity) -> Self {
+        Self(value)
     }
 
     #[getter]
-    pub fn identity(&self) -> Pubkey {
-        self.0
+    pub fn value(&self) -> RpcIdentity {
+        self.0.clone()
     }
 }
 
@@ -1035,6 +1058,7 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<RpcSimulateTransactionResult>()?;
     m.add_class::<RpcSnapshotSlotInfo>()?;
     m.add_class::<GetHighestSnapshotSlotResp>()?;
+    m.add_class::<RpcIdentity>()?;
     m.add_class::<GetIdentityResp>()?;
     m.add_class::<RpcInflationGovernor>()?;
     m.add_class::<GetInflationGovernorResp>()?;
