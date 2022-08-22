@@ -915,6 +915,27 @@ impl GetHighestSnapshotSlotResp {
     }
 }
 
+#[serde_as]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetIdentityResp(#[serde_as(as = "DisplayFromStr")] Pubkey);
+
+resp_traits!(GetIdentityResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetIdentityResp {
+    #[new]
+    pub fn new(identity: Pubkey) -> Self {
+        Self(identity)
+    }
+
+    #[getter]
+    pub fn identity(&self) -> Pubkey {
+        self.0
+    }
+}
+
 pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "responses")?;
     let typing = py.import("typing")?;
@@ -954,5 +975,6 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<RpcSimulateTransactionResult>()?;
     m.add_class::<RpcSnapshotSlotInfo>()?;
     m.add_class::<GetHighestSnapshotSlotResp>()?;
+    m.add_class::<GetIdentityResp>()?;
     Ok(m)
 }

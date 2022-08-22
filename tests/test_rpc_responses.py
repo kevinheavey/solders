@@ -20,6 +20,7 @@ from solders.rpc.responses import (
     GetGenesisHashResp,
     GetHealthResp,
     GetHighestSnapshotSlotResp,
+    GetIdentityResp,
     RpcSnapshotSlotInfo,
     RpcResponseContext,
     RpcContactInfo,
@@ -547,3 +548,16 @@ def test_get_highest_snapshot_slot() -> None:
     parsed = GetHighestSnapshotSlotResp.from_json(raw)
     assert isinstance(parsed, GetHighestSnapshotSlotResp)
     assert parsed.info == RpcSnapshotSlotInfo(full=100, incremental=110)
+
+
+def test_get_identity() -> None:
+    raw = """{
+  "jsonrpc": "2.0",
+  "result": { "identity": "2r1F4iWqVcb8M1DbAjQuFpebkQHY9hcVU4WuW2DJBppN" },
+  "id": 1
+}"""
+    parsed = GetIdentityResp.from_json(raw)
+    assert isinstance(parsed, GetIdentityResp)
+    assert parsed == GetIdentityResp(
+        Pubkey.from_string("2r1F4iWqVcb8M1DbAjQuFpebkQHY9hcVU4WuW2DJBppN")
+    )
