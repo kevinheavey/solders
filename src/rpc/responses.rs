@@ -121,8 +121,9 @@ pub struct RpcError {
     /// Message
     #[pyo3(get)]
     pub message: String,
-    #[pyo3(get)]
     /// Data
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[pyo3(get)]
     pub data: Option<RpcCustomError>,
 }
 
@@ -904,5 +905,6 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<GetFirstAvailableBlockResp>()?;
     m.add_class::<GetGenesisHashResp>()?;
     m.add_class::<GetHealthResp>()?;
+    m.add_class::<RpcSimulateTransactionResult>()?;
     Ok(m)
 }

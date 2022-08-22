@@ -13,6 +13,7 @@ use super::responses::RpcSimulateTransactionResult;
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.rpc.errors", subclass)]
+#[serde(rename_all = "camelCase")]
 pub struct BlockCleanedUp {
     #[pyo3(get)]
     slot: Slot,
@@ -83,6 +84,7 @@ impl BlockNotAvailable {
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.rpc.errors", subclass)]
+#[serde(rename_all = "camelCase")]
 pub struct NodeUnhealthy {
     #[pyo3(get)]
     num_slots_behind: Option<Slot>,
@@ -161,6 +163,7 @@ impl LongTermStorageSlotSkipped {
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.rpc.errors", subclass)]
+#[serde(rename_all = "camelCase")]
 pub struct KeyExcludedFromSecondaryIndex {
     #[pyo3(get)]
     index_key: String,
@@ -218,6 +221,7 @@ impl BlockStatusNotAvailableYet {
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.rpc.errors", subclass)]
+#[serde(rename_all = "camelCase")]
 pub struct MinContextSlotNotReached {
     #[pyo3(get)]
     context_slot: Slot,
@@ -257,6 +261,7 @@ impl UnsupportedTransactionVersion {
 }
 
 #[derive(FromPyObject, Clone, PartialEq, Serialize, Deserialize, Debug)]
+#[serde(untagged)]
 pub enum RpcCustomError {
     Fieldless(RpcCustomErrorFieldless),
     BlockCleanedUp(BlockCleanedUp),

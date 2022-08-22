@@ -9,7 +9,9 @@ from solders.transaction_status import (
 from solders.signature import Signature
 from solders.pubkey import Pubkey
 from solders.epoch_schedule import EpochSchedule
+from solders.rpc.errors import RpcCustomError
 from solders.transaction import VersionedTransaction
+from solders.transaction_status import TransactionErrorType, TransactionReturnData
 
 class RpcResponseContext:
     slot: int
@@ -19,7 +21,10 @@ class RpcResponseContext:
 class RpcError:
     code: int
     message: str
-    def __init__(self, code: int, message: str) -> None: ...
+    data: Optional[RpcCustomError]
+    def __init__(
+        self, code: int, message: str, data: Optional[RpcCustomError] = None
+    ) -> None: ...
 
 T = TypeVar("T")
 Resp = Union[RpcError, T]
@@ -387,3 +392,19 @@ class GetHealthResp:
     def __eq__(self, o: object) -> bool: ...
     def __bytes__(self) -> bytes: ...
     def __hash__(self) -> int: ...
+
+class RpcSimulateTransactionResult:
+    err: Optional[TransactionErrorType]
+    logs: Optional[List[str]]
+    accounts: Optional[List[Optional[Account]]]
+    units_consumed: Optional[int]
+    return_data: Optional[TransactionReturnData]
+
+    def __init__(
+        self,
+        err: Optional[TransactionErrorType] = None,
+        logs: Optional[Sequence[str]] = None,
+        accounts: Optional[Sequence[Optional[Account]]] = None,
+        units_consumed: Optional[int] = None,
+        return_data: Optional[TransactionReturnData] = None,
+    ) -> None: ...

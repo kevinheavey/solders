@@ -24,6 +24,7 @@ from solders.rpc.responses import (
     EpochInfo,
     RpcError,
 )
+from solders.rpc.errors import NodeUnhealthy
 from solders.hash import Hash
 from solders.account import Account, AccountJSON
 from solders.epoch_schedule import EpochSchedule
@@ -497,7 +498,14 @@ def test_get_genesis_hash_resp() -> None:
     )
 
 
-def test_get_health_resp() -> None:
+def test_get_health_healthy() -> None:
+    raw = '{ "jsonrpc": "2.0", "result": "ok", "id": 1 }'
+    parsed = GetHealthResp.from_json(raw)
+    assert isinstance(parsed, GetHealthResp)
+    assert parsed.health == "ok"
+
+
+def test_get_health_resp_unhealthy_generic() -> None:
     raw = """{
   "jsonrpc": "2.0",
   "error": {
@@ -508,5 +516,25 @@ def test_get_health_resp() -> None:
   "id": 1
 }"""
     parsed = GetHealthResp.from_json(raw)
-    assert isinstance(parsed, GetHealthResp)
-    assert parsed.health == raw
+    assert isinstance(parsed, RpcError)
+    # This is the only custom rpc error that can be empty.
+    # Thus, if the JSON error has `"data": {}`,
+    # it's implicitly a NodeUnhealthy error.
+    assert parsed.data == NodeUnhealthy()
+
+
+def test_get_health_additional_info() -> None:
+    raw = """{
+  "jsonrpc": "2.0",
+  "error": {
+    "code": -32005,
+    "message": "Node is behind by 42 slots",
+    "data": {
+      "numSlotsBehind": 42
+    }
+  },
+  "id": 1
+}"""
+    parsed = GetHealthResp.from_json(raw)
+    assert isinstance(parsed, RpcError)
+    assert parsed.data == NodeUnhealthy(42)
