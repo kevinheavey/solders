@@ -27,6 +27,7 @@ from solders.rpc.responses import (
     GetLargestAccountsResp,
     GetLatestBlockhashResp,
     GetLeaderScheduleResp,
+    GetMaxRetransmitSlotResp,
     RpcSnapshotSlotInfo,
     RpcResponseContext,
     RpcContactInfo,
@@ -832,3 +833,10 @@ def test_get_leader_schedule() -> None:
             63,
         ]
     }
+
+
+def test_get_max_retransmit_slot() -> None:
+    raw = '{ "jsonrpc": "2.0", "result": 1234, "id": 1 }'
+    parsed = GetMaxRetransmitSlotResp.from_json(raw)
+    assert isinstance(parsed, GetMaxRetransmitSlotResp)
+    assert parsed.slot == 1234
