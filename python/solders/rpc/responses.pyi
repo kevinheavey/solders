@@ -11,7 +11,11 @@ from solders.pubkey import Pubkey
 from solders.epoch_schedule import EpochSchedule
 from solders.rpc.errors import RpcCustomError
 from solders.transaction import VersionedTransaction
-from solders.transaction_status import TransactionErrorType, TransactionReturnData
+from solders.transaction_status import (
+    TransactionErrorType,
+    TransactionReturnData,
+    TransactionConfirmationStatus,
+)
 
 class RpcResponseContext:
     slot: int
@@ -840,7 +844,7 @@ class GetRecentPerformanceSamplesResp:
 class RpcConfirmedTransactionStatusWithSignature:
     def __init__(
         self,
-        signature: str,
+        signature: Signature,
         slot: int,
         err: Optional[TransactionErrorType] = None,
         memo: Optional[str] = None,
@@ -848,7 +852,7 @@ class RpcConfirmedTransactionStatusWithSignature:
         confirmation_status: Optional[TransactionConfirmationStatus] = None,
     ) -> None: ...
     @property
-    def signature(self) -> str: ...
+    def signature(self) -> Signature: ...
     @property
     def slot(self) -> int: ...
     @property
