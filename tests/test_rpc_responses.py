@@ -11,6 +11,7 @@ from solders.rpc.responses import (
     GetBlockProductionResp,
     GetBlockHeightResp,
     GetBlocksResp,
+    GetBlocksWithLimitResp,
     GetBlockTimeResp,
     GetClusterNodesResp,
     GetEpochInfoResp,
@@ -33,6 +34,8 @@ from solders.rpc.responses import (
     GetMultipleAccountsResp,
     GetProgramAccountsWithContextResp,
     GetProgramAccountsWithoutContextResp,
+    GetProgramAccountsWithContextJsonParsedResp,
+    GetProgramAccountsWithoutContextJsonParsedResp,
     GetRecentPerformanceSamplesResp,
     GetSignaturesForAddressResp,
     GetSignatureStatusesResp,
@@ -42,6 +45,10 @@ from solders.rpc.responses import (
     GetStakeActivationResp,
     GetSupplyResp,
     GetTokenAccountBalanceResp,
+    GetTokenAccountsByDelegateResp,
+    GetTokenAccountsByDelegateJsonParsedResp,
+    GetTokenAccountsByOwnerResp,
+    GetTokenAccountsByOwnerJsonParsedResp,
     StakeActivationState,
     RpcSnapshotSlotInfo,
     RpcResponseContext,
@@ -53,6 +60,7 @@ from solders.rpc.responses import (
     RpcAccountBalance,
     RpcBlockhash,
     RpcKeyedAccount,
+    RpcKeyedAccountJsonParsed,
     RpcPerfSample,
     RpcConfirmedTransactionStatusWithSignature,
     RpcStakeActivation,
@@ -167,7 +175,7 @@ def test_get_account_info_json_parsed() -> None:
     assert parsed.value.data.program == "spl-token"
 
 
-def test_get_balance_resp() -> None:
+def test_get_balance() -> None:
     raw = """{
 "jsonrpc": "2.0",
 "result": { "context": { "slot": 1 }, "value": 0 },
@@ -178,7 +186,7 @@ def test_get_balance_resp() -> None:
     assert parsed == GetBalanceResp(value=0, context=RpcResponseContext(slot=1))
 
 
-def test_get_block_production_resp() -> None:
+def test_get_block_production() -> None:
     raw = """{
   "jsonrpc": "2.0",
   "result": {
@@ -212,14 +220,14 @@ def test_get_block_production_resp() -> None:
     )
 
 
-def test_get_block_height_resp() -> None:
+def test_get_block_height() -> None:
     raw = '{ "jsonrpc": "2.0", "result": 1233, "id": 1 }'
     parsed = GetBlockHeightResp.from_json(raw)
     assert isinstance(parsed, GetBlockHeightResp)
     assert parsed.height == 1233
 
 
-def test_get_block_commitment_resp() -> None:
+def test_get_block_commitment() -> None:
     raw = """{
   "jsonrpc": "2.0",
   "result": {
@@ -414,21 +422,28 @@ def test_get_block_resp(path: str) -> None:
     assert isinstance(parsed.previous_blockhash, Hash)
 
 
-def test_get_blocks_resp() -> None:
+def test_get_blocks() -> None:
     raw = '{ "jsonrpc": "2.0", "result": [5, 6, 7, 8, 9, 10], "id": 1 }'
     parsed = GetBlocksResp.from_json(raw)
     assert isinstance(parsed, GetBlocksResp)
     assert parsed.blocks == [5, 6, 7, 8, 9, 10]
 
 
-def test_get_block_time_resp() -> None:
+def test_get_blocks_with_limit() -> None:
+    raw = '{ "jsonrpc": "2.0", "result": [5, 6, 7, 8, 9, 10], "id": 1 }'
+    parsed = GetBlocksWithLimitResp.from_json(raw)
+    assert isinstance(parsed, GetBlocksWithLimitResp)
+    assert parsed.blocks == [5, 6, 7, 8, 9, 10]
+
+
+def test_get_block_time() -> None:
     raw = '{ "jsonrpc": "2.0", "result": 1574721591, "id": 1 }'
     parsed = GetBlockTimeResp.from_json(raw)
     assert isinstance(parsed, GetBlockTimeResp)
     assert parsed.time == 1574721591
 
 
-def test_get_cluster_nodes_resp() -> None:
+def test_get_cluster_nodes() -> None:
     raw = """{
   "jsonrpc": "2.0",
   "result": [
@@ -455,7 +470,7 @@ def test_get_cluster_nodes_resp() -> None:
     ]
 
 
-def test_get_epoch_info_resp() -> None:
+def test_get_epoch_info() -> None:
     raw = """{
   "jsonrpc": "2.0",
   "result": {
@@ -480,7 +495,7 @@ def test_get_epoch_info_resp() -> None:
     )
 
 
-def test_get_epoch_schedule_resp() -> None:
+def test_get_epoch_schedule() -> None:
     raw = """{
   "jsonrpc": "2.0",
   "result": {
@@ -504,7 +519,7 @@ def test_get_epoch_schedule_resp() -> None:
     assert schedule.warmup is True
 
 
-def test_get_fee_for_message_resp() -> None:
+def test_get_fee_for_message() -> None:
     raw = """{
   "jsonrpc": "2.0",
   "result": { "context": { "slot": 5068 }, "value": 5000 },
@@ -517,14 +532,14 @@ def test_get_fee_for_message_resp() -> None:
     )
 
 
-def test_get_first_available_block_resp() -> None:
+def test_get_first_available_block() -> None:
     raw = '{ "jsonrpc": "2.0", "result": 250000, "id": 1 }'
     parsed = GetFirstAvailableBlockResp.from_json(raw)
     assert isinstance(parsed, GetFirstAvailableBlockResp)
     assert parsed.slot == 250000
 
 
-def test_get_genesis_hash_resp() -> None:
+def test_get_genesis_hash() -> None:
     raw = """{
   "jsonrpc": "2.0",
   "result": "GH7ome3EiwEr7tu9JuTh2dpYWBJK3z69Xm1ZE3MEE6JC",
@@ -1005,11 +1020,145 @@ def test_get_program_accounts_without_context() -> None:
     )
 
 
+def test_get_program_accounts_without_context_json_parsed() -> None:
+    raw = """{
+    "jsonrpc": "2.0",
+    "result": [
+        {
+            "account": {
+                "data": {
+                    "parsed": {
+                        "info": {
+                            "extensions": [
+                                {
+                                    "extension": "immutableOwner"
+                                },
+                                {
+                                    "extension": "transferFeeAmount",
+                                    "state": {
+                                        "withheldAmount": 0
+                                    }
+                                }
+                            ],
+                            "isNative": false,
+                            "mint": "CYRKaU7PaCnSAnDWT1UgSk3uF2gXrkauJYJcHuDPYwLr",
+                            "owner": "QT1tXf1kz2fMyRPmGdDCCTY6aFcxXaXK3CuwvyCprb1",
+                            "state": "initialized",
+                            "tokenAmount": {
+                                "amount": "0",
+                                "decimals": 6,
+                                "uiAmount": 0.0,
+                                "uiAmountString": "0"
+                            }
+                        },
+                        "type": "account"
+                    },
+                    "program": "spl-token-2022",
+                    "space": 182
+                },
+                "executable": false,
+                "lamports": 2157600,
+                "owner": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+                "rentEpoch": 364
+            },
+            "pubkey": "2je6rgKzzBX6SiYUpEhrshmpmEJvEewDNCkLq1Rbreh7"
+        }
+    ]
+}"""
+    parsed = GetProgramAccountsWithoutContextJsonParsedResp.from_json(raw)
+    assert isinstance(parsed, GetProgramAccountsWithoutContextJsonParsedResp)
+    val = parsed.accounts[0]
+    assert isinstance(val, RpcKeyedAccountJsonParsed)
+    acc = val.account
+    data = acc.data
+    assert isinstance(acc, AccountJSON)
+    assert acc.owner == Pubkey.from_string(
+        "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+    )
+    assert acc.lamports == 2157600
+    assert acc.executable is False
+    assert acc.rent_epoch == 364
+    assert isinstance(data, ParsedAccount)
+    assert data.program == "spl-token-2022"
+    assert data.space == 182
+    assert isinstance(data.parsed, str)
+
+
 def test_get_program_accounts_with_context() -> None:
     raw = '{"jsonrpc":"2.0","result":{"context":{"apiVersion":"1.10.34","slot":156892898},"value":[]},"id":1}'
     parsed = GetProgramAccountsWithContextResp.from_json(raw)
     assert isinstance(parsed, GetProgramAccountsWithContextResp)
     assert parsed.value == []
+
+
+def test_get_program_accounts_with_context_json_parsed() -> None:
+    raw = """{
+    "jsonrpc": "2.0",
+    "result": {
+        "context": {
+            "apiVersion": "1.10.34",
+            "slot": 157310305
+        },
+        "value": [
+            {
+                "account": {
+                    "data": {
+                        "parsed": {
+                            "info": {
+                                "extensions": [
+                                    {
+                                        "extension": "immutableOwner"
+                                    },
+                                    {
+                                        "extension": "transferFeeAmount",
+                                        "state": {
+                                            "withheldAmount": 0
+                                        }
+                                    }
+                                ],
+                                "isNative": false,
+                                "mint": "CYRKaU7PaCnSAnDWT1UgSk3uF2gXrkauJYJcHuDPYwLr",
+                                "owner": "QT1tXf1kz2fMyRPmGdDCCTY6aFcxXaXK3CuwvyCprb1",
+                                "state": "initialized",
+                                "tokenAmount": {
+                                    "amount": "0",
+                                    "decimals": 6,
+                                    "uiAmount": 0.0,
+                                    "uiAmountString": "0"
+                                }
+                            },
+                            "type": "account"
+                        },
+                        "program": "spl-token-2022",
+                        "space": 182
+                    },
+                    "executable": false,
+                    "lamports": 2157600,
+                    "owner": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+                    "rentEpoch": 364
+                },
+                "pubkey": "2je6rgKzzBX6SiYUpEhrshmpmEJvEewDNCkLq1Rbreh7"
+            }
+        ]
+    }
+}"""
+    parsed = GetProgramAccountsWithContextJsonParsedResp.from_json(raw)
+    assert isinstance(parsed, GetProgramAccountsWithContextJsonParsedResp)
+    val = parsed.value[0]
+    assert isinstance(val, RpcKeyedAccountJsonParsed)
+    acc = val.account
+    data = acc.data
+    assert isinstance(acc, AccountJSON)
+    assert acc.owner == Pubkey.from_string(
+        "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+    )
+    assert acc.lamports == 2157600
+    assert acc.executable is False
+    assert acc.rent_epoch == 364
+    assert isinstance(data, ParsedAccount)
+    assert data.program == "spl-token-2022"
+    assert data.space == 182
+    assert isinstance(data.parsed, str)
 
 
 def test_get_recent_performance_samples() -> None:
@@ -1238,4 +1387,236 @@ def test_get_token_account_balance() -> None:
     assert isinstance(parsed, GetTokenAccountBalanceResp)
     assert parsed.value == UiTokenAmount(
         amount="9864", decimals=2, ui_amount=98.64, ui_amount_string="98.64"
+    )
+
+
+def test_get_token_accounts_by_owner_json_parsed() -> None:
+    raw = """{
+  "jsonrpc": "2.0",
+  "result": {
+    "context": {
+      "slot": 1114
+    },
+    "value": [
+      {
+        "account": {
+          "data": {
+            "program": "spl-token",
+            "parsed": {
+              "accountType": "account",
+              "info": {
+                "tokenAmount": {
+                  "amount": "1",
+                  "decimals": 1,
+                  "uiAmount": 0.1,
+                  "uiAmountString": "0.1"
+                },
+                "delegate": "4Nd1mBQtrMJVYVfKf2PJy9NZUZdTAsp7D4xWLs4gDB4T",
+                "delegatedAmount": {
+                  "amount": "1",
+                  "decimals": 1,
+                  "uiAmount": 0.1,
+                  "uiAmountString": "0.1"
+                },
+                "state": "initialized",
+                "isNative": false,
+                "mint": "3wyAj7Rt1TWVPZVteFJPLa26JmLvdb1CAKEFZm3NY75E",
+                "owner": "4Qkev8aNZcqFNSRhQzwyLMFSsi94jHqE8WNVTJzTP99F"
+              },
+              "type": "account"
+            },
+            "space": 165
+          },
+          "executable": false,
+          "lamports": 1726080,
+          "owner": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+          "rentEpoch": 4
+        },
+        "pubkey": "C2gJg6tKpQs41PRS1nC8aw3ZKNZK3HQQZGVrDFDup5nx"
+      }
+    ]
+  },
+  "id": 1
+}"""
+    parsed = GetTokenAccountsByOwnerJsonParsedResp.from_json(raw)
+    assert isinstance(parsed, GetTokenAccountsByOwnerJsonParsedResp)
+    val = parsed.value[0]
+    assert isinstance(val, RpcKeyedAccountJsonParsed)
+    assert val.pubkey == Pubkey.from_string(
+        "C2gJg6tKpQs41PRS1nC8aw3ZKNZK3HQQZGVrDFDup5nx"
+    )
+    acc = val.account
+    assert isinstance(acc, AccountJSON)
+    assert acc.lamports == 1726080
+    data = acc.data
+    assert isinstance(data, ParsedAccount)
+    assert data.program == "spl-token"
+    assert isinstance(data.parsed, str)
+    assert data.space == 165
+    assert acc.owner == Pubkey.from_string(
+        "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+    )
+
+
+def test_get_token_accounts_by_owner_base64() -> None:
+    raw = """{
+    "jsonrpc": "2.0",
+    "result": {
+        "context": {
+            "apiVersion": "1.10.34",
+            "slot": 147478898
+        },
+        "value": [
+            {
+                "account": {
+                    "data": [
+                        "xvp6877brTo9ZfNqq8l0MbG75MLS9uDkfKYCA0UvXWFKA06zRYoxr7jEHagAc7BsbLa6ckZFMVzMh+LY4w/Hky/M7fw+BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+                        "base64"
+                    ],
+                    "executable": false,
+                    "lamports": 2039280,
+                    "owner": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                    "rentEpoch": 341
+                },
+                "pubkey": "5urjqaUDYeHiSiiTkRph6aqYU94GrsBXXSMosxT9b3dF"
+            }
+        ]
+    },
+    "id": 1
+}"""
+    parsed = GetTokenAccountsByOwnerResp.from_json(raw)
+    assert isinstance(parsed, GetTokenAccountsByOwnerResp)
+    val = parsed.value[0]
+    assert isinstance(val, RpcKeyedAccount)
+    assert val.pubkey == Pubkey.from_string(
+        "5urjqaUDYeHiSiiTkRph6aqYU94GrsBXXSMosxT9b3dF"
+    )
+    acc = val.account
+    expected_lamports = 2039280
+    expected_owner = Pubkey.from_string("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA")
+    expected_data = b64decode(
+        "xvp6877brTo9ZfNqq8l0MbG75MLS9uDkfKYCA0UvXWFKA06zRYoxr7jEHagAc7BsbLa6ckZFMVzMh+LY4w/Hky/M7fw+BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    )
+    assert acc == Account(
+        lamports=expected_lamports,
+        data=expected_data,
+        owner=expected_owner,
+        executable=False,
+        rent_epoch=341,
+    )
+
+
+def test_get_token_accounts_by_delegate_json_parsed() -> None:
+    raw = """{
+  "jsonrpc": "2.0",
+  "result": {
+    "context": {
+      "slot": 1114
+    },
+    "value": [
+      {
+        "account": {
+          "data": {
+            "program": "spl-token",
+            "parsed": {
+              "info": {
+                "tokenAmount": {
+                  "amount": "1",
+                  "decimals": 1,
+                  "uiAmount": 0.1,
+                  "uiAmountString": "0.1"
+                },
+                "delegate": "4Nd1mBQtrMJVYVfKf2PJy9NZUZdTAsp7D4xWLs4gDB4T",
+                "delegatedAmount": {
+                  "amount": "1",
+                  "decimals": 1,
+                  "uiAmount": 0.1,
+                  "uiAmountString": "0.1"
+                },
+                "state": "initialized",
+                "isNative": false,
+                "mint": "3wyAj7Rt1TWVPZVteFJPLa26JmLvdb1CAKEFZm3NY75E",
+                "owner": "CnPoSPKXu7wJqxe59Fs72tkBeALovhsCxYeFwPCQH9TD"
+              },
+              "type": "account"
+            },
+            "space": 165
+          },
+          "executable": false,
+          "lamports": 1726080,
+          "owner": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+          "rentEpoch": 4
+        },
+        "pubkey": "28YTZEwqtMHWrhWcvv34se7pjS7wctgqzCPB3gReCFKp"
+      }
+    ]
+  },
+  "id": 1
+}"""
+    parsed = GetTokenAccountsByDelegateJsonParsedResp.from_json(raw)
+    assert isinstance(parsed, GetTokenAccountsByDelegateJsonParsedResp)
+    val = parsed.value[0]
+    assert isinstance(val, RpcKeyedAccountJsonParsed)
+    assert val.pubkey == Pubkey.from_string(
+        "28YTZEwqtMHWrhWcvv34se7pjS7wctgqzCPB3gReCFKp"
+    )
+    acc = val.account
+    assert isinstance(acc, AccountJSON)
+    assert acc.executable is False
+    assert acc.owner == Pubkey.from_string(
+        "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+    )
+    assert acc.rent_epoch == 4
+    assert acc.lamports == 1726080
+    data = acc.data
+    assert data.program == "spl-token"
+    assert isinstance(data.parsed, str)
+    assert data.space == 165
+
+
+def test_get_token_accounts_by_delegate_base64() -> None:
+    raw = """{
+    "jsonrpc": "2.0",
+    "result": {
+        "context": {
+            "apiVersion": "1.10.34",
+            "slot": 147478898
+        },
+        "value": [
+            {
+                "account": {
+                    "data": [
+                        "xvp6877brTo9ZfNqq8l0MbG75MLS9uDkfKYCA0UvXWFKA06zRYoxr7jEHagAc7BsbLa6ckZFMVzMh+LY4w/Hky/M7fw+BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+                        "base64"
+                    ],
+                    "executable": false,
+                    "lamports": 2039280,
+                    "owner": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                    "rentEpoch": 341
+                },
+                "pubkey": "5urjqaUDYeHiSiiTkRph6aqYU94GrsBXXSMosxT9b3dF"
+            }
+        ]
+    },
+    "id": 1
+}"""
+    parsed = GetTokenAccountsByDelegateResp.from_json(raw)
+    assert isinstance(parsed, GetTokenAccountsByDelegateResp)
+    val = parsed.value[0]
+    assert isinstance(val, RpcKeyedAccount)
+    assert val.pubkey == Pubkey.from_string(
+        "5urjqaUDYeHiSiiTkRph6aqYU94GrsBXXSMosxT9b3dF"
+    )
+    acc = val.account
+    expected_lamports = 2039280
+    expected_owner = Pubkey.from_string("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA")
+    expected_data = b64decode(
+        "xvp6877brTo9ZfNqq8l0MbG75MLS9uDkfKYCA0UvXWFKA06zRYoxr7jEHagAc7BsbLa6ckZFMVzMh+LY4w/Hky/M7fw+BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    )
+    assert acc == Account(
+        lamports=expected_lamports,
+        data=expected_data,
+        owner=expected_owner,
+        executable=False,
+        rent_epoch=341,
     )

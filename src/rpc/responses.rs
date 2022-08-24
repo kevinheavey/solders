@@ -468,7 +468,6 @@ impl GetBlockResp {
     }
 }
 
-// note: this also covers get_blocks_with_limit
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
 pub struct GetBlocksResp(Vec<u64>);
@@ -478,6 +477,26 @@ resp_traits!(GetBlocksResp);
 #[common_methods_rpc_resp]
 #[pymethods]
 impl GetBlocksResp {
+    #[new]
+    pub fn new(blocks: Vec<u64>) -> Self {
+        Self(blocks)
+    }
+
+    #[getter]
+    pub fn blocks(&self) -> Vec<u64> {
+        self.0.clone()
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetBlocksWithLimitResp(Vec<u64>);
+
+resp_traits!(GetBlocksWithLimitResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetBlocksWithLimitResp {
     #[new]
     pub fn new(blocks: Vec<u64>) -> Self {
         Self(blocks)
@@ -1397,6 +1416,31 @@ impl RpcKeyedAccount {
     }
 }
 
+#[serde_as]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+#[serde(rename_all = "camelCase")]
+pub struct RpcKeyedAccountJsonParsed {
+    #[serde_as(as = "DisplayFromStr")]
+    #[pyo3(get)]
+    pub pubkey: Pubkey,
+    #[serde_as(as = "FromInto<UiAccount>")]
+    #[pyo3(get)]
+    pub account: AccountJSON,
+}
+
+response_data_boilerplate!(RpcKeyedAccountJsonParsed);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl RpcKeyedAccountJsonParsed {
+    #[new]
+    pub fn new(pubkey: Pubkey, account: AccountJSON) -> Self {
+        Self { pubkey, account }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
 pub struct GetProgramAccountsWithContextResp {
@@ -1419,6 +1463,26 @@ impl GetProgramAccountsWithContextResp {
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetProgramAccountsWithContextJsonParsedResp {
+    #[pyo3(get)]
+    context: RpcResponseContext,
+    #[pyo3(get)]
+    value: Vec<RpcKeyedAccountJsonParsed>,
+}
+
+resp_traits!(GetProgramAccountsWithContextJsonParsedResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetProgramAccountsWithContextJsonParsedResp {
+    #[new]
+    pub fn new(value: Vec<RpcKeyedAccountJsonParsed>, context: RpcResponseContext) -> Self {
+        Self { value, context }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
 pub struct GetProgramAccountsWithoutContextResp(Vec<RpcKeyedAccount>);
 
 resp_traits!(GetProgramAccountsWithoutContextResp);
@@ -1433,6 +1497,26 @@ impl GetProgramAccountsWithoutContextResp {
 
     #[getter]
     pub fn accounts(&self) -> Vec<RpcKeyedAccount> {
+        self.0.clone()
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetProgramAccountsWithoutContextJsonParsedResp(Vec<RpcKeyedAccountJsonParsed>);
+
+resp_traits!(GetProgramAccountsWithoutContextJsonParsedResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetProgramAccountsWithoutContextJsonParsedResp {
+    #[new]
+    pub fn new(accounts: Vec<RpcKeyedAccountJsonParsed>) -> Self {
+        Self(accounts)
+    }
+
+    #[getter]
+    pub fn accounts(&self) -> Vec<RpcKeyedAccountJsonParsed> {
         self.0.clone()
     }
 }
@@ -1826,6 +1910,86 @@ impl GetTokenAccountBalanceResp {
     }
 }
 
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetTokenAccountsByDelegateResp {
+    #[pyo3(get)]
+    context: RpcResponseContext,
+    #[pyo3(get)]
+    value: Vec<RpcKeyedAccount>,
+}
+
+resp_traits!(GetTokenAccountsByDelegateResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetTokenAccountsByDelegateResp {
+    #[new]
+    pub fn new(value: Vec<RpcKeyedAccount>, context: RpcResponseContext) -> Self {
+        Self { value, context }
+    }
+}
+
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetTokenAccountsByDelegateJsonParsedResp {
+    #[pyo3(get)]
+    context: RpcResponseContext,
+    #[pyo3(get)]
+    value: Vec<RpcKeyedAccountJsonParsed>,
+}
+
+resp_traits!(GetTokenAccountsByDelegateJsonParsedResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetTokenAccountsByDelegateJsonParsedResp {
+    #[new]
+    pub fn new(value: Vec<RpcKeyedAccountJsonParsed>, context: RpcResponseContext) -> Self {
+        Self { value, context }
+    }
+}
+
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetTokenAccountsByOwnerResp {
+    #[pyo3(get)]
+    context: RpcResponseContext,
+    #[pyo3(get)]
+    value: Vec<RpcKeyedAccount>,
+}
+
+resp_traits!(GetTokenAccountsByOwnerResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetTokenAccountsByOwnerResp {
+    #[new]
+    pub fn new(value: Vec<RpcKeyedAccount>, context: RpcResponseContext) -> Self {
+        Self { value, context }
+    }
+}
+
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetTokenAccountsByOwnerJsonParsedResp {
+    #[pyo3(get)]
+    context: RpcResponseContext,
+    #[pyo3(get)]
+    value: Vec<RpcKeyedAccountJsonParsed>,
+}
+
+resp_traits!(GetTokenAccountsByOwnerJsonParsedResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetTokenAccountsByOwnerJsonParsedResp {
+    #[new]
+    pub fn new(value: Vec<RpcKeyedAccountJsonParsed>, context: RpcResponseContext) -> Self {
+        Self { value, context }
+    }
+}
+
 pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "responses")?;
     let typing = py.import("typing")?;
@@ -1852,6 +2016,7 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<GetBlockCommitmentResp>()?;
     m.add_class::<GetBlockHeightResp>()?;
     m.add_class::<GetBlocksResp>()?;
+    m.add_class::<GetBlocksWithLimitResp>()?;
     m.add_class::<GetBlockTimeResp>()?;
     m.add_class::<RpcContactInfo>()?;
     m.add_class::<GetClusterNodesResp>()?;
@@ -1883,8 +2048,11 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<GetMinimumBalanceForRentExemption>()?;
     m.add_class::<GetMultipleAccountsResp>()?;
     m.add_class::<RpcKeyedAccount>()?;
+    m.add_class::<RpcKeyedAccountJsonParsed>()?;
     m.add_class::<GetProgramAccountsWithContextResp>()?;
     m.add_class::<GetProgramAccountsWithoutContextResp>()?;
+    m.add_class::<GetProgramAccountsWithContextJsonParsedResp>()?;
+    m.add_class::<GetProgramAccountsWithoutContextJsonParsedResp>()?;
     m.add_class::<RpcPerfSample>()?;
     m.add_class::<GetRecentPerformanceSamplesResp>()?;
     m.add_class::<RpcConfirmedTransactionStatusWithSignature>()?;
@@ -1899,5 +2067,9 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<RpcSupply>()?;
     m.add_class::<GetSupplyResp>()?;
     m.add_class::<GetTokenAccountBalanceResp>()?;
+    m.add_class::<GetTokenAccountsByDelegateResp>()?;
+    m.add_class::<GetTokenAccountsByDelegateJsonParsedResp>()?;
+    m.add_class::<GetTokenAccountsByOwnerResp>()?;
+    m.add_class::<GetTokenAccountsByOwnerJsonParsedResp>()?;
     Ok(m)
 }
