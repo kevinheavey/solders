@@ -35,6 +35,12 @@ from solders.rpc.responses import (
     GetProgramAccountsWithoutContextResp,
     GetRecentPerformanceSamplesResp,
     GetSignaturesForAddressResp,
+    GetSignatureStatusesResp,
+    GetSlotResp,
+    GetSlotLeaderResp,
+    GetSlotLeadersResp,
+    GetStakeActivationResp,
+    StakeActivationState,
     RpcSnapshotSlotInfo,
     RpcResponseContext,
     RpcContactInfo,
@@ -47,6 +53,7 @@ from solders.rpc.responses import (
     RpcKeyedAccount,
     RpcPerfSample,
     RpcConfirmedTransactionStatusWithSignature,
+    RpcStakeActivation,
     EpochInfo,
     RpcError,
 )
@@ -68,6 +75,8 @@ from solders.transaction_status import (
     UiCompiledInstruction,
     ParsedAccount as ParsedAccountTxStatus,
     ParsedInstruction,
+    TransactionStatus,
+    TransactionConfirmationStatus,
 )
 from solders.message import MessageHeader, Message
 from solders.transaction import VersionedTransaction
@@ -1062,4 +1071,106 @@ def test_get_signatures_for_address() -> None:
         ),
         slot=114,
         block_time=None,
+    )
+
+
+def test_get_signature_statuses() -> None:
+    raw = """{
+  "jsonrpc": "2.0",
+  "result": {
+    "context": {
+      "slot": 82
+    },
+    "value": [
+      {
+        "slot": 72,
+        "confirmations": 10,
+        "err": null,
+        "status": {
+          "Ok": null
+        },
+        "confirmationStatus": "confirmed"
+      },
+      null
+    ]
+  },
+  "id": 1
+}"""
+    parsed = GetSignatureStatusesResp.from_json(raw)
+    assert isinstance(parsed, GetSignatureStatusesResp)
+    assert parsed.value[0] == TransactionStatus(
+        slot=72,
+        confirmations=10,
+        err=None,
+        status=None,
+        confirmation_status=TransactionConfirmationStatus.Confirmed,
+    )
+
+
+def test_get_slot() -> None:
+    raw = '{ "jsonrpc": "2.0", "result": 1234, "id": 1 }'
+    parsed = GetSlotResp.from_json(raw)
+    assert isinstance(parsed, GetSlotResp)
+    assert parsed.slot == 1234
+
+
+def test_get_slot_leader() -> None:
+    raw = """{
+  "jsonrpc": "2.0",
+  "result": "ENvAW7JScgYq6o4zKZwewtkzzJgDzuJAFxYasvmEQdpS",
+  "id": 1
+}"""
+    parsed = GetSlotLeaderResp.from_json(raw)
+    assert isinstance(parsed, GetSlotLeaderResp)
+    assert parsed.leader == Pubkey.from_string(
+        "ENvAW7JScgYq6o4zKZwewtkzzJgDzuJAFxYasvmEQdpS"
+    )
+
+
+def test_get_slot_leaders() -> None:
+    raw = """{
+  "jsonrpc": "2.0",
+  "result": [
+    "ChorusmmK7i1AxXeiTtQgQZhQNiXYU84ULeaYF1EH15n",
+    "ChorusmmK7i1AxXeiTtQgQZhQNiXYU84ULeaYF1EH15n",
+    "ChorusmmK7i1AxXeiTtQgQZhQNiXYU84ULeaYF1EH15n",
+    "ChorusmmK7i1AxXeiTtQgQZhQNiXYU84ULeaYF1EH15n",
+    "Awes4Tr6TX8JDzEhCZY2QVNimT6iD1zWHzf1vNyGvpLM",
+    "Awes4Tr6TX8JDzEhCZY2QVNimT6iD1zWHzf1vNyGvpLM",
+    "Awes4Tr6TX8JDzEhCZY2QVNimT6iD1zWHzf1vNyGvpLM",
+    "Awes4Tr6TX8JDzEhCZY2QVNimT6iD1zWHzf1vNyGvpLM",
+    "DWvDTSh3qfn88UoQTEKRV2JnLt5jtJAVoiCo3ivtMwXP",
+    "DWvDTSh3qfn88UoQTEKRV2JnLt5jtJAVoiCo3ivtMwXP"
+  ],
+  "id": 1
+}"""
+    parsed = GetSlotLeadersResp.from_json(raw)
+    assert isinstance(parsed, GetSlotLeadersResp)
+    assert parsed.leaders == [
+        Pubkey.from_string(p)
+        for p in (
+            "ChorusmmK7i1AxXeiTtQgQZhQNiXYU84ULeaYF1EH15n",
+            "ChorusmmK7i1AxXeiTtQgQZhQNiXYU84ULeaYF1EH15n",
+            "ChorusmmK7i1AxXeiTtQgQZhQNiXYU84ULeaYF1EH15n",
+            "ChorusmmK7i1AxXeiTtQgQZhQNiXYU84ULeaYF1EH15n",
+            "Awes4Tr6TX8JDzEhCZY2QVNimT6iD1zWHzf1vNyGvpLM",
+            "Awes4Tr6TX8JDzEhCZY2QVNimT6iD1zWHzf1vNyGvpLM",
+            "Awes4Tr6TX8JDzEhCZY2QVNimT6iD1zWHzf1vNyGvpLM",
+            "Awes4Tr6TX8JDzEhCZY2QVNimT6iD1zWHzf1vNyGvpLM",
+            "DWvDTSh3qfn88UoQTEKRV2JnLt5jtJAVoiCo3ivtMwXP",
+            "DWvDTSh3qfn88UoQTEKRV2JnLt5jtJAVoiCo3ivtMwXP",
+        )
+    ]
+
+
+def test_get_stake_activation() -> None:
+    raw = """{
+  "jsonrpc": "2.0",
+  "result": { "active": 197717120, "inactive": 0, "state": "active" },
+  "id": 1
+}"""
+    parsed = GetStakeActivationResp.from_json(raw)
+    assert isinstance(parsed, GetStakeActivationResp)
+    assert parsed.activation == RpcStakeActivation(
+        state=StakeActivationState.Active, active=197717120, inactive=0
     )

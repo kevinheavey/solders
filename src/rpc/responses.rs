@@ -17,11 +17,13 @@ use solana_sdk::{
     transaction::TransactionError as TransactionErrorOriginal,
     transaction_context::TransactionReturnData as TransactionReturnDataOriginal,
 };
-use solders_macros::{common_methods, common_methods_rpc_resp, richcmp_eq_only};
+use solders_macros::{
+    common_methods, common_methods_rpc_resp, enum_original_mapping, richcmp_eq_only,
+};
 
 use crate::epoch_schedule::EpochSchedule;
 use crate::transaction_status::{
-    TransactionConfirmationStatus, TransactionErrorType, TransactionReturnData,
+    TransactionConfirmationStatus, TransactionErrorType, TransactionReturnData, TransactionStatus,
 };
 use crate::{
     account::{Account, AccountJSON},
@@ -29,7 +31,10 @@ use crate::{
     py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
     signature::Signature,
     tmp_account_decoder::UiAccount,
-    tmp_transaction_status::TransactionConfirmationStatus as TransactionConfirmationStatusOriginal,
+    tmp_transaction_status::{
+        TransactionConfirmationStatus as TransactionConfirmationStatusOriginal,
+        TransactionStatus as TransactionStatusOriginal,
+    },
     to_py_err,
     transaction_status::{EncodedTransactionWithStatusMeta, Rewards},
     CommonMethods, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly, SolderHash,
@@ -41,7 +46,8 @@ use solana_client::rpc_response::{
     RpcContactInfo as RpcContactInfoOriginal, RpcInflationGovernor as RpcInflationGovernorOriginal,
     RpcInflationRate as RpcInflationRateOriginal, RpcInflationReward as RpcInflationRewardOriginal,
     RpcPerfSample as RpcPerfSampleOriginal, RpcSnapshotSlotInfo as RpcSnapshotSlotInfoOriginal,
-    RpcTransactionReturnData,
+    RpcStakeActivation as RpcStakeActivationOriginal, RpcTransactionReturnData,
+    StakeActivationState as StakeActivationStateOriginal,
 };
 use solana_rpc::rpc;
 
@@ -1390,7 +1396,6 @@ impl RpcKeyedAccount {
     }
 }
 
-#[serde_as]
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
 pub struct GetProgramAccountsWithContextResp {
@@ -1580,6 +1585,155 @@ impl GetSignaturesForAddressResp {
     }
 }
 
+#[serde_as]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetSignatureStatusesResp {
+    #[pyo3(get)]
+    context: RpcResponseContext,
+    #[pyo3(get)]
+    #[serde_as(as = "Vec<Option<FromInto<TransactionStatusOriginal>>>")]
+    value: Vec<Option<TransactionStatus>>,
+}
+
+resp_traits!(GetSignatureStatusesResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetSignatureStatusesResp {
+    #[new]
+    pub fn new(value: Vec<Option<TransactionStatus>>, context: RpcResponseContext) -> Self {
+        Self { value, context }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetSlotResp(Slot);
+
+resp_traits!(GetSlotResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetSlotResp {
+    #[new]
+    pub fn new(slot: Slot) -> Self {
+        Self(slot)
+    }
+
+    #[getter]
+    pub fn slot(&self) -> Slot {
+        self.0
+    }
+}
+
+#[serde_as]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetSlotLeaderResp(#[serde_as(as = "DisplayFromStr")] Pubkey);
+
+resp_traits!(GetSlotLeaderResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetSlotLeaderResp {
+    #[new]
+    pub fn new(leader: Pubkey) -> Self {
+        Self(leader)
+    }
+
+    #[getter]
+    pub fn leader(&self) -> Pubkey {
+        self.0
+    }
+}
+
+#[serde_as]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetSlotLeadersResp(#[serde_as(as = "Vec<DisplayFromStr>")] Vec<Pubkey>);
+
+resp_traits!(GetSlotLeadersResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetSlotLeadersResp {
+    #[new]
+    pub fn new(leaders: Vec<Pubkey>) -> Self {
+        Self(leaders)
+    }
+
+    #[getter]
+    pub fn leaders(&self) -> Vec<Pubkey> {
+        self.0.clone()
+    }
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+#[pyclass(module = "solders.rpc.responses")]
+#[enum_original_mapping(StakeActivationStateOriginal)]
+pub enum StakeActivationState {
+    Activating,
+    Active,
+    Deactivating,
+    Inactive,
+}
+
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct RpcStakeActivation(RpcStakeActivationOriginal);
+
+response_data_boilerplate!(RpcStakeActivation);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl RpcStakeActivation {
+    #[new]
+    pub fn new(state: StakeActivationState, active: u64, inactive: u64) -> Self {
+        RpcStakeActivationOriginal {
+            state: state.into(),
+            active,
+            inactive,
+        }
+        .into()
+    }
+
+    #[getter]
+    pub fn state(&self) -> StakeActivationState {
+        self.0.state.clone().into()
+    }
+    #[getter]
+    pub fn active(&self) -> u64 {
+        self.0.active
+    }
+    #[getter]
+    pub fn inactive(&self) -> u64 {
+        self.0.inactive
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetStakeActivationResp(RpcStakeActivation);
+
+resp_traits!(GetStakeActivationResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetStakeActivationResp {
+    #[new]
+    pub fn new(activation: RpcStakeActivation) -> Self {
+        Self(activation)
+    }
+
+    #[getter]
+    pub fn activation(&self) -> RpcStakeActivation {
+        self.0.clone()
+    }
+}
+
 pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "responses")?;
     let typing = py.import("typing")?;
@@ -1643,5 +1797,12 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<GetRecentPerformanceSamplesResp>()?;
     m.add_class::<RpcConfirmedTransactionStatusWithSignature>()?;
     m.add_class::<GetSignaturesForAddressResp>()?;
+    m.add_class::<GetSignatureStatusesResp>()?;
+    m.add_class::<GetSlotResp>()?;
+    m.add_class::<GetSlotLeaderResp>()?;
+    m.add_class::<GetSlotLeadersResp>()?;
+    m.add_class::<StakeActivationState>()?;
+    m.add_class::<RpcStakeActivation>()?;
+    m.add_class::<GetStakeActivationResp>()?;
     Ok(m)
 }
