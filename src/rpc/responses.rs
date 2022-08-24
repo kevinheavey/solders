@@ -31,7 +31,7 @@ use crate::{
     pubkey::Pubkey,
     py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
     signature::Signature,
-    tmp_account_decoder::UiAccount,
+    tmp_account_decoder::{UiAccount, UiTokenAmount as UiTokenAmountOriginal},
     tmp_transaction_status::{
         TransactionConfirmationStatus as TransactionConfirmationStatusOriginal,
         TransactionStatus as TransactionStatusOriginal,
@@ -1970,7 +1970,7 @@ impl GetTokenAccountsByOwnerResp {
     }
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
 pub struct GetTokenAccountsByOwnerJsonParsedResp {
     #[pyo3(get)]
@@ -1986,6 +1986,65 @@ resp_traits!(GetTokenAccountsByOwnerJsonParsedResp);
 impl GetTokenAccountsByOwnerJsonParsedResp {
     #[new]
     pub fn new(value: Vec<RpcKeyedAccountJsonParsed>, context: RpcResponseContext) -> Self {
+        Self { value, context }
+    }
+}
+
+// the one in solana_client uses account_decoder
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct RpcTokenAccountBalanceOriginal {
+    pub address: String,
+    #[serde(flatten)]
+    pub amount: UiTokenAmountOriginal,
+}
+
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone, From, Into)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct RpcTokenAccountBalance(RpcTokenAccountBalanceOriginal);
+
+response_data_boilerplate!(RpcTokenAccountBalance);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl RpcTokenAccountBalance {
+    #[new]
+    pub fn new(address: Pubkey, amount: UiTokenAmount) -> Self {
+        RpcTokenAccountBalanceOriginal {
+            address: address.to_string(),
+            amount: amount.into(),
+        }
+        .into()
+    }
+
+    #[getter]
+    pub fn address(&self) -> Pubkey {
+        Pubkey::from_str(&self.0.address).unwrap()
+    }
+
+    #[getter]
+    pub fn amount(&self) -> UiTokenAmount {
+        self.0.amount.clone().into()
+    }
+}
+
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetTokenLargestAccountsResp {
+    #[pyo3(get)]
+    context: RpcResponseContext,
+    #[pyo3(get)]
+    value: Vec<RpcTokenAccountBalance>,
+}
+
+resp_traits!(GetTokenLargestAccountsResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetTokenLargestAccountsResp {
+    #[new]
+    pub fn new(value: Vec<RpcTokenAccountBalance>, context: RpcResponseContext) -> Self {
         Self { value, context }
     }
 }
@@ -2071,5 +2130,7 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<GetTokenAccountsByDelegateJsonParsedResp>()?;
     m.add_class::<GetTokenAccountsByOwnerResp>()?;
     m.add_class::<GetTokenAccountsByOwnerJsonParsedResp>()?;
+    m.add_class::<RpcTokenAccountBalance>()?;
+    m.add_class::<GetTokenLargestAccountsResp>()?;
     Ok(m)
 }

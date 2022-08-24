@@ -49,6 +49,7 @@ from solders.rpc.responses import (
     GetTokenAccountsByDelegateJsonParsedResp,
     GetTokenAccountsByOwnerResp,
     GetTokenAccountsByOwnerJsonParsedResp,
+    GetTokenLargestAccountsResp,
     StakeActivationState,
     RpcSnapshotSlotInfo,
     RpcResponseContext,
@@ -65,6 +66,7 @@ from solders.rpc.responses import (
     RpcConfirmedTransactionStatusWithSignature,
     RpcStakeActivation,
     RpcSupply,
+    RpcTokenAccountBalance,
     EpochInfo,
     RpcError,
 )
@@ -1619,4 +1621,44 @@ def test_get_token_accounts_by_delegate_base64() -> None:
         owner=expected_owner,
         executable=False,
         rent_epoch=341,
+    )
+
+
+def test_get_token_largest_accounts() -> None:
+    raw = """{
+  "jsonrpc": "2.0",
+  "result": {
+    "context": {
+      "slot": 1114
+    },
+    "value": [
+      {
+        "address": "FYjHNoFtSQ5uijKrZFyYAxvEr87hsKXkXcxkcmkBAf4r",
+        "amount": "771",
+        "decimals": 2,
+        "uiAmount": 7.71,
+        "uiAmountString": "7.71"
+      },
+      {
+        "address": "BnsywxTcaYeNUtzrPxQUvzAWxfzZe3ZLUJ4wMMuLESnu",
+        "amount": "229",
+        "decimals": 2,
+        "uiAmount": 2.29,
+        "uiAmountString": "2.29"
+      }
+    ]
+  },
+  "id": 1
+}"""
+    parsed = GetTokenLargestAccountsResp.from_json(raw)
+    assert isinstance(parsed, GetTokenLargestAccountsResp)
+    val = parsed.value
+    assert val[0] == RpcTokenAccountBalance(
+        address=Pubkey.from_string("FYjHNoFtSQ5uijKrZFyYAxvEr87hsKXkXcxkcmkBAf4r"),
+        amount=UiTokenAmount(
+            decimals=2,
+            ui_amount=7.71,
+            amount="771",
+            ui_amount_string="7.71",
+        ),
     )
