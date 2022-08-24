@@ -1616,7 +1616,7 @@ pub enum TransactionConfirmationStatus {
 
 pub type Rewards = Vec<Reward>;
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.transaction_status", subclass)]
 pub struct TransactionStatus(TransactionStatusOriginal);
 
