@@ -6,6 +6,7 @@ use std::str::FromStr;
 
 use crate::{
     account_decoder::UiTokenAmount,
+    commitment_config::CommitmentConfig,
     message::MessageHeader,
     pubkey::Pubkey,
     signature::Signature,
@@ -16,6 +17,7 @@ use crate::{
         Reward as RewardOriginal, RewardType as RewardTypeOriginal,
         TransactionBinaryEncoding as TransactionBinaryEncodingOriginal,
         TransactionConfirmationStatus as TransactionConfirmationStatusOriginal,
+        TransactionStatus as TransactionStatusOriginal,
         UiAddressTableLookup as UiAddressTableLookupOriginal,
         UiCompiledInstruction as UiCompiledInstructionOriginal,
         UiInnerInstructions as UiInnerInstructionsOriginal, UiInstruction as UiInstructionOriginal,
@@ -38,7 +40,7 @@ use pyo3::{
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use solana_sdk::{
-    instruction::InstructionError as InstructionErrorOriginal,
+    instruction::InstructionError as InstructionErrorOriginal, slot_history::Slot,
     transaction::TransactionError as TransactionErrorOriginal,
     transaction_context::TransactionReturnData as TransactionReturnDataOriginal,
 };
@@ -1614,6 +1616,67 @@ pub enum TransactionConfirmationStatus {
 
 pub type Rewards = Vec<Reward>;
 
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
+#[pyclass(module = "solders.transaction_status", subclass)]
+pub struct TransactionStatus(TransactionStatusOriginal);
+
+transaction_status_boilerplate!(TransactionStatus);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl TransactionStatus {
+    #[new]
+    pub fn new(
+        slot: Slot,
+        confirmations: Option<usize>,
+        status: Option<TransactionErrorType>,
+        err: Option<TransactionErrorType>,
+        confirmation_status: Option<TransactionConfirmationStatus>,
+    ) -> Self {
+        TransactionStatusOriginal {
+            slot,
+            confirmations,
+            status: status.map_or(Ok(()), |e| Err(e.into())),
+            err: err.map(Into::into),
+            confirmation_status: confirmation_status.map(Into::into),
+        }
+        .into()
+    }
+
+    #[getter]
+    pub fn slot(&self) -> Slot {
+        self.0.slot
+    }
+    #[getter]
+    pub fn confirmations(&self) -> Option<usize> {
+        self.0.confirmations
+    }
+    #[getter]
+    pub fn status(&self) -> Option<TransactionErrorType> {
+        self.0
+            .status
+            .clone()
+            .map_or_else(|e| Some(e.into()), |_s| None)
+    }
+    #[getter]
+    pub fn err(&self) -> Option<TransactionErrorType> {
+        self.0.err.clone().map(Into::into)
+    }
+    #[getter]
+    pub fn confirmation_status(&self) -> Option<TransactionConfirmationStatus> {
+        self.0.confirmation_status.clone().map(Into::into)
+    }
+
+    pub fn satisfies_commitment(&self, commitment_config: CommitmentConfig) -> bool {
+        self.0.satisfies_commitment(commitment_config.into())
+    }
+
+    pub fn get_confirmation_status(&self) -> TransactionConfirmationStatus {
+        self.0.confirmation_status().into()
+    }
+}
+
 pub fn create_transaction_status_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "transaction_status")?;
     m.add_class::<TransactionDetails>()?;
@@ -1643,6 +1706,7 @@ pub fn create_transaction_status_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<TransactionErrorFieldless>()?;
     m.add_class::<Reward>()?;
     m.add_class::<TransactionConfirmationStatus>()?;
+    m.add_class::<TransactionStatus>()?;
     let typing = py.import("typing")?;
     let union = typing.getattr("Union")?;
     let ui_parsed_instruction_members = vec![
