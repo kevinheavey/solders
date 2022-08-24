@@ -14,18 +14,22 @@ use serde_with::{serde_as, DisplayFromStr, FromInto};
 use solana_sdk::{
     clock::{Epoch, Slot, UnixTimestamp},
     epoch_info::EpochInfo as EpochInfoOriginal,
+    transaction::TransactionError as TransactionErrorOriginal,
     transaction_context::TransactionReturnData as TransactionReturnDataOriginal,
 };
 use solders_macros::{common_methods, common_methods_rpc_resp, richcmp_eq_only};
 
 use crate::epoch_schedule::EpochSchedule;
-use crate::transaction_status::{TransactionErrorType, TransactionReturnData};
+use crate::transaction_status::{
+    TransactionConfirmationStatus, TransactionErrorType, TransactionReturnData,
+};
 use crate::{
     account::{Account, AccountJSON},
     pubkey::Pubkey,
     py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
     signature::Signature,
     tmp_account_decoder::UiAccount,
+    tmp_transaction_status::TransactionConfirmationStatus as TransactionConfirmationStatusOriginal,
     to_py_err,
     transaction_status::{EncodedTransactionWithStatusMeta, Rewards},
     CommonMethods, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly, SolderHash,
@@ -36,7 +40,8 @@ use solana_client::rpc_response::{
     RpcBlockProductionRange as RpcBlockProductionRangeOriginal,
     RpcContactInfo as RpcContactInfoOriginal, RpcInflationGovernor as RpcInflationGovernorOriginal,
     RpcInflationRate as RpcInflationRateOriginal, RpcInflationReward as RpcInflationRewardOriginal,
-    RpcSnapshotSlotInfo as RpcSnapshotSlotInfoOriginal, RpcTransactionReturnData,
+    RpcPerfSample as RpcPerfSampleOriginal, RpcSnapshotSlotInfo as RpcSnapshotSlotInfoOriginal,
+    RpcTransactionReturnData,
 };
 use solana_rpc::rpc;
 
@@ -1426,6 +1431,155 @@ impl GetProgramAccountsWithoutContextResp {
     }
 }
 
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct RpcPerfSample(RpcPerfSampleOriginal);
+
+response_data_boilerplate!(RpcPerfSample);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl RpcPerfSample {
+    #[new]
+    pub fn new(slot: Slot, num_transactions: u64, num_slots: u64, sample_period_secs: u16) -> Self {
+        RpcPerfSampleOriginal {
+            slot,
+            num_transactions,
+            num_slots,
+            sample_period_secs,
+        }
+        .into()
+    }
+
+    #[getter]
+    pub fn slot(&self) -> Slot {
+        self.0.slot
+    }
+    #[getter]
+    pub fn num_transactions(&self) -> u64 {
+        self.0.num_transactions
+    }
+    #[getter]
+    pub fn num_slots(&self) -> u64 {
+        self.0.num_slots
+    }
+    #[getter]
+    pub fn sample_period_secs(&self) -> u16 {
+        self.0.sample_period_secs
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetRecentPerformanceSamplesResp(Vec<RpcPerfSample>);
+
+resp_traits!(GetRecentPerformanceSamplesResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetRecentPerformanceSamplesResp {
+    #[new]
+    pub fn new(samples: Vec<RpcPerfSample>) -> Self {
+        Self(samples)
+    }
+
+    #[getter]
+    pub fn samples(&self) -> Vec<RpcPerfSample> {
+        self.0.clone()
+    }
+}
+
+// the one in solana_client uses transaction_status
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RpcConfirmedTransactionStatusWithSignatureOriginal {
+    pub signature: String,
+    pub slot: Slot,
+    pub err: Option<TransactionErrorOriginal>,
+    pub memo: Option<String>,
+    pub block_time: Option<UnixTimestamp>,
+    pub confirmation_status: Option<TransactionConfirmationStatusOriginal>,
+}
+
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct RpcConfirmedTransactionStatusWithSignature(
+    RpcConfirmedTransactionStatusWithSignatureOriginal,
+);
+
+response_data_boilerplate!(RpcConfirmedTransactionStatusWithSignature);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl RpcConfirmedTransactionStatusWithSignature {
+    #[new]
+    pub fn new(
+        signature: Signature,
+        slot: Slot,
+        err: Option<TransactionErrorType>,
+        memo: Option<String>,
+        block_time: Option<UnixTimestamp>,
+        confirmation_status: Option<TransactionConfirmationStatus>,
+    ) -> Self {
+        RpcConfirmedTransactionStatusWithSignatureOriginal {
+            signature: signature.to_string(),
+            slot,
+            err: err.map(|e| e.into()),
+            memo,
+            block_time,
+            confirmation_status: confirmation_status.map(|c| c.into()),
+        }
+        .into()
+    }
+
+    #[getter]
+    pub fn signature(&self) -> Signature {
+        Signature::from_str(&self.0.signature).unwrap()
+    }
+    #[getter]
+    pub fn slot(&self) -> Slot {
+        self.0.slot
+    }
+    #[getter]
+    pub fn err(&self) -> Option<TransactionErrorType> {
+        self.0.err.clone().map(|e| e.into())
+    }
+    #[getter]
+    pub fn memo(&self) -> Option<String> {
+        self.0.memo.clone()
+    }
+    #[getter]
+    pub fn block_time(&self) -> Option<UnixTimestamp> {
+        self.0.block_time
+    }
+    #[getter]
+    pub fn confirmation_status(&self) -> Option<TransactionConfirmationStatus> {
+        self.0.confirmation_status.clone().map(|s| s.into())
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetSignaturesForAddressResp(Vec<RpcConfirmedTransactionStatusWithSignature>);
+
+resp_traits!(GetSignaturesForAddressResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetSignaturesForAddressResp {
+    #[new]
+    pub fn new(signatures: Vec<RpcConfirmedTransactionStatusWithSignature>) -> Self {
+        Self(signatures)
+    }
+
+    #[getter]
+    pub fn signatures(&self) -> Vec<RpcConfirmedTransactionStatusWithSignature> {
+        self.0.clone()
+    }
+}
+
 pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "responses")?;
     let typing = py.import("typing")?;
@@ -1485,5 +1639,9 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<RpcKeyedAccount>()?;
     m.add_class::<GetProgramAccountsWithContextResp>()?;
     m.add_class::<GetProgramAccountsWithoutContextResp>()?;
+    m.add_class::<RpcPerfSample>()?;
+    m.add_class::<GetRecentPerformanceSamplesResp>()?;
+    m.add_class::<RpcConfirmedTransactionStatusWithSignature>()?;
+    m.add_class::<GetSignaturesForAddressResp>()?;
     Ok(m)
 }

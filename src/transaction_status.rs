@@ -15,6 +15,7 @@ use crate::{
         ParsedAccount as ParsedAccountOriginal, ParsedInstruction as ParsedInstructionOriginal,
         Reward as RewardOriginal, RewardType as RewardTypeOriginal,
         TransactionBinaryEncoding as TransactionBinaryEncodingOriginal,
+        TransactionConfirmationStatus as TransactionConfirmationStatusOriginal,
         UiAddressTableLookup as UiAddressTableLookupOriginal,
         UiCompiledInstruction as UiCompiledInstructionOriginal,
         UiInnerInstructions as UiInnerInstructionsOriginal, UiInstruction as UiInstructionOriginal,
@@ -1601,6 +1602,16 @@ impl Reward {
     }
 }
 
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+#[enum_original_mapping(TransactionConfirmationStatusOriginal)]
+#[pyclass(module = "solders.transaction_status")]
+pub enum TransactionConfirmationStatus {
+    Processed,
+    Confirmed,
+    Finalized,
+}
+
 pub type Rewards = Vec<Reward>;
 
 pub fn create_transaction_status_mod(py: Python<'_>) -> PyResult<&PyModule> {
@@ -1631,6 +1642,7 @@ pub fn create_transaction_status_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<TransactionErrorInsufficientFundsForRent>()?;
     m.add_class::<TransactionErrorFieldless>()?;
     m.add_class::<Reward>()?;
+    m.add_class::<TransactionConfirmationStatus>()?;
     let typing = py.import("typing")?;
     let union = typing.getattr("Union")?;
     let ui_parsed_instruction_members = vec![

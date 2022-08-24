@@ -2,7 +2,9 @@ use crate::tmp_account_decoder::UiTokenAmount;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use solana_sdk::{
+    commitment_config::CommitmentConfig,
     message::MessageHeader,
+    slot_history::Slot,
     transaction::{
         Result as TransactionResult, TransactionError, TransactionVersion, VersionedTransaction,
     },
@@ -222,4 +224,57 @@ pub struct EncodedTransactionWithStatusMeta {
     pub meta: Option<UiTransactionStatusMeta>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub version: Option<TransactionVersion>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum TransactionConfirmationStatus {
+    Processed,
+    Confirmed,
+    Finalized,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TransactionStatus {
+    pub slot: Slot,
+    pub confirmations: Option<usize>,  // None = rooted
+    pub status: TransactionResult<()>, // legacy field
+    pub err: Option<TransactionError>,
+    pub confirmation_status: Option<TransactionConfirmationStatus>,
+}
+
+impl TransactionStatus {
+    pub fn satisfies_commitment(&self, commitment_config: CommitmentConfig) -> bool {
+        if commitment_config.is_finalized() {
+            self.confirmations.is_none()
+        } else if commitment_config.is_confirmed() {
+            if let Some(status) = &self.confirmation_status {
+                *status != TransactionConfirmationStatus::Processed
+            } else {
+                // These fallback cases handle TransactionStatus RPC responses from older software
+                self.confirmations.is_some() && self.confirmations.unwrap() > 1
+                    || self.confirmations.is_none()
+            }
+        } else {
+            true
+        }
+    }
+
+    // Returns `confirmation_status`, or if is_none, determines the status from confirmations.
+    // Facilitates querying nodes on older software
+    pub fn confirmation_status(&self) -> TransactionConfirmationStatus {
+        match &self.confirmation_status {
+            Some(status) => status.clone(),
+            None => {
+                if self.confirmations.is_none() {
+                    TransactionConfirmationStatus::Finalized
+                } else if self.confirmations.unwrap() > 0 {
+                    TransactionConfirmationStatus::Confirmed
+                } else {
+                    TransactionConfirmationStatus::Processed
+                }
+            }
+        }
+    }
 }

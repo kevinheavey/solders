@@ -33,6 +33,8 @@ from solders.rpc.responses import (
     GetMultipleAccountsResp,
     GetProgramAccountsWithContextResp,
     GetProgramAccountsWithoutContextResp,
+    GetRecentPerformanceSamplesResp,
+    GetSignaturesForAddressResp,
     RpcSnapshotSlotInfo,
     RpcResponseContext,
     RpcContactInfo,
@@ -43,6 +45,8 @@ from solders.rpc.responses import (
     RpcAccountBalance,
     RpcBlockhash,
     RpcKeyedAccount,
+    RpcPerfSample,
+    RpcConfirmedTransactionStatusWithSignature,
     EpochInfo,
     RpcError,
 )
@@ -994,3 +998,68 @@ def test_get_program_accounts_with_context() -> None:
     parsed = GetProgramAccountsWithContextResp.from_json(raw)
     assert isinstance(parsed, GetProgramAccountsWithContextResp)
     assert parsed.value == []
+
+
+def test_get_recent_performance_samples() -> None:
+    raw = """{
+  "jsonrpc": "2.0",
+  "result": [
+    {
+      "numSlots": 126,
+      "numTransactions": 126,
+      "samplePeriodSecs": 60,
+      "slot": 348125
+    },
+    {
+      "numSlots": 126,
+      "numTransactions": 126,
+      "samplePeriodSecs": 60,
+      "slot": 347999
+    },
+    {
+      "numSlots": 125,
+      "numTransactions": 125,
+      "samplePeriodSecs": 60,
+      "slot": 347873
+    },
+    {
+      "numSlots": 125,
+      "numTransactions": 125,
+      "samplePeriodSecs": 60,
+      "slot": 347748
+    }
+  ],
+  "id": 1
+}"""
+    parsed = GetRecentPerformanceSamplesResp.from_json(raw)
+    assert isinstance(parsed, GetRecentPerformanceSamplesResp)
+    assert parsed.samples[0] == RpcPerfSample(
+        num_slots=126, num_transactions=126, sample_period_secs=60, slot=348125
+    )
+
+
+def test_get_signatures_for_address() -> None:
+    raw = """{
+  "jsonrpc": "2.0",
+  "result": [
+    {
+      "err": null,
+      "memo": null,
+      "signature": "5h6xBEauJ3PK6SWCZ1PGjBvj8vDdWG3KpwATGy1ARAXFSDwt8GFXM7W5Ncn16wmqokgpiKRLuS83KUxyZyv2sUYv",
+      "slot": 114,
+      "blockTime": null
+    }
+  ],
+  "id": 1
+}"""
+    parsed = GetSignaturesForAddressResp.from_json(raw)
+    assert isinstance(parsed, GetSignaturesForAddressResp)
+    assert parsed.signatures[0] == RpcConfirmedTransactionStatusWithSignature(
+        err=None,
+        memo=None,
+        signature=Signature.from_string(
+            "5h6xBEauJ3PK6SWCZ1PGjBvj8vDdWG3KpwATGy1ARAXFSDwt8GFXM7W5Ncn16wmqokgpiKRLuS83KUxyZyv2sUYv"
+        ),
+        slot=114,
+        block_time=None,
+    )
