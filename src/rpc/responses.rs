@@ -46,8 +46,8 @@ use solana_client::rpc_response::{
     RpcContactInfo as RpcContactInfoOriginal, RpcInflationGovernor as RpcInflationGovernorOriginal,
     RpcInflationRate as RpcInflationRateOriginal, RpcInflationReward as RpcInflationRewardOriginal,
     RpcPerfSample as RpcPerfSampleOriginal, RpcSnapshotSlotInfo as RpcSnapshotSlotInfoOriginal,
-    RpcStakeActivation as RpcStakeActivationOriginal, RpcTransactionReturnData,
-    StakeActivationState as StakeActivationStateOriginal,
+    RpcStakeActivation as RpcStakeActivationOriginal, RpcSupply as RpcSupplyOriginal,
+    RpcTransactionReturnData, StakeActivationState as StakeActivationStateOriginal,
 };
 use solana_rpc::rpc;
 
@@ -1734,6 +1734,77 @@ impl GetStakeActivationResp {
     }
 }
 
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct RpcSupply(RpcSupplyOriginal);
+
+response_data_boilerplate!(RpcSupply);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl RpcSupply {
+    #[new]
+    pub fn new(
+        total: u64,
+        circulating: u64,
+        non_circulating: u64,
+        non_circulating_accounts: Vec<Pubkey>,
+    ) -> Self {
+        RpcSupplyOriginal {
+            total,
+            circulating,
+            non_circulating,
+            non_circulating_accounts: non_circulating_accounts
+                .into_iter()
+                .map(|p| p.to_string())
+                .collect(),
+        }
+        .into()
+    }
+
+    #[getter]
+    pub fn total(&self) -> u64 {
+        self.0.total
+    }
+    #[getter]
+    pub fn circulating(&self) -> u64 {
+        self.0.circulating
+    }
+    #[getter]
+    pub fn non_circulating(&self) -> u64 {
+        self.0.non_circulating
+    }
+    #[getter]
+    pub fn non_circulating_accounts(&self) -> Vec<Pubkey> {
+        self.0
+            .non_circulating_accounts
+            .iter()
+            .map(|s| Pubkey::from_str(s).unwrap())
+            .collect()
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetSupplyResp {
+    #[pyo3(get)]
+    context: RpcResponseContext,
+    #[pyo3(get)]
+    value: RpcSupply,
+}
+
+resp_traits!(GetSupplyResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetSupplyResp {
+    #[new]
+    pub fn new(value: RpcSupply, context: RpcResponseContext) -> Self {
+        Self { value, context }
+    }
+}
+
 pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "responses")?;
     let typing = py.import("typing")?;
@@ -1804,5 +1875,7 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<StakeActivationState>()?;
     m.add_class::<RpcStakeActivation>()?;
     m.add_class::<GetStakeActivationResp>()?;
+    m.add_class::<RpcSupply>()?;
+    m.add_class::<GetSupplyResp>()?;
     Ok(m)
 }

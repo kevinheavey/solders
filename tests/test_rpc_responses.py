@@ -40,6 +40,7 @@ from solders.rpc.responses import (
     GetSlotLeaderResp,
     GetSlotLeadersResp,
     GetStakeActivationResp,
+    GetSupplyResp,
     StakeActivationState,
     RpcSnapshotSlotInfo,
     RpcResponseContext,
@@ -54,6 +55,7 @@ from solders.rpc.responses import (
     RpcPerfSample,
     RpcConfirmedTransactionStatusWithSignature,
     RpcStakeActivation,
+    RpcSupply,
     EpochInfo,
     RpcError,
 )
@@ -1173,4 +1175,43 @@ def test_get_stake_activation() -> None:
     assert isinstance(parsed, GetStakeActivationResp)
     assert parsed.activation == RpcStakeActivation(
         state=StakeActivationState.Active, active=197717120, inactive=0
+    )
+
+
+def test_get_supply() -> None:
+    raw = """{
+  "jsonrpc": "2.0",
+  "result": {
+    "context": {
+      "slot": 1114
+    },
+    "value": {
+      "circulating": 16000,
+      "nonCirculating": 1000000,
+      "nonCirculatingAccounts": [
+        "FEy8pTbP5fEoqMV1GdTz83byuA8EKByqYat1PKDgVAq5",
+        "9huDUZfxoJ7wGMTffUE7vh1xePqef7gyrLJu9NApncqA",
+        "3mi1GmwEE3zo2jmfDuzvjSX9ovRXsDUKHvsntpkhuLJ9",
+        "BYxEJTDerkaRWBem3XgnVcdhppktBXa2HbkHPKj2Ui4Z"
+      ],
+      "total": 1016000
+    }
+  },
+  "id": 1
+}"""
+    parsed = GetSupplyResp.from_json(raw)
+    assert isinstance(parsed, GetSupplyResp)
+    assert parsed.value == RpcSupply(
+        total=1016000,
+        circulating=16000,
+        non_circulating=1000000,
+        non_circulating_accounts=[
+            Pubkey.from_string(s)
+            for s in (
+                "FEy8pTbP5fEoqMV1GdTz83byuA8EKByqYat1PKDgVAq5",
+                "9huDUZfxoJ7wGMTffUE7vh1xePqef7gyrLJu9NApncqA",
+                "3mi1GmwEE3zo2jmfDuzvjSX9ovRXsDUKHvsntpkhuLJ9",
+                "BYxEJTDerkaRWBem3XgnVcdhppktBXa2HbkHPKj2Ui4Z",
+            )
+        ],
     )
