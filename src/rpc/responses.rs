@@ -21,6 +21,7 @@ use solders_macros::{
     common_methods, common_methods_rpc_resp, enum_original_mapping, richcmp_eq_only,
 };
 
+use crate::account_decoder::UiTokenAmount;
 use crate::epoch_schedule::EpochSchedule;
 use crate::transaction_status::{
     TransactionConfirmationStatus, TransactionErrorType, TransactionReturnData, TransactionStatus,
@@ -1805,6 +1806,26 @@ impl GetSupplyResp {
     }
 }
 
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetTokenAccountBalanceResp {
+    #[pyo3(get)]
+    context: RpcResponseContext,
+    #[pyo3(get)]
+    value: UiTokenAmount,
+}
+
+resp_traits!(GetTokenAccountBalanceResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetTokenAccountBalanceResp {
+    #[new]
+    pub fn new(value: UiTokenAmount, context: RpcResponseContext) -> Self {
+        Self { value, context }
+    }
+}
+
 pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "responses")?;
     let typing = py.import("typing")?;
@@ -1877,5 +1898,6 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<GetStakeActivationResp>()?;
     m.add_class::<RpcSupply>()?;
     m.add_class::<GetSupplyResp>()?;
+    m.add_class::<GetTokenAccountBalanceResp>()?;
     Ok(m)
 }

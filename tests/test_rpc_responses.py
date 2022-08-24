@@ -41,6 +41,7 @@ from solders.rpc.responses import (
     GetSlotLeadersResp,
     GetStakeActivationResp,
     GetSupplyResp,
+    GetTokenAccountBalanceResp,
     StakeActivationState,
     RpcSnapshotSlotInfo,
     RpcResponseContext,
@@ -64,7 +65,7 @@ from solders.hash import Hash
 from solders.account import Account, AccountJSON
 from solders.epoch_schedule import EpochSchedule
 from solders.pubkey import Pubkey
-from solders.account_decoder import ParsedAccount
+from solders.account_decoder import ParsedAccount, UiTokenAmount
 from solders.signature import Signature
 from solders.transaction_status import (
     Reward,
@@ -1214,4 +1215,27 @@ def test_get_supply() -> None:
                 "BYxEJTDerkaRWBem3XgnVcdhppktBXa2HbkHPKj2Ui4Z",
             )
         ],
+    )
+
+
+def test_get_token_account_balance() -> None:
+    raw = """{
+  "jsonrpc": "2.0",
+  "result": {
+    "context": {
+      "slot": 1114
+    },
+    "value": {
+      "amount": "9864",
+      "decimals": 2,
+      "uiAmount": 98.64,
+      "uiAmountString": "98.64"
+    },
+    "id": 1
+  }
+}"""
+    parsed = GetTokenAccountBalanceResp.from_json(raw)
+    assert isinstance(parsed, GetTokenAccountBalanceResp)
+    assert parsed.value == UiTokenAmount(
+        amount="9864", decimals=2, ui_amount=98.64, ui_amount_string="98.64"
     )
