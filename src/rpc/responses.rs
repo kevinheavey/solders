@@ -1390,6 +1390,28 @@ impl GetMultipleAccountsResp {
     }
 }
 
+#[serde_as]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetMultipleAccountsJsonParsedResp {
+    #[pyo3(get)]
+    context: RpcResponseContext,
+    #[pyo3(get)]
+    #[serde_as(as = "Vec<Option<FromInto<UiAccount>>>")]
+    value: Vec<Option<AccountJSON>>,
+}
+
+resp_traits!(GetMultipleAccountsJsonParsedResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetMultipleAccountsJsonParsedResp {
+    #[new]
+    pub fn new(value: Vec<Option<AccountJSON>>, context: RpcResponseContext) -> Self {
+        Self { value, context }
+    }
+}
+
 // the one in solana_client uses UiAccount from account_decoder which currently isn't portable
 #[serde_as]
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
@@ -2106,6 +2128,7 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<GetMaxShredInsertSlotResp>()?;
     m.add_class::<GetMinimumBalanceForRentExemption>()?;
     m.add_class::<GetMultipleAccountsResp>()?;
+    m.add_class::<GetMultipleAccountsJsonParsedResp>()?;
     m.add_class::<RpcKeyedAccount>()?;
     m.add_class::<RpcKeyedAccountJsonParsed>()?;
     m.add_class::<GetProgramAccountsWithContextResp>()?;

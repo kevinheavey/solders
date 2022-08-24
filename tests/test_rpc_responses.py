@@ -32,6 +32,7 @@ from solders.rpc.responses import (
     GetMaxShredInsertSlotResp,
     GetMinimumBalanceForRentExemption,
     GetMultipleAccountsResp,
+    GetMultipleAccountsJsonParsedResp,
     GetProgramAccountsWithContextResp,
     GetProgramAccountsWithoutContextResp,
     GetProgramAccountsWithContextJsonParsedResp,
@@ -989,6 +990,62 @@ def test_get_multiple_accounts_base58() -> None:
         rent_epoch=2,
         data=b"",
     )
+
+
+def test_get_multiple_accounts_json_parsed() -> None:
+    raw = """{
+    "jsonrpc": "2.0",
+    "result": {
+        "context": {
+            "apiVersion": "1.10.25",
+            "slot": 140702417
+        },
+        "value": [
+            {
+                "data": {
+                    "parsed": {
+                        "info": {
+                            "isNative": false,
+                            "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+                            "owner": "vines1vzrYbzLMRdu58ou5XTby4qAqVRLmqo36NKPTg",
+                            "state": "initialized",
+                            "tokenAmount": {
+                                "amount": "36010000000",
+                                "decimals": 6,
+                                "uiAmount": 36010.0,
+                                "uiAmountString": "36010"
+                            }
+                        },
+                        "type": "account"
+                    },
+                    "program": "spl-token",
+                    "space": 165
+                },
+                "executable": false,
+                "lamports": 2039280,
+                "owner": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                "rentEpoch": 325
+            }
+        ]
+    },
+    "id": 1
+}"""
+    parsed = GetMultipleAccountsJsonParsedResp.from_json(raw)
+    assert isinstance(parsed, GetMultipleAccountsJsonParsedResp)
+    val = parsed.value
+    acc = val[0]
+    assert isinstance(acc, AccountJSON)
+    assert acc.executable is False
+    assert acc.lamports == 2039280
+    assert acc.owner == Pubkey.from_string(
+        "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+    )
+    assert acc.rent_epoch == 325
+    data = acc.data
+    assert isinstance(data, ParsedAccount)
+    assert data.program == "spl-token"
+    assert data.space == 165
+    assert isinstance(data.parsed, str)
 
 
 def test_get_program_accounts_without_context() -> None:
