@@ -24,7 +24,8 @@ use solders_macros::{
 use crate::account_decoder::UiTokenAmount;
 use crate::epoch_schedule::EpochSchedule;
 use crate::transaction_status::{
-    TransactionConfirmationStatus, TransactionErrorType, TransactionReturnData, TransactionStatus,
+    EncodedConfirmedTransactionWithStatusMeta, TransactionConfirmationStatus, TransactionErrorType,
+    TransactionReturnData, TransactionStatus,
 };
 use crate::{
     account::{Account, AccountJSON},
@@ -2091,6 +2092,26 @@ impl GetTokenSupplyResp {
     }
 }
 
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetTransactionResp(Option<EncodedConfirmedTransactionWithStatusMeta>);
+
+resp_traits!(GetTransactionResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetTransactionResp {
+    #[new]
+    pub fn new(transaction: Option<EncodedConfirmedTransactionWithStatusMeta>) -> Self {
+        Self(transaction)
+    }
+
+    #[getter]
+    pub fn transaction(&self) -> Option<EncodedConfirmedTransactionWithStatusMeta> {
+        self.0.clone()
+    }
+}
+
 pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "responses")?;
     let typing = py.import("typing")?;
@@ -2176,5 +2197,6 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<RpcTokenAccountBalance>()?;
     m.add_class::<GetTokenLargestAccountsResp>()?;
     m.add_class::<GetTokenSupplyResp>()?;
+    m.add_class::<GetTransactionResp>()?;
     Ok(m)
 }

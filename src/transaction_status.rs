@@ -11,6 +11,7 @@ use crate::{
     pubkey::Pubkey,
     signature::Signature,
     tmp_transaction_status::{
+        EncodedConfirmedTransactionWithStatusMeta as EncodedConfirmedTransactionWithStatusMetaOriginal,
         EncodedTransaction as EncodedTransactionOriginal,
         EncodedTransactionWithStatusMeta as EncodedTransactionWithStatusMetaOriginal,
         ParsedAccount as ParsedAccountOriginal, ParsedInstruction as ParsedInstructionOriginal,
@@ -40,8 +41,8 @@ use pyo3::{
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use solana_sdk::{
-    instruction::InstructionError as InstructionErrorOriginal, slot_history::Slot,
-    transaction::TransactionError as TransactionErrorOriginal,
+    clock::UnixTimestamp, instruction::InstructionError as InstructionErrorOriginal,
+    slot_history::Slot, transaction::TransactionError as TransactionErrorOriginal,
     transaction_context::TransactionReturnData as TransactionReturnDataOriginal,
 };
 use solders_macros::{common_methods, enum_original_mapping, richcmp_eq_only};
@@ -1677,6 +1678,48 @@ impl TransactionStatus {
     }
 }
 
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
+#[pyclass(module = "solders.transaction_status", subclass)]
+pub struct EncodedConfirmedTransactionWithStatusMeta(
+    EncodedConfirmedTransactionWithStatusMetaOriginal,
+);
+
+transaction_status_boilerplate!(EncodedConfirmedTransactionWithStatusMeta);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl EncodedConfirmedTransactionWithStatusMeta {
+    #[new]
+    pub fn new(
+        slot: Slot,
+        transaction: EncodedTransactionWithStatusMeta,
+        block_time: Option<UnixTimestamp>,
+    ) -> Self {
+        EncodedConfirmedTransactionWithStatusMetaOriginal {
+            slot,
+            transaction: transaction.into(),
+            block_time,
+        }
+        .into()
+    }
+
+    #[getter]
+    pub fn slot(&self) -> Slot {
+        self.0.slot
+    }
+
+    #[getter]
+    pub fn transaction(&self) -> EncodedTransactionWithStatusMeta {
+        self.0.transaction.clone().into()
+    }
+
+    #[getter]
+    pub fn block_time(&self) -> Option<UnixTimestamp> {
+        self.0.block_time
+    }
+}
+
 pub fn create_transaction_status_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "transaction_status")?;
     m.add_class::<TransactionDetails>()?;
@@ -1707,6 +1750,7 @@ pub fn create_transaction_status_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<Reward>()?;
     m.add_class::<TransactionConfirmationStatus>()?;
     m.add_class::<TransactionStatus>()?;
+    m.add_class::<EncodedConfirmedTransactionWithStatusMeta>()?;
     let typing = py.import("typing")?;
     let union = typing.getattr("Union")?;
     let ui_parsed_instruction_members = vec![

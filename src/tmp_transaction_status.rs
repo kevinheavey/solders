@@ -2,6 +2,7 @@ use crate::tmp_account_decoder::UiTokenAmount;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use solana_sdk::{
+    clock::UnixTimestamp,
     commitment_config::CommitmentConfig,
     message::MessageHeader,
     slot_history::Slot,
@@ -277,4 +278,14 @@ impl TransactionStatus {
             }
         }
     }
+}
+
+// the one in transaction_status is missing Clone
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct EncodedConfirmedTransactionWithStatusMeta {
+    pub slot: Slot,
+    #[serde(flatten)]
+    pub transaction: EncodedTransactionWithStatusMeta,
+    pub block_time: Option<UnixTimestamp>,
 }

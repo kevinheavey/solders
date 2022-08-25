@@ -52,6 +52,7 @@ from solders.rpc.responses import (
     GetTokenAccountsByOwnerJsonParsedResp,
     GetTokenLargestAccountsResp,
     GetTokenSupplyResp,
+    GetTransactionResp,
     StakeActivationState,
     RpcSnapshotSlotInfo,
     RpcResponseContext,
@@ -292,14 +293,14 @@ def test_get_block_commitment() -> None:
         "get_block_json_parsed_encoding.json",
     ],
 )
-def test_get_block_resp(path: str) -> None:
+def test_get_block(path: str) -> None:
     raw = (Path(__file__).parent / "data" / path).read_text()
     parsed = GetBlockResp.from_json(raw)
     # pub transactions: Option<Vec<EncodedTransactionWithStatusMeta>>,
     assert isinstance(parsed, GetBlockResp)
     assert isinstance(parsed.previous_blockhash, Hash)
     assert parsed.rewards is not None
-    parsed.rewards[0] == Reward(
+    assert parsed.rewards[0] == Reward(
         pubkey=Pubkey.from_string("8vio2CKbM54Pfo7LZrRVZdopDxBYMtoBx2YXgfh2rBo6"),
         commission=None,
         lamports=-125,
@@ -1744,3 +1745,120 @@ def test_get_token_supply() -> None:
     assert val == UiTokenAmount(
         amount="100000", decimals=2, ui_amount=1000, ui_amount_string="1000"
     )
+
+
+@mark.parametrize(
+    "path",
+    [
+        "get_transaction_json_encoding.json",
+        "get_transaction_base64_encoding.json",
+        "get_transaction_json_parsed_encoding.json",
+    ],
+)
+def test_get_transaction(path: str) -> None:
+    raw = (Path(__file__).parent / "data" / path).read_text()
+    parsed = GetTransactionResp.from_json(raw)
+    assert isinstance(parsed, GetTransactionResp)
+    encoded = parsed.transaction
+    assert encoded is not None
+    assert encoded.block_time == 1661417105
+    assert encoded.slot == 147558327
+    assert encoded is not None
+    tx = encoded.transaction
+    meta = tx.meta
+    expected_meta = UiTransactionStatusMeta(
+        err=None,
+        fee=5000,
+        pre_balances=[65966805251, 28420419522, 1169280, 143487360, 1],
+        post_balances=[65966800251, 28420419522, 1169280, 143487360, 1],
+        inner_instructions=[],
+        log_messages=[
+            "Program Vote111111111111111111111111111111111111111 invoke [1]",
+            "Program Vote111111111111111111111111111111111111111 success",
+        ],
+        pre_token_balances=[],
+        post_token_balances=[],
+        rewards=[],
+        loaded_addresses=UiLoadedAddresses([], []),
+        return_data=None,
+    )
+    version = tx.version
+    assert meta == expected_meta
+    assert version is None  # always None in the test data
+    expected_signature = Signature.from_string(
+        "4zExa66hUSr28i2ma6EJwEsm3nZo4VFryEyRYE5Zrr4Q6dZpP1ctzsoMqUhLnp6iHGPp5MB722rZXRBKg927WXN9"
+    )
+    assert tx.transaction.signatures[0] == expected_signature
+    expected_account_keys = [
+        Pubkey.from_string(
+            "5p8qKVyKthA9DUb1rwQDzjcmTkaZdwN97J3LiaEywUjd",
+        ),
+        Pubkey.from_string(
+            "EsEtxoyhFTgfvudcy2VwwQJ1qA6BScLUW39PKpYczuxF",
+        ),
+        Pubkey.from_string(
+            "SysvarC1ock11111111111111111111111111111111",
+        ),
+        Pubkey.from_string(
+            "SysvarS1otHashes111111111111111111111111111",
+        ),
+        Pubkey.from_string(
+            "Vote111111111111111111111111111111111111111",
+        ),
+    ]
+    encoded_tx = tx.transaction
+    msg = encoded_tx.message
+    assert msg.recent_blockhash == Hash.from_string(
+        "2NiTTzGXE7kW66iwM4FaoB7xMidgzMXZkh7k4AeagnW8"
+    )
+    if "_json_" in path:
+        assert isinstance(msg, (UiParsedMessage, UiRawMessage))
+        assert msg.address_table_lookups is None
+        assert isinstance(encoded_tx, UiTransaction)
+        if "parsed" in path:
+            assert isinstance(msg, UiParsedMessage)
+            writable_vals = [True, True, False, False, False]
+            signer_vals = [True, False, False, False, False]
+            expected_parsed_accounts = [
+                ParsedAccountTxStatus(pubkey, writable, signer)
+                for pubkey, writable, signer in zip(
+                    expected_account_keys, writable_vals, signer_vals
+                )
+            ]
+            assert msg.account_keys == expected_parsed_accounts
+            json_data = '{"info":{"clockSysvar":"SysvarC1ock11111111111111111111111111111111","slotHashesSysvar":"SysvarS1otHashes111111111111111111111111111","vote":{"hash":"EGPfU6nPLtV76PrQrsUKAmkLKf2q9prrzGtdn8xLmXqP","slots":[147558324, 147558325],"timestamp":1661417104},"voteAccount":"EsEtxoyhFTgfvudcy2VwwQJ1qA6BScLUW39PKpYczuxF","voteAuthority":"5p8qKVyKthA9DUb1rwQDzjcmTkaZdwN97J3LiaEywUjd"},"type":"vote"}'
+            assert msg.instructions == [
+                ParsedInstruction(
+                    program="vote",
+                    program_id=expected_account_keys[-1],
+                    parsed=json_data,
+                )
+            ]
+            assert msg.instructions
+        else:
+            assert isinstance(msg, UiRawMessage)
+            assert msg.account_keys == expected_account_keys
+            assert msg.address_table_lookups is None
+            assert msg.header == MessageHeader(
+                num_required_signatures=1,
+                num_readonly_signed_accounts=0,
+                num_readonly_unsigned_accounts=3,
+            )
+            assert msg.instructions == [
+                UiCompiledInstruction(
+                    program_id_index=4,
+                    accounts=bytes(
+                        [
+                            1,
+                            3,
+                            2,
+                            0,
+                        ]
+                    ),
+                    data="29z5mr1JoRmJYQ6zAMYeoMgmako3Wwu22EBXCfkjkPzNMYFWT8NYE9mLqfhirugcv2CiNqvhCiGLwzpvtUuowKoy1kjyyq",
+                )
+            ]
+    else:
+        assert isinstance(encoded_tx, VersionedTransaction)
+        assert isinstance(msg, Message)
+        # don't need so many assertions here since we already have tests for Message
