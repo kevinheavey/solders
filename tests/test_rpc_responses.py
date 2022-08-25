@@ -51,6 +51,7 @@ from solders.rpc.responses import (
     GetTokenAccountsByOwnerResp,
     GetTokenAccountsByOwnerJsonParsedResp,
     GetTokenLargestAccountsResp,
+    GetTokenSupplyResp,
     StakeActivationState,
     RpcSnapshotSlotInfo,
     RpcResponseContext,
@@ -1718,4 +1719,28 @@ def test_get_token_largest_accounts() -> None:
             amount="771",
             ui_amount_string="7.71",
         ),
+    )
+
+
+def test_get_token_supply() -> None:
+    raw = """{
+  "jsonrpc": "2.0",
+  "result": {
+    "context": {
+      "slot": 1114
+    },
+    "value": {
+      "amount": "100000",
+      "decimals": 2,
+      "uiAmount": 1000,
+      "uiAmountString": "1000"
+    }
+  },
+  "id": 1
+}"""
+    parsed = GetTokenSupplyResp.from_json(raw)
+    assert isinstance(parsed, GetTokenSupplyResp)
+    val = parsed.value
+    assert val == UiTokenAmount(
+        amount="100000", decimals=2, ui_amount=1000, ui_amount_string="1000"
     )

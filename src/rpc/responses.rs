@@ -2071,6 +2071,26 @@ impl GetTokenLargestAccountsResp {
     }
 }
 
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct GetTokenSupplyResp {
+    #[pyo3(get)]
+    context: RpcResponseContext,
+    #[pyo3(get)]
+    value: UiTokenAmount,
+}
+
+resp_traits!(GetTokenSupplyResp);
+
+#[common_methods_rpc_resp]
+#[pymethods]
+impl GetTokenSupplyResp {
+    #[new]
+    pub fn new(value: UiTokenAmount, context: RpcResponseContext) -> Self {
+        Self { value, context }
+    }
+}
+
 pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "responses")?;
     let typing = py.import("typing")?;
@@ -2155,5 +2175,6 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<GetTokenAccountsByOwnerJsonParsedResp>()?;
     m.add_class::<RpcTokenAccountBalance>()?;
     m.add_class::<GetTokenLargestAccountsResp>()?;
+    m.add_class::<GetTokenSupplyResp>()?;
     Ok(m)
 }
