@@ -53,6 +53,9 @@ from solders.rpc.responses import (
     GetTokenLargestAccountsResp,
     GetTokenSupplyResp,
     GetTransactionResp,
+    GetTransactionCountResp,
+    GetVersionResp,
+    GetVoteAccountsResp,
     StakeActivationState,
     RpcSnapshotSlotInfo,
     RpcResponseContext,
@@ -70,6 +73,9 @@ from solders.rpc.responses import (
     RpcStakeActivation,
     RpcSupply,
     RpcTokenAccountBalance,
+    RpcVersionInfo,
+    RpcVoteAccountInfo,
+    RpcVoteAccountStatus,
     EpochInfo,
     RpcError,
 )
@@ -1862,3 +1868,74 @@ def test_get_transaction(path: str) -> None:
         assert isinstance(encoded_tx, VersionedTransaction)
         assert isinstance(msg, Message)
         # don't need so many assertions here since we already have tests for Message
+
+
+def test_get_transaction_count() -> None:
+    raw = '{ "jsonrpc": "2.0", "result": 268, "id": 1 }'
+    parsed = GetTransactionCountResp.from_json(raw)
+    assert isinstance(parsed, GetTransactionCountResp)
+    assert parsed.value == 268
+
+
+def test_get_version() -> None:
+    raw = '{ "jsonrpc": "2.0", "result": { "solana-core": "1.10.32" }, "id": 1 }'
+    parsed = GetVersionResp.from_json(raw)
+    assert isinstance(parsed, GetVersionResp)
+    assert parsed.value == RpcVersionInfo(solana_core="1.10.32")
+
+
+def test_vote_accounts() -> None:
+    raw = (Path(__file__).parent / "data" / "get_vote_accounts.json").read_text()
+    parsed = GetVoteAccountsResp.from_json(raw)
+    assert isinstance(parsed, GetVoteAccountsResp)
+    val = parsed.value
+    assert isinstance(val, RpcVoteAccountStatus)
+    current = val.current[0]
+    delinquent = val.delinquent[0]
+    expected_delinquent = RpcVoteAccountInfo(
+        commission=100,
+        epoch_vote_account=True,
+        epoch_credits=[
+            (
+                154,
+                80087,
+                0,
+            ),
+            (
+                155,
+                207429,
+                80087,
+            ),
+        ],
+        node_pubkey=Pubkey.from_string("ECTTH7S5UVJeC5C5WxH64KMdpUVJ9yrmMdWwEd8vcFU6"),
+        last_vote=67089657,
+        activated_stake=2272912627,
+        vote_pubkey=Pubkey.from_string("GaZ5Pqr1GN5paSeuvkXHJnLsvjbAQGZgZrkjkPRnSp1s"),
+        root_slot=67089626,
+    )
+    assert expected_delinquent.commission == delinquent.commission
+    assert expected_delinquent.epoch_vote_account == delinquent.epoch_vote_account
+    assert expected_delinquent.epoch_credits == delinquent.epoch_credits
+    assert expected_delinquent.node_pubkey == delinquent.node_pubkey
+    assert expected_delinquent.last_vote == delinquent.last_vote
+    assert expected_delinquent.activated_stake == delinquent.activated_stake
+    assert expected_delinquent.vote_pubkey == delinquent.vote_pubkey
+    assert expected_delinquent.root_slot == delinquent.root_slot
+    assert delinquent == expected_delinquent
+    expected_current = RpcVoteAccountInfo(
+        commission=85,
+        epoch_vote_account=True,
+        epoch_credits=[
+            (360, 30653476, 30296700),
+            (361, 31017670, 30653476),
+            (362, 31382495, 31017670),
+            (363, 31741125, 31382495),
+            (364, 31968581, 31741125),
+        ],
+        node_pubkey=Pubkey.from_string("7LH3HCmvnJRvHvzinbDerTNQ2GvLvdnukdx1dQ26aCFt"),
+        last_vote=157522003,
+        activated_stake=15864630107818,
+        vote_pubkey=Pubkey.from_string("F95vVhuyAjAtmXbg2EnNVWKkD5yQsDS5S83Uw1TUDcZm"),
+        root_slot=157521972,
+    )
+    assert current == expected_current

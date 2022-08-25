@@ -1447,6 +1447,194 @@ contextless_resp_no_eq!(
     Option<EncodedConfirmedTransactionWithStatusMeta>,
     clone
 );
+contextless_resp_eq!(GetTransactionCountResp, u64);
+contextless_resp_eq!(GetVersionResp, RpcVersionInfo, clone);
+
+// the one in solana_client doesn't implement PartialEq or Debug
+#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq)]
+#[serde(rename_all = "kebab-case")]
+pub struct RpcVersionInfoOriginal {
+    /// The current version of solana-core
+    pub solana_core: String,
+    /// first 4 bytes of the FeatureSet identifier
+    pub feature_set: Option<u32>,
+}
+
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct RpcVersionInfo(RpcVersionInfoOriginal);
+
+response_data_boilerplate!(RpcVersionInfo);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl RpcVersionInfo {
+    #[new]
+    pub fn new(solana_core: String, feature_set: Option<u32>) -> Self {
+        RpcVersionInfoOriginal {
+            solana_core,
+            feature_set,
+        }
+        .into()
+    }
+
+    #[getter]
+    pub fn solana_core(&self) -> String {
+        self.0.solana_core.clone()
+    }
+
+    #[getter]
+    pub fn feature_set(&self) -> Option<u32> {
+        self.0.feature_set
+    }
+}
+
+// the one in solana_client doesn't implement PartialEq
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct RpcVoteAccountInfoOriginal {
+    /// Vote account address, as base-58 encoded string
+    pub vote_pubkey: String,
+
+    /// The validator identity, as base-58 encoded string
+    pub node_pubkey: String,
+
+    /// The current stake, in lamports, delegated to this vote account
+    pub activated_stake: u64,
+
+    /// An 8-bit integer used as a fraction (commission/MAX_U8) for rewards payout
+    pub commission: u8,
+
+    /// Whether this account is staked for the current epoch
+    pub epoch_vote_account: bool,
+
+    /// History of how many credits earned by the end of each epoch
+    ///   each tuple is (Epoch, credits, prev_credits)
+    pub epoch_credits: Vec<(Epoch, u64, u64)>,
+
+    /// Most recent slot voted on by this vote account (0 if no votes exist)
+    pub last_vote: u64,
+
+    /// Current root slot for this vote account (0 if not root slot exists)
+    pub root_slot: Slot,
+}
+
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct RpcVoteAccountInfo(RpcVoteAccountInfoOriginal);
+
+response_data_boilerplate!(RpcVoteAccountInfo);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl RpcVoteAccountInfo {
+    #[new]
+    pub fn new(
+        vote_pubkey: Pubkey,
+        node_pubkey: Pubkey,
+        activated_stake: u64,
+        commission: u8,
+        epoch_vote_account: bool,
+        epoch_credits: Vec<(Epoch, u64, u64)>,
+        last_vote: u64,
+        root_slot: Slot,
+    ) -> Self {
+        RpcVoteAccountInfoOriginal {
+            vote_pubkey: vote_pubkey.to_string(),
+            node_pubkey: node_pubkey.to_string(),
+            activated_stake,
+            commission,
+            epoch_vote_account,
+            epoch_credits,
+            last_vote,
+            root_slot,
+        }
+        .into()
+    }
+    #[getter]
+    pub fn vote_pubkey(&self) -> Pubkey {
+        Pubkey::from_str(&self.0.vote_pubkey).unwrap()
+    }
+    #[getter]
+    pub fn node_pubkey(&self) -> Pubkey {
+        Pubkey::from_str(&self.0.node_pubkey).unwrap()
+    }
+    #[getter]
+    pub fn activated_stake(&self) -> u64 {
+        self.0.activated_stake
+    }
+    #[getter]
+    pub fn commission(&self) -> u8 {
+        self.0.commission
+    }
+    #[getter]
+    pub fn epoch_vote_account(&self) -> bool {
+        self.0.epoch_vote_account
+    }
+    #[getter]
+    pub fn epoch_credits(&self) -> Vec<(Epoch, u64, u64)> {
+        self.0.epoch_credits.clone()
+    }
+    #[getter]
+    pub fn last_vote(&self) -> u64 {
+        self.0.last_vote
+    }
+    #[getter]
+    pub fn root_slot(&self) -> Slot {
+        self.0.root_slot
+    }
+}
+
+// the one in solana_client doesn't derive PartialEq
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct RpcVoteAccountStatusOriginal {
+    pub current: Vec<RpcVoteAccountInfoOriginal>,
+    pub delinquent: Vec<RpcVoteAccountInfoOriginal>,
+}
+
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct RpcVoteAccountStatus(RpcVoteAccountStatusOriginal);
+
+response_data_boilerplate!(RpcVoteAccountStatus);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl RpcVoteAccountStatus {
+    #[new]
+    pub fn new(current: Vec<RpcVoteAccountInfo>, delinquent: Vec<RpcVoteAccountInfo>) -> Self {
+        RpcVoteAccountStatusOriginal {
+            current: current.into_iter().map(|x| x.into()).collect(),
+            delinquent: delinquent.into_iter().map(|x| x.into()).collect(),
+        }
+        .into()
+    }
+    #[getter]
+    pub fn current(&self) -> Vec<RpcVoteAccountInfo> {
+        self.0
+            .current
+            .clone()
+            .into_iter()
+            .map(|x| x.into())
+            .collect()
+    }
+
+    #[getter]
+    pub fn delinquent(&self) -> Vec<RpcVoteAccountInfo> {
+        self.0
+            .delinquent
+            .clone()
+            .into_iter()
+            .map(|x| x.into())
+            .collect()
+    }
+}
+
+contextless_resp_eq!(GetVoteAccountsResp, RpcVoteAccountStatus, clone);
 
 pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "responses")?;
@@ -1534,5 +1722,11 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<GetTokenLargestAccountsResp>()?;
     m.add_class::<GetTokenSupplyResp>()?;
     m.add_class::<GetTransactionResp>()?;
+    m.add_class::<GetTransactionCountResp>()?;
+    m.add_class::<GetVersionResp>()?;
+    m.add_class::<RpcVersionInfo>()?;
+    m.add_class::<RpcVoteAccountInfo>()?;
+    m.add_class::<RpcVoteAccountStatus>()?;
+    m.add_class::<GetVoteAccountsResp>()?;
     Ok(m)
 }
