@@ -56,6 +56,11 @@ from solders.rpc.responses import (
     GetTransactionCountResp,
     GetVersionResp,
     GetVoteAccountsResp,
+    IsBlockhashValidResp,
+    MinimumLedgerSlotResp,
+    RequestAirdropResp,
+    SendTransactionResp,
+    SimulateTransactionResp,
     StakeActivationState,
     RpcSnapshotSlotInfo,
     RpcResponseContext,
@@ -70,6 +75,7 @@ from solders.rpc.responses import (
     RpcKeyedAccountJsonParsed,
     RpcPerfSample,
     RpcConfirmedTransactionStatusWithSignature,
+    RpcSimulateTransactionResult,
     RpcStakeActivation,
     RpcSupply,
     RpcTokenAccountBalance,
@@ -99,6 +105,8 @@ from solders.transaction_status import (
     ParsedInstruction,
     TransactionStatus,
     TransactionConfirmationStatus,
+    TransactionErrorInstructionError,
+    InstructionErrorCustom,
 )
 from solders.message import MessageHeader, Message
 from solders.transaction import VersionedTransaction
@@ -1939,3 +1947,92 @@ def test_vote_accounts() -> None:
         root_slot=157521972,
     )
     assert current == expected_current
+
+
+def test_is_blockhash_valid() -> None:
+    raw = """{
+  "jsonrpc": "2.0",
+  "result": {
+    "context": {
+      "slot": 2483
+    },
+    "value": false
+  },
+  "id": 1
+}"""
+    parsed = IsBlockhashValidResp.from_json(raw)
+    assert isinstance(parsed, IsBlockhashValidResp)
+    assert parsed.value is False
+
+
+def test_minimum_ledger_slot() -> None:
+    raw = '{ "jsonrpc": "2.0", "result": 1234, "id": 1 }'
+    parsed = MinimumLedgerSlotResp.from_json(raw)
+    assert isinstance(parsed, MinimumLedgerSlotResp)
+    assert parsed.value == 1234
+
+
+def test_request_airdrop() -> None:
+    raw = """{
+  "jsonrpc": "2.0",
+  "result": "5VERv8NMvzbJMEkV8xnrLkEaWRtSz9CosKDYjCJjBRnbJLgp8uirBgmQpjKhoR4tjF3ZpRzrFmBV6UjKdiSZkQUW",
+  "id": 1
+}"""
+    parsed = RequestAirdropResp.from_json(raw)
+    assert isinstance(parsed, RequestAirdropResp)
+    assert parsed.value == Signature.from_string(
+        "5VERv8NMvzbJMEkV8xnrLkEaWRtSz9CosKDYjCJjBRnbJLgp8uirBgmQpjKhoR4tjF3ZpRzrFmBV6UjKdiSZkQUW"
+    )
+
+
+def test_send_transaction() -> None:
+    raw = """{
+  "jsonrpc": "2.0",
+  "result": "2id3YC2jK9G5Wo2phDx4gJVAew8DcY5NAojnVuao8rkxwPYPe8cSwE5GzhEgJA2y8fVjDEo6iR6ykBvDxrTQrtpb",
+  "id": 1
+}"""
+    parsed = SendTransactionResp.from_json(raw)
+    assert isinstance(parsed, SendTransactionResp)
+    assert parsed.value == Signature.from_string(
+        "2id3YC2jK9G5Wo2phDx4gJVAew8DcY5NAojnVuao8rkxwPYPe8cSwE5GzhEgJA2y8fVjDEo6iR6ykBvDxrTQrtpb"
+    )
+
+
+def test_simulate_transaction() -> None:
+    raw = """{
+    "jsonrpc": "2.0",
+    "result": {
+        "context": {
+            "apiVersion": "1.10.34",
+            "slot": 147616013
+        },
+        "value": {
+            "accounts": null,
+            "err": {
+                "InstructionError": [
+                    0,
+                    {
+                        "Custom": 0
+                    }
+                ]
+            },
+            "logs": [
+                "Program Vote111111111111111111111111111111111111111 invoke [1]",
+                "Program Vote111111111111111111111111111111111111111 failed: custom program error: 0x0"
+            ],
+            "unitsConsumed": 0,
+            "returnData": null
+        }
+    },
+    "id": "00f783f3-2ab0-42cd-80c8-8cdd14732f45"
+}"""
+    parsed = SimulateTransactionResp.from_json(raw)
+    assert isinstance(parsed, SimulateTransactionResp)
+    assert parsed.value == RpcSimulateTransactionResult(
+        err=TransactionErrorInstructionError(0, InstructionErrorCustom(0)),
+        logs=[
+            "Program Vote111111111111111111111111111111111111111 invoke [1]",
+            "Program Vote111111111111111111111111111111111111111 failed: custom program error: 0x0",
+        ],
+        units_consumed=0,
+    )

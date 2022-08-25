@@ -273,6 +273,7 @@ impl RpcResponseContext {
 
 response_data_boilerplate!(RpcResponseContext);
 
+
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 #[serde(untagged)]
 pub enum Resp<T: PyClass + IntoPy<PyObject>> {
@@ -1635,6 +1636,11 @@ impl RpcVoteAccountStatus {
 }
 
 contextless_resp_eq!(GetVoteAccountsResp, RpcVoteAccountStatus, clone);
+contextful_resp_eq!(IsBlockhashValidResp, bool);
+contextless_resp_eq!(MinimumLedgerSlotResp, u64);
+contextless_resp_eq!(RequestAirdropResp, Signature, "DisplayFromStr");
+contextless_resp_eq!(SendTransactionResp, Signature, "DisplayFromStr");
+contextful_resp_eq!(SimulateTransactionResp, RpcSimulateTransactionResult);
 
 pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "responses")?;
@@ -1728,5 +1734,10 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<RpcVoteAccountInfo>()?;
     m.add_class::<RpcVoteAccountStatus>()?;
     m.add_class::<GetVoteAccountsResp>()?;
+    m.add_class::<IsBlockhashValidResp>()?;
+    m.add_class::<MinimumLedgerSlotResp>()?;
+    m.add_class::<RequestAirdropResp>()?;
+    m.add_class::<SendTransactionResp>()?;
+    m.add_class::<SimulateTransactionResp>()?;
     Ok(m)
 }
