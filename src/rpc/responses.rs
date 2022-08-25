@@ -621,7 +621,6 @@ impl From<RpcContactInfoOriginal> for RpcContactInfo {
 }
 
 // the one in solana_client doesn't derive Eq or PartialEq
-#[serde_as]
 #[derive(Serialize, Deserialize, Eq, PartialEq, Clone, Debug)]
 #[serde(rename_all = "camelCase")]
 #[pyclass(module = "solders.rpc.responses", subclass)]
@@ -972,7 +971,6 @@ impl RpcIdentity {
     }
 }
 
-#[serde_as]
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
 pub struct GetIdentityResp(RpcIdentity);
@@ -1042,7 +1040,6 @@ impl RpcInflationGovernor {
     }
 }
 
-#[serde_as]
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
 pub struct GetInflationGovernorResp(RpcInflationGovernor);
