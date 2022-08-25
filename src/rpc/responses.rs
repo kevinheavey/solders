@@ -301,70 +301,105 @@ impl<T: PyClass + IntoPy<PyObject>> IntoPy<PyObject> for Resp<T> {
     }
 }
 
-#[serde_as]
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetAccountInfoResp {
-    #[pyo3(get)]
-    context: RpcResponseContext,
-    #[pyo3(get)]
-    #[serde_as(as = "Option<FromInto<UiAccount>>")]
-    value: Option<Account>,
+macro_rules! contextful_struct_def_eq {
+    ($name:ident, $inner:ty) => {
+        #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+        #[pyclass(module = "solders.rpc.responses", subclass)]
+        pub struct $name {
+            #[pyo3(get)]
+            context: RpcResponseContext,
+            #[pyo3(get)]
+            value: $inner,
+        }
+    };
+    ($name:ident, $inner:ty, $serde_as:expr) => {
+        #[serde_as]
+        #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+        #[pyclass(module = "solders.rpc.responses", subclass)]
+        pub struct $name {
+            #[pyo3(get)]
+            context: RpcResponseContext,
+            #[pyo3(get)]
+            #[serde_as(as = $serde_as)]
+            value: $inner,
+        }
+    };
 }
 
-resp_traits!(GetAccountInfoResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetAccountInfoResp {
-    #[new]
-    pub fn new(value: Option<Account>, context: RpcResponseContext) -> Self {
-        Self { value, context }
-    }
+macro_rules! contextful_struct_def_no_eq {
+    ($name:ident, $inner:ty) => {
+        #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
+        #[pyclass(module = "solders.rpc.responses", subclass)]
+        pub struct $name {
+            #[pyo3(get)]
+            context: RpcResponseContext,
+            #[pyo3(get)]
+            value: $inner,
+        }
+    };
+    ($name:ident, $inner:ty, $serde_as:expr) => {
+        #[serde_as]
+        #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
+        #[pyclass(module = "solders.rpc.responses", subclass)]
+        pub struct $name {
+            #[pyo3(get)]
+            context: RpcResponseContext,
+            #[pyo3(get)]
+            #[serde_as(as = $serde_as)]
+            value: $inner,
+        }
+    };
 }
 
-#[serde_as]
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetAccountInfoJsonParsedResp {
-    #[pyo3(get)]
-    context: RpcResponseContext,
-    #[pyo3(get)]
-    #[serde_as(as = "Option<FromInto<UiAccount>>")]
-    value: Option<AccountJSON>,
+macro_rules! contextful_resp_boilerplate {
+    ($name:ident, $inner:ty) => {
+        resp_traits!($name);
+        #[common_methods_rpc_resp]
+        #[pymethods]
+        impl $name {
+            #[new]
+            pub fn new(value: $inner, context: RpcResponseContext) -> Self {
+                Self { value, context }
+            }
+        }
+    };
 }
 
-resp_traits!(GetAccountInfoJsonParsedResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetAccountInfoJsonParsedResp {
-    #[new]
-    pub fn new(value: Option<AccountJSON>, context: RpcResponseContext) -> Self {
-        Self { value, context }
-    }
+macro_rules! contextful_resp_eq {
+    ($name:ident, $inner:ty) => {
+        contextful_struct_def_eq!($name, $inner);
+        contextful_resp_boilerplate!($name, $inner);
+    };
+    ($name:ident, $inner:ty, $serde_as:expr) => {
+        contextful_struct_def_eq!($name, $inner, $serde_as);
+        contextful_resp_boilerplate!($name, $inner);
+    };
 }
 
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "camelCase")]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetBalanceResp {
-    #[pyo3(get)]
-    pub context: RpcResponseContext,
-    #[pyo3(get)]
-    pub value: u64,
+macro_rules! contextful_resp_no_eq {
+    ($name:ident, $inner:ty) => {
+        contextful_struct_def_no_eq!($name, $inner);
+        contextful_resp_boilerplate!($name, $inner);
+    };
+    ($name:ident, $inner:ty, $serde_as:expr) => {
+        contextful_struct_def_no_eq!($name, $inner, $serde_as);
+        contextful_resp_boilerplate!($name, $inner);
+    };
 }
 
-resp_traits!(GetBalanceResp);
+contextful_resp_eq!(
+    GetAccountInfoResp,
+    Option<Account>,
+    "Option<FromInto<UiAccount>>"
+);
 
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetBalanceResp {
-    #[new]
-    pub fn new(value: u64, context: RpcResponseContext) -> Self {
-        Self { value, context }
-    }
-}
+contextful_resp_eq!(
+    GetAccountInfoJsonParsedResp,
+    Option<AccountJSON>,
+    "Option<FromInto<UiAccount>>"
+);
+
+contextful_resp_eq!(GetBalanceResp, u64);
 
 // The one in solana_client isn't clonable
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
@@ -464,25 +499,7 @@ impl RpcBlockProduction {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetBlockProductionResp {
-    #[pyo3(get)]
-    context: RpcResponseContext,
-    #[pyo3(get)]
-    value: RpcBlockProduction,
-}
-
-resp_traits!(GetBlockProductionResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetBlockProductionResp {
-    #[new]
-    pub fn new(value: RpcBlockProduction, context: RpcResponseContext) -> Self {
-        Self { value, context }
-    }
-}
+contextful_resp_eq!(GetBlockProductionResp, RpcBlockProduction);
 
 #[serde_as]
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
@@ -726,26 +743,7 @@ impl From<EpochInfoOriginal> for EpochInfo {
 contextless_resp_eq!(GetClusterNodesResp, Vec<RpcContactInfo>, clone);
 contextless_resp_eq!(GetEpochInfoResp, EpochInfo, clone);
 contextless_resp_eq!(GetEpochScheduleResp, EpochSchedule, clone);
-
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetFeeForMessageResp {
-    #[pyo3(get)]
-    context: RpcResponseContext,
-    #[pyo3(get)]
-    value: Option<u64>,
-}
-
-resp_traits!(GetFeeForMessageResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetFeeForMessageResp {
-    #[new]
-    pub fn new(value: Option<u64>, context: RpcResponseContext) -> Self {
-        Self { value, context }
-    }
-}
+contextful_resp_eq!(GetFeeForMessageResp, Option<u64>);
 
 contextless_resp_eq!(GetFirstAvailableBlockResp, u64);
 contextless_resp_eq!(GetGenesisHashResp, SolderHash, "DisplayFromStr");
@@ -1039,27 +1037,7 @@ impl RpcAccountBalance {
         self.0.lamports
     }
 }
-
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "camelCase")]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetLargestAccountsResp {
-    #[pyo3(get)]
-    pub context: RpcResponseContext,
-    #[pyo3(get)]
-    pub value: Vec<RpcAccountBalance>,
-}
-
-resp_traits!(GetLargestAccountsResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetLargestAccountsResp {
-    #[new]
-    pub fn new(value: Vec<RpcAccountBalance>, context: RpcResponseContext) -> Self {
-        Self { value, context }
-    }
-}
+contextful_resp_eq!(GetLargestAccountsResp, Vec<RpcAccountBalance>);
 
 // the one in solana_client doesn't derive Eq
 #[serde_as]
@@ -1087,26 +1065,7 @@ impl RpcBlockhash {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "camelCase")]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetLatestBlockhashResp {
-    #[pyo3(get)]
-    pub context: RpcResponseContext,
-    #[pyo3(get)]
-    pub value: RpcBlockhash,
-}
-
-resp_traits!(GetLatestBlockhashResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetLatestBlockhashResp {
-    #[new]
-    pub fn new(value: RpcBlockhash, context: RpcResponseContext) -> Self {
-        Self { value, context }
-    }
-}
+contextful_resp_eq!(GetLatestBlockhashResp, RpcBlockhash);
 
 type RpcLeaderSchedule = Option<HashMap<Pubkey, Vec<usize>>>;
 
@@ -1120,50 +1079,16 @@ contextless_resp_eq!(
 contextless_resp_eq!(GetMaxRetransmitSlotResp, u64);
 contextless_resp_eq!(GetMaxShredInsertSlotResp, u64);
 contextless_resp_eq!(GetMinimumBalanceForRentExemption, u64);
-
-#[serde_as]
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetMultipleAccountsResp {
-    #[pyo3(get)]
-    context: RpcResponseContext,
-    #[pyo3(get)]
-    #[serde_as(as = "Vec<Option<FromInto<UiAccount>>>")]
-    value: Vec<Option<Account>>,
-}
-
-resp_traits!(GetMultipleAccountsResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetMultipleAccountsResp {
-    #[new]
-    pub fn new(value: Vec<Option<Account>>, context: RpcResponseContext) -> Self {
-        Self { value, context }
-    }
-}
-
-#[serde_as]
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetMultipleAccountsJsonParsedResp {
-    #[pyo3(get)]
-    context: RpcResponseContext,
-    #[pyo3(get)]
-    #[serde_as(as = "Vec<Option<FromInto<UiAccount>>>")]
-    value: Vec<Option<AccountJSON>>,
-}
-
-resp_traits!(GetMultipleAccountsJsonParsedResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetMultipleAccountsJsonParsedResp {
-    #[new]
-    pub fn new(value: Vec<Option<AccountJSON>>, context: RpcResponseContext) -> Self {
-        Self { value, context }
-    }
-}
+contextful_resp_eq!(
+    GetMultipleAccountsResp,
+    Vec<Option<Account>>,
+    "Vec<Option<FromInto<UiAccount>>>"
+);
+contextful_resp_eq!(
+    GetMultipleAccountsJsonParsedResp,
+    Vec<Option<AccountJSON>>,
+    "Vec<Option<FromInto<UiAccount>>>"
+);
 
 // the one in solana_client uses UiAccount from account_decoder which currently isn't portable
 #[serde_as]
@@ -1216,45 +1141,11 @@ impl RpcKeyedAccountJsonParsed {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetProgramAccountsWithContextResp {
-    #[pyo3(get)]
-    context: RpcResponseContext,
-    #[pyo3(get)]
-    value: Vec<RpcKeyedAccount>,
-}
-
-resp_traits!(GetProgramAccountsWithContextResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetProgramAccountsWithContextResp {
-    #[new]
-    pub fn new(value: Vec<RpcKeyedAccount>, context: RpcResponseContext) -> Self {
-        Self { value, context }
-    }
-}
-
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetProgramAccountsWithContextJsonParsedResp {
-    #[pyo3(get)]
-    context: RpcResponseContext,
-    #[pyo3(get)]
-    value: Vec<RpcKeyedAccountJsonParsed>,
-}
-
-resp_traits!(GetProgramAccountsWithContextJsonParsedResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetProgramAccountsWithContextJsonParsedResp {
-    #[new]
-    pub fn new(value: Vec<RpcKeyedAccountJsonParsed>, context: RpcResponseContext) -> Self {
-        Self { value, context }
-    }
-}
+contextful_resp_eq!(GetProgramAccountsWithContextResp, Vec<RpcKeyedAccount>);
+contextful_resp_eq!(
+    GetProgramAccountsWithContextJsonParsedResp,
+    Vec<RpcKeyedAccountJsonParsed>
+);
 
 contextless_resp_eq!(
     GetProgramAccountsWithoutContextResp,
@@ -1384,27 +1275,11 @@ contextless_resp_eq!(
     clone
 );
 
-#[serde_as]
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetSignatureStatusesResp {
-    #[pyo3(get)]
-    context: RpcResponseContext,
-    #[pyo3(get)]
-    #[serde_as(as = "Vec<Option<FromInto<TransactionStatusOriginal>>>")]
-    value: Vec<Option<TransactionStatus>>,
-}
-
-resp_traits!(GetSignatureStatusesResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetSignatureStatusesResp {
-    #[new]
-    pub fn new(value: Vec<Option<TransactionStatus>>, context: RpcResponseContext) -> Self {
-        Self { value, context }
-    }
-}
+contextful_resp_eq!(
+    GetSignatureStatusesResp,
+    Vec<Option<TransactionStatus>>,
+    "Vec<Option<FromInto<TransactionStatusOriginal>>>"
+);
 
 contextless_resp_eq!(GetSlotResp, Slot);
 contextless_resp_eq!(GetSlotLeaderResp, Pubkey, "DisplayFromStr");
@@ -1513,125 +1388,18 @@ impl RpcSupply {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetSupplyResp {
-    #[pyo3(get)]
-    context: RpcResponseContext,
-    #[pyo3(get)]
-    value: RpcSupply,
-}
-
-resp_traits!(GetSupplyResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetSupplyResp {
-    #[new]
-    pub fn new(value: RpcSupply, context: RpcResponseContext) -> Self {
-        Self { value, context }
-    }
-}
-
-#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetTokenAccountBalanceResp {
-    #[pyo3(get)]
-    context: RpcResponseContext,
-    #[pyo3(get)]
-    value: UiTokenAmount,
-}
-
-resp_traits!(GetTokenAccountBalanceResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetTokenAccountBalanceResp {
-    #[new]
-    pub fn new(value: UiTokenAmount, context: RpcResponseContext) -> Self {
-        Self { value, context }
-    }
-}
-
-#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetTokenAccountsByDelegateResp {
-    #[pyo3(get)]
-    context: RpcResponseContext,
-    #[pyo3(get)]
-    value: Vec<RpcKeyedAccount>,
-}
-
-resp_traits!(GetTokenAccountsByDelegateResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetTokenAccountsByDelegateResp {
-    #[new]
-    pub fn new(value: Vec<RpcKeyedAccount>, context: RpcResponseContext) -> Self {
-        Self { value, context }
-    }
-}
-
-#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetTokenAccountsByDelegateJsonParsedResp {
-    #[pyo3(get)]
-    context: RpcResponseContext,
-    #[pyo3(get)]
-    value: Vec<RpcKeyedAccountJsonParsed>,
-}
-
-resp_traits!(GetTokenAccountsByDelegateJsonParsedResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetTokenAccountsByDelegateJsonParsedResp {
-    #[new]
-    pub fn new(value: Vec<RpcKeyedAccountJsonParsed>, context: RpcResponseContext) -> Self {
-        Self { value, context }
-    }
-}
-
-#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetTokenAccountsByOwnerResp {
-    #[pyo3(get)]
-    context: RpcResponseContext,
-    #[pyo3(get)]
-    value: Vec<RpcKeyedAccount>,
-}
-
-resp_traits!(GetTokenAccountsByOwnerResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetTokenAccountsByOwnerResp {
-    #[new]
-    pub fn new(value: Vec<RpcKeyedAccount>, context: RpcResponseContext) -> Self {
-        Self { value, context }
-    }
-}
-
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetTokenAccountsByOwnerJsonParsedResp {
-    #[pyo3(get)]
-    context: RpcResponseContext,
-    #[pyo3(get)]
-    value: Vec<RpcKeyedAccountJsonParsed>,
-}
-
-resp_traits!(GetTokenAccountsByOwnerJsonParsedResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetTokenAccountsByOwnerJsonParsedResp {
-    #[new]
-    pub fn new(value: Vec<RpcKeyedAccountJsonParsed>, context: RpcResponseContext) -> Self {
-        Self { value, context }
-    }
-}
+contextful_resp_eq!(GetSupplyResp, RpcSupply);
+contextful_resp_no_eq!(GetTokenAccountBalanceResp, UiTokenAmount);
+contextful_resp_eq!(GetTokenAccountsByDelegateResp, Vec<RpcKeyedAccount>);
+contextful_resp_eq!(
+    GetTokenAccountsByDelegateJsonParsedResp,
+    Vec<RpcKeyedAccountJsonParsed>
+);
+contextful_resp_eq!(GetTokenAccountsByOwnerResp, Vec<RpcKeyedAccount>);
+contextful_resp_eq!(
+    GetTokenAccountsByOwnerJsonParsedResp,
+    Vec<RpcKeyedAccountJsonParsed>
+);
 
 // the one in solana_client uses account_decoder
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
@@ -1672,46 +1440,8 @@ impl RpcTokenAccountBalance {
     }
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetTokenLargestAccountsResp {
-    #[pyo3(get)]
-    context: RpcResponseContext,
-    #[pyo3(get)]
-    value: Vec<RpcTokenAccountBalance>,
-}
-
-resp_traits!(GetTokenLargestAccountsResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetTokenLargestAccountsResp {
-    #[new]
-    pub fn new(value: Vec<RpcTokenAccountBalance>, context: RpcResponseContext) -> Self {
-        Self { value, context }
-    }
-}
-
-#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetTokenSupplyResp {
-    #[pyo3(get)]
-    context: RpcResponseContext,
-    #[pyo3(get)]
-    value: UiTokenAmount,
-}
-
-resp_traits!(GetTokenSupplyResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetTokenSupplyResp {
-    #[new]
-    pub fn new(value: UiTokenAmount, context: RpcResponseContext) -> Self {
-        Self { value, context }
-    }
-}
-
+contextful_resp_no_eq!(GetTokenLargestAccountsResp, Vec<RpcTokenAccountBalance>);
+contextful_resp_no_eq!(GetTokenSupplyResp, UiTokenAmount);
 contextless_resp_no_eq!(
     GetTransactionResp,
     Option<EncodedConfirmedTransactionWithStatusMeta>,
