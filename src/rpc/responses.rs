@@ -128,7 +128,98 @@ macro_rules! response_data_boilerplate {
     };
 }
 
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+macro_rules! contextless_struct_def_no_eq {
+    ($name:ident, $inner:ty) => {
+        #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
+        #[pyclass(module = "solders.rpc.responses", subclass)]
+        pub struct $name($inner);
+        resp_traits!($name);
+    };
+}
+
+macro_rules! contextless_struct_def_eq {
+    ($name:ident, $inner:ty) => {
+        #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+        #[pyclass(module = "solders.rpc.responses", subclass)]
+        pub struct $name($inner);
+        resp_traits!($name);
+    };
+    ($name:ident, $inner:ty, $serde_as:expr) => {
+        #[serde_as]
+        #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+        #[pyclass(module = "solders.rpc.responses", subclass)]
+        pub struct $name(#[serde_as(as = $serde_as)] $inner);
+        resp_traits!($name);
+    };
+}
+
+macro_rules! contextless_resp_methods_no_clone {
+    ($name:ident, $inner:ty) => {
+        #[common_methods_rpc_resp]
+        #[pymethods]
+        impl $name {
+            #[new]
+            pub fn new(value: $inner) -> Self {
+                Self(value)
+            }
+
+            #[getter]
+            pub fn value(&self) -> $inner {
+                self.0
+            }
+        }
+    };
+}
+
+macro_rules! contextless_resp_methods_clone {
+    ($name:ident, $inner:ty) => {
+        #[common_methods_rpc_resp]
+        #[pymethods]
+        impl $name {
+            #[new]
+            pub fn new(value: $inner) -> Self {
+                Self(value)
+            }
+
+            #[getter]
+            pub fn value(&self) -> $inner {
+                self.0.clone()
+            }
+        }
+    };
+}
+
+macro_rules! contextless_resp_eq {
+    ($name:ident, $inner:ty) => {
+        contextless_struct_def_eq!($name, $inner);
+        contextless_resp_methods_no_clone!($name, $inner);
+    };
+    ($name:ident, $inner:ty, clone) => {
+        contextless_struct_def_eq!($name, $inner);
+        contextless_resp_methods_clone!($name, $inner);
+    };
+    ($name:ident, $inner:ty, $serde_as:expr) => {
+        contextless_struct_def_eq!($name, $inner, $serde_as);
+        contextless_resp_methods_no_clone!($name, $inner);
+    };
+    ($name:ident, $inner:ty, clone, $serde_as:expr) => {
+        contextless_struct_def_eq!($name, $inner, $serde_as);
+        contextless_resp_methods_clone!($name, $inner);
+    };
+}
+
+macro_rules! contextless_resp_no_eq {
+    ($name:ident, $inner:ty, clone) => {
+        contextless_struct_def_no_eq!($name, $inner);
+        contextless_resp_methods_clone!($name, $inner);
+    };
+    ($name:ident, $inner:ty) => {
+        contextless_struct_def_no_eq!($name, $inner);
+        contextless_resp_methods_no_clone!($name, $inner);
+    };
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
 pub struct RpcError {
     /// Code
@@ -300,25 +391,7 @@ impl GetBlockCommitmentResp {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetBlockHeightResp(u64);
-
-resp_traits!(GetBlockHeightResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetBlockHeightResp {
-    #[new]
-    pub fn new(value: u64) -> Self {
-        Self(value)
-    }
-
-    #[getter]
-    pub fn value(&self) -> u64 {
-        self.0
-    }
-}
+contextless_resp_eq!(GetBlockHeightResp, u64);
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
@@ -469,65 +542,9 @@ impl GetBlockResp {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetBlocksResp(Vec<u64>);
-
-resp_traits!(GetBlocksResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetBlocksResp {
-    #[new]
-    pub fn new(value: Vec<u64>) -> Self {
-        Self(value)
-    }
-
-    #[getter]
-    pub fn value(&self) -> Vec<u64> {
-        self.0.clone()
-    }
-}
-
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetBlocksWithLimitResp(Vec<u64>);
-
-resp_traits!(GetBlocksWithLimitResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetBlocksWithLimitResp {
-    #[new]
-    pub fn new(value: Vec<u64>) -> Self {
-        Self(value)
-    }
-
-    #[getter]
-    pub fn value(&self) -> Vec<u64> {
-        self.0.clone()
-    }
-}
-
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetBlockTimeResp(Option<u64>);
-
-resp_traits!(GetBlockTimeResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetBlockTimeResp {
-    #[new]
-    pub fn new(value: Option<u64>) -> Self {
-        Self(value)
-    }
-
-    #[getter]
-    pub fn value(&self) -> Option<u64> {
-        self.0
-    }
-}
+contextless_resp_eq!(GetBlocksResp, Vec<u64>, clone);
+contextless_resp_eq!(GetBlocksWithLimitResp, Vec<u64>, clone);
+contextless_resp_eq!(GetBlockTimeResp, Option<u64>);
 
 // the one in solana_client doesn't derive Eq or PartialEq
 #[serde_as]
@@ -706,62 +723,9 @@ impl From<EpochInfoOriginal> for EpochInfo {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetClusterNodesResp(Vec<RpcContactInfo>);
-resp_traits!(GetClusterNodesResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetClusterNodesResp {
-    #[new]
-    pub fn new(value: Vec<RpcContactInfo>) -> Self {
-        Self(value)
-    }
-
-    #[getter]
-    pub fn value(&self) -> Vec<RpcContactInfo> {
-        self.0.clone()
-    }
-}
-
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetEpochInfoResp(EpochInfo);
-resp_traits!(GetEpochInfoResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetEpochInfoResp {
-    #[new]
-    pub fn new(value: EpochInfo) -> Self {
-        Self(value)
-    }
-
-    #[getter]
-    pub fn value(&self) -> EpochInfo {
-        self.0.clone()
-    }
-}
-
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetEpochScheduleResp(EpochSchedule);
-resp_traits!(GetEpochScheduleResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetEpochScheduleResp {
-    #[new]
-    pub fn new(value: EpochSchedule) -> Self {
-        Self(value)
-    }
-
-    #[getter]
-    pub fn value(&self) -> EpochSchedule {
-        self.0.clone()
-    }
-}
+contextless_resp_eq!(GetClusterNodesResp, Vec<RpcContactInfo>, clone);
+contextless_resp_eq!(GetEpochInfoResp, EpochInfo, clone);
+contextless_resp_eq!(GetEpochScheduleResp, EpochSchedule, clone);
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
@@ -783,66 +747,9 @@ impl GetFeeForMessageResp {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetFirstAvailableBlockResp(u64);
-
-resp_traits!(GetFirstAvailableBlockResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetFirstAvailableBlockResp {
-    #[new]
-    pub fn new(value: u64) -> Self {
-        Self(value)
-    }
-
-    #[getter]
-    pub fn value(&self) -> u64 {
-        self.0
-    }
-}
-
-#[serde_as]
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetGenesisHashResp(#[serde_as(as = "DisplayFromStr")] SolderHash);
-
-resp_traits!(GetGenesisHashResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetGenesisHashResp {
-    #[new]
-    pub fn new(value: SolderHash) -> Self {
-        Self(value)
-    }
-
-    #[getter]
-    pub fn value(&self) -> SolderHash {
-        self.0
-    }
-}
-
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetHealthResp(String);
-
-resp_traits!(GetHealthResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetHealthResp {
-    #[new]
-    pub fn new(value: String) -> Self {
-        Self(value)
-    }
-
-    #[getter]
-    pub fn value(&self) -> String {
-        self.0.clone()
-    }
-}
+contextless_resp_eq!(GetFirstAvailableBlockResp, u64);
+contextless_resp_eq!(GetGenesisHashResp, SolderHash, "DisplayFromStr");
+contextless_resp_eq!(GetHealthResp, String, clone);
 
 impl From<TransactionReturnData> for RpcTransactionReturnData {
     fn from(t: TransactionReturnData) -> Self {
@@ -929,24 +836,7 @@ impl RpcSnapshotSlotInfo {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetHighestSnapshotSlotResp(RpcSnapshotSlotInfo);
-resp_traits!(GetHighestSnapshotSlotResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetHighestSnapshotSlotResp {
-    #[new]
-    pub fn new(value: RpcSnapshotSlotInfo) -> Self {
-        Self(value)
-    }
-
-    #[getter]
-    pub fn value(&self) -> RpcSnapshotSlotInfo {
-        self.0.clone()
-    }
-}
+contextless_resp_eq!(GetHighestSnapshotSlotResp, RpcSnapshotSlotInfo, clone);
 
 // the one in solana_client doesn't derive Eq
 #[serde_as]
@@ -971,24 +861,7 @@ impl RpcIdentity {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetIdentityResp(RpcIdentity);
-resp_traits!(GetIdentityResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetIdentityResp {
-    #[new]
-    pub fn new(value: RpcIdentity) -> Self {
-        Self(value)
-    }
-
-    #[getter]
-    pub fn value(&self) -> RpcIdentity {
-        self.0.clone()
-    }
-}
+contextless_resp_eq!(GetIdentityResp, RpcIdentity, clone);
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, From, Into)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
@@ -1040,24 +913,7 @@ impl RpcInflationGovernor {
     }
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetInflationGovernorResp(RpcInflationGovernor);
-resp_traits!(GetInflationGovernorResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetInflationGovernorResp {
-    #[new]
-    pub fn new(value: RpcInflationGovernor) -> Self {
-        Self(value)
-    }
-
-    #[getter]
-    pub fn value(&self) -> RpcInflationGovernor {
-        self.0.clone()
-    }
-}
+contextless_resp_no_eq!(GetInflationGovernorResp, RpcInflationGovernor, clone);
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, From, Into)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
@@ -1098,24 +954,7 @@ impl RpcInflationRate {
     }
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize, Clone, From, Into)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetInflationRateResp(RpcInflationRate);
-resp_traits!(GetInflationRateResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetInflationRateResp {
-    #[new]
-    pub fn new(value: RpcInflationRate) -> Self {
-        Self(value)
-    }
-
-    #[getter]
-    pub fn value(&self) -> RpcInflationRate {
-        self.0.clone()
-    }
-}
+contextless_resp_no_eq!(GetInflationRateResp, RpcInflationRate, clone);
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, From, Into)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
@@ -1166,24 +1005,11 @@ impl RpcInflationReward {
     }
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize, Clone, Eq, From, Into)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetInflationRewardResp(Vec<Option<RpcInflationReward>>);
-resp_traits!(GetInflationRewardResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetInflationRewardResp {
-    #[new]
-    pub fn new(value: Vec<Option<RpcInflationReward>>) -> Self {
-        Self(value)
-    }
-
-    #[getter]
-    pub fn value(&self) -> Vec<Option<RpcInflationReward>> {
-        self.0.clone()
-    }
-}
+contextless_resp_eq!(
+    GetInflationRewardResp,
+    Vec<Option<RpcInflationReward>>,
+    clone
+);
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, From, Into)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
@@ -1284,87 +1110,16 @@ impl GetLatestBlockhashResp {
 
 type RpcLeaderSchedule = Option<HashMap<Pubkey, Vec<usize>>>;
 
-#[serde_as]
-#[derive(Debug, PartialEq, Serialize, Deserialize, Clone, Eq, From, Into)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetLeaderScheduleResp(
-    #[serde_as(as = "Option<HashMap<DisplayFromStr, _>>")] RpcLeaderSchedule,
+contextless_resp_eq!(
+    GetLeaderScheduleResp,
+    RpcLeaderSchedule,
+    clone,
+    "Option<HashMap<DisplayFromStr, _>>"
 );
-resp_traits!(GetLeaderScheduleResp);
 
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetLeaderScheduleResp {
-    #[new]
-    pub fn new(value: RpcLeaderSchedule) -> Self {
-        Self(value)
-    }
-
-    #[getter]
-    pub fn value(&self) -> RpcLeaderSchedule {
-        self.0.clone()
-    }
-}
-
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetMaxRetransmitSlotResp(u64);
-
-resp_traits!(GetMaxRetransmitSlotResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetMaxRetransmitSlotResp {
-    #[new]
-    pub fn new(value: u64) -> Self {
-        Self(value)
-    }
-
-    #[getter]
-    pub fn value(&self) -> u64 {
-        self.0
-    }
-}
-
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetMaxShredInsertSlotResp(u64);
-
-resp_traits!(GetMaxShredInsertSlotResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetMaxShredInsertSlotResp {
-    #[new]
-    pub fn new(value: u64) -> Self {
-        Self(value)
-    }
-
-    #[getter]
-    pub fn value(&self) -> u64 {
-        self.0
-    }
-}
-
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetMinimumBalanceForRentExemption(u64);
-
-resp_traits!(GetMinimumBalanceForRentExemption);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetMinimumBalanceForRentExemption {
-    #[new]
-    pub fn new(slot: u64) -> Self {
-        Self(slot)
-    }
-
-    #[getter]
-    pub fn slot(&self) -> u64 {
-        self.0
-    }
-}
+contextless_resp_eq!(GetMaxRetransmitSlotResp, u64);
+contextless_resp_eq!(GetMaxShredInsertSlotResp, u64);
+contextless_resp_eq!(GetMinimumBalanceForRentExemption, u64);
 
 #[serde_as]
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
@@ -1501,45 +1256,16 @@ impl GetProgramAccountsWithContextJsonParsedResp {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetProgramAccountsWithoutContextResp(Vec<RpcKeyedAccount>);
-
-resp_traits!(GetProgramAccountsWithoutContextResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetProgramAccountsWithoutContextResp {
-    #[new]
-    pub fn new(value: Vec<RpcKeyedAccount>) -> Self {
-        Self(value)
-    }
-
-    #[getter]
-    pub fn value(&self) -> Vec<RpcKeyedAccount> {
-        self.0.clone()
-    }
-}
-
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetProgramAccountsWithoutContextJsonParsedResp(Vec<RpcKeyedAccountJsonParsed>);
-
-resp_traits!(GetProgramAccountsWithoutContextJsonParsedResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetProgramAccountsWithoutContextJsonParsedResp {
-    #[new]
-    pub fn new(value: Vec<RpcKeyedAccountJsonParsed>) -> Self {
-        Self(value)
-    }
-
-    #[getter]
-    pub fn value(&self) -> Vec<RpcKeyedAccountJsonParsed> {
-        self.0.clone()
-    }
-}
+contextless_resp_eq!(
+    GetProgramAccountsWithoutContextResp,
+    Vec<RpcKeyedAccount>,
+    clone
+);
+contextless_resp_eq!(
+    GetProgramAccountsWithoutContextJsonParsedResp,
+    Vec<RpcKeyedAccountJsonParsed>,
+    clone
+);
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
@@ -1580,25 +1306,7 @@ impl RpcPerfSample {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetRecentPerformanceSamplesResp(Vec<RpcPerfSample>);
-
-resp_traits!(GetRecentPerformanceSamplesResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetRecentPerformanceSamplesResp {
-    #[new]
-    pub fn new(value: Vec<RpcPerfSample>) -> Self {
-        Self(value)
-    }
-
-    #[getter]
-    pub fn value(&self) -> Vec<RpcPerfSample> {
-        self.0.clone()
-    }
-}
+contextless_resp_eq!(GetRecentPerformanceSamplesResp, Vec<RpcPerfSample>, clone);
 
 // the one in solana_client uses transaction_status
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -1670,25 +1378,11 @@ impl RpcConfirmedTransactionStatusWithSignature {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetSignaturesForAddressResp(Vec<RpcConfirmedTransactionStatusWithSignature>);
-
-resp_traits!(GetSignaturesForAddressResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetSignaturesForAddressResp {
-    #[new]
-    pub fn new(value: Vec<RpcConfirmedTransactionStatusWithSignature>) -> Self {
-        Self(value)
-    }
-
-    #[getter]
-    pub fn value(&self) -> Vec<RpcConfirmedTransactionStatusWithSignature> {
-        self.0.clone()
-    }
-}
+contextless_resp_eq!(
+    GetSignaturesForAddressResp,
+    Vec<RpcConfirmedTransactionStatusWithSignature>,
+    clone
+);
 
 #[serde_as]
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
@@ -1712,67 +1406,14 @@ impl GetSignatureStatusesResp {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetSlotResp(Slot);
-
-resp_traits!(GetSlotResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetSlotResp {
-    #[new]
-    pub fn new(value: Slot) -> Self {
-        Self(value)
-    }
-
-    #[getter]
-    pub fn value(&self) -> Slot {
-        self.0
-    }
-}
-
-#[serde_as]
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetSlotLeaderResp(#[serde_as(as = "DisplayFromStr")] Pubkey);
-
-resp_traits!(GetSlotLeaderResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetSlotLeaderResp {
-    #[new]
-    pub fn new(value: Pubkey) -> Self {
-        Self(value)
-    }
-
-    #[getter]
-    pub fn value(&self) -> Pubkey {
-        self.0
-    }
-}
-
-#[serde_as]
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetSlotLeadersResp(#[serde_as(as = "Vec<DisplayFromStr>")] Vec<Pubkey>);
-
-resp_traits!(GetSlotLeadersResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetSlotLeadersResp {
-    #[new]
-    pub fn new(value: Vec<Pubkey>) -> Self {
-        Self(value)
-    }
-
-    #[getter]
-    pub fn value(&self) -> Vec<Pubkey> {
-        self.0.clone()
-    }
-}
+contextless_resp_eq!(GetSlotResp, Slot);
+contextless_resp_eq!(GetSlotLeaderResp, Pubkey, "DisplayFromStr");
+contextless_resp_eq!(
+    GetSlotLeadersResp,
+    Vec<Pubkey>,
+    clone,
+    "Vec<DisplayFromStr>"
+);
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
@@ -1819,25 +1460,7 @@ impl RpcStakeActivation {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetStakeActivationResp(RpcStakeActivation);
-
-resp_traits!(GetStakeActivationResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetStakeActivationResp {
-    #[new]
-    pub fn new(value: RpcStakeActivation) -> Self {
-        Self(value)
-    }
-
-    #[getter]
-    pub fn value(&self) -> RpcStakeActivation {
-        self.0.clone()
-    }
-}
+contextless_resp_eq!(GetStakeActivationResp, RpcStakeActivation, clone);
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
@@ -2089,25 +1712,11 @@ impl GetTokenSupplyResp {
     }
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetTransactionResp(Option<EncodedConfirmedTransactionWithStatusMeta>);
-
-resp_traits!(GetTransactionResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetTransactionResp {
-    #[new]
-    pub fn new(value: Option<EncodedConfirmedTransactionWithStatusMeta>) -> Self {
-        Self(value)
-    }
-
-    #[getter]
-    pub fn value(&self) -> Option<EncodedConfirmedTransactionWithStatusMeta> {
-        self.0.clone()
-    }
-}
+contextless_resp_no_eq!(
+    GetTransactionResp,
+    Option<EncodedConfirmedTransactionWithStatusMeta>,
+    clone
+);
 
 pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "responses")?;
