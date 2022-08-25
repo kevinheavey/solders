@@ -229,7 +229,7 @@ def test_get_block_height() -> None:
     raw = '{ "jsonrpc": "2.0", "result": 1233, "id": 1 }'
     parsed = GetBlockHeightResp.from_json(raw)
     assert isinstance(parsed, GetBlockHeightResp)
-    assert parsed.height == 1233
+    assert parsed.value == 1233
 
 
 def test_get_block_commitment() -> None:
@@ -431,21 +431,21 @@ def test_get_blocks() -> None:
     raw = '{ "jsonrpc": "2.0", "result": [5, 6, 7, 8, 9, 10], "id": 1 }'
     parsed = GetBlocksResp.from_json(raw)
     assert isinstance(parsed, GetBlocksResp)
-    assert parsed.blocks == [5, 6, 7, 8, 9, 10]
+    assert parsed.value == [5, 6, 7, 8, 9, 10]
 
 
 def test_get_blocks_with_limit() -> None:
     raw = '{ "jsonrpc": "2.0", "result": [5, 6, 7, 8, 9, 10], "id": 1 }'
     parsed = GetBlocksWithLimitResp.from_json(raw)
     assert isinstance(parsed, GetBlocksWithLimitResp)
-    assert parsed.blocks == [5, 6, 7, 8, 9, 10]
+    assert parsed.value == [5, 6, 7, 8, 9, 10]
 
 
 def test_get_block_time() -> None:
     raw = '{ "jsonrpc": "2.0", "result": 1574721591, "id": 1 }'
     parsed = GetBlockTimeResp.from_json(raw)
     assert isinstance(parsed, GetBlockTimeResp)
-    assert parsed.time == 1574721591
+    assert parsed.value == 1574721591
 
 
 def test_get_cluster_nodes() -> None:
@@ -464,7 +464,7 @@ def test_get_cluster_nodes() -> None:
 }"""
     parsed = GetClusterNodesResp.from_json(raw)
     assert isinstance(parsed, GetClusterNodesResp)
-    assert parsed.nodes == [
+    assert parsed.value == [
         RpcContactInfo(
             pubkey=Pubkey.from_string("9QzsJf7LPLj8GkXbYT3LFDKqsj2hHG7TA3xinJHu8epQ"),
             gossip="10.239.6.48:8001",
@@ -490,7 +490,7 @@ def test_get_epoch_info() -> None:
 }"""
     parsed = GetEpochInfoResp.from_json(raw)
     assert isinstance(parsed, GetEpochInfoResp)
-    assert parsed.info == EpochInfo(
+    assert parsed.value == EpochInfo(
         absolute_slot=166598,
         block_height=166500,
         epoch=27,
@@ -514,7 +514,7 @@ def test_get_epoch_schedule() -> None:
 }"""
     parsed = GetEpochScheduleResp.from_json(raw)
     assert isinstance(parsed, GetEpochScheduleResp)
-    schedule = parsed.schedule
+    schedule = parsed.value
     assert schedule == EpochSchedule(
         slots_per_epoch=8192,
     )
@@ -541,7 +541,7 @@ def test_get_first_available_block() -> None:
     raw = '{ "jsonrpc": "2.0", "result": 250000, "id": 1 }'
     parsed = GetFirstAvailableBlockResp.from_json(raw)
     assert isinstance(parsed, GetFirstAvailableBlockResp)
-    assert parsed.slot == 250000
+    assert parsed.value == 250000
 
 
 def test_get_genesis_hash() -> None:
@@ -561,7 +561,7 @@ def test_get_health_healthy() -> None:
     raw = '{ "jsonrpc": "2.0", "result": "ok", "id": 1 }'
     parsed = GetHealthResp.from_json(raw)
     assert isinstance(parsed, GetHealthResp)
-    assert parsed.health == "ok"
+    assert parsed.value == "ok"
 
 
 def test_get_health_resp_unhealthy_generic() -> None:
@@ -603,7 +603,7 @@ def test_get_highest_snapshot_slot() -> None:
     raw = '{ "jsonrpc": "2.0", "result": { "full": 100, "incremental": 110 }, "id": 1 }'
     parsed = GetHighestSnapshotSlotResp.from_json(raw)
     assert isinstance(parsed, GetHighestSnapshotSlotResp)
-    assert parsed.info == RpcSnapshotSlotInfo(full=100, incremental=110)
+    assert parsed.value == RpcSnapshotSlotInfo(full=100, incremental=110)
 
 
 def test_get_identity() -> None:
@@ -633,7 +633,7 @@ def test_get_inflation_governor() -> None:
 }"""
     parsed = GetInflationGovernorResp.from_json(raw)
     assert isinstance(parsed, GetInflationGovernorResp)
-    assert parsed.governor == RpcInflationGovernor(
+    assert parsed.value == RpcInflationGovernor(
         initial=0.15, terminal=0.015, taper=0.15, foundation=0.05, foundation_term=7
     )
 
@@ -651,7 +651,7 @@ def test_get_inflation_rate() -> None:
 }"""
     parsed = GetInflationRateResp.from_json(raw)
     assert isinstance(parsed, GetInflationRateResp)
-    assert parsed.rate == RpcInflationRate(
+    assert parsed.value == RpcInflationRate(
         total=0.149, validator=0.148, foundation=0.001, epoch=100
     )
 
@@ -672,7 +672,7 @@ def test_get_inflation_reward() -> None:
 }"""
     parsed = GetInflationRewardResp.from_json(raw)
     assert isinstance(parsed, GetInflationRewardResp)
-    assert parsed.rewards == [
+    assert parsed.value == [
         RpcInflationReward(
             amount=2500, effective_slot=224, epoch=2, post_balance=499999442500
         ),
@@ -808,7 +808,7 @@ def test_get_leader_schedule() -> None:
 }"""
     parsed = GetLeaderScheduleResp.from_json(raw)
     assert isinstance(parsed, GetLeaderScheduleResp)
-    assert parsed.schedule == {
+    assert parsed.value == {
         Pubkey.from_string("4Qkev8aNZcqFNSRhQzwyLMFSsi94jHqE8WNVTJzTP99F"): [
             0,
             1,
@@ -882,21 +882,21 @@ def test_get_max_retransmit_slot() -> None:
     raw = '{ "jsonrpc": "2.0", "result": 1234, "id": 1 }'
     parsed = GetMaxRetransmitSlotResp.from_json(raw)
     assert isinstance(parsed, GetMaxRetransmitSlotResp)
-    assert parsed.slot == 1234
+    assert parsed.value == 1234
 
 
 def test_get_max_shred_insert_slot() -> None:
     raw = '{ "jsonrpc": "2.0", "result": 1234, "id": 1 }'
     parsed = GetMaxShredInsertSlotResp.from_json(raw)
     assert isinstance(parsed, GetMaxShredInsertSlotResp)
-    assert parsed.slot == 1234
+    assert parsed.value == 1234
 
 
 def test_get_minimum_balance_for_tent_exemption() -> None:
     raw = '{ "jsonrpc": "2.0", "result": 500, "id": 1 }'
     parsed = GetMinimumBalanceForRentExemption.from_json(raw)
     assert isinstance(parsed, GetMinimumBalanceForRentExemption)
-    assert parsed.slot == 500
+    assert parsed.value == 500
 
 
 def test_get_multiple_accounts_base64() -> None:
@@ -1069,7 +1069,7 @@ def test_get_program_accounts_without_context() -> None:
 }"""
     parsed = GetProgramAccountsWithoutContextResp.from_json(raw)
     assert isinstance(parsed, GetProgramAccountsWithoutContextResp)
-    assert parsed.accounts[0] == RpcKeyedAccount(
+    assert parsed.value[0] == RpcKeyedAccount(
         account=Account(
             data=b58decode(b"2R9jLfiAQ9bgdcw6h8s44439"),
             executable=False,
@@ -1128,7 +1128,7 @@ def test_get_program_accounts_without_context_json_parsed() -> None:
 }"""
     parsed = GetProgramAccountsWithoutContextJsonParsedResp.from_json(raw)
     assert isinstance(parsed, GetProgramAccountsWithoutContextJsonParsedResp)
-    val = parsed.accounts[0]
+    val = parsed.value[0]
     assert isinstance(val, RpcKeyedAccountJsonParsed)
     acc = val.account
     data = acc.data
@@ -1255,7 +1255,7 @@ def test_get_recent_performance_samples() -> None:
 }"""
     parsed = GetRecentPerformanceSamplesResp.from_json(raw)
     assert isinstance(parsed, GetRecentPerformanceSamplesResp)
-    assert parsed.samples[0] == RpcPerfSample(
+    assert parsed.value[0] == RpcPerfSample(
         num_slots=126, num_transactions=126, sample_period_secs=60, slot=348125
     )
 
@@ -1276,7 +1276,7 @@ def test_get_signatures_for_address() -> None:
 }"""
     parsed = GetSignaturesForAddressResp.from_json(raw)
     assert isinstance(parsed, GetSignaturesForAddressResp)
-    assert parsed.signatures[0] == RpcConfirmedTransactionStatusWithSignature(
+    assert parsed.value[0] == RpcConfirmedTransactionStatusWithSignature(
         err=None,
         memo=None,
         signature=Signature.from_string(
@@ -1324,7 +1324,7 @@ def test_get_slot() -> None:
     raw = '{ "jsonrpc": "2.0", "result": 1234, "id": 1 }'
     parsed = GetSlotResp.from_json(raw)
     assert isinstance(parsed, GetSlotResp)
-    assert parsed.slot == 1234
+    assert parsed.value == 1234
 
 
 def test_get_slot_leader() -> None:
@@ -1335,7 +1335,7 @@ def test_get_slot_leader() -> None:
 }"""
     parsed = GetSlotLeaderResp.from_json(raw)
     assert isinstance(parsed, GetSlotLeaderResp)
-    assert parsed.leader == Pubkey.from_string(
+    assert parsed.value == Pubkey.from_string(
         "ENvAW7JScgYq6o4zKZwewtkzzJgDzuJAFxYasvmEQdpS"
     )
 
@@ -1359,7 +1359,7 @@ def test_get_slot_leaders() -> None:
 }"""
     parsed = GetSlotLeadersResp.from_json(raw)
     assert isinstance(parsed, GetSlotLeadersResp)
-    assert parsed.leaders == [
+    assert parsed.value == [
         Pubkey.from_string(p)
         for p in (
             "ChorusmmK7i1AxXeiTtQgQZhQNiXYU84ULeaYF1EH15n",
@@ -1384,7 +1384,7 @@ def test_get_stake_activation() -> None:
 }"""
     parsed = GetStakeActivationResp.from_json(raw)
     assert isinstance(parsed, GetStakeActivationResp)
-    assert parsed.activation == RpcStakeActivation(
+    assert parsed.value == RpcStakeActivation(
         state=StakeActivationState.Active, active=197717120, inactive=0
     )
 
@@ -1759,7 +1759,7 @@ def test_get_transaction(path: str) -> None:
     raw = (Path(__file__).parent / "data" / path).read_text()
     parsed = GetTransactionResp.from_json(raw)
     assert isinstance(parsed, GetTransactionResp)
-    encoded = parsed.transaction
+    encoded = parsed.value
     assert encoded is not None
     assert encoded.block_time == 1661417105
     assert encoded.slot == 147558327

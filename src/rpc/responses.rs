@@ -310,12 +310,12 @@ resp_traits!(GetBlockHeightResp);
 #[pymethods]
 impl GetBlockHeightResp {
     #[new]
-    pub fn new(height: u64) -> Self {
-        Self(height)
+    pub fn new(value: u64) -> Self {
+        Self(value)
     }
 
     #[getter]
-    pub fn height(&self) -> u64 {
+    pub fn value(&self) -> u64 {
         self.0
     }
 }
@@ -479,12 +479,12 @@ resp_traits!(GetBlocksResp);
 #[pymethods]
 impl GetBlocksResp {
     #[new]
-    pub fn new(blocks: Vec<u64>) -> Self {
-        Self(blocks)
+    pub fn new(value: Vec<u64>) -> Self {
+        Self(value)
     }
 
     #[getter]
-    pub fn blocks(&self) -> Vec<u64> {
+    pub fn value(&self) -> Vec<u64> {
         self.0.clone()
     }
 }
@@ -499,12 +499,12 @@ resp_traits!(GetBlocksWithLimitResp);
 #[pymethods]
 impl GetBlocksWithLimitResp {
     #[new]
-    pub fn new(blocks: Vec<u64>) -> Self {
-        Self(blocks)
+    pub fn new(value: Vec<u64>) -> Self {
+        Self(value)
     }
 
     #[getter]
-    pub fn blocks(&self) -> Vec<u64> {
+    pub fn value(&self) -> Vec<u64> {
         self.0.clone()
     }
 }
@@ -519,12 +519,12 @@ resp_traits!(GetBlockTimeResp);
 #[pymethods]
 impl GetBlockTimeResp {
     #[new]
-    pub fn new(time: Option<u64>) -> Self {
-        Self(time)
+    pub fn new(value: Option<u64>) -> Self {
+        Self(value)
     }
 
     #[getter]
-    pub fn time(&self) -> Option<u64> {
+    pub fn value(&self) -> Option<u64> {
         self.0
     }
 }
@@ -716,12 +716,12 @@ resp_traits!(GetClusterNodesResp);
 #[pymethods]
 impl GetClusterNodesResp {
     #[new]
-    pub fn new(nodes: Vec<RpcContactInfo>) -> Self {
-        Self(nodes)
+    pub fn new(value: Vec<RpcContactInfo>) -> Self {
+        Self(value)
     }
 
     #[getter]
-    pub fn nodes(&self) -> Vec<RpcContactInfo> {
+    pub fn value(&self) -> Vec<RpcContactInfo> {
         self.0.clone()
     }
 }
@@ -735,12 +735,12 @@ resp_traits!(GetEpochInfoResp);
 #[pymethods]
 impl GetEpochInfoResp {
     #[new]
-    pub fn new(info: EpochInfo) -> Self {
-        Self(info)
+    pub fn new(value: EpochInfo) -> Self {
+        Self(value)
     }
 
     #[getter]
-    pub fn info(&self) -> EpochInfo {
+    pub fn value(&self) -> EpochInfo {
         self.0.clone()
     }
 }
@@ -754,12 +754,12 @@ resp_traits!(GetEpochScheduleResp);
 #[pymethods]
 impl GetEpochScheduleResp {
     #[new]
-    pub fn new(schedule: EpochSchedule) -> Self {
-        Self(schedule)
+    pub fn new(value: EpochSchedule) -> Self {
+        Self(value)
     }
 
     #[getter]
-    pub fn schedule(&self) -> EpochSchedule {
+    pub fn value(&self) -> EpochSchedule {
         self.0.clone()
     }
 }
@@ -794,12 +794,12 @@ resp_traits!(GetFirstAvailableBlockResp);
 #[pymethods]
 impl GetFirstAvailableBlockResp {
     #[new]
-    pub fn new(slot: u64) -> Self {
-        Self(slot)
+    pub fn new(value: u64) -> Self {
+        Self(value)
     }
 
     #[getter]
-    pub fn slot(&self) -> u64 {
+    pub fn value(&self) -> u64 {
         self.0
     }
 }
@@ -835,12 +835,12 @@ resp_traits!(GetHealthResp);
 #[pymethods]
 impl GetHealthResp {
     #[new]
-    pub fn new(health: String) -> Self {
-        Self(health)
+    pub fn new(value: String) -> Self {
+        Self(value)
     }
 
     #[getter]
-    pub fn health(&self) -> String {
+    pub fn value(&self) -> String {
         self.0.clone()
     }
 }
@@ -939,12 +939,12 @@ resp_traits!(GetHighestSnapshotSlotResp);
 #[pymethods]
 impl GetHighestSnapshotSlotResp {
     #[new]
-    pub fn new(info: RpcSnapshotSlotInfo) -> Self {
-        Self(info)
+    pub fn new(value: RpcSnapshotSlotInfo) -> Self {
+        Self(value)
     }
 
     #[getter]
-    pub fn info(&self) -> RpcSnapshotSlotInfo {
+    pub fn value(&self) -> RpcSnapshotSlotInfo {
         self.0.clone()
     }
 }
@@ -1052,12 +1052,12 @@ resp_traits!(GetInflationGovernorResp);
 #[pymethods]
 impl GetInflationGovernorResp {
     #[new]
-    pub fn new(governor: RpcInflationGovernor) -> Self {
-        Self(governor)
+    pub fn new(value: RpcInflationGovernor) -> Self {
+        Self(value)
     }
 
     #[getter]
-    pub fn governor(&self) -> RpcInflationGovernor {
+    pub fn value(&self) -> RpcInflationGovernor {
         self.0.clone()
     }
 }
@@ -1110,12 +1110,12 @@ resp_traits!(GetInflationRateResp);
 #[pymethods]
 impl GetInflationRateResp {
     #[new]
-    pub fn new(rate: RpcInflationRate) -> Self {
-        Self(rate)
+    pub fn new(value: RpcInflationRate) -> Self {
+        Self(value)
     }
 
     #[getter]
-    pub fn rate(&self) -> RpcInflationRate {
+    pub fn value(&self) -> RpcInflationRate {
         self.0.clone()
     }
 }
@@ -1178,12 +1178,12 @@ resp_traits!(GetInflationRewardResp);
 #[pymethods]
 impl GetInflationRewardResp {
     #[new]
-    pub fn new(rewards: Vec<Option<RpcInflationReward>>) -> Self {
-        Self(rewards)
+    pub fn new(value: Vec<Option<RpcInflationReward>>) -> Self {
+        Self(value)
     }
 
     #[getter]
-    pub fn rewards(&self) -> Vec<Option<RpcInflationReward>> {
+    pub fn value(&self) -> Vec<Option<RpcInflationReward>> {
         self.0.clone()
     }
 }
@@ -1299,12 +1299,12 @@ resp_traits!(GetLeaderScheduleResp);
 #[pymethods]
 impl GetLeaderScheduleResp {
     #[new]
-    pub fn new(schedule: RpcLeaderSchedule) -> Self {
-        Self(schedule)
+    pub fn new(value: RpcLeaderSchedule) -> Self {
+        Self(value)
     }
 
     #[getter]
-    pub fn schedule(&self) -> RpcLeaderSchedule {
+    pub fn value(&self) -> RpcLeaderSchedule {
         self.0.clone()
     }
 }
@@ -1319,12 +1319,12 @@ resp_traits!(GetMaxRetransmitSlotResp);
 #[pymethods]
 impl GetMaxRetransmitSlotResp {
     #[new]
-    pub fn new(slot: u64) -> Self {
-        Self(slot)
+    pub fn new(value: u64) -> Self {
+        Self(value)
     }
 
     #[getter]
-    pub fn slot(&self) -> u64 {
+    pub fn value(&self) -> u64 {
         self.0
     }
 }
@@ -1339,12 +1339,12 @@ resp_traits!(GetMaxShredInsertSlotResp);
 #[pymethods]
 impl GetMaxShredInsertSlotResp {
     #[new]
-    pub fn new(slot: u64) -> Self {
-        Self(slot)
+    pub fn new(value: u64) -> Self {
+        Self(value)
     }
 
     #[getter]
-    pub fn slot(&self) -> u64 {
+    pub fn value(&self) -> u64 {
         self.0
     }
 }
@@ -1514,12 +1514,12 @@ resp_traits!(GetProgramAccountsWithoutContextResp);
 #[pymethods]
 impl GetProgramAccountsWithoutContextResp {
     #[new]
-    pub fn new(accounts: Vec<RpcKeyedAccount>) -> Self {
-        Self(accounts)
+    pub fn new(value: Vec<RpcKeyedAccount>) -> Self {
+        Self(value)
     }
 
     #[getter]
-    pub fn accounts(&self) -> Vec<RpcKeyedAccount> {
+    pub fn value(&self) -> Vec<RpcKeyedAccount> {
         self.0.clone()
     }
 }
@@ -1534,12 +1534,12 @@ resp_traits!(GetProgramAccountsWithoutContextJsonParsedResp);
 #[pymethods]
 impl GetProgramAccountsWithoutContextJsonParsedResp {
     #[new]
-    pub fn new(accounts: Vec<RpcKeyedAccountJsonParsed>) -> Self {
-        Self(accounts)
+    pub fn new(value: Vec<RpcKeyedAccountJsonParsed>) -> Self {
+        Self(value)
     }
 
     #[getter]
-    pub fn accounts(&self) -> Vec<RpcKeyedAccountJsonParsed> {
+    pub fn value(&self) -> Vec<RpcKeyedAccountJsonParsed> {
         self.0.clone()
     }
 }
@@ -1593,12 +1593,12 @@ resp_traits!(GetRecentPerformanceSamplesResp);
 #[pymethods]
 impl GetRecentPerformanceSamplesResp {
     #[new]
-    pub fn new(samples: Vec<RpcPerfSample>) -> Self {
-        Self(samples)
+    pub fn new(value: Vec<RpcPerfSample>) -> Self {
+        Self(value)
     }
 
     #[getter]
-    pub fn samples(&self) -> Vec<RpcPerfSample> {
+    pub fn value(&self) -> Vec<RpcPerfSample> {
         self.0.clone()
     }
 }
@@ -1683,12 +1683,12 @@ resp_traits!(GetSignaturesForAddressResp);
 #[pymethods]
 impl GetSignaturesForAddressResp {
     #[new]
-    pub fn new(signatures: Vec<RpcConfirmedTransactionStatusWithSignature>) -> Self {
-        Self(signatures)
+    pub fn new(value: Vec<RpcConfirmedTransactionStatusWithSignature>) -> Self {
+        Self(value)
     }
 
     #[getter]
-    pub fn signatures(&self) -> Vec<RpcConfirmedTransactionStatusWithSignature> {
+    pub fn value(&self) -> Vec<RpcConfirmedTransactionStatusWithSignature> {
         self.0.clone()
     }
 }
@@ -1725,12 +1725,12 @@ resp_traits!(GetSlotResp);
 #[pymethods]
 impl GetSlotResp {
     #[new]
-    pub fn new(slot: Slot) -> Self {
-        Self(slot)
+    pub fn new(value: Slot) -> Self {
+        Self(value)
     }
 
     #[getter]
-    pub fn slot(&self) -> Slot {
+    pub fn value(&self) -> Slot {
         self.0
     }
 }
@@ -1746,12 +1746,12 @@ resp_traits!(GetSlotLeaderResp);
 #[pymethods]
 impl GetSlotLeaderResp {
     #[new]
-    pub fn new(leader: Pubkey) -> Self {
-        Self(leader)
+    pub fn new(value: Pubkey) -> Self {
+        Self(value)
     }
 
     #[getter]
-    pub fn leader(&self) -> Pubkey {
+    pub fn value(&self) -> Pubkey {
         self.0
     }
 }
@@ -1767,12 +1767,12 @@ resp_traits!(GetSlotLeadersResp);
 #[pymethods]
 impl GetSlotLeadersResp {
     #[new]
-    pub fn new(leaders: Vec<Pubkey>) -> Self {
-        Self(leaders)
+    pub fn new(value: Vec<Pubkey>) -> Self {
+        Self(value)
     }
 
     #[getter]
-    pub fn leaders(&self) -> Vec<Pubkey> {
+    pub fn value(&self) -> Vec<Pubkey> {
         self.0.clone()
     }
 }
@@ -1832,12 +1832,12 @@ resp_traits!(GetStakeActivationResp);
 #[pymethods]
 impl GetStakeActivationResp {
     #[new]
-    pub fn new(activation: RpcStakeActivation) -> Self {
-        Self(activation)
+    pub fn new(value: RpcStakeActivation) -> Self {
+        Self(value)
     }
 
     #[getter]
-    pub fn activation(&self) -> RpcStakeActivation {
+    pub fn value(&self) -> RpcStakeActivation {
         self.0.clone()
     }
 }
@@ -2102,12 +2102,12 @@ resp_traits!(GetTransactionResp);
 #[pymethods]
 impl GetTransactionResp {
     #[new]
-    pub fn new(transaction: Option<EncodedConfirmedTransactionWithStatusMeta>) -> Self {
-        Self(transaction)
+    pub fn new(value: Option<EncodedConfirmedTransactionWithStatusMeta>) -> Self {
+        Self(value)
     }
 
     #[getter]
-    pub fn transaction(&self) -> Option<EncodedConfirmedTransactionWithStatusMeta> {
+    pub fn value(&self) -> Option<EncodedConfirmedTransactionWithStatusMeta> {
         self.0.clone()
     }
 }
