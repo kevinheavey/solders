@@ -30,7 +30,7 @@ from solders.rpc.responses import (
     GetLeaderScheduleResp,
     GetMaxRetransmitSlotResp,
     GetMaxShredInsertSlotResp,
-    GetMinimumBalanceForRentExemption,
+    GetMinimumBalanceForRentExemptionResp,
     GetMultipleAccountsResp,
     GetMultipleAccountsJsonParsedResp,
     GetProgramAccountsWithContextResp,
@@ -84,6 +84,8 @@ from solders.rpc.responses import (
     RpcVoteAccountStatus,
     EpochInfo,
     RpcError,
+    batch_from_json,
+    batch_to_json,
 )
 from solders.rpc.errors import NodeUnhealthy
 from solders.hash import Hash
@@ -908,8 +910,8 @@ def test_get_max_shred_insert_slot() -> None:
 
 def test_get_minimum_balance_for_tent_exemption() -> None:
     raw = '{ "jsonrpc": "2.0", "result": 500, "id": 1 }'
-    parsed = GetMinimumBalanceForRentExemption.from_json(raw)
-    assert isinstance(parsed, GetMinimumBalanceForRentExemption)
+    parsed = GetMinimumBalanceForRentExemptionResp.from_json(raw)
+    assert isinstance(parsed, GetMinimumBalanceForRentExemptionResp)
     assert parsed.value == 500
 
 
@@ -2035,4 +2037,12 @@ def test_simulate_transaction() -> None:
             "Program Vote111111111111111111111111111111111111111 failed: custom program error: 0x0",
         ],
         units_consumed=0,
+    )
+
+
+def test_batch() -> None:
+    parsed = [GetBlockHeightResp(1233), GetFirstAvailableBlockResp(1)]
+    raw = batch_to_json(parsed)
+    assert (
+        batch_from_json(raw, [GetBlockHeightResp, GetFirstAvailableBlockResp]) == parsed
     )

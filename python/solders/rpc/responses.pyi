@@ -740,15 +740,15 @@ class GetMaxShredInsertSlotResp:
     def __bytes__(self) -> bytes: ...
     def __hash__(self) -> int: ...
 
-class GetMinimumBalanceForRentExemption:
+class GetMinimumBalanceForRentExemptionResp:
     def __init__(self, value: int) -> None: ...
     @property
     def value(self) -> int: ...
     def to_json(self) -> str: ...
     @staticmethod
-    def from_json(raw: str) -> Resp[GetMinimumBalanceForRentExemption]: ...
+    def from_json(raw: str) -> Resp[GetMinimumBalanceForRentExemptionResp]: ...
     @staticmethod
-    def from_bytes(data: bytes) -> GetMinimumBalanceForRentExemption: ...
+    def from_bytes(data: bytes) -> GetMinimumBalanceForRentExemptionResp: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
     def __eq__(self, o: object) -> bool: ...
@@ -1468,3 +1468,69 @@ class SimulateTransactionResp:
     def __eq__(self, o: object) -> bool: ...
     def __bytes__(self) -> bytes: ...
     def __hash__(self) -> int: ...
+
+RPCResponse = Union[
+    RpcError,
+    GetAccountInfoResp,
+    GetAccountInfoJsonParsedResp,
+    GetBalanceResp,
+    GetBlockProductionResp,
+    GetBlockResp,
+    GetBlockCommitmentResp,
+    GetBlockHeightResp,
+    GetBlocksResp,
+    GetBlocksWithLimitResp,
+    GetBlockTimeResp,
+    GetClusterNodesResp,
+    GetEpochInfoResp,
+    GetEpochScheduleResp,
+    GetFeeForMessageResp,
+    GetFirstAvailableBlockResp,
+    GetGenesisHashResp,
+    GetHealthResp,
+    GetHighestSnapshotSlotResp,
+    GetIdentityResp,
+    GetInflationGovernorResp,
+    GetInflationRateResp,
+    GetInflationRewardResp,
+    GetLargestAccountsResp,
+    GetLatestBlockhashResp,
+    GetLeaderScheduleResp,
+    GetMaxRetransmitSlotResp,
+    GetMaxShredInsertSlotResp,
+    GetMinimumBalanceForRentExemptionResp,
+    GetMultipleAccountsResp,
+    GetMultipleAccountsJsonParsedResp,
+    GetProgramAccountsWithContextResp,
+    GetProgramAccountsWithoutContextResp,
+    GetProgramAccountsWithContextJsonParsedResp,
+    GetProgramAccountsWithoutContextJsonParsedResp,
+    GetRecentPerformanceSamplesResp,
+    GetSignaturesForAddressResp,
+    GetSignatureStatusesResp,
+    GetSlotResp,
+    GetSlotLeaderResp,
+    GetSlotLeadersResp,
+    GetStakeActivationResp,
+    GetSupplyResp,
+    GetTokenAccountBalanceResp,
+    GetTokenAccountsByDelegateResp,
+    GetTokenAccountsByDelegateJsonParsedResp,
+    GetTokenAccountsByOwnerResp,
+    GetTokenAccountsByOwnerJsonParsedResp,
+    GetTokenLargestAccountsResp,
+    GetTokenSupplyResp,
+    GetTransactionResp,
+    GetTransactionCountResp,
+    GetVersionResp,
+    RpcVersionInfo,
+    GetVoteAccountsResp,
+    IsBlockhashValidResp,
+    MinimumLedgerSlotResp,
+    RequestAirdropResp,
+    SendTransactionResp,
+    SimulateTransactionResp,
+]
+
+def batch_to_json(resps: Sequence[RPCResponse]) -> str: ...
+def batch_from_json(raw: str, parsers: Sequence[RPCResponse]) -> List[RPCResponse]: ...

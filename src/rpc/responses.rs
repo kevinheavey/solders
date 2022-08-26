@@ -3,6 +3,8 @@ use std::fmt::Display;
 use std::{collections::HashMap, str::FromStr};
 
 use derive_more::{From, Into};
+use pyo3::exceptions::PyValueError;
+use pyo3::types::PyType;
 use pyo3::{
     prelude::*,
     type_object::PyTypeObject,
@@ -92,7 +94,12 @@ pub trait CommonMethodsRpcResp<'a>:
     }
 
     fn py_to_json(&self) -> String {
-        serde_json::to_string(self).unwrap()
+        let to_serialize = Resp::Result {
+            jsonrpc: crate::rpc::requests::V2::default(),
+            result: self.clone(),
+            id: 0,
+        };
+        serde_json::to_string(&to_serialize).unwrap()
     }
 
     fn py_from_json(raw: &'a str) -> PyResult<Resp<Self>> {
@@ -273,22 +280,21 @@ impl RpcResponseContext {
 
 response_data_boilerplate!(RpcResponseContext);
 
-
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 #[serde(untagged)]
 pub enum Resp<T: PyClass + IntoPy<PyObject>> {
     Result {
-        #[serde(skip)]
+        #[serde(skip_deserializing)]
         jsonrpc: crate::rpc::requests::V2,
         result: T,
-        #[serde(skip)]
+        #[serde(skip_deserializing)]
         id: u64,
     },
     Error {
-        #[serde(skip)]
+        #[serde(skip_deserializing)]
         jsonrpc: crate::rpc::requests::V2,
         error: RpcError,
-        #[serde(skip)]
+        #[serde(skip_deserializing)]
         id: u64,
     },
 }
@@ -1079,7 +1085,7 @@ contextless_resp_eq!(
 
 contextless_resp_eq!(GetMaxRetransmitSlotResp, u64);
 contextless_resp_eq!(GetMaxShredInsertSlotResp, u64);
-contextless_resp_eq!(GetMinimumBalanceForRentExemption, u64);
+contextless_resp_eq!(GetMinimumBalanceForRentExemptionResp, u64);
 contextful_resp_eq!(
     GetMultipleAccountsResp,
     Vec<Option<Account>>,
@@ -1642,6 +1648,161 @@ contextless_resp_eq!(RequestAirdropResp, Signature, "DisplayFromStr");
 contextless_resp_eq!(SendTransactionResp, Signature, "DisplayFromStr");
 contextful_resp_eq!(SimulateTransactionResp, RpcSimulateTransactionResult);
 
+macro_rules ! pyunion_resp {
+    ($name:ident, $($variant:ident),+) => {
+        #[derive(FromPyObject, Clone, Debug, PartialEq, Serialize, Deserialize)]
+        #[serde(untagged, rename_all = "camelCase")]
+        pub enum $name {
+            $($variant($variant),)+
+        }
+
+        impl $name {
+            fn to_json(&self) -> String {
+                match self {
+                    $(Self::$variant(x) => x.py_to_json(),)+
+                }
+            }
+        }
+
+        impl IntoPy<PyObject> for $name {
+            fn into_py(self, py: Python<'_>) -> PyObject {
+                match self {
+                    $(Self::$variant(x) => x.into_py(py),)+
+                }
+            }
+        }
+    }
+}
+
+pyunion_resp!(
+    RPCResult,
+    RpcError,
+    GetAccountInfoResp,
+    GetAccountInfoJsonParsedResp,
+    GetBalanceResp,
+    GetBlockProductionResp,
+    GetBlockResp,
+    GetBlockCommitmentResp,
+    GetBlockHeightResp,
+    GetBlocksResp,
+    GetBlocksWithLimitResp,
+    GetBlockTimeResp,
+    GetClusterNodesResp,
+    GetEpochInfoResp,
+    GetEpochScheduleResp,
+    GetFeeForMessageResp,
+    GetFirstAvailableBlockResp,
+    GetGenesisHashResp,
+    GetHealthResp,
+    GetHighestSnapshotSlotResp,
+    GetIdentityResp,
+    GetInflationGovernorResp,
+    GetInflationRateResp,
+    GetInflationRewardResp,
+    GetLargestAccountsResp,
+    GetLatestBlockhashResp,
+    GetLeaderScheduleResp,
+    GetMaxRetransmitSlotResp,
+    GetMaxShredInsertSlotResp,
+    GetMinimumBalanceForRentExemptionResp,
+    GetMultipleAccountsResp,
+    GetMultipleAccountsJsonParsedResp,
+    GetProgramAccountsWithContextResp,
+    GetProgramAccountsWithoutContextResp,
+    GetProgramAccountsWithContextJsonParsedResp,
+    GetProgramAccountsWithoutContextJsonParsedResp,
+    GetRecentPerformanceSamplesResp,
+    GetSignaturesForAddressResp,
+    GetSignatureStatusesResp,
+    GetSlotResp,
+    GetSlotLeaderResp,
+    GetSlotLeadersResp,
+    GetStakeActivationResp,
+    GetSupplyResp,
+    GetTokenAccountBalanceResp,
+    GetTokenAccountsByDelegateResp,
+    GetTokenAccountsByDelegateJsonParsedResp,
+    GetTokenAccountsByOwnerResp,
+    GetTokenAccountsByOwnerJsonParsedResp,
+    GetTokenLargestAccountsResp,
+    GetTokenSupplyResp,
+    GetTransactionResp,
+    GetTransactionCountResp,
+    GetVersionResp,
+    RpcVersionInfo,
+    GetVoteAccountsResp,
+    IsBlockhashValidResp,
+    MinimumLedgerSlotResp,
+    RequestAirdropResp,
+    SendTransactionResp,
+    SimulateTransactionResp
+);
+
+/// Serialize a list of response objects into a single batch response JSON.
+///
+/// Args:
+///     resps: A list of response objects.
+///
+/// Returns:
+///     str: The batch JSON string.
+///
+/// Example:
+///     >>> from solders.rpc.responses import batch_to_json, GetBlockHeightResp, GetFirstAvailableBlockResp
+///     >>> batch_to_json([GetBlockHeightResp(1233), GetFirstAvailableBlockResp(1)])
+///     '[{"id":0,"jsonrpc":"2.0","result":1233},{"id":0,"jsonrpc":"2.0","result":1}]'
+///
+#[pyfunction]
+pub fn batch_to_json(resps: Vec<RPCResult>) -> String {
+    let objects: Vec<serde_json::Map<String, serde_json::Value>> = resps
+        .iter()
+        .map(|r| serde_json::from_str(&r.to_json()).unwrap())
+        .collect();
+    serde_json::to_string(&objects).unwrap()
+}
+
+/// Deserialize a batch request JSON string into a list of request objects.
+///
+/// Args:
+///     raw (str): The batch JSON string.
+///
+/// Returns:
+///     A list of request objects.
+///
+/// Example:
+///     >>> from solders.rpc.responses import batch_from_json, GetBlockHeightResp, GetFirstAvailableBlockResp
+///     >>> raw = '[{ "jsonrpc": "2.0", "result": 1233, "id": 1 },{ "jsonrpc": "2.0", "result": 111, "id": 1 }]'
+///     >>> batch_from_json(raw, [GetBlockHeightResp, GetFirstAvailableBlockResp])
+///     [GetBlockHeightResp(
+///         1233,
+///     ), GetFirstAvailableBlockResp(
+///         111,
+///     )]
+///
+#[pyfunction]
+pub fn batch_from_json(raw: &str, parsers: Vec<&PyType>) -> PyResult<Vec<PyObject>> {
+    let gil = Python::acquire_gil();
+    let py = gil.python();
+    let raw_objects: Vec<serde_json::Map<String, serde_json::Value>> =
+        serde_json::from_str(raw).map_err(to_py_err)?;
+    let raw_objects_len = raw_objects.len();
+    let parsers_len = parsers.len();
+    if raw_objects_len != parsers_len {
+        let msg = format!("Number of parsers does not match number of response objects. Num parsers: {}. Num responses: {}", parsers_len, raw_objects_len);
+        Err(PyValueError::new_err(msg))
+    } else {
+        Ok(raw_objects
+            .iter()
+            .zip(parsers.iter())
+            .map(|(res, parser)| {
+                parser
+                    .call_method1("from_json", (serde_json::to_string(res).unwrap(),))
+                    .unwrap()
+                    .into_py(py)
+            })
+            .collect())
+    }
+}
+
 pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "responses")?;
     let typing = py.import("typing")?;
@@ -1656,6 +1817,72 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
             vec![RpcError::type_object(py).as_ref(), t],
         ))?,
     )?;
+    let rpc_result_members = PyTuple::new(
+        py,
+        vec![
+            RpcError::type_object(py),
+            GetAccountInfoResp::type_object(py),
+            GetAccountInfoJsonParsedResp::type_object(py),
+            GetBalanceResp::type_object(py),
+            GetBlockProductionResp::type_object(py),
+            GetBlockResp::type_object(py),
+            GetBlockCommitmentResp::type_object(py),
+            GetBlockHeightResp::type_object(py),
+            GetBlocksResp::type_object(py),
+            GetBlocksWithLimitResp::type_object(py),
+            GetBlockTimeResp::type_object(py),
+            GetClusterNodesResp::type_object(py),
+            GetEpochInfoResp::type_object(py),
+            GetEpochScheduleResp::type_object(py),
+            GetFeeForMessageResp::type_object(py),
+            GetFirstAvailableBlockResp::type_object(py),
+            GetGenesisHashResp::type_object(py),
+            GetHealthResp::type_object(py),
+            GetHighestSnapshotSlotResp::type_object(py),
+            GetIdentityResp::type_object(py),
+            GetInflationGovernorResp::type_object(py),
+            GetInflationRateResp::type_object(py),
+            GetInflationRewardResp::type_object(py),
+            GetLargestAccountsResp::type_object(py),
+            GetLatestBlockhashResp::type_object(py),
+            GetLeaderScheduleResp::type_object(py),
+            GetMaxRetransmitSlotResp::type_object(py),
+            GetMaxShredInsertSlotResp::type_object(py),
+            GetMinimumBalanceForRentExemptionResp::type_object(py),
+            GetMultipleAccountsResp::type_object(py),
+            GetMultipleAccountsJsonParsedResp::type_object(py),
+            GetProgramAccountsWithContextResp::type_object(py),
+            GetProgramAccountsWithoutContextResp::type_object(py),
+            GetProgramAccountsWithContextJsonParsedResp::type_object(py),
+            GetProgramAccountsWithoutContextJsonParsedResp::type_object(py),
+            GetRecentPerformanceSamplesResp::type_object(py),
+            GetSignaturesForAddressResp::type_object(py),
+            GetSignatureStatusesResp::type_object(py),
+            GetSlotResp::type_object(py),
+            GetSlotLeaderResp::type_object(py),
+            GetSlotLeadersResp::type_object(py),
+            GetStakeActivationResp::type_object(py),
+            GetSupplyResp::type_object(py),
+            GetTokenAccountBalanceResp::type_object(py),
+            GetTokenAccountsByDelegateResp::type_object(py),
+            GetTokenAccountsByDelegateJsonParsedResp::type_object(py),
+            GetTokenAccountsByOwnerResp::type_object(py),
+            GetTokenAccountsByOwnerJsonParsedResp::type_object(py),
+            GetTokenLargestAccountsResp::type_object(py),
+            GetTokenSupplyResp::type_object(py),
+            GetTransactionResp::type_object(py),
+            GetTransactionCountResp::type_object(py),
+            GetVersionResp::type_object(py),
+            RpcVersionInfo::type_object(py),
+            GetVoteAccountsResp::type_object(py),
+            IsBlockhashValidResp::type_object(py),
+            MinimumLedgerSlotResp::type_object(py),
+            RequestAirdropResp::type_object(py),
+            SendTransactionResp::type_object(py),
+            SimulateTransactionResp::type_object(py),
+        ],
+    );
+    let rpc_result_alias = union.get_item(rpc_result_members)?;
     m.add_class::<RpcResponseContext>()?;
     m.add_class::<RpcError>()?;
     m.add_class::<GetAccountInfoResp>()?;
@@ -1697,7 +1924,7 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<GetLeaderScheduleResp>()?;
     m.add_class::<GetMaxRetransmitSlotResp>()?;
     m.add_class::<GetMaxShredInsertSlotResp>()?;
-    m.add_class::<GetMinimumBalanceForRentExemption>()?;
+    m.add_class::<GetMinimumBalanceForRentExemptionResp>()?;
     m.add_class::<GetMultipleAccountsResp>()?;
     m.add_class::<GetMultipleAccountsJsonParsedResp>()?;
     m.add_class::<RpcKeyedAccount>()?;
@@ -1739,5 +1966,13 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<RequestAirdropResp>()?;
     m.add_class::<SendTransactionResp>()?;
     m.add_class::<SimulateTransactionResp>()?;
+    m.add("RPCResult", rpc_result_alias)?;
+    let funcs = [
+        wrap_pyfunction!(batch_to_json, m)?,
+        wrap_pyfunction!(batch_from_json, m)?,
+    ];
+    for func in funcs {
+        m.add_function(func)?;
+    }
     Ok(m)
 }
