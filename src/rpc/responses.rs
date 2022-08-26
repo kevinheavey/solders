@@ -571,6 +571,7 @@ contextless_resp_eq!(GetBlocksWithLimitResp, Vec<u64>, clone);
 contextless_resp_eq!(GetBlockTimeResp, Option<u64>);
 
 // the one in solana_client doesn't derive Eq or PartialEq
+// TODO: it does derive these things in latest unreleased version
 #[serde_as]
 #[derive(Serialize, Deserialize, Eq, PartialEq, Clone, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -772,6 +773,7 @@ impl From<RpcTransactionReturnData> for TransactionReturnData {
 }
 
 // the one in solana_client doesn't derive Eq
+// TODO: latest does
 #[serde_as]
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
@@ -844,6 +846,7 @@ impl RpcSnapshotSlotInfo {
 contextless_resp_eq!(GetHighestSnapshotSlotResp, RpcSnapshotSlotInfo, clone);
 
 // the one in solana_client doesn't derive Eq
+// TODO: latest does
 #[serde_as]
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
@@ -1457,7 +1460,7 @@ contextless_resp_no_eq!(
 contextless_resp_eq!(GetTransactionCountResp, u64);
 contextless_resp_eq!(GetVersionResp, RpcVersionInfo, clone);
 
-// the one in solana_client doesn't implement PartialEq or Debug
+// the one in solana_client doesn't implement PartialEq
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq)]
 #[serde(rename_all = "kebab-case")]
 pub struct RpcVersionInfoOriginal {
