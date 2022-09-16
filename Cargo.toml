@@ -13,7 +13,7 @@ name = "solders"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-pyo3 = { version = "^0.16.4", features = ["extension-module", "abi3-py37"] }
+pyo3 = { version = "0.16.6", features = ["extension-module", "abi3-py37"] }
 solana-client = "1.14.1"
 solana-rpc = "1.14.1"
 solana-sdk = "^1.14.1"
