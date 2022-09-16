@@ -215,7 +215,33 @@ pub struct UiTransactionStatusMeta {
     pub rewards: Option<Rewards>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub loaded_addresses: Option<UiLoadedAddresses>,
-    pub return_data: Option<TransactionReturnData>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub return_data: Option<UiTransactionReturnData>,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct UiTransactionReturnData {
+    pub program_id: String,
+    pub data: (String, UiReturnDataEncoding),
+}
+
+impl From<TransactionReturnData> for UiTransactionReturnData {
+    fn from(return_data: TransactionReturnData) -> Self {
+        Self {
+            program_id: return_data.program_id.to_string(),
+            data: (
+                base64::encode(return_data.data),
+                UiReturnDataEncoding::Base64,
+            ),
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize, Clone, Copy, Debug, Eq, Hash, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub enum UiReturnDataEncoding {
+    Base64,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]

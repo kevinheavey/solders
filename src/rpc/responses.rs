@@ -37,7 +37,7 @@ use crate::{
     tmp_account_decoder::{UiAccount, UiTokenAmount as UiTokenAmountOriginal},
     tmp_transaction_status::{
         TransactionConfirmationStatus as TransactionConfirmationStatusOriginal,
-        TransactionStatus as TransactionStatusOriginal,
+        TransactionStatus as TransactionStatusOriginal, UiTransactionReturnData,
     },
     to_py_err,
     transaction_status::{EncodedTransactionWithStatusMeta, Rewards},
@@ -51,7 +51,7 @@ use solana_client::rpc_response::{
     RpcInflationRate as RpcInflationRateOriginal, RpcInflationReward as RpcInflationRewardOriginal,
     RpcPerfSample as RpcPerfSampleOriginal, RpcSnapshotSlotInfo as RpcSnapshotSlotInfoOriginal,
     RpcStakeActivation as RpcStakeActivationOriginal, RpcSupply as RpcSupplyOriginal,
-    RpcTransactionReturnData, StakeActivationState as StakeActivationStateOriginal,
+    StakeActivationState as StakeActivationStateOriginal,
 };
 use solana_rpc::rpc;
 
@@ -757,14 +757,14 @@ contextless_resp_eq!(GetFirstAvailableBlockResp, u64);
 contextless_resp_eq!(GetGenesisHashResp, SolderHash, "DisplayFromStr");
 contextless_resp_eq!(GetHealthResp, String, clone);
 
-impl From<TransactionReturnData> for RpcTransactionReturnData {
+impl From<TransactionReturnData> for UiTransactionReturnData {
     fn from(t: TransactionReturnData) -> Self {
         TransactionReturnDataOriginal::from(t).into()
     }
 }
 
-impl From<RpcTransactionReturnData> for TransactionReturnData {
-    fn from(r: RpcTransactionReturnData) -> Self {
+impl From<UiTransactionReturnData> for TransactionReturnData {
+    fn from(r: UiTransactionReturnData) -> Self {
         Self::new(
             r.program_id.parse().unwrap(),
             base64::decode(r.data.0).unwrap(),
@@ -788,7 +788,7 @@ pub struct RpcSimulateTransactionResult {
     pub accounts: Option<Vec<Option<Account>>>,
     #[pyo3(get)]
     pub units_consumed: Option<u64>,
-    #[serde_as(as = "Option<FromInto<RpcTransactionReturnData>>")]
+    #[serde_as(as = "Option<FromInto<UiTransactionReturnData>>")]
     #[pyo3(get)]
     pub return_data: Option<TransactionReturnData>,
 }
