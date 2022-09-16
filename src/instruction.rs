@@ -46,7 +46,7 @@ use crate::{
 ///     >>> instruction = Instruction(program_id, instruction_data, accs)
 ///
 #[pyclass(module = "solders.instruction", subclass)]
-#[derive(PartialEq, Debug, Clone, Serialize, Deserialize, From, Into)]
+#[derive(PartialEq, Eq, Debug, Clone, Serialize, Deserialize, From, Into)]
 pub struct AccountMeta(AccountMetaOriginal);
 #[pyhash]
 #[richcmp_eq_only]
@@ -172,7 +172,7 @@ impl std::hash::Hash for AccountMeta {
 ///     data (bytes): Opaque data passed to the program for its own interpretation.
 ///     accounts (list[AccountMeta]): Metadata describing accounts that should be passed to the program.
 ///
-#[derive(PartialEq, Debug, Clone, Serialize, Deserialize, From, Into)]
+#[derive(PartialEq, Eq, Debug, Clone, Serialize, Deserialize, From, Into)]
 pub struct Instruction(pub InstructionOriginal);
 
 #[richcmp_eq_only]

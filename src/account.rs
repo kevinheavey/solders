@@ -132,19 +132,19 @@ impl From<Account> for UiAccount {
 #[serde(rename_all = "camelCase")]
 #[pyclass(module = "solders.account", subclass)]
 pub struct AccountJSON {
-    /// lamports in the account
+    /// int: Lamports in the account.
     #[pyo3(get)]
     pub lamports: u64,
-    /// data held in this account
+    /// ParsedAccount: Data held in this account.
     #[pyo3(get)]
     pub data: ParsedAccount,
-    /// the program that owns this account. If executable, the program that loads this account.
+    /// Pubkey: The program that owns this account. If executable, the program that loads this account.
     #[pyo3(get)]
     pub owner: Pubkey,
-    /// this account's data contains a loaded program (and is now read-only)
+    /// bool: Whether this account's data contains a loaded program (and is now read-only).
     #[pyo3(get)]
     pub executable: bool,
-    /// the epoch at which this account will next owe rent
+    /// int: The epoch at which this account will next owe rent.
     #[pyo3(get)]
     pub rent_epoch: Epoch,
 }
@@ -169,36 +169,6 @@ impl AccountJSON {
             executable,
             rent_epoch,
         }
-    }
-
-    /// int: Lamports in the account.
-    #[getter]
-    pub fn lamports(&self) -> u64 {
-        self.lamports
-    }
-
-    /// ParsedAccount: Data held in this account.
-    #[getter]
-    pub fn data(&self) -> ParsedAccount {
-        self.data.clone()
-    }
-
-    /// Pubkey: The program that owns this account. If executable, the program that loads this account.
-    #[getter]
-    pub fn owner(&self) -> Pubkey {
-        self.owner
-    }
-
-    /// Whether this account's data contains a loaded program (and is now read-only).
-    #[getter]
-    pub fn executable(&self) -> bool {
-        self.executable
-    }
-
-    /// int: The epoch at which this account will next owe rent.
-    #[getter]
-    pub fn rent_epoch(&self) -> Epoch {
-        self.rent_epoch
     }
 }
 

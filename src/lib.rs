@@ -406,11 +406,11 @@ pub trait CommonMethods<'a>:
     }
 
     fn pyreduce(&self) -> PyResult<(PyObject, PyObject)> {
-        let gil = Python::acquire_gil();
-        let py = gil.python();
         let cloned = self.clone();
-        let constructor = cloned.into_py(py).getattr(py, "from_bytes")?;
-        Ok((constructor, (self.pybytes(py).to_object(py),).to_object(py)))
+        Python::with_gil(|py| {
+            let constructor = cloned.into_py(py).getattr(py, "from_bytes")?;
+            Ok((constructor, (self.pybytes(py).to_object(py),).to_object(py)))
+        })
     }
 
     fn py_to_json(&self) -> String {

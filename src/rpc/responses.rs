@@ -7,9 +7,8 @@ use pyo3::exceptions::PyValueError;
 use pyo3::types::PyType;
 use pyo3::{
     prelude::*,
-    type_object::PyTypeObject,
     types::{PyBytes, PyTuple},
-    PyClass,
+    PyClass, PyTypeInfo,
 };
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, DisplayFromStr, FromInto};
@@ -86,11 +85,11 @@ pub trait CommonMethodsRpcResp<'a>:
     }
 
     fn pyreduce(&self) -> PyResult<(PyObject, PyObject)> {
-        let gil = Python::acquire_gil();
-        let py = gil.python();
         let cloned = self.clone();
-        let constructor = cloned.into_py(py).getattr(py, "from_bytes")?;
-        Ok((constructor, (self.pybytes(py).to_object(py),).to_object(py)))
+        Python::with_gil(|py| {
+            let constructor = cloned.into_py(py).getattr(py, "from_bytes")?;
+            Ok((constructor, (self.pybytes(py).to_object(py),).to_object(py)))
+        })
     }
 
     fn py_to_json(&self) -> String {
@@ -226,7 +225,7 @@ macro_rules! contextless_resp_no_eq {
     };
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
 pub struct RpcError {
     /// Code
@@ -280,7 +279,7 @@ impl RpcResponseContext {
 
 response_data_boilerplate!(RpcResponseContext);
 
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 #[serde(untagged)]
 pub enum Resp<T: PyClass + IntoPy<PyObject>> {
     Result {
@@ -1783,8 +1782,6 @@ pub fn batch_to_json(resps: Vec<RPCResult>) -> String {
 ///
 #[pyfunction]
 pub fn batch_from_json(raw: &str, parsers: Vec<&PyType>) -> PyResult<Vec<PyObject>> {
-    let gil = Python::acquire_gil();
-    let py = gil.python();
     let raw_objects: Vec<serde_json::Map<String, serde_json::Value>> =
         serde_json::from_str(raw).map_err(to_py_err)?;
     let raw_objects_len = raw_objects.len();
@@ -1793,16 +1790,18 @@ pub fn batch_from_json(raw: &str, parsers: Vec<&PyType>) -> PyResult<Vec<PyObjec
         let msg = format!("Number of parsers does not match number of response objects. Num parsers: {}. Num responses: {}", parsers_len, raw_objects_len);
         Err(PyValueError::new_err(msg))
     } else {
-        Ok(raw_objects
-            .iter()
-            .zip(parsers.iter())
-            .map(|(res, parser)| {
-                parser
-                    .call_method1("from_json", (serde_json::to_string(res).unwrap(),))
-                    .unwrap()
-                    .into_py(py)
-            })
-            .collect())
+        Python::with_gil(|py| {
+            Ok(raw_objects
+                .iter()
+                .zip(parsers.iter())
+                .map(|(res, parser)| {
+                    parser
+                        .call_method1("from_json", (serde_json::to_string(res).unwrap(),))
+                        .unwrap()
+                        .into_py(py)
+                })
+                .collect())
+        })
     }
 }
 

@@ -4,8 +4,8 @@ use pyo3::{
     create_exception,
     exceptions::PyException,
     prelude::*,
-    type_object::PyTypeObject,
     types::{PyBytes, PyInt, PyTuple},
+    PyTypeInfo,
 };
 use serde::{Deserialize, Serialize};
 use solana_sdk::{

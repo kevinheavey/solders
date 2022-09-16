@@ -40,7 +40,7 @@ macro_rules! rpc_config_impls {
 macro_rules! pyclass_boilerplate {
     ($(#[$attr:meta])* => $name:ident) => {
         $(#[$attr])*
-        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+        #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
         #[pyclass(module = "solders.rpc.config", subclass)]
         pub struct $name(rpc_config::$name);
         rpc_config_impls!($name);
@@ -50,7 +50,7 @@ macro_rules! pyclass_boilerplate {
 macro_rules! pyclass_boilerplate_with_default {
     ($(#[$attr:meta])* => $name:ident) => {
         $(#[$attr])*
-        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+        #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
         #[pyclass(module = "solders.rpc.config", subclass)]
         pub struct $name(rpc_config::$name);
         rpc_config_impls!($name);
@@ -818,12 +818,13 @@ impl RpcProgramAccountsConfig {
 
     #[getter]
     pub fn filters(&self) -> Option<Vec<PyObject>> {
-        let gil = Python::acquire_gil();
-        let py = gil.python();
-        self.0.filters.clone().map(|v| {
-            v.into_iter()
-                .map(|f| RpcFilterType::from(f).into_py(py))
-                .collect()
+        let cloned = self.0.filters.clone();
+        Python::with_gil(|py| {
+            cloned.map(|v| {
+                v.into_iter()
+                    .map(|f| RpcFilterType::from(f).into_py(py))
+                    .collect()
+            })
         })
     }
 
@@ -834,7 +835,7 @@ impl RpcProgramAccountsConfig {
 }
 
 /// Fieldless filters for ``logsSubscribe``.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 #[pyclass(module = "solders.rpc.config")]
 pub enum RpcTransactionLogsFilter {
@@ -847,7 +848,7 @@ pub enum RpcTransactionLogsFilter {
 /// Args:
 ///     pubkey (Pubkey): Subscribe to all transactions that mention the provided Pubkey.
 ///
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[pyclass(module = "solders.rpc.config", subclass)]
 pub struct RpcTransactionLogsFilterMentions(Vec<String>);
 
@@ -871,7 +872,7 @@ impl RpcTransactionLogsFilterMentions {
 
 impl RichcmpEqualityOnly for RpcTransactionLogsFilterMentions {}
 
-#[derive(FromPyObject, Clone, PartialEq, Serialize, Deserialize, Debug)]
+#[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug)]
 pub enum TransactionLogsFilterWrapper {
     Plain(RpcTransactionLogsFilter),
     Mentions(RpcTransactionLogsFilterMentions),
@@ -953,7 +954,7 @@ impl RpcTransactionLogsConfig {
 /// Args:
 ///     mint (Pubkey):  Pubkey of the specific token Mint to limit accounts to.
 ///
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[pyclass(module = "solders.rpc.config", subclass)]
 pub struct RpcTokenAccountsFilterMint(Pubkey);
 
@@ -982,7 +983,7 @@ impl RichcmpEqualityOnly for RpcTokenAccountsFilterMint {}
 /// Args:
 ///     program_id (Pubkey):   Pubkey of the Token program that owns the accounts.
 ///
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[pyclass(module = "solders.rpc.config", subclass)]
 pub struct RpcTokenAccountsFilterProgramId(Pubkey);
 
@@ -1006,7 +1007,7 @@ impl RpcTokenAccountsFilterProgramId {
 
 impl RichcmpEqualityOnly for RpcTokenAccountsFilterProgramId {}
 
-#[derive(FromPyObject, Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(FromPyObject, Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub enum RpcTokenAccountsFilterWrapper {
     Mint(RpcTokenAccountsFilterMint),
     ProgramId(RpcTokenAccountsFilterProgramId),
@@ -1091,7 +1092,7 @@ impl RpcSignatureSubscribeConfig {
 }
 
 /// Filter for ``blockSubscribe``.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 #[pyclass(module = "solders.rpc.config")]
 pub enum RpcBlockSubscribeFilter {
@@ -1103,7 +1104,7 @@ pub enum RpcBlockSubscribeFilter {
 /// Args:
 ///     pubkey (Pubkey): Return only transactions that mention the provided pubkey.
 ///
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[pyclass(module = "solders.rpc.config", subclass)]
 pub struct RpcBlockSubscribeFilterMentions(String);
 
@@ -1127,7 +1128,7 @@ impl RpcBlockSubscribeFilterMentions {
 
 impl RichcmpEqualityOnly for RpcBlockSubscribeFilterMentions {}
 
-#[derive(FromPyObject, Serialize, Deserialize, Clone, Debug, PartialEq)]
+#[derive(FromPyObject, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub enum RpcBlockSubscribeFilterWrapper {
     All(RpcBlockSubscribeFilter),
     MentionsAccountOrProgram(RpcBlockSubscribeFilterMentions),

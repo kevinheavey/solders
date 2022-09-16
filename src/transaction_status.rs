@@ -35,8 +35,8 @@ use crate::{
 };
 use pyo3::{
     prelude::*,
-    type_object::PyTypeObject,
     types::{PyBytes, PyTuple},
+    PyTypeInfo,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -639,7 +639,7 @@ impl From<EncodedTransaction> for EncodedTransactionOriginal {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.transaction_status", subclass)]
 pub struct UiInnerInstructions(UiInnerInstructionsOriginal);
 
@@ -674,7 +674,7 @@ impl UiInnerInstructions {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.transaction_status", subclass)]
 pub struct UiLoadedAddresses(UiLoadedAddressesOriginal);
 
@@ -1551,7 +1551,7 @@ impl IntoPy<PyObject> for TransactionErrorType {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.transaction_status", subclass)]
 pub struct Reward(RewardOriginal);
 
@@ -1673,7 +1673,7 @@ impl TransactionStatus {
         self.0.satisfies_commitment(commitment_config.into())
     }
 
-    pub fn get_confirmation_status(&self) -> TransactionConfirmationStatus {
+    pub fn find_confirmation_status(&self) -> TransactionConfirmationStatus {
         self.0.confirmation_status().into()
     }
 }

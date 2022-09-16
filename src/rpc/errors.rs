@@ -3,7 +3,7 @@ use crate::{
     CommonMethods, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly,
 };
 use derive_more::{From, Into};
-use pyo3::{prelude::*, type_object::PyTypeObject, types::PyTuple};
+use pyo3::{prelude::*, types::PyTuple, PyTypeInfo};
 use serde::{Deserialize, Serialize};
 use solana_sdk::slot_history::Slot;
 use solders_macros::{common_methods, richcmp_eq_only};
@@ -11,7 +11,7 @@ use std::fmt::Display;
 
 use super::responses::RpcSimulateTransactionResult;
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.rpc.errors", subclass)]
 #[serde(rename_all = "camelCase")]
 pub struct BlockCleanedUp {
@@ -33,7 +33,7 @@ impl BlockCleanedUp {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.rpc.errors", subclass)]
 pub struct SendTransactionPreflightFailure {
     #[pyo3(get)]
@@ -63,7 +63,7 @@ pub enum RpcCustomErrorFieldless {
     TransactionSignatureLenMismatch,
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.rpc.errors", subclass)]
 pub struct BlockNotAvailable {
     #[pyo3(get)]
@@ -82,7 +82,7 @@ impl BlockNotAvailable {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.rpc.errors", subclass)]
 #[serde(rename_all = "camelCase")]
 pub struct NodeUnhealthy {
@@ -102,7 +102,7 @@ impl NodeUnhealthy {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.rpc.errors", subclass)]
 pub struct TransactionPrecompileVerificationFailure(TransactionErrorType);
 
@@ -123,7 +123,7 @@ impl TransactionPrecompileVerificationFailure {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.rpc.errors", subclass)]
 pub struct SlotSkipped {
     #[pyo3(get)]
@@ -142,7 +142,7 @@ impl SlotSkipped {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.rpc.errors", subclass)]
 pub struct LongTermStorageSlotSkipped {
     #[pyo3(get)]
@@ -161,7 +161,7 @@ impl LongTermStorageSlotSkipped {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.rpc.errors", subclass)]
 #[serde(rename_all = "camelCase")]
 pub struct KeyExcludedFromSecondaryIndex {
@@ -181,7 +181,7 @@ impl KeyExcludedFromSecondaryIndex {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.rpc.errors", subclass)]
 pub struct ScanError {
     #[pyo3(get)]
@@ -200,7 +200,7 @@ impl ScanError {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.rpc.errors", subclass)]
 pub struct BlockStatusNotAvailableYet {
     #[pyo3(get)]
@@ -219,7 +219,7 @@ impl BlockStatusNotAvailableYet {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.rpc.errors", subclass)]
 #[serde(rename_all = "camelCase")]
 pub struct MinContextSlotNotReached {
@@ -239,7 +239,7 @@ impl MinContextSlotNotReached {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.rpc.errors", subclass)]
 pub struct UnsupportedTransactionVersion(u8);
 
@@ -260,7 +260,7 @@ impl UnsupportedTransactionVersion {
     }
 }
 
-#[derive(FromPyObject, Clone, PartialEq, Serialize, Deserialize, Debug)]
+#[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug)]
 #[serde(untagged)]
 pub enum RpcCustomError {
     Fieldless(RpcCustomErrorFieldless),
