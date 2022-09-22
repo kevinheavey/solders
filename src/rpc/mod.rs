@@ -13,6 +13,7 @@ pub mod requests;
 pub mod responses;
 mod tmp_config;
 mod tmp_filter;
+mod tmp_response;
 
 pub fn create_rpc_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let rpc_mod = PyModule::new(py, "rpc")?;

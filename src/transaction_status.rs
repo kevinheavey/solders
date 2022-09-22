@@ -21,6 +21,7 @@ use crate::{
         TransactionStatus as TransactionStatusOriginal,
         UiAddressTableLookup as UiAddressTableLookupOriginal,
         UiCompiledInstruction as UiCompiledInstructionOriginal,
+        UiConfirmedBlock as UiConfirmedBlockOriginal,
         UiInnerInstructions as UiInnerInstructionsOriginal, UiInstruction as UiInstructionOriginal,
         UiLoadedAddresses as UiLoadedAddressesOriginal, UiMessage as UiMessageOriginal,
         UiParsedInstruction as UiParsedInstructionOriginal,
@@ -1717,6 +1718,86 @@ impl EncodedConfirmedTransactionWithStatusMeta {
     #[getter]
     pub fn block_time(&self) -> Option<UnixTimestamp> {
         self.0.block_time
+    }
+}
+
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone, From, Into)]
+#[pyclass(module = "solders.transaction_status", subclass)]
+pub struct UiConfirmedBlock(UiConfirmedBlockOriginal);
+
+transaction_status_boilerplate!(UiConfirmedBlock);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl UiConfirmedBlock {
+    #[new]
+    pub fn new(
+        previous_blockhash: SolderHash,
+        blockhash: SolderHash,
+        parent_slot: Slot,
+        transactions: Option<Vec<EncodedTransactionWithStatusMeta>>,
+        signatures: Option<Vec<Signature>>,
+        rewards: Option<Rewards>,
+        block_time: Option<UnixTimestamp>,
+        block_height: Option<u64>,
+    ) -> Self {
+        UiConfirmedBlockOriginal {
+            previous_blockhash: previous_blockhash.to_string(),
+            blockhash: blockhash.to_string(),
+            parent_slot,
+            transactions: transactions.map(|txs| txs.into_iter().map(|tx| tx.into()).collect()),
+            signatures: signatures.map(|sigs| sigs.iter().map(|sig| sig.to_string()).collect()),
+            rewards: rewards.map(|v| v.into_iter().map(|r| r.into()).collect()),
+            block_time,
+            block_height,
+        }
+        .into()
+    }
+
+    #[getter]
+    pub fn previous_blockhash(&self) -> SolderHash {
+        self.0.previous_blockhash.parse().unwrap()
+    }
+
+    #[getter]
+    pub fn blockhash(&self) -> SolderHash {
+        self.0.blockhash.parse().unwrap()
+    }
+
+    #[getter]
+    pub fn parent_slot(&self) -> Slot {
+        self.0.parent_slot
+    }
+
+    #[getter]
+    pub fn transactions(&self) -> Option<Vec<EncodedTransactionWithStatusMeta>> {
+        self.0
+            .transactions
+            .clone()
+            .map(|txs| txs.into_iter().map(|tx| tx.into()).collect())
+    }
+    #[getter]
+    pub fn signatures(&self) -> Option<Vec<Signature>> {
+        self.0
+            .signatures
+            .clone()
+            .map(|sigs| sigs.iter().map(|sig| sig.parse().unwrap()).collect())
+    }
+    #[getter]
+    pub fn rewards(&self) -> Option<Rewards> {
+        self.0
+            .rewards
+            .clone()
+            .map(|v| v.into_iter().map(|r| r.into()).collect())
+    }
+    #[getter]
+    pub fn block_time(&self) -> Option<UnixTimestamp> {
+        self.0.block_time
+    }
+    #[getter]
+    pub fn block_height(&self) -> Option<u64> {
+        self.0.block_height
     }
 }
 

@@ -24,6 +24,16 @@ use solders_macros::{
 
 use crate::account_decoder::UiTokenAmount;
 use crate::epoch_schedule::EpochSchedule;
+use crate::rpc::tmp_response::{
+    RpcAccountBalance as RpcAccountBalanceOriginal,
+    RpcBlockProduction as RpcBlockProductionOriginal,
+    RpcBlockProductionRange as RpcBlockProductionRangeOriginal,
+    RpcContactInfo as RpcContactInfoOriginal, RpcInflationGovernor as RpcInflationGovernorOriginal,
+    RpcInflationRate as RpcInflationRateOriginal, RpcInflationReward as RpcInflationRewardOriginal,
+    RpcPerfSample as RpcPerfSampleOriginal, RpcSnapshotSlotInfo as RpcSnapshotSlotInfoOriginal,
+    RpcStakeActivation as RpcStakeActivationOriginal, RpcSupply as RpcSupplyOriginal,
+    StakeActivationState as StakeActivationStateOriginal,
+};
 use crate::transaction_status::{
     EncodedConfirmedTransactionWithStatusMeta, TransactionConfirmationStatus, TransactionErrorType,
     TransactionReturnData, TransactionStatus,
@@ -39,18 +49,8 @@ use crate::{
         TransactionStatus as TransactionStatusOriginal, UiTransactionReturnData,
     },
     to_py_err,
-    transaction_status::{EncodedTransactionWithStatusMeta, Rewards},
+    transaction_status::UiConfirmedBlock,
     CommonMethods, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly, SolderHash,
-};
-use solana_client::rpc_response::{
-    RpcAccountBalance as RpcAccountBalanceOriginal,
-    RpcBlockProduction as RpcBlockProductionOriginal,
-    RpcBlockProductionRange as RpcBlockProductionRangeOriginal,
-    RpcContactInfo as RpcContactInfoOriginal, RpcInflationGovernor as RpcInflationGovernorOriginal,
-    RpcInflationRate as RpcInflationRateOriginal, RpcInflationReward as RpcInflationRewardOriginal,
-    RpcPerfSample as RpcPerfSampleOriginal, RpcSnapshotSlotInfo as RpcSnapshotSlotInfoOriginal,
-    RpcStakeActivation as RpcStakeActivationOriginal, RpcSupply as RpcSupplyOriginal,
-    StakeActivationState as StakeActivationStateOriginal,
 };
 use solana_rpc::rpc;
 
@@ -507,63 +507,7 @@ impl RpcBlockProduction {
 
 contextful_resp_eq!(GetBlockProductionResp, RpcBlockProduction);
 
-#[serde_as]
-#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "camelCase")]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetBlockResp {
-    #[serde_as(as = "DisplayFromStr")]
-    #[pyo3(get)]
-    pub previous_blockhash: SolderHash,
-    #[serde_as(as = "DisplayFromStr")]
-    #[pyo3(get)]
-    pub blockhash: SolderHash,
-    #[pyo3(get)]
-    pub parent_slot: Slot,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[pyo3(get)]
-    pub transactions: Option<Vec<EncodedTransactionWithStatusMeta>>,
-    #[serde_as(as = "Option<Vec<DisplayFromStr>>")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[pyo3(get)]
-    pub signatures: Option<Vec<Signature>>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[pyo3(get)]
-    pub rewards: Option<Rewards>,
-    #[pyo3(get)]
-    pub block_time: Option<UnixTimestamp>,
-    #[pyo3(get)]
-    pub block_height: Option<u64>,
-}
-
-resp_traits!(GetBlockResp);
-
-#[common_methods_rpc_resp]
-#[pymethods]
-impl GetBlockResp {
-    #[new]
-    pub fn new(
-        previous_blockhash: SolderHash,
-        blockhash: SolderHash,
-        parent_slot: Slot,
-        transactions: Option<Vec<EncodedTransactionWithStatusMeta>>,
-        signatures: Option<Vec<Signature>>,
-        rewards: Option<Rewards>,
-        block_time: Option<UnixTimestamp>,
-        block_height: Option<u64>,
-    ) -> Self {
-        Self {
-            previous_blockhash,
-            blockhash,
-            parent_slot,
-            transactions,
-            signatures,
-            rewards,
-            block_time,
-            block_height,
-        }
-    }
-}
+contextless_resp_no_eq!(GetBlockResp, Option<UiConfirmedBlock>, clone);
 
 contextless_resp_eq!(GetBlocksResp, Vec<u64>, clone);
 contextless_resp_eq!(GetBlocksWithLimitResp, Vec<u64>, clone);

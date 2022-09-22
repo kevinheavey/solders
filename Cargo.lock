@@ -4842,7 +4842,6 @@ dependencies = [
  "serde_cbor",
  "serde_json",
  "serde_with",
- "solana-client",
  "solana-rpc",
  "solana-sdk",
  "solders-macros",
