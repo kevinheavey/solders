@@ -3,10 +3,7 @@ from typing import Sequence, List, Optional, TypeVar, Union, Tuple, Dict
 from solders.hash import Hash
 from solders.account import Account, AccountJSON
 from solders.account_decoder import UiTokenAmount
-from solders.transaction_status import (
-    EncodedTransactionWithStatusMeta,
-    Reward,
-)
+from solders.transaction_status import UiConfirmedBlock
 from solders.signature import Signature
 from solders.pubkey import Pubkey
 from solders.epoch_schedule import EpochSchedule
@@ -179,25 +176,9 @@ class GetBlockProductionResp:
     def __hash__(self) -> int: ...
 
 class GetBlockResp:
-    previous_blockhash: Hash
-    blockhash: Hash
-    parent_slot: int
-    transactions: Optional[List[EncodedTransactionWithStatusMeta]]
-    signatures: Optional[List[Signature]]
-    rewards: Optional[List[Reward]]
-    block_time: Optional[int]
-    block_height: Optional[int]
-    def __init__(
-        self,
-        previous_blockhash: Hash,
-        blockhash: Hash,
-        parent_slot: int,
-        transactions: Optional[Sequence[EncodedTransactionWithStatusMeta]] = None,
-        signatures: Optional[Sequence[Signature]] = None,
-        rewards: Optional[Sequence[Reward]] = None,
-        block_time: Optional[int] = None,
-        block_height: Optional[int] = None,
-    ) -> None: ...
+    def __init__(self, value: UiConfirmedBlock) -> None: ...
+    @property
+    def value(self) -> UiConfirmedBlock: ...
     def to_json(self) -> str: ...
     @staticmethod
     def from_json(raw: str) -> Resp[GetBlockResp]: ...

@@ -1832,6 +1832,7 @@ pub fn create_transaction_status_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<TransactionConfirmationStatus>()?;
     m.add_class::<TransactionStatus>()?;
     m.add_class::<EncodedConfirmedTransactionWithStatusMeta>()?;
+    m.add_class::<UiConfirmedBlock>()?;
     let typing = py.import("typing")?;
     let union = typing.getattr("Union")?;
     let ui_parsed_instruction_members = vec![

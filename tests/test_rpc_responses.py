@@ -109,6 +109,7 @@ from solders.transaction_status import (
     TransactionConfirmationStatus,
     TransactionErrorInstructionError,
     InstructionErrorCustom,
+    UiConfirmedBlock,
 )
 from solders.message import MessageHeader, Message
 from solders.transaction import VersionedTransaction
@@ -314,16 +315,17 @@ def test_get_block(path: str) -> None:
     parsed = GetBlockResp.from_json(raw)
     # pub transactions: Option<Vec<EncodedTransactionWithStatusMeta>>,
     assert isinstance(parsed, GetBlockResp)
-    assert isinstance(parsed.previous_blockhash, Hash)
-    assert parsed.rewards is not None
-    assert parsed.rewards[0] == Reward(
+    val = parsed.value
+    assert isinstance(val.previous_blockhash, Hash)
+    assert val.rewards is not None
+    assert val.rewards[0] == Reward(
         pubkey=Pubkey.from_string("8vio2CKbM54Pfo7LZrRVZdopDxBYMtoBx2YXgfh2rBo6"),
         commission=None,
         lamports=-125,
         post_balance=2020030,
         reward_type=RewardType.Rent,
     )
-    transactions = parsed.transactions
+    transactions = val.transactions
     assert transactions is not None
     tx = transactions[0]
     meta = tx.meta
@@ -358,7 +360,7 @@ def test_get_block(path: str) -> None:
     version = tx.version
     assert meta == expected_meta
     assert version is None  # always None in the test data
-    assert parsed.signatures is None  # always None in the test data
+    assert val.signatures is None  # always None in the test data
     expected_signature = Signature.from_string(
         "2DtNjd9uPve3HHHNroiKoNByaGZ1jgRKqsQGzh4JPcE2NjmVvbYuxJMNfAUgecQnLYqfxSgdKjvj3LNigLZeAx2N"
     )
@@ -436,11 +438,10 @@ def test_get_block(path: str) -> None:
         assert isinstance(encoded_tx, VersionedTransaction)
         assert isinstance(msg, Message)
         # don't need so many assertions here since we already have tests for Message
-    assert parsed.block_height == 139015678
-    assert parsed.block_time == 1657486664
-    assert isinstance(parsed.blockhash, Hash)
-    assert parsed.parent_slot == 147078734
-    assert isinstance(parsed.previous_blockhash, Hash)
+    assert val.block_height == 139015678
+    assert val.block_time == 1657486664
+    assert isinstance(val.blockhash, Hash)
+    assert val.parent_slot == 147078734
 
 
 def test_get_blocks() -> None:
