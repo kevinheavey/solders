@@ -33,7 +33,8 @@ use crate::rpc::tmp_response::{
     RpcLogsResponse as RpcLogsResponseOriginal, RpcPerfSample as RpcPerfSampleOriginal,
     RpcSnapshotSlotInfo as RpcSnapshotSlotInfoOriginal,
     RpcStakeActivation as RpcStakeActivationOriginal, RpcSupply as RpcSupplyOriginal,
-    StakeActivationState as StakeActivationStateOriginal,
+    SlotInfo as SlotInfoOriginal, SlotTransactionStats as SlotTransactionStatsOriginal,
+    SlotUpdate as SlotUpdateOriginal, StakeActivationState as StakeActivationStateOriginal,
 };
 use crate::transaction_status::{
     EncodedConfirmedTransactionWithStatusMeta, TransactionConfirmationStatus, TransactionErrorType,
@@ -53,6 +54,7 @@ use crate::{
     transaction_status::UiConfirmedBlock,
     CommonMethods, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly, SolderHash,
 };
+use camelpaste::paste;
 
 use super::errors::RpcCustomError;
 
@@ -1621,6 +1623,262 @@ impl RpcLogsResponse {
     }
 }
 
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct SlotTransactionStats(SlotTransactionStatsOriginal);
+
+response_data_boilerplate!(SlotTransactionStats);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl SlotTransactionStats {
+    #[new]
+    pub fn new(
+        num_transaction_entries: u64,
+        num_successful_transactions: u64,
+        num_failed_transactions: u64,
+        max_transactions_per_entry: u64,
+    ) -> Self {
+        SlotTransactionStatsOriginal {
+            num_transaction_entries,
+            num_successful_transactions,
+            num_failed_transactions,
+            max_transactions_per_entry,
+        }
+        .into()
+    }
+
+    #[getter]
+    pub fn num_transaction_entries(&self) -> u64 {
+        self.0.num_transaction_entries
+    }
+    #[getter]
+    pub fn num_successful_transactions(&self) -> u64 {
+        self.0.num_successful_transactions
+    }
+    #[getter]
+    pub fn num_failed_transactions(&self) -> u64 {
+        self.0.num_failed_transactions
+    }
+
+    #[getter]
+    pub fn max_transactions_per_entry(&self) -> u64 {
+        self.0.num_failed_transactions
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct SlotInfo(SlotInfoOriginal);
+
+response_data_boilerplate!(SlotInfo);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl SlotInfo {
+    #[new]
+    pub fn new(slot: Slot, parent: Slot, root: Slot) -> Self {
+        SlotInfoOriginal { slot, parent, root }.into()
+    }
+
+    #[getter]
+    pub fn slot(&self) -> Slot {
+        self.0.slot
+    }
+    #[getter]
+    pub fn parent(&self) -> Slot {
+        self.0.parent
+    }
+    #[getter]
+    pub fn root(&self) -> Slot {
+        self.0.root
+    }
+}
+
+macro_rules! slot_update_core {
+    ($name:ident) => {
+        paste! {
+            #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+            #[pyclass(module = "solders.rpc.responses", subclass)]
+            pub struct [<SlotUpdate $name>] {
+                #[pyo3(get)]
+                slot: Slot,
+                #[pyo3(get)]
+                timestamp: u64,
+            }
+
+            response_data_boilerplate!([<SlotUpdate $name>]);
+
+            #[richcmp_eq_only]
+            #[common_methods]
+            #[pymethods]
+            impl [<SlotUpdate $name>] {
+                #[new]
+                pub fn new(slot: Slot, timestamp: u64) -> Self {
+                    Self { slot, timestamp }
+                }
+            }
+
+            impl From<[<SlotUpdate $name>]> for SlotUpdateOriginal {
+                fn from(s: [<SlotUpdate $name>]) -> Self {
+                    Self::$name { slot: s.slot, timestamp: s.timestamp}
+                }
+            }
+        }
+    };
+    ($name:ident, $param:ident : $type:ty) => {
+        paste! {
+            #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+            #[pyclass(module = "solders.rpc.responses", subclass)]
+            pub struct [<SlotUpdate $name>] {
+                #[pyo3(get)]
+                slot: Slot,
+                #[pyo3(get)]
+                timestamp: u64,
+                #[pyo3(get)]
+                $param: $type,
+            }
+
+            response_data_boilerplate!([<SlotUpdate $name>]);
+
+            #[richcmp_eq_only]
+            #[common_methods]
+            #[pymethods]
+            impl [<SlotUpdate $name>] {
+                #[new]
+                pub fn new(slot: Slot, timestamp: u64, $param: $type) -> Self {
+                    Self {
+                        slot,
+                        timestamp,
+                        $param,
+                    }
+                }
+            }
+        }
+    };
+}
+
+macro_rules! slot_update {
+    ($name:ident) => {
+        slot_update_core!($name);
+    };
+    ($name:ident, $param:ident : $type:ty) => {
+        slot_update_core!($name, $param: $type);
+        paste! {
+            impl From<[<SlotUpdate $name>]> for SlotUpdateOriginal {
+                fn from(s: [<SlotUpdate $name>]) -> Self {
+                    Self::$name { slot: s.slot, timestamp: s.timestamp, $param: s.$param}
+                }
+            }
+        }
+    };
+}
+
+slot_update!(FirstShredReceived);
+slot_update!(Completed);
+slot_update!(CreatedBank, parent: Slot);
+slot_update!(Dead, err: String);
+slot_update!(OptimisticConfirmation);
+slot_update!(Root);
+slot_update_core!(Frozen, stats: SlotTransactionStats);
+impl From<SlotUpdateFrozen> for SlotUpdateOriginal {
+    fn from(s: SlotUpdateFrozen) -> Self {
+        Self::Frozen {
+            slot: s.slot,
+            timestamp: s.timestamp,
+            stats: s.stats.into(),
+        }
+    }
+}
+
+#[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase", tag = "type")]
+pub enum SlotUpdate {
+    FirstShredReceived(SlotUpdateFirstShredReceived),
+    Completed(SlotUpdateCompleted),
+    CreatedBank(SlotUpdateCreatedBank),
+    Frozen(SlotUpdateFrozen),
+    Dead(SlotUpdateDead),
+    OptimisticConfirmation(SlotUpdateOptimisticConfirmation),
+    Root(SlotUpdateRoot),
+}
+
+impl From<SlotUpdate> for SlotUpdateOriginal {
+    fn from(w: SlotUpdate) -> Self {
+        match w {
+            SlotUpdate::FirstShredReceived(x) => x.into(),
+            SlotUpdate::Completed(x) => x.into(),
+            SlotUpdate::CreatedBank(x) => x.into(),
+            SlotUpdate::Frozen(x) => x.into(),
+            SlotUpdate::Dead(x) => x.into(),
+            SlotUpdate::OptimisticConfirmation(x) => x.into(),
+            SlotUpdate::Root(x) => x.into(),
+        }
+    }
+}
+
+impl From<SlotUpdateOriginal> for SlotUpdate {
+    fn from(w: SlotUpdateOriginal) -> Self {
+        match w {
+            SlotUpdateOriginal::FirstShredReceived { slot, timestamp } => {
+                Self::FirstShredReceived(SlotUpdateFirstShredReceived { slot, timestamp })
+            }
+            SlotUpdateOriginal::Completed { slot, timestamp } => {
+                Self::Completed(SlotUpdateCompleted { slot, timestamp })
+            }
+            SlotUpdateOriginal::CreatedBank {
+                slot,
+                timestamp,
+                parent,
+            } => Self::CreatedBank(SlotUpdateCreatedBank {
+                slot,
+                timestamp,
+                parent,
+            }),
+            SlotUpdateOriginal::Frozen {
+                slot,
+                timestamp,
+                stats,
+            } => Self::Frozen(SlotUpdateFrozen {
+                slot,
+                timestamp,
+                stats: stats.into(),
+            }),
+            SlotUpdateOriginal::Dead {
+                slot,
+                timestamp,
+                err,
+            } => Self::Dead(SlotUpdateDead {
+                slot,
+                timestamp,
+                err,
+            }),
+            SlotUpdateOriginal::OptimisticConfirmation { slot, timestamp } => {
+                Self::OptimisticConfirmation(SlotUpdateOptimisticConfirmation { slot, timestamp })
+            }
+            SlotUpdateOriginal::Root { slot, timestamp } => {
+                Self::Root(SlotUpdateRoot { slot, timestamp })
+            }
+        }
+    }
+}
+
+impl IntoPy<PyObject> for SlotUpdate {
+    fn into_py(self, py: Python<'_>) -> PyObject {
+        match self {
+            Self::FirstShredReceived(x) => x.into_py(py),
+            Self::Completed(x) => x.into_py(py),
+            Self::CreatedBank(x) => x.into_py(py),
+            Self::Frozen(x) => x.into_py(py),
+            Self::Dead(x) => x.into_py(py),
+            Self::OptimisticConfirmation(x) => x.into_py(py),
+            Self::Root(x) => x.into_py(py),
+        }
+    }
+}
+
 contextless_resp_eq!(GetVoteAccountsResp, RpcVoteAccountStatus, clone);
 contextful_resp_eq!(IsBlockhashValidResp, bool);
 contextless_resp_eq!(MinimumLedgerSlotResp, u64);
@@ -1863,6 +2121,18 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
         ],
     );
     let rpc_result_alias = union.get_item(rpc_result_members)?;
+    let slot_update_members = PyTuple::new(
+        py,
+        vec![
+            SlotUpdateFirstShredReceived::type_object(py),
+            SlotUpdateCompleted::type_object(py),
+            SlotUpdateCreatedBank::type_object(py),
+            SlotUpdateDead::type_object(py),
+            SlotUpdateOptimisticConfirmation::type_object(py),
+            SlotUpdateRoot::type_object(py),
+        ],
+    );
+    let slot_update_alias = union.get_item(slot_update_members)?;
     m.add_class::<RpcResponseContext>()?;
     m.add_class::<RpcError>()?;
     m.add_class::<GetAccountInfoResp>()?;
@@ -1947,7 +2217,17 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<SendTransactionResp>()?;
     m.add_class::<SimulateTransactionResp>()?;
     m.add_class::<RpcLogsResponse>()?;
+    m.add_class::<SlotInfo>()?;
+    m.add_class::<SlotTransactionStats>()?;
+    m.add_class::<SlotUpdateFirstShredReceived>()?;
+    m.add_class::<SlotUpdateCompleted>()?;
+    m.add_class::<SlotUpdateCreatedBank>()?;
+    m.add_class::<SlotUpdateDead>()?;
+    m.add_class::<SlotUpdateOptimisticConfirmation>()?;
+    m.add_class::<SlotUpdateRoot>()?;
+    slot_update_core!(Frozen, stats: SlotTransactionStats);
     m.add("RPCResult", rpc_result_alias)?;
+    m.add("SlotUpdate", slot_update_alias)?;
     let funcs = [
         wrap_pyfunction!(batch_to_json, m)?,
         wrap_pyfunction!(batch_from_json, m)?,
