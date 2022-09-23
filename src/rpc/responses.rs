@@ -33,8 +33,9 @@ use crate::rpc::tmp_response::{
     RpcLogsResponse as RpcLogsResponseOriginal, RpcPerfSample as RpcPerfSampleOriginal,
     RpcSnapshotSlotInfo as RpcSnapshotSlotInfoOriginal,
     RpcStakeActivation as RpcStakeActivationOriginal, RpcSupply as RpcSupplyOriginal,
-    SlotInfo as SlotInfoOriginal, SlotTransactionStats as SlotTransactionStatsOriginal,
-    SlotUpdate as SlotUpdateOriginal, StakeActivationState as StakeActivationStateOriginal,
+    RpcVote as RpcVoteOriginal, SlotInfo as SlotInfoOriginal,
+    SlotTransactionStats as SlotTransactionStatsOriginal, SlotUpdate as SlotUpdateOriginal,
+    StakeActivationState as StakeActivationStateOriginal,
 };
 use crate::transaction_status::{
     EncodedConfirmedTransactionWithStatusMeta, TransactionConfirmationStatus, TransactionErrorType,
@@ -1879,6 +1880,55 @@ impl IntoPy<PyObject> for SlotUpdate {
     }
 }
 
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct RpcVote(RpcVoteOriginal);
+
+response_data_boilerplate!(RpcVote);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl RpcVote {
+    #[new]
+    pub fn new(
+        vote_pubkey: Pubkey,
+        slots: Vec<Slot>,
+        hash: SolderHash,
+        timestamp: Option<UnixTimestamp>,
+        signature: Signature,
+    ) -> Self {
+        RpcVoteOriginal {
+            vote_pubkey: vote_pubkey.to_string(),
+            slots,
+            hash: hash.to_string(),
+            timestamp,
+            signature: signature.to_string(),
+        }
+        .into()
+    }
+    #[getter]
+    pub fn vote_pubkey(&self) -> Pubkey {
+        Pubkey::from_str(&self.0.vote_pubkey).unwrap()
+    }
+    #[getter]
+    pub fn slots(&self) -> Vec<Slot> {
+        self.0.slots.clone()
+    }
+    #[getter]
+    pub fn hash(&self) -> SolderHash {
+        self.0.hash.parse().unwrap()
+    }
+    #[getter]
+    pub fn timestamp(&self) -> Option<UnixTimestamp> {
+        self.0.timestamp
+    }
+    #[getter]
+    pub fn signature(&self) -> Signature {
+        self.0.signature.parse().unwrap()
+    }
+}
+
 contextless_resp_eq!(GetVoteAccountsResp, RpcVoteAccountStatus, clone);
 contextful_resp_eq!(IsBlockhashValidResp, bool);
 contextless_resp_eq!(MinimumLedgerSlotResp, u64);
@@ -2225,6 +2275,7 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<SlotUpdateDead>()?;
     m.add_class::<SlotUpdateOptimisticConfirmation>()?;
     m.add_class::<SlotUpdateRoot>()?;
+    m.add_class::<RpcVote>()?;
     slot_update_core!(Frozen, stats: SlotTransactionStats);
     m.add("RPCResult", rpc_result_alias)?;
     m.add("SlotUpdate", slot_update_alias)?;
