@@ -165,20 +165,6 @@ pub enum SlotUpdate {
     },
 }
 
-impl SlotUpdate {
-    pub fn slot(&self) -> Slot {
-        match self {
-            Self::FirstShredReceived { slot, .. } => *slot,
-            Self::Completed { slot, .. } => *slot,
-            Self::CreatedBank { slot, .. } => *slot,
-            Self::Frozen { slot, .. } => *slot,
-            Self::Dead { slot, .. } => *slot,
-            Self::OptimisticConfirmation { slot, .. } => *slot,
-            Self::Root { slot, .. } => *slot,
-        }
-    }
-}
-
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum RpcSignatureResult {
@@ -224,9 +210,6 @@ pub struct RpcContactInfo {
     /// Shred version
     pub shred_version: Option<u16>,
 }
-
-/// Map of leader base58 identity pubkeys to the slot indices relative to the first epoch slot
-pub type RpcLeaderSchedule = HashMap<String, Vec<usize>>;
 
 #[derive(Debug, Default, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]

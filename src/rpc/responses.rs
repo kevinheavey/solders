@@ -30,7 +30,8 @@ use crate::rpc::tmp_response::{
     RpcBlockProductionRange as RpcBlockProductionRangeOriginal,
     RpcContactInfo as RpcContactInfoOriginal, RpcInflationGovernor as RpcInflationGovernorOriginal,
     RpcInflationRate as RpcInflationRateOriginal, RpcInflationReward as RpcInflationRewardOriginal,
-    RpcPerfSample as RpcPerfSampleOriginal, RpcSnapshotSlotInfo as RpcSnapshotSlotInfoOriginal,
+    RpcLogsResponse as RpcLogsResponseOriginal, RpcPerfSample as RpcPerfSampleOriginal,
+    RpcSnapshotSlotInfo as RpcSnapshotSlotInfoOriginal,
     RpcStakeActivation as RpcStakeActivationOriginal, RpcSupply as RpcSupplyOriginal,
     StakeActivationState as StakeActivationStateOriginal,
 };
@@ -52,7 +53,6 @@ use crate::{
     transaction_status::UiConfirmedBlock,
     CommonMethods, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly, SolderHash,
 };
-use solana_rpc::rpc;
 
 use super::errors::RpcCustomError;
 
@@ -1587,6 +1587,40 @@ impl RpcVoteAccountStatus {
     }
 }
 
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct RpcLogsResponse(RpcLogsResponseOriginal);
+
+response_data_boilerplate!(RpcLogsResponse);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl RpcLogsResponse {
+    #[new]
+    pub fn new(signature: Signature, err: Option<TransactionErrorType>, logs: Vec<String>) -> Self {
+        RpcLogsResponseOriginal {
+            signature: signature.to_string(),
+            err: err.map(|e| e.into()),
+            logs,
+        }
+        .into()
+    }
+
+    #[getter]
+    pub fn signature(&self) -> Signature {
+        self.0.signature.parse().unwrap()
+    }
+    #[getter]
+    pub fn err(&self) -> Option<TransactionErrorType> {
+        self.0.err.clone().map(|e| e.into())
+    }
+    #[getter]
+    pub fn logs(&self) -> Vec<String> {
+        self.0.logs.clone()
+    }
+}
+
 contextless_resp_eq!(GetVoteAccountsResp, RpcVoteAccountStatus, clone);
 contextful_resp_eq!(IsBlockhashValidResp, bool);
 contextless_resp_eq!(MinimumLedgerSlotResp, u64);
@@ -1912,6 +1946,7 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<RequestAirdropResp>()?;
     m.add_class::<SendTransactionResp>()?;
     m.add_class::<SimulateTransactionResp>()?;
+    m.add_class::<RpcLogsResponse>()?;
     m.add("RPCResult", rpc_result_alias)?;
     let funcs = [
         wrap_pyfunction!(batch_to_json, m)?,
