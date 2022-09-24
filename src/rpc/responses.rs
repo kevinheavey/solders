@@ -310,6 +310,24 @@ impl<T: PyClass + IntoPy<PyObject>> IntoPy<PyObject> for Resp<T> {
     }
 }
 
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+#[serde(tag = "method", rename_all = "camelCase")]
+pub enum Notification {
+    AccountNotfication {
+        #[serde(skip_deserializing)]
+        jsonrpc: crate::rpc::requests::V2,
+        params: AccountNotificationType,
+    },
+}
+
+impl IntoPy<PyObject> for Notification {
+    fn into_py(self, py: Python<'_>) -> PyObject {
+        match self {
+            Self::AccountNotfication { params: p, .. } => p.into_py(py),
+        }
+    }
+}
+
 macro_rules! contextful_struct_def_eq {
     ($name:ident, $inner:ty) => {
         #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
@@ -360,6 +378,52 @@ macro_rules! contextful_struct_def_no_eq {
     };
 }
 
+macro_rules! notification_struct_def_outer {
+    ($name:ident) => {
+        paste! {
+            #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+            #[pyclass(module = "solders.rpc.responses", subclass)]
+            pub struct $name {
+                #[pyo3(get)]
+                result: [<$name Result>],
+                #[pyo3(get)]
+                subscription: u64,
+            }
+        }
+    };
+}
+
+macro_rules! notification_struct_def {
+    ($name:ident, $inner:ty) => {
+        notification_struct_def_outer!($name);
+        paste! {
+            #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+            #[pyclass(module = "solders.rpc.responses", subclass)]
+            pub struct [<$name Result>] {
+                #[pyo3(get)]
+                context: RpcResponseContext,
+                #[pyo3(get)]
+                value: $inner,
+            }
+        }
+    };
+    ($name:ident, $inner:ty, $serde_as:expr) => {
+        notification_struct_def_outer!($name);
+        paste! {
+            #[serde_as]
+            #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+            #[pyclass(module = "solders.rpc.responses", subclass)]
+            pub struct [<$name Result>] {
+                #[pyo3(get)]
+                context: RpcResponseContext,
+                #[pyo3(get)]
+                #[serde_as(as = $serde_as)]
+                value: $inner,
+            }
+        }
+    };
+}
+
 macro_rules! contextful_resp_boilerplate {
     ($name:ident, $inner:ty) => {
         resp_traits!($name);
@@ -369,6 +433,31 @@ macro_rules! contextful_resp_boilerplate {
             #[new]
             pub fn new(value: $inner, context: RpcResponseContext) -> Self {
                 Self { value, context }
+            }
+        }
+    };
+}
+
+macro_rules! notification_boilerplate {
+    ($name:ident, $inner:ty) => {
+        paste! {
+            response_data_boilerplate!([<$name Result>]);
+            #[common_methods]
+            #[pymethods]
+            impl [<$name Result>] {
+                #[new]
+                pub fn new(value: $inner, context: RpcResponseContext) -> Self {
+                    Self { value, context }
+                }
+            }
+            response_data_boilerplate!($name);
+            #[common_methods]
+            #[pymethods]
+            impl $name {
+                #[new]
+                pub fn new(result: [<$name Result>], subscription: u64) -> Self {
+                    Self { result, subscription }
+                }
             }
         }
     };
@@ -393,6 +482,17 @@ macro_rules! contextful_resp_no_eq {
     ($name:ident, $inner:ty, $serde_as:expr) => {
         contextful_struct_def_no_eq!($name, $inner, $serde_as);
         contextful_resp_boilerplate!($name, $inner);
+    };
+}
+
+macro_rules! notification {
+    ($name:ident, $inner:ty) => {
+        notification_struct_def!($name, $inner);
+        notification_boilerplate!($name, $inner);
+    };
+    ($name:ident, $inner:ty, $serde_as:expr) => {
+        notification_struct_def!($name, $inner, $serde_as);
+        notification_boilerplate!($name, $inner);
     };
 }
 
@@ -1936,6 +2036,29 @@ contextless_resp_eq!(RequestAirdropResp, Signature, "DisplayFromStr");
 contextless_resp_eq!(SendTransactionResp, Signature, "DisplayFromStr");
 contextful_resp_eq!(SimulateTransactionResp, RpcSimulateTransactionResult);
 
+notification!(AccountNotification, Account, "FromInto<UiAccount>");
+notification!(
+    AccountNotificationJsonParsed,
+    Account,
+    "FromInto<UiAccount>"
+);
+
+#[derive(FromPyObject, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+#[serde(untagged)]
+pub enum AccountNotificationType {
+    Binary(AccountNotification),
+    JsonParsed(AccountNotificationJsonParsed),
+}
+
+impl IntoPy<PyObject> for AccountNotificationType {
+    fn into_py(self, py: Python<'_>) -> PyObject {
+        match self {
+            Self::Binary(x) => x.into_py(py),
+            Self::JsonParsed(x) => x.into_py(py),
+        }
+    }
+}
+
 macro_rules ! pyunion_resp {
     ($name:ident, $($variant:ident),+) => {
         #[derive(FromPyObject, Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -2183,6 +2306,14 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
         ],
     );
     let slot_update_alias = union.get_item(slot_update_members)?;
+    let notification_members = PyTuple::new(
+        py,
+        vec![
+            AccountNotification::type_object(py),
+            AccountNotificationJsonParsed::type_object(py),
+        ],
+    );
+    let notification_alias = union.get_item(notification_members)?;
     m.add_class::<RpcResponseContext>()?;
     m.add_class::<RpcError>()?;
     m.add_class::<GetAccountInfoResp>()?;
@@ -2276,9 +2407,12 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<SlotUpdateOptimisticConfirmation>()?;
     m.add_class::<SlotUpdateRoot>()?;
     m.add_class::<RpcVote>()?;
+    m.add_class::<AccountNotification>()?;
+    m.add_class::<AccountNotificationResult>()?;
     slot_update_core!(Frozen, stats: SlotTransactionStats);
     m.add("RPCResult", rpc_result_alias)?;
     m.add("SlotUpdate", slot_update_alias)?;
+    m.add("Notification", notification_alias)?;
     let funcs = [
         wrap_pyfunction!(batch_to_json, m)?,
         wrap_pyfunction!(batch_from_json, m)?,
