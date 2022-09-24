@@ -328,6 +328,24 @@ impl IntoPy<PyObject> for Notification {
     }
 }
 
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+#[serde(untagged)]
+pub enum WebsocketMessage {
+    Notification(Notification),
+    SubscriptionResult(SubscriptionResult),
+    SubscriptionError(SubscriptionError),
+}
+
+impl IntoPy<PyObject> for WebsocketMessage {
+    fn into_py(self, py: Python<'_>) -> PyObject {
+        match self {
+            Self::Notification(x) => x.into_py(py),
+            Self::SubscriptionResult(x) => x.into_py(py),
+            Self::SubscriptionError(x) => x.into_py(py),
+        }
+    }
+}
+
 macro_rules! contextful_struct_def_eq {
     ($name:ident, $inner:ty) => {
         #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
@@ -2029,6 +2047,60 @@ impl RpcVote {
     }
 }
 
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct SubscriptionResult {
+    #[serde(skip_deserializing)]
+    jsonrpc: crate::rpc::requests::V2,
+    #[pyo3(get)]
+    id: u64,
+    #[pyo3(get)]
+    result: u64,
+}
+
+response_data_boilerplate!(SubscriptionResult);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl SubscriptionResult {
+    #[new]
+    pub fn new(id: u64, result: u64) -> Self {
+        Self {
+            id,
+            result,
+            jsonrpc: crate::rpc::requests::V2::default(),
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct SubscriptionError {
+    #[serde(skip_deserializing)]
+    jsonrpc: crate::rpc::requests::V2,
+    #[pyo3(get)]
+    error: RpcError,
+    #[pyo3(get)]
+    id: u64,
+}
+
+response_data_boilerplate!(SubscriptionError);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl SubscriptionError {
+    #[new]
+    pub fn new(id: u64, error: RpcError) -> Self {
+        Self {
+            id,
+            error,
+            jsonrpc: crate::rpc::requests::V2::default(),
+        }
+    }
+}
+
 contextless_resp_eq!(GetVoteAccountsResp, RpcVoteAccountStatus, clone);
 contextful_resp_eq!(IsBlockhashValidResp, bool);
 contextless_resp_eq!(MinimumLedgerSlotResp, u64);
@@ -2039,7 +2111,7 @@ contextful_resp_eq!(SimulateTransactionResp, RpcSimulateTransactionResult);
 notification!(AccountNotification, Account, "FromInto<UiAccount>");
 notification!(
     AccountNotificationJsonParsed,
-    Account,
+    AccountJSON,
     "FromInto<UiAccount>"
 );
 
@@ -2058,6 +2130,8 @@ impl IntoPy<PyObject> for AccountNotificationType {
         }
     }
 }
+
+contextless_resp_eq!(SubscriptionResp, u64);
 
 macro_rules ! pyunion_resp {
     ($name:ident, $($variant:ident),+) => {
@@ -2306,14 +2380,19 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
         ],
     );
     let slot_update_alias = union.get_item(slot_update_members)?;
-    let notification_members = PyTuple::new(
-        py,
-        vec![
-            AccountNotification::type_object(py),
-            AccountNotificationJsonParsed::type_object(py),
-        ],
-    );
+    let notification_members_raw = vec![
+        AccountNotification::type_object(py),
+        AccountNotificationJsonParsed::type_object(py),
+    ];
+    let notification_members = PyTuple::new(py, notification_members_raw.clone());
     let notification_alias = union.get_item(notification_members)?;
+    let mut websocket_message_members_raw = notification_members_raw.clone();
+    websocket_message_members_raw.extend(vec![
+        SubscriptionResult::type_object(py),
+        SubscriptionError::type_object(py),
+    ]);
+    let websocket_message_members = PyTuple::new(py, websocket_message_members_raw);
+    let websocket_message_alias = union.get_item(websocket_message_members)?;
     m.add_class::<RpcResponseContext>()?;
     m.add_class::<RpcError>()?;
     m.add_class::<GetAccountInfoResp>()?;
@@ -2407,12 +2486,15 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<SlotUpdateOptimisticConfirmation>()?;
     m.add_class::<SlotUpdateRoot>()?;
     m.add_class::<RpcVote>()?;
+    m.add_class::<SubscriptionResult>()?;
+    m.add_class::<SubscriptionError>()?;
     m.add_class::<AccountNotification>()?;
     m.add_class::<AccountNotificationResult>()?;
     slot_update_core!(Frozen, stats: SlotTransactionStats);
     m.add("RPCResult", rpc_result_alias)?;
     m.add("SlotUpdate", slot_update_alias)?;
     m.add("Notification", notification_alias)?;
+    m.add("WebsocketMessage", websocket_message_alias)?;
     let funcs = [
         wrap_pyfunction!(batch_to_json, m)?,
         wrap_pyfunction!(batch_from_json, m)?,
