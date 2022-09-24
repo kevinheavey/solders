@@ -313,7 +313,7 @@ impl<T: PyClass + IntoPy<PyObject>> IntoPy<PyObject> for Resp<T> {
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 #[serde(tag = "method", rename_all = "camelCase")]
 pub enum Notification {
-    AccountNotfication {
+    AccountNotification {
         #[serde(skip_deserializing)]
         jsonrpc: crate::rpc::requests::V2,
         params: AccountNotificationType,
@@ -363,7 +363,7 @@ pub enum Notification {
 impl IntoPy<PyObject> for Notification {
     fn into_py(self, py: Python<'_>) -> PyObject {
         match self {
-            Self::AccountNotfication { params: p, .. } => p.into_py(py),
+            Self::AccountNotification { params: p, .. } => p.into_py(py),
             Self::BlockNotification { params: p, .. } => p.into_py(py),
             Self::LogsNotification { params: p, .. } => p.into_py(py),
             Self::ProgramNotification { params: p, .. } => p.into_py(py),
@@ -2593,6 +2593,15 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let notification_members_raw = vec![
         AccountNotification::type_object(py),
         AccountNotificationJsonParsed::type_object(py),
+        BlockNotification::type_object(py),
+        LogsNotification::type_object(py),
+        ProgramNotification::type_object(py),
+        ProgramNotificationJsonParsed::type_object(py),
+        SignatureNotification::type_object(py),
+        SlotNotification::type_object(py),
+        SlotUpdateNotification::type_object(py),
+        RootNotification::type_object(py),
+        VoteNotification::type_object(py),
     ];
     let notification_members = PyTuple::new(py, notification_members_raw.clone());
     let notification_alias = union.get_item(notification_members)?;
