@@ -310,7 +310,7 @@ impl<T: PyClass + IntoPy<PyObject>> IntoPy<PyObject> for Resp<T> {
     }
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 #[serde(tag = "method", rename_all = "camelCase")]
 pub enum Notification {
     AccountNotfication {
@@ -318,17 +318,65 @@ pub enum Notification {
         jsonrpc: crate::rpc::requests::V2,
         params: AccountNotificationType,
     },
+    BlockNotification {
+        #[serde(skip_deserializing)]
+        jsonrpc: crate::rpc::requests::V2,
+        params: BlockNotification,
+    },
+    LogsNotification {
+        #[serde(skip_deserializing)]
+        jsonrpc: crate::rpc::requests::V2,
+        params: LogsNotification,
+    },
+    ProgramNotification {
+        #[serde(skip_deserializing)]
+        jsonrpc: crate::rpc::requests::V2,
+        params: ProgramNotificationType,
+    },
+    SignatureNotification {
+        #[serde(skip_deserializing)]
+        jsonrpc: crate::rpc::requests::V2,
+        params: SignatureNotification,
+    },
+    SlotNotification {
+        #[serde(skip_deserializing)]
+        jsonrpc: crate::rpc::requests::V2,
+        params: SlotNotification,
+    },
+    SlotUpdateNotification {
+        #[serde(skip_deserializing)]
+        jsonrpc: crate::rpc::requests::V2,
+        params: SlotUpdateNotification,
+    },
+    RootNotification {
+        #[serde(skip_deserializing)]
+        jsonrpc: crate::rpc::requests::V2,
+        params: RootNotification,
+    },
+    VoteNotification {
+        #[serde(skip_deserializing)]
+        jsonrpc: crate::rpc::requests::V2,
+        params: VoteNotification,
+    },
 }
 
 impl IntoPy<PyObject> for Notification {
     fn into_py(self, py: Python<'_>) -> PyObject {
         match self {
             Self::AccountNotfication { params: p, .. } => p.into_py(py),
+            Self::BlockNotification { params: p, .. } => p.into_py(py),
+            Self::LogsNotification { params: p, .. } => p.into_py(py),
+            Self::ProgramNotification { params: p, .. } => p.into_py(py),
+            Self::SignatureNotification { params: p, .. } => p.into_py(py),
+            Self::SlotNotification { params: p, .. } => p.into_py(py),
+            Self::SlotUpdateNotification { params: p, .. } => p.into_py(py),
+            Self::RootNotification { params: p, .. } => p.into_py(py),
+            Self::VoteNotification { params: p, .. } => p.into_py(py),
         }
     }
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 #[serde(untagged)]
 pub enum WebsocketMessage {
     Notification(Notification),
@@ -411,6 +459,21 @@ macro_rules! notification_struct_def_outer {
     };
 }
 
+macro_rules! notification_struct_def_outer_no_eq {
+    ($name:ident) => {
+        paste! {
+            #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
+            #[pyclass(module = "solders.rpc.responses", subclass)]
+            pub struct $name {
+                #[pyo3(get)]
+                result: [<$name Result>],
+                #[pyo3(get)]
+                subscription: u64,
+            }
+        }
+    };
+}
+
 macro_rules! notification_struct_def {
     ($name:ident, $inner:ty) => {
         notification_struct_def_outer!($name);
@@ -436,6 +499,22 @@ macro_rules! notification_struct_def {
                 context: RpcResponseContext,
                 #[pyo3(get)]
                 #[serde_as(as = $serde_as)]
+                value: $inner,
+            }
+        }
+    };
+}
+
+macro_rules! notification_struct_def_no_eq {
+    ($name:ident, $inner:ty) => {
+        notification_struct_def_outer_no_eq!($name);
+        paste! {
+            #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
+            #[pyclass(module = "solders.rpc.responses", subclass)]
+            pub struct [<$name Result>] {
+                #[pyo3(get)]
+                context: RpcResponseContext,
+                #[pyo3(get)]
                 value: $inner,
             }
         }
@@ -510,6 +589,13 @@ macro_rules! notification {
     };
     ($name:ident, $inner:ty, $serde_as:expr) => {
         notification_struct_def!($name, $inner, $serde_as);
+        notification_boilerplate!($name, $inner);
+    };
+}
+
+macro_rules! notification_no_eq {
+    ($name:ident, $inner:ty) => {
+        notification_struct_def_no_eq!($name, $inner);
         notification_boilerplate!($name, $inner);
     };
 }
@@ -1742,6 +1828,24 @@ impl RpcLogsResponse {
     }
 }
 
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct RpcSignatureResponse {
+    err: Option<TransactionErrorType>,
+}
+
+response_data_boilerplate!(RpcSignatureResponse);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl RpcSignatureResponse {
+    #[new]
+    pub fn new(err: Option<TransactionErrorType>) -> Self {
+        Self { err }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
 pub struct SlotTransactionStats(SlotTransactionStatsOriginal);
@@ -2114,6 +2218,15 @@ notification!(
     AccountJSON,
     "FromInto<UiAccount>"
 );
+notification_no_eq!(BlockNotification, UiConfirmedBlock);
+notification!(LogsNotification, RpcLogsResponse);
+notification!(ProgramNotification, RpcKeyedAccount);
+notification!(ProgramNotificationJsonParsed, RpcKeyedAccountJsonParsed);
+notification!(SignatureNotification, RpcSignatureResponse);
+notification!(SlotNotification, SlotInfo);
+notification!(SlotUpdateNotification, SlotUpdate);
+notification!(RootNotification, u64);
+notification!(VoteNotification, RpcVote);
 
 #[derive(FromPyObject, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 #[serde(untagged)]
@@ -2123,6 +2236,22 @@ pub enum AccountNotificationType {
 }
 
 impl IntoPy<PyObject> for AccountNotificationType {
+    fn into_py(self, py: Python<'_>) -> PyObject {
+        match self {
+            Self::Binary(x) => x.into_py(py),
+            Self::JsonParsed(x) => x.into_py(py),
+        }
+    }
+}
+
+#[derive(FromPyObject, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+#[serde(untagged)]
+pub enum ProgramNotificationType {
+    Binary(ProgramNotification),
+    JsonParsed(ProgramNotificationJsonParsed),
+}
+
+impl IntoPy<PyObject> for ProgramNotificationType {
     fn into_py(self, py: Python<'_>) -> PyObject {
         match self {
             Self::Binary(x) => x.into_py(py),
@@ -2486,11 +2615,29 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<SlotUpdateOptimisticConfirmation>()?;
     m.add_class::<SlotUpdateRoot>()?;
     m.add_class::<RpcVote>()?;
+    m.add_class::<RpcSignatureResponse>()?;
     m.add_class::<SubscriptionResult>()?;
     m.add_class::<SubscriptionError>()?;
     m.add_class::<AccountNotification>()?;
     m.add_class::<AccountNotificationResult>()?;
-    slot_update_core!(Frozen, stats: SlotTransactionStats);
+    m.add_class::<BlockNotification>()?;
+    m.add_class::<BlockNotificationResult>()?;
+    m.add_class::<LogsNotification>()?;
+    m.add_class::<LogsNotificationResult>()?;
+    m.add_class::<ProgramNotification>()?;
+    m.add_class::<ProgramNotificationResult>()?;
+    m.add_class::<ProgramNotificationJsonParsed>()?;
+    m.add_class::<ProgramNotificationJsonParsedResult>()?;
+    m.add_class::<SignatureNotification>()?;
+    m.add_class::<SignatureNotificationResult>()?;
+    m.add_class::<SlotNotification>()?;
+    m.add_class::<SlotNotificationResult>()?;
+    m.add_class::<SlotUpdateNotification>()?;
+    m.add_class::<SlotUpdateNotificationResult>()?;
+    m.add_class::<RootNotification>()?;
+    m.add_class::<RootNotificationResult>()?;
+    m.add_class::<VoteNotification>()?;
+    m.add_class::<VoteNotificationResult>()?;
     m.add("RPCResult", rpc_result_alias)?;
     m.add("SlotUpdate", slot_update_alias)?;
     m.add("Notification", notification_alias)?;
