@@ -505,6 +505,19 @@ macro_rules! notification_struct_def {
     };
 }
 
+macro_rules! notification_struct_def_contextless {
+    ($name:ident, $inner:ty) => {
+        #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+        #[pyclass(module = "solders.rpc.responses", subclass)]
+        pub struct $name {
+            #[pyo3(get)]
+            result: $inner,
+            #[pyo3(get)]
+            subscription: u64,
+        }
+    };
+}
+
 macro_rules! notification_struct_def_no_eq {
     ($name:ident, $inner:ty) => {
         notification_struct_def_outer_no_eq!($name);
@@ -560,6 +573,23 @@ macro_rules! notification_boilerplate {
     };
 }
 
+macro_rules! notification_boilerplate_contextless {
+    ($name:ident, $inner:ty) => {
+        response_data_boilerplate!($name);
+        #[common_methods]
+        #[pymethods]
+        impl $name {
+            #[new]
+            pub fn new(result: $inner, subscription: u64) -> Self {
+                Self {
+                    result,
+                    subscription,
+                }
+            }
+        }
+    };
+}
+
 macro_rules! contextful_resp_eq {
     ($name:ident, $inner:ty) => {
         contextful_struct_def_eq!($name, $inner);
@@ -597,6 +627,13 @@ macro_rules! notification_no_eq {
     ($name:ident, $inner:ty) => {
         notification_struct_def_no_eq!($name, $inner);
         notification_boilerplate!($name, $inner);
+    };
+}
+
+macro_rules! notification_contextless {
+    ($name:ident, $inner:ty) => {
+        notification_struct_def_contextless!($name, $inner);
+        notification_boilerplate_contextless!($name, $inner);
     };
 }
 
@@ -2223,10 +2260,10 @@ notification!(LogsNotification, RpcLogsResponse);
 notification!(ProgramNotification, RpcKeyedAccount);
 notification!(ProgramNotificationJsonParsed, RpcKeyedAccountJsonParsed);
 notification!(SignatureNotification, RpcSignatureResponse);
-notification!(SlotNotification, SlotInfo);
-notification!(SlotUpdateNotification, SlotUpdate);
-notification!(RootNotification, u64);
-notification!(VoteNotification, RpcVote);
+notification_contextless!(SlotNotification, SlotInfo);
+notification_contextless!(SlotUpdateNotification, SlotUpdate);
+notification_contextless!(RootNotification, u64);
+notification_contextless!(VoteNotification, RpcVote);
 
 #[derive(FromPyObject, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 #[serde(untagged)]
@@ -2415,6 +2452,50 @@ pub fn batch_from_json(raw: &str, parsers: Vec<&PyType>) -> PyResult<Vec<PyObjec
                 .collect())
         })
     }
+}
+
+/// Parse a notification received by a Solana websocket subscription.
+///
+/// Args:
+///     msg (str): The raw notification JSON.
+///
+/// Returns:
+///     Notification: The parsed message.
+///
+/// Example:
+///     >>> from solders.rpc.responses import parse_notification
+///     >>> raw = '{ "jsonrpc": "2.0", "method": "rootNotification", "params": { "result": 4, "subscription": 0 } }'
+///     >>> parse_notification(raw)
+///     RootNotification {
+///         result: 4,
+///         subscription: 0,
+///     }
+///
+#[pyfunction]
+pub fn parse_notification(msg: &str) -> PyResult<Notification> {
+    serde_json::from_str(msg).map_err(to_py_err)
+}
+
+/// Parse a message received by a Solana websocket subscription.
+///
+/// Args:
+///     msg (str): The raw message JSON.
+///
+/// Returns:
+///     WebsocketMessage: The parsed message.
+///
+/// Example:
+///     >>> from solders.rpc.responses import parse_websocket_message
+///     >>> raw = '{ "jsonrpc": "2.0", "method": "rootNotification", "params": { "result": 4, "subscription": 0 } }'
+///     >>> parse_websocket_message(raw)
+///     RootNotification {
+///         result: 4,
+///         subscription: 0,
+///     }
+///
+#[pyfunction]
+pub fn parse_websocket_message(msg: &str) -> PyResult<WebsocketMessage> {
+    serde_json::from_str(msg).map_err(to_py_err)
 }
 
 pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
@@ -2631,13 +2712,9 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<SignatureNotification>()?;
     m.add_class::<SignatureNotificationResult>()?;
     m.add_class::<SlotNotification>()?;
-    m.add_class::<SlotNotificationResult>()?;
     m.add_class::<SlotUpdateNotification>()?;
-    m.add_class::<SlotUpdateNotificationResult>()?;
     m.add_class::<RootNotification>()?;
-    m.add_class::<RootNotificationResult>()?;
     m.add_class::<VoteNotification>()?;
-    m.add_class::<VoteNotificationResult>()?;
     m.add("RPCResult", rpc_result_alias)?;
     m.add("SlotUpdate", slot_update_alias)?;
     m.add("Notification", notification_alias)?;
@@ -2645,6 +2722,8 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let funcs = [
         wrap_pyfunction!(batch_to_json, m)?,
         wrap_pyfunction!(batch_from_json, m)?,
+        wrap_pyfunction!(parse_websocket_message, m)?,
+        wrap_pyfunction!(parse_notification, m)?,
     ];
     for func in funcs {
         m.add_function(func)?;
