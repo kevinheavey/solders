@@ -84,8 +84,15 @@ from solders.rpc.responses import (
     RpcVoteAccountStatus,
     EpochInfo,
     RpcError,
+    AccountNotification,
+    AccountNotificationResult,
+    RootNotification,
+    SubscriptionError,
+    SubscriptionResult,
     batch_from_json,
     batch_to_json,
+    parse_notification,
+    parse_websocket_message,
 )
 from solders.rpc.errors import NodeUnhealthy
 from solders.hash import Hash
@@ -2047,3 +2054,49 @@ def test_batch() -> None:
     assert (
         batch_from_json(raw, [GetBlockHeightResp, GetFirstAvailableBlockResp]) == parsed
     )
+
+
+def test_account_notification() -> None:
+    raw = """{
+  "jsonrpc": "2.0",
+  "method": "accountNotification",
+  "params": {
+    "result": {
+      "context": {
+        "slot": 5199307
+      },
+      "value": {
+        "data": [
+          "11116bv5nS2h3y12kD1yUKeMZvGcKLSjQgX6BeV7u1FrjeJcKfsHPXHRDEHrBesJhZyqnnq9qJeUuF7WHxiuLuL5twc38w2TXNLxnDbjmuR",
+          "base58"
+        ],
+        "executable": false,
+        "lamports": 33594,
+        "owner": "11111111111111111111111111111111",
+        "rentEpoch": 635
+      }
+    },
+    "subscription": 23784
+  }
+}"""
+    parsed = parse_notification(raw)
+    assert isinstance(parsed, AccountNotification)
+    result = parsed.result
+    assert isinstance(result, AccountNotificationResult)
+    assert isinstance(result.value, Account)
+
+
+def test_parse_ws_message() -> None:
+    raw_err = '{"jsonrpc":"2.0","error":{"code":-32602,"message":"Invalid param: WrongSize"},"id":1}'
+    parsed_err = parse_websocket_message(raw_err)
+    assert isinstance(parsed_err, SubscriptionError)
+    assert isinstance(parsed_err.error, RpcError)
+    raw_ok = '{ "jsonrpc": "2.0", "result": 23784, "id": 3 }'
+    parsed_ok = parse_websocket_message(raw_ok)
+    assert isinstance(parsed_ok, SubscriptionResult)
+    assert parsed_ok.result == 23784
+    assert parsed_ok.id == 3
+    raw_notification = '{ "jsonrpc": "2.0", "method": "rootNotification", "params": { "result": 4, "subscription": 0 } }'
+    parsed_notification = parse_websocket_message(raw_notification)
+    assert isinstance(parsed_notification, RootNotification)
+    assert parsed_notification.result == 4
