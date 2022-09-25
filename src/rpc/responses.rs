@@ -344,7 +344,7 @@ pub enum Notification {
         jsonrpc: crate::rpc::requests::V2,
         params: SlotNotification,
     },
-    SlotUpdateNotification {
+    SlotsUpdatesNotification {
         #[serde(skip_deserializing)]
         jsonrpc: crate::rpc::requests::V2,
         params: SlotUpdateNotification,
@@ -370,7 +370,7 @@ impl IntoPy<PyObject> for Notification {
             Self::ProgramNotification { params: p, .. } => p.into_py(py),
             Self::SignatureNotification { params: p, .. } => p.into_py(py),
             Self::SlotNotification { params: p, .. } => p.into_py(py),
-            Self::SlotUpdateNotification { params: p, .. } => p.into_py(py),
+            Self::SlotsUpdatesNotification { params: p, .. } => p.into_py(py),
             Self::RootNotification { params: p, .. } => p.into_py(py),
             Self::VoteNotification { params: p, .. } => p.into_py(py),
         }

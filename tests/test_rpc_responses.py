@@ -82,15 +82,30 @@ from solders.rpc.responses import (
     RpcVersionInfo,
     RpcVoteAccountInfo,
     RpcVoteAccountStatus,
+    RpcSignatureResponse,
     EpochInfo,
     RpcError,
     RpcBlockUpdate,
+    RpcLogsResponse,
+    RpcVote,
     AccountNotification,
     AccountNotificationResult,
     AccountNotificationJsonParsed,
     AccountNotificationJsonParsedResult,
     BlockNotification,
     BlockNotificationResult,
+    LogsNotification,
+    LogsNotificationResult,
+    ProgramNotification,
+    ProgramNotificationResult,
+    SignatureNotification,
+    SignatureNotificationResult,
+    SlotNotification,
+    SlotInfo,
+    SlotUpdate,
+    SlotUpdateOptimisticConfirmation,
+    SlotUpdateNotification,
+    VoteNotification,
     RootNotification,
     SubscriptionError,
     SubscriptionResult,
@@ -2301,6 +2316,137 @@ def test_block_notification() -> None:
     result = parsed.result
     assert isinstance(result, BlockNotificationResult)
     assert isinstance(result.value, RpcBlockUpdate)
+
+
+def test_logs_notification() -> None:
+    raw = """{
+  "jsonrpc": "2.0",
+  "method": "logsNotification",
+  "params": {
+    "result": {
+      "context": {
+        "slot": 5208469
+      },
+      "value": {
+        "signature": "5h6xBEauJ3PK6SWCZ1PGjBvj8vDdWG3KpwATGy1ARAXFSDwt8GFXM7W5Ncn16wmqokgpiKRLuS83KUxyZyv2sUYv",
+        "err": null,
+        "logs": [
+          "BPF program 83astBRguLMdt2h5U1Tpdq5tjFoJ6noeGwaY3mDLVcri success"
+        ]
+      }
+    },
+    "subscription": 24040
+  }
+}"""
+    parsed = parse_notification(raw)
+    assert isinstance(parsed, LogsNotification)
+    result = parsed.result
+    assert isinstance(result, LogsNotificationResult)
+    assert isinstance(result.value, RpcLogsResponse)
+
+
+def test_program_notification() -> None:
+    raw = """{
+  "jsonrpc": "2.0",
+  "method": "programNotification",
+  "params": {
+    "result": {
+      "context": {
+        "slot": 5208469
+      },
+      "value": {
+        "pubkey": "H4vnBqifaSACnKa7acsxstsY1iV1bvJNxsCY7enrd1hq",
+        "account": {
+          "data": [
+            "11116bv5nS2h3y12kD1yUKeMZvGcKLSjQgX6BeV7u1FrjeJcKfsHPXHRDEHrBesJhZyqnnq9qJeUuF7WHxiuLuL5twc38w2TXNLxnDbjmuR",
+            "base58"
+          ],
+          "executable": false,
+          "lamports": 33594,
+          "owner": "11111111111111111111111111111111",
+          "rentEpoch": 636
+        }
+      }
+    },
+    "subscription": 24040
+  }
+}"""
+    parsed = parse_notification(raw)
+    assert isinstance(parsed, ProgramNotification)
+    result = parsed.result
+    assert isinstance(result, ProgramNotificationResult)
+    assert isinstance(result.value, RpcKeyedAccount)
+
+
+def test_signature_notification() -> None:
+    raw = """{
+  "jsonrpc": "2.0",
+  "method": "signatureNotification",
+  "params": {
+    "result": {
+      "context": {
+        "slot": 5207624
+      },
+      "value": {
+        "err": null
+      }
+    },
+    "subscription": 24006
+  }
+}"""
+    parsed = parse_notification(raw)
+    assert isinstance(parsed, SignatureNotification)
+    result = parsed.result
+    assert isinstance(result, SignatureNotificationResult)
+    assert isinstance(result.value, RpcSignatureResponse)
+
+
+def test_slot_notification() -> None:
+    raw = """{
+  "jsonrpc": "2.0",
+  "method": "slotNotification",
+  "params": {
+    "result": {
+      "parent": 75,
+      "root": 44,
+      "slot": 76
+    },
+    "subscription": 0
+  }
+}"""
+    parsed = parse_notification(raw)
+    assert isinstance(parsed, SlotNotification)
+    result = parsed.result
+    assert isinstance(result, SlotInfo)
+
+
+def test_slot_update_notification() -> None:
+    raw = """{
+  "jsonrpc": "2.0",
+  "method": "slotsUpdatesNotification",
+  "params": {
+    "result": {
+      "parent": 75,
+      "slot": 76,
+      "timestamp": 1625081266243,
+      "type": "optimisticConfirmation"
+    },
+    "subscription": 0
+  }
+}"""
+    parsed = parse_notification(raw)
+    assert isinstance(parsed, SlotUpdateNotification)
+    result = parsed.result
+    assert isinstance(result, SlotUpdateOptimisticConfirmation)
+
+
+def test_vote_notification() -> None:
+    raw = '{"jsonrpc":"2.0","method":"voteNotification","params":{"result":{"votePubkey":"2rQ2oMoB29Ge8pWuPB7pgc4tGTj5Ppzdqd53ThYPAtU1","slots":[214,215,216,217,218,219,220,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,242,243,244],"hash":"5qj25gJJWnzpq5SGKPVpgw84NoNV4qNDbhTgchCUqu42","timestamp":1664066781,"signature":"mz5NhjFjAs5r9J74ndChvYGxbXhnBRUz5UULkSsaDos1SmqoFJrRC16LYtVX73y42RTYEBhGbUpRx6umyxEzRM1"},"subscription":3}}'
+    parsed = parse_notification(raw)
+    assert isinstance(parsed, VoteNotification)
+    result = parsed.result
+    assert isinstance(result, RpcVote)
+    assert result.timestamp == 1664066781
 
 
 def test_parse_ws_message() -> None:
