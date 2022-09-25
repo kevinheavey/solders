@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import List, Union
 from pytest import mark
 from solders.rpc.responses import (
     GetAccountInfoResp,
@@ -91,7 +92,6 @@ from solders.rpc.responses import (
     AccountNotification,
     AccountNotificationResult,
     AccountNotificationJsonParsed,
-    AccountNotificationJsonParsedResult,
     BlockNotification,
     BlockNotificationResult,
     LogsNotification,
@@ -102,7 +102,6 @@ from solders.rpc.responses import (
     SignatureNotificationResult,
     SlotNotification,
     SlotInfo,
-    SlotUpdate,
     SlotUpdateOptimisticConfirmation,
     SlotUpdateNotification,
     VoteNotification,
@@ -136,7 +135,6 @@ from solders.transaction_status import (
     TransactionConfirmationStatus,
     TransactionErrorInstructionError,
     InstructionErrorCustom,
-    UiConfirmedBlock,
 )
 from solders.message import MessageHeader, Message
 from solders.transaction import VersionedTransaction
@@ -267,6 +265,7 @@ def test_get_block_production() -> None:
         ),
         RpcResponseContext(9887),
     )
+    assert parsed == expected
 
 
 def test_get_block_height() -> None:
@@ -1193,7 +1192,7 @@ def test_get_program_accounts_with_context() -> None:
     raw = '{"jsonrpc":"2.0","result":{"context":{"apiVersion":"1.10.34","slot":156892898},"value":[]},"id":1}'
     parsed = GetProgramAccountsWithContextResp.from_json(raw)
     assert isinstance(parsed, GetProgramAccountsWithContextResp)
-    assert parsed.value == []
+    assert not parsed.value
 
 
 def test_get_program_accounts_with_context_json_parsed() -> None:
@@ -2069,7 +2068,10 @@ def test_simulate_transaction() -> None:
 
 
 def test_batch() -> None:
-    parsed = [GetBlockHeightResp(1233), GetFirstAvailableBlockResp(1)]
+    parsed: List[Union[GetBlockHeightResp, GetFirstAvailableBlockResp]] = [
+        GetBlockHeightResp(1233),
+        GetFirstAvailableBlockResp(1),
+    ]
     raw = batch_to_json(parsed)
     assert (
         batch_from_json(raw, [GetBlockHeightResp, GetFirstAvailableBlockResp]) == parsed

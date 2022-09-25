@@ -1869,6 +1869,7 @@ impl RpcLogsResponse {
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
 pub struct RpcSignatureResponse {
+    #[pyo3(get)]
     err: Option<TransactionErrorType>,
 }
 
