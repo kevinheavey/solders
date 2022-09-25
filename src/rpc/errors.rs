@@ -241,7 +241,7 @@ impl MinContextSlotNotReached {
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.rpc.errors", subclass)]
-pub struct UnsupportedTransactionVersion(u8);
+pub struct UnsupportedTransactionVersion(pub u8);
 
 transaction_status_boilerplate!(UnsupportedTransactionVersion);
 

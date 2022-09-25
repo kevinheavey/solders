@@ -28,6 +28,7 @@ use crate::rpc::tmp_response::{
     RpcAccountBalance as RpcAccountBalanceOriginal,
     RpcBlockProduction as RpcBlockProductionOriginal,
     RpcBlockProductionRange as RpcBlockProductionRangeOriginal,
+    RpcBlockUpdate as RpcBlockUpdateOriginal, RpcBlockUpdateError as RpcBlockUpdateErrorOriginal,
     RpcContactInfo as RpcContactInfoOriginal, RpcInflationGovernor as RpcInflationGovernorOriginal,
     RpcInflationRate as RpcInflationRateOriginal, RpcInflationReward as RpcInflationRewardOriginal,
     RpcLogsResponse as RpcLogsResponseOriginal, RpcPerfSample as RpcPerfSampleOriginal,
@@ -57,7 +58,7 @@ use crate::{
 };
 use camelpaste::paste;
 
-use super::errors::RpcCustomError;
+use super::errors::{RpcCustomError, UnsupportedTransactionVersion};
 
 // note: the `data` field of the error struct is always None
 
@@ -316,7 +317,7 @@ pub enum Notification {
     AccountNotification {
         #[serde(skip_deserializing)]
         jsonrpc: crate::rpc::requests::V2,
-        params: AccountNotificationType,
+        params: AccountNotification,
     },
     BlockNotification {
         #[serde(skip_deserializing)]
@@ -2188,6 +2189,89 @@ impl RpcVote {
     }
 }
 
+#[derive(Clone, Deserialize, Serialize, Debug, Eq, PartialEq)]
+#[pyclass(module = "solders.rpc.responses")]
+pub enum BlockStoreError {
+    BlockStoreError,
+}
+
+#[derive(FromPyObject, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+#[serde(untagged)]
+pub enum RpcBlockUpdateError {
+    BlockStoreError(BlockStoreError),
+    UnsupportedTransactionVersion(UnsupportedTransactionVersion),
+}
+
+impl IntoPy<PyObject> for RpcBlockUpdateError {
+    fn into_py(self, py: Python<'_>) -> PyObject {
+        match self {
+            Self::BlockStoreError(x) => x.into_py(py),
+            Self::UnsupportedTransactionVersion(x) => x.into_py(py),
+        }
+    }
+}
+
+impl From<RpcBlockUpdateError> for RpcBlockUpdateErrorOriginal {
+    fn from(e: RpcBlockUpdateError) -> Self {
+        match e {
+            RpcBlockUpdateError::BlockStoreError(_) => Self::BlockStoreError,
+            RpcBlockUpdateError::UnsupportedTransactionVersion(u) => {
+                Self::UnsupportedTransactionVersion(u.0)
+            }
+        }
+    }
+}
+
+impl From<RpcBlockUpdateErrorOriginal> for RpcBlockUpdateError {
+    fn from(e: RpcBlockUpdateErrorOriginal) -> Self {
+        match e {
+            RpcBlockUpdateErrorOriginal::BlockStoreError => {
+                Self::BlockStoreError(BlockStoreError::BlockStoreError)
+            }
+            RpcBlockUpdateErrorOriginal::UnsupportedTransactionVersion(version) => {
+                Self::UnsupportedTransactionVersion(UnsupportedTransactionVersion(version))
+            }
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone, From, Into)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct RpcBlockUpdate(RpcBlockUpdateOriginal);
+
+response_data_boilerplate!(RpcBlockUpdate);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl RpcBlockUpdate {
+    #[new]
+    pub fn new(
+        slot: Slot,
+        block: Option<UiConfirmedBlock>,
+        err: Option<RpcBlockUpdateError>,
+    ) -> Self {
+        RpcBlockUpdateOriginal {
+            slot,
+            block: block.map(|b| b.into()),
+            err: err.map(|e| e.into()),
+        }
+        .into()
+    }
+    #[getter]
+    pub fn slot(&self) -> u64 {
+        self.0.slot
+    }
+    #[getter]
+    pub fn block(&self) -> Option<UiConfirmedBlock> {
+        self.0.block.clone().map(|b| b.into())
+    }
+    #[getter]
+    pub fn err(&self) -> Option<RpcBlockUpdateError> {
+        self.0.err.clone().map(|e| e.into())
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
 pub struct SubscriptionResult {
@@ -2255,7 +2339,7 @@ notification!(
     AccountJSON,
     "FromInto<UiAccount>"
 );
-notification_no_eq!(BlockNotification, UiConfirmedBlock);
+notification_no_eq!(BlockNotification, RpcBlockUpdate);
 notification!(LogsNotification, RpcLogsResponse);
 notification!(ProgramNotification, RpcKeyedAccount);
 notification!(ProgramNotificationJsonParsed, RpcKeyedAccountJsonParsed);
@@ -2268,8 +2352,8 @@ notification_contextless!(VoteNotification, RpcVote);
 #[derive(FromPyObject, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 #[serde(untagged)]
 pub enum AccountNotificationType {
-    Binary(AccountNotification),
     JsonParsed(AccountNotificationJsonParsed),
+    Binary(AccountNotification),
 }
 
 impl IntoPy<PyObject> for AccountNotificationType {
@@ -2590,6 +2674,14 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
         ],
     );
     let slot_update_alias = union.get_item(slot_update_members)?;
+    let block_update_error_members = PyTuple::new(
+        py,
+        vec![
+            UnsupportedTransactionVersion::type_object(py),
+            BlockStoreError::type_object(py),
+        ],
+    );
+    let block_update_error_alias = union.get_item(block_update_error_members)?;
     let notification_members_raw = vec![
         AccountNotification::type_object(py),
         AccountNotificationJsonParsed::type_object(py),
@@ -2710,6 +2802,8 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<SubscriptionError>()?;
     m.add_class::<AccountNotification>()?;
     m.add_class::<AccountNotificationResult>()?;
+    m.add_class::<AccountNotificationJsonParsed>()?;
+    m.add_class::<AccountNotificationJsonParsedResult>()?;
     m.add_class::<BlockNotification>()?;
     m.add_class::<BlockNotificationResult>()?;
     m.add_class::<LogsNotification>()?;
@@ -2724,10 +2818,13 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<SlotUpdateNotification>()?;
     m.add_class::<RootNotification>()?;
     m.add_class::<VoteNotification>()?;
+    m.add_class::<RpcBlockUpdate>()?;
+    m.add_class::<BlockStoreError>()?;
     m.add("RPCResult", rpc_result_alias)?;
     m.add("SlotUpdate", slot_update_alias)?;
     m.add("Notification", notification_alias)?;
     m.add("WebsocketMessage", websocket_message_alias)?;
+    m.add("RpcBlockUpddateError", block_update_error_alias)?;
     let funcs = [
         wrap_pyfunction!(batch_to_json, m)?,
         wrap_pyfunction!(batch_from_json, m)?,
