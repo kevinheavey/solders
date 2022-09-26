@@ -34,8 +34,8 @@ jobs:
           args: --release --out dist
       - name: Install built wheel
         run: |
-          pip install pytest based58 pybip39
-          pip install ${{ env.name }} --find-links dist --force-reinstall
+          pip install pytest based58 pybip39 typing-extensions
+          pip install ${{ env.name }} --no-index --no-dependencies --find-links dist --force-reinstall
           pytest
   macos_universal2:
     runs-on: macos-latest
@@ -57,8 +57,8 @@ jobs:
           args: --release --universal2 --out dist
       - name: Install built wheel
         run: |
-          pip install pytest based58 pybip39
-          pip install ${{ env.name }} --find-links dist --force-reinstall
+          pip install pytest based58 pybip39 typing-extensions
+          pip install ${{ env.name }} --no-index --no-dependencies --find-links dist --force-reinstall
           pytest
       - name: Upload wheels
         uses: actions/upload-artifact@v2
@@ -90,8 +90,8 @@ jobs:
           args: --release --out dist
       - name: Install built wheel
         run: |
-          python -m pip install pytest based58 pybip39
-          python -m pip install ${{ env.name }} --find-links dist --force-reinstall
+          python -m pip install pytest based58 pybip39 typing-extensions
+          python -m pip install ${{ env.name }} --no-index --no-dependencies --find-links dist --force-reinstall
           python -m pytest
       - name: Upload wheels
         uses: actions/upload-artifact@v2
@@ -126,8 +126,8 @@ jobs:
       - name: Install built wheel
         if: matrix.target == 'x86_64'
         run: |
-          pip install pytest based58 pybip39
-          pip install ${{ env.name }} --find-links dist --force-reinstall
+          pip install pytest based58 pybip39 typing-extensions
+          pip install ${{ env.name }} --no-index --no-dependencies --find-links dist --force-reinstall
           pytest
       - name: Upload wheels
         uses: actions/upload-artifact@v2
