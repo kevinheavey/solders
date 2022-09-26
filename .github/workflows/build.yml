@@ -95,7 +95,7 @@ jobs:
         run: |
           python -m pip install pytest based58 pybip39
           python -m pip install ${{ env.name }} --find-links dist --force-reinstall
-          python -m pytest tests/test_system_program.py
+          python -m pytest
       - name: Upload wheels
         uses: actions/upload-artifact@v2
         with:
