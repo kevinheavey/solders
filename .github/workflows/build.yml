@@ -27,7 +27,6 @@ jobs:
           toolchain: nightly
           profile: minimal
           default: true
-      - uses: Swatinem/rust-cache@v1
       - name: Build wheels
         uses: messense/maturin-action@v1
         with:
@@ -52,7 +51,6 @@ jobs:
           toolchain: nightly
           profile: minimal
           default: true
-      - uses: Swatinem/rust-cache@v1
       - name: Build wheels
         uses: messense/maturin-action@v1
         with:
@@ -85,7 +83,6 @@ jobs:
           toolchain: nightly
           profile: minimal
           default: true
-      - uses: Swatinem/rust-cache@v1
       - name: Build wheels
         uses: messense/maturin-action@v1
         with:
@@ -120,7 +117,6 @@ jobs:
           toolchain: nightly
           profile: minimal
           default: true
-      - uses: Swatinem/rust-cache@v1
       - name: Build Wheels
         uses: messense/maturin-action@v1
         with:
@@ -159,7 +155,6 @@ jobs:
           toolchain: nightly
           profile: minimal
           default: true
-      - uses: Swatinem/rust-cache@v1
       - name: Build wheels
         uses: messense/maturin-action@v1
         with:
@@ -200,7 +195,6 @@ jobs:
           toolchain: nightly
           profile: minimal
           default: true
-      - uses: Swatinem/rust-cache@v1
       - name: Build Wheels
         uses: messense/maturin-action@v1
         with:
