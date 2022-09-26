@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0] - 2022-09-26
+
+### Added
+
+- Add RPC response parsing [(#8)](https://github.com/kevinheavey/solders/pull/10)
+- Add versioned transactions [(#8)](https://github.com/kevinheavey/solders/pull/10)
+
 ## [0.4.0] - 2022-08-13
 
 ### Added

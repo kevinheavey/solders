@@ -4,6 +4,7 @@ use crate::{
     handle_py_err, handle_py_value_err, pybytes_general_via_slice, CommonMethods, PyBytesSlice,
     PyErrWrapper, PyFromBytesGeneral, PyHash, RichcmpFull,
 };
+use derive_more::{From, Into};
 use pyo3::{create_exception, exceptions::PyException, prelude::*};
 use serde::{Deserialize, Serialize};
 use solana_sdk::pubkey::{
@@ -38,7 +39,19 @@ impl From<PubkeyErrorOriginal> for PyErrWrapper {
 ///
 #[pyclass(module = "solders.pubkey", subclass)]
 #[derive(
-    Eq, PartialEq, Ord, PartialOrd, Debug, Default, Hash, Clone, Copy, Serialize, Deserialize,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Debug,
+    Default,
+    Hash,
+    Clone,
+    Copy,
+    Serialize,
+    Deserialize,
+    From,
+    Into,
 )]
 pub struct Pubkey(pub PubkeyOriginal);
 
@@ -236,12 +249,6 @@ impl Pubkey {
 impl RichcmpFull for Pubkey {}
 impl PyHash for Pubkey {}
 
-impl From<PubkeyOriginal> for Pubkey {
-    fn from(pubkey: PubkeyOriginal) -> Self {
-        Self(pubkey)
-    }
-}
-
 impl From<&PubkeyOriginal> for Pubkey {
     fn from(pubkey: &PubkeyOriginal) -> Self {
         Self(*pubkey)
@@ -250,12 +257,6 @@ impl From<&PubkeyOriginal> for Pubkey {
 
 impl From<&Pubkey> for PubkeyOriginal {
     fn from(pubkey: &Pubkey) -> Self {
-        pubkey.0
-    }
-}
-
-impl From<Pubkey> for PubkeyOriginal {
-    fn from(pubkey: Pubkey) -> Self {
         pubkey.0
     }
 }

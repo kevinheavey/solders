@@ -27,16 +27,15 @@ jobs:
           toolchain: nightly
           profile: minimal
           default: true
-      - uses: Swatinem/rust-cache@v1
       - name: Build wheels
         uses: messense/maturin-action@v1
         with:
           target: x86_64
-          args: --release --out dist --no-sdist
+          args: --release --out dist
       - name: Install built wheel
         run: |
-          pip install pytest based58 pybip39
-          pip install ${{ env.name }} --find-links dist --force-reinstall
+          pip install pytest based58 pybip39 typing-extensions
+          pip install ${{ env.name }} --no-index --no-dependencies --find-links dist --force-reinstall
           pytest
   macos_universal2:
     runs-on: macos-latest
@@ -52,15 +51,14 @@ jobs:
           toolchain: nightly
           profile: minimal
           default: true
-      - uses: Swatinem/rust-cache@v1
       - name: Build wheels
         uses: messense/maturin-action@v1
         with:
-          args: --release --universal2 --out dist --no-sdist
+          args: --release --universal2 --out dist
       - name: Install built wheel
         run: |
-          pip install pytest based58 pybip39
-          pip install ${{ env.name }} --find-links dist --force-reinstall
+          pip install pytest based58 pybip39 typing-extensions
+          pip install ${{ env.name }} --no-index --no-dependencies --find-links dist --force-reinstall
           pytest
       - name: Upload wheels
         uses: actions/upload-artifact@v2
@@ -85,17 +83,16 @@ jobs:
           toolchain: nightly
           profile: minimal
           default: true
-      - uses: Swatinem/rust-cache@v1
       - name: Build wheels
         uses: messense/maturin-action@v1
         with:
           target: ${{ matrix.target }}
-          args: --release --out dist --no-sdist
+          args: --release --out dist
       - name: Install built wheel
         run: |
-          python -m pip install pytest based58 pybip39
-          python -m pip install ${{ env.name }} --find-links dist --force-reinstall
-          python -m pytest tests/test_system_program.py
+          python -m pip install pytest based58 pybip39 typing-extensions
+          python -m pip install ${{ env.name }} --no-index --no-dependencies --find-links dist --force-reinstall
+          python -m pytest
       - name: Upload wheels
         uses: actions/upload-artifact@v2
         with:
@@ -120,18 +117,17 @@ jobs:
           toolchain: nightly
           profile: minimal
           default: true
-      - uses: Swatinem/rust-cache@v1
       - name: Build Wheels
         uses: messense/maturin-action@v1
         with:
           target: ${{ matrix.target }}
           manylinux: auto
-          args: --release --out dist --no-sdist
+          args: --release --out dist
       - name: Install built wheel
         if: matrix.target == 'x86_64'
         run: |
-          pip install pytest based58 pybip39
-          pip install ${{ env.name }} --find-links dist --force-reinstall
+          pip install pytest based58 pybip39 typing-extensions
+          pip install ${{ env.name }} --no-index --no-dependencies --find-links dist --force-reinstall
           pytest
       - name: Upload wheels
         uses: actions/upload-artifact@v2
@@ -159,13 +155,12 @@ jobs:
           toolchain: nightly
           profile: minimal
           default: true
-      - uses: Swatinem/rust-cache@v1
       - name: Build wheels
         uses: messense/maturin-action@v1
         with:
           target: ${{ matrix.target }}
           manylinux: musllinux_1_2
-          args: --release --out dist --no-sdist
+          args: --release --out dist
       - name: Install built wheel
         if: matrix.target == 'x86_64-unknown-linux-musl'
         uses: addnab/docker-run-action@v3
@@ -174,8 +169,8 @@ jobs:
           options: -v ${{ github.workspace }}:/io -w /io
           run: |
             apk add py3-pip
-            pip3 install -U pip pytest based58 pybip39
-            pip3 install ${{ env.name }} --find-links /io/dist/ --force-reinstall
+            pip3 install -U pip pytest based58 pybip39 typing-extensions
+            pip3 install ${{ env.name }} --find-links /io/dist/ --force-reinstall --no-index --no-dependencies
             python3 -m pytest
       - name: Upload wheels
         uses: actions/upload-artifact@v2
@@ -200,13 +195,12 @@ jobs:
           toolchain: nightly
           profile: minimal
           default: true
-      - uses: Swatinem/rust-cache@v1
       - name: Build Wheels
         uses: messense/maturin-action@v1
         with:
           target: ${{ matrix.target }}
           manylinux: auto
-          args: --release --out dist --no-sdist
+          args: --release --out dist
       - name: Upload wheels
         uses: actions/upload-artifact@v2
         with:

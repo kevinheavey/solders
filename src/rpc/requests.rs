@@ -1,15 +1,17 @@
 #![allow(deprecated)]
 use crate::{
     commitment_config::{CommitmentConfig, CommitmentLevel},
-    py_from_bytes_general_via_cbor, pybytes_general_via_cbor, to_py_err, CommonMethods, Message,
-    Pubkey, PyBytesCbor, PyErrWrapper, PyFromBytesCbor, RichcmpEqualityOnly, Transaction,
+    message::Message,
+    py_from_bytes_general_via_cbor, pybytes_general_via_cbor, to_py_err,
+    transaction::Transaction,
+    CommonMethods, Pubkey, PyBytesCbor, PyErrWrapper, PyFromBytesCbor, RichcmpEqualityOnly,
 };
 use pyo3::{
     create_exception,
     exceptions::{PyException, PyValueError},
     prelude::*,
-    type_object::PyTypeObject,
     types::PyTuple,
+    PyTypeInfo,
 };
 extern crate base64;
 use crate::rpc::tmp_config::{
@@ -83,7 +85,7 @@ macro_rules! request_boilerplate {
     };
 }
 
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize, Default)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Default)]
 pub struct UnsubscribeParams((u64,));
 
 macro_rules! unsubscribe_def {
@@ -101,7 +103,7 @@ Example:
      '{\"method\":\"" $name:camel "\",\"jsonrpc\":\"2.0\",\"id\":2,\"params\":[1]}'
 "]
                 #[pyclass(module = "solders.rpc.requests")]
-                #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+                #[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
                 pub struct $name {
                     #[serde(flatten)]
                     base: RequestBase,
@@ -183,8 +185,9 @@ impl From<serde_json::Error> for PyErrWrapper {
     }
 }
 
-#[derive(Deserialize, Serialize, PartialEq, Eq, Clone, Debug)]
+#[derive(Deserialize, Serialize, PartialEq, Eq, Clone, Debug, Default)]
 pub enum V2 {
+    #[default]
     #[serde(rename = "2.0")]
     TwoPointOh,
 }
@@ -206,7 +209,7 @@ impl RequestBase {
 
 #[serde_as]
 #[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetAccountInfoParams(
     #[serde_as(as = "DisplayFromStr")] Pubkey,
     #[serde(default)] Option<RpcAccountInfoConfig>,
@@ -229,7 +232,7 @@ pub struct GetAccountInfoParams(
 ///     '{"method":"getAccountInfo","jsonrpc":"2.0","id":0,"params":["11111111111111111111111111111111",{"encoding":"base64","dataSlice":null,"minContextSlot":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetAccountInfo {
     #[serde(flatten)]
     base: RequestBase,
@@ -265,7 +268,7 @@ request_boilerplate!(GetAccountInfo);
 
 #[serde_as]
 #[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetBalanceParams(
     #[serde_as(as = "DisplayFromStr")] Pubkey,
     #[serde(default)] Option<RpcContextConfig>,
@@ -287,7 +290,7 @@ pub struct GetBalanceParams(
 ///     '{"method":"getBalance","jsonrpc":"2.0","id":0,"params":["11111111111111111111111111111111",{"minContextSlot":1}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetBalance {
     #[serde(flatten)]
     base: RequestBase,
@@ -322,7 +325,7 @@ impl GetBalance {
 request_boilerplate!(GetBalance);
 
 #[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetBlockParams(u64, #[serde(default)] Option<RpcBlockConfig>);
 
 /// A ``getBlock`` request.
@@ -341,7 +344,7 @@ pub struct GetBlockParams(u64, #[serde(default)] Option<RpcBlockConfig>);
 ///     '{"method":"getBlock","jsonrpc":"2.0","id":0,"params":[123,{"encoding":"base58","transactionDetails":"none","rewards":null,"maxSupportedTransactionVersion":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetBlock {
     #[serde(flatten)]
     base: RequestBase,
@@ -390,7 +393,7 @@ request_boilerplate!(GetBlock);
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetBlockHeight {
     #[serde(flatten)]
     base: RequestBase,
@@ -477,7 +480,7 @@ request_boilerplate!(GetBlockProduction);
 ///     '{"method":"getBlockCommitment","jsonrpc":"2.0","id":0,"params":[123]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetBlockCommitment {
     #[serde(flatten)]
     base: RequestBase,
@@ -506,7 +509,7 @@ impl GetBlockCommitment {
 request_boilerplate!(GetBlockCommitment);
 
 #[serde_as]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetBlocksParams(
     u64,
     #[serde(default)] Option<u64>,
@@ -530,7 +533,7 @@ pub struct GetBlocksParams(
 ///     '{"method":"getBlocks","jsonrpc":"2.0","id":0,"params":[123,null,{"commitment":"processed"}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetBlocks {
     #[serde(flatten)]
     base: RequestBase,
@@ -590,7 +593,7 @@ request_boilerplate!(GetBlocks);
 ///     '{"method":"getBlocksWithLimit","jsonrpc":"2.0","id":0,"params":[123,5,{"commitment":"processed"}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetBlocksWithLimit {
     #[serde(flatten)]
     base: RequestBase,
@@ -647,7 +650,7 @@ request_boilerplate!(GetBlocksWithLimit);
 ///     '{"method":"getBlockTime","jsonrpc":"2.0","id":0,"params":[123]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetBlockTime {
     #[serde(flatten)]
     base: RequestBase,
@@ -693,7 +696,7 @@ zero_param_req_def!(GetClusterNodes);
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetEpochInfo {
     #[serde(flatten)]
     base: RequestBase,
@@ -744,7 +747,7 @@ impl From<MessageBase64> for Message {
 
 #[serde_as]
 #[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetFeeForMessageParams(
     #[serde_as(as = "FromInto<MessageBase64>")] Message,
     #[serde_as(as = "Option<FromInto<CommitmentConfig>>")]
@@ -767,7 +770,7 @@ pub struct GetFeeForMessageParams(
 ///     '{"method":"getFeeForMessage","jsonrpc":"2.0","id":0,"params":["AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",{"commitment":"processed"}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetFeeForMessage {
     #[serde(flatten)]
     base: RequestBase,
@@ -821,7 +824,7 @@ zero_param_req_def!(GetIdentity);
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetInflationGovernor {
     #[serde(flatten)]
     base: RequestBase,
@@ -853,7 +856,7 @@ zero_param_req_def!(GetInflationRate);
 
 #[serde_as]
 #[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetInflationRewardParams(
     #[serde_as(as = "Vec<DisplayFromStr>")] Vec<Pubkey>,
     #[serde(default)] Option<RpcEpochConfig>,
@@ -876,7 +879,7 @@ pub struct GetInflationRewardParams(
 ///     '{"method":"getInflationReward","jsonrpc":"2.0","id":0,"params":[["11111111111111111111111111111111","11111111111111111111111111111111"],{"epoch":1234,"minContextSlot":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetInflationReward {
     #[serde(flatten)]
     base: RequestBase,
@@ -911,7 +914,7 @@ impl GetInflationReward {
 request_boilerplate!(GetInflationReward);
 
 #[serde_as]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetLargestAccountsParams(
     #[serde_as(as = "Option<FromInto<CommitmentConfig>>")]
     #[serde(default)]
@@ -937,7 +940,7 @@ pub struct GetLargestAccountsParams(
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetLargestAccounts {
     #[serde(flatten)]
     base: RequestBase,
@@ -996,7 +999,7 @@ request_boilerplate!(GetLargestAccounts);
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetLatestBlockhash {
     #[serde(flatten)]
     base: RequestBase,
@@ -1025,7 +1028,7 @@ impl GetLatestBlockhash {
 
 request_boilerplate!(GetLatestBlockhash);
 
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetLeaderScheduleParams(
     #[serde(default)] Option<u64>,
     #[serde(default, skip_serializing_if = "Option::is_none")] Option<RpcLeaderScheduleConfig>,
@@ -1048,7 +1051,7 @@ pub struct GetLeaderScheduleParams(
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetLeaderSchedule {
     #[serde(flatten)]
     base: RequestBase,
@@ -1091,7 +1094,7 @@ zero_param_req_def!(GetMaxShredInsertSlot);
 
 #[serde_as]
 #[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetMinimumBalanceForRentExemptionParams(
     usize,
     #[serde_as(as = "Option<FromInto<CommitmentConfig>>")]
@@ -1112,7 +1115,7 @@ pub struct GetMinimumBalanceForRentExemptionParams(
 ///     '{"method":"getMinimumBalanceForRentExemption","jsonrpc":"2.0","id":0,"params":[50]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetMinimumBalanceForRentExemption {
     #[serde(flatten)]
     base: RequestBase,
@@ -1148,7 +1151,7 @@ request_boilerplate!(GetMinimumBalanceForRentExemption);
 
 #[serde_as]
 #[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetMultipleAccountsParams(
     #[serde_as(as = "Vec<DisplayFromStr>")] Vec<Pubkey>,
     #[serde(default)] Option<RpcAccountInfoConfig>,
@@ -1175,7 +1178,7 @@ pub struct GetMultipleAccountsParams(
 ///     '{"method":"getMultipleAccounts","jsonrpc":"2.0","id":0,"params":[["11111111111111111111111111111111","11111111111111111111111111111111"],{"encoding":"base64+zstd","dataSlice":{"offset":10,"length":8},"minContextSlot":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetMultipleAccounts {
     #[serde(flatten)]
     base: RequestBase,
@@ -1211,7 +1214,7 @@ request_boilerplate!(GetMultipleAccounts);
 
 #[serde_as]
 #[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetProgramAccountsParams(
     #[serde_as(as = "DisplayFromStr")] Pubkey,
     #[serde(default)] Option<RpcProgramAccountsConfig>,
@@ -1236,7 +1239,7 @@ pub struct GetProgramAccountsParams(
 ///     '{"method":"getProgramAccounts","jsonrpc":"2.0","id":0,"params":["11111111111111111111111111111111",{"filters":[{"dataSize":10},{"memcmp":{"offset":10,"bytes":[49,50,51],"encoding":null}}],"encoding":null,"dataSlice":null,"minContextSlot":null,"withContext":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetProgramAccounts {
     #[serde(flatten)]
     base: RequestBase,
@@ -1283,7 +1286,7 @@ request_boilerplate!(GetProgramAccounts);
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetRecentPerformanceSamples {
     #[serde(flatten)]
     base: RequestBase,
@@ -1314,7 +1317,7 @@ request_boilerplate!(GetRecentPerformanceSamples);
 
 #[serde_as]
 #[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetSignaturesForAddressParams(
     #[serde_as(as = "DisplayFromStr")] Pubkey,
     #[serde(default)] Option<RpcSignaturesForAddressConfig>,
@@ -1335,7 +1338,7 @@ pub struct GetSignaturesForAddressParams(
 ///     '{"method":"getSignaturesForAddress","jsonrpc":"2.0","id":0,"params":["11111111111111111111111111111111",{"before":null,"until":null,"limit":10,"minContextSlot":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetSignaturesForAddress {
     #[serde(flatten)]
     base: RequestBase,
@@ -1375,7 +1378,7 @@ request_boilerplate!(GetSignaturesForAddress);
 
 #[serde_as]
 #[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetSignatureStatusesParams(
     #[serde_as(as = "Vec<DisplayFromStr>")] Vec<Signature>,
     #[serde(default)] Option<RpcSignatureStatusConfig>,
@@ -1397,7 +1400,7 @@ pub struct GetSignatureStatusesParams(
 ///     '{"method":"getSignatureStatuses","jsonrpc":"2.0","id":0,"params":[["1111111111111111111111111111111111111111111111111111111111111111"],{"searchTransactionHistory":true}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetSignatureStatuses {
     #[serde(flatten)]
     base: RequestBase,
@@ -1450,7 +1453,7 @@ request_boilerplate!(GetSignatureStatuses);
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetSlot {
     #[serde(flatten)]
     base: RequestBase,
@@ -1494,7 +1497,7 @@ request_boilerplate!(GetSlot);
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetSlotLeader {
     #[serde(flatten)]
     base: RequestBase,
@@ -1536,7 +1539,7 @@ request_boilerplate!(GetSlotLeader);
 ///     '{"method":"getSlotLeaders","jsonrpc":"2.0","id":0,"params":[100,10]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetSlotLeaders {
     #[serde(flatten)]
     base: RequestBase,
@@ -1572,7 +1575,7 @@ request_boilerplate!(GetSlotLeaders);
 
 #[serde_as]
 #[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetStakeActivationParams(
     #[serde_as(as = "DisplayFromStr")] Pubkey,
     #[serde(default)] Option<RpcEpochConfig>,
@@ -1594,7 +1597,7 @@ pub struct GetStakeActivationParams(
 ///     '{"method":"getStakeActivation","jsonrpc":"2.0","id":0,"params":["11111111111111111111111111111111",{"epoch":1234,"minContextSlot":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetStakeActivation {
     #[serde(flatten)]
     base: RequestBase,
@@ -1643,7 +1646,7 @@ request_boilerplate!(GetStakeActivation);
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetSupply {
     #[serde(flatten)]
     base: RequestBase,
@@ -1674,7 +1677,7 @@ request_boilerplate!(GetSupply);
 
 #[serde_as]
 #[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct PubkeyAndCommitmentParams(
     #[serde_as(as = "DisplayFromStr")] Pubkey,
     #[serde_as(as = "Option<FromInto<CommitmentConfig>>")]
@@ -1697,7 +1700,7 @@ pub struct PubkeyAndCommitmentParams(
 ///     '{"method":"getTokenAccountBalance","jsonrpc":"2.0","id":0,"params":["11111111111111111111111111111111",{"commitment":"processed"}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetTokenAccountBalance {
     #[serde(flatten)]
     base: RequestBase,
@@ -1733,7 +1736,7 @@ request_boilerplate!(GetTokenAccountBalance);
 
 #[serde_as]
 #[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetTokenAccountsByDelegateParams(
     #[serde_as(as = "DisplayFromStr")] Pubkey,
     #[serde_as(as = "FromInto<RpcTokenAccountsFilter>")] RpcTokenAccountsFilterWrapper,
@@ -1765,7 +1768,7 @@ pub struct GetTokenAccountsByDelegateParams(
 ///     )
 ///
 #[pyclass(module = "solders.rpc.requests")]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetTokenAccountsByDelegate {
     #[serde(flatten)]
     base: RequestBase,
@@ -1835,7 +1838,7 @@ request_boilerplate!(GetTokenAccountsByDelegate);
 ///     )
 ///
 #[pyclass(module = "solders.rpc.requests")]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetTokenAccountsByOwner {
     #[serde(flatten)]
     base: RequestBase,
@@ -1894,7 +1897,7 @@ request_boilerplate!(GetTokenAccountsByOwner);
 ///     '{"method":"getTokenLargestAccounts","jsonrpc":"2.0","id":0,"params":["11111111111111111111111111111111"]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetTokenLargestAccounts {
     #[serde(flatten)]
     base: RequestBase,
@@ -1942,7 +1945,7 @@ request_boilerplate!(GetTokenLargestAccounts);
 ///     '{"method":"getTokenSupply","jsonrpc":"2.0","id":0,"params":["11111111111111111111111111111111"]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetTokenSupply {
     #[serde(flatten)]
     base: RequestBase,
@@ -1978,7 +1981,7 @@ request_boilerplate!(GetTokenSupply);
 
 #[serde_as]
 #[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetTransactionParams(
     #[serde_as(as = "DisplayFromStr")] Signature,
     #[serde(default)] Option<RpcTransactionConfig>,
@@ -2000,7 +2003,7 @@ pub struct GetTransactionParams(
 ///     '{"method":"getTransaction","jsonrpc":"2.0","id":0,"params":["1111111111111111111111111111111111111111111111111111111111111111",{"encoding":null,"maxSupportedTransactionVersion":1}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetTransaction {
     #[serde(flatten)]
     base: RequestBase,
@@ -2049,7 +2052,7 @@ request_boilerplate!(GetTransaction);
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetTransactionCount {
     #[serde(flatten)]
     base: RequestBase,
@@ -2094,7 +2097,7 @@ zero_param_req_def!(GetVersion);
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetVoteAccounts {
     #[serde(flatten)]
     base: RequestBase,
@@ -2125,7 +2128,7 @@ request_boilerplate!(GetVoteAccounts);
 
 #[serde_as]
 #[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct IsBlockhashValidParams(
     #[serde_as(as = "DisplayFromStr")] SolderHash,
     #[serde(default)] Option<RpcContextConfig>,
@@ -2145,7 +2148,7 @@ pub struct IsBlockhashValidParams(
 ///     '{"method":"isBlockhashValid","jsonrpc":"2.0","id":0,"params":["11111111111111111111111111111111"]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct IsBlockhashValid {
     #[serde(flatten)]
     base: RequestBase,
@@ -2182,7 +2185,7 @@ zero_param_req_def!(MinimumLedgerSlot);
 
 #[serde_as]
 #[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize, Default)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Default)]
 pub struct RequestAirdropParams(
     #[serde_as(as = "DisplayFromStr")] Pubkey,
     u64,
@@ -2207,7 +2210,7 @@ pub struct RequestAirdropParams(
 ///      '{"method":"requestAirdrop","jsonrpc":"2.0","id":0,"params":["11111111111111111111111111111111",1000,{"recentBlockhash":null,"commitment":"confirmed"}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct RequestAirdrop {
     #[serde(flatten)]
     base: RequestBase,
@@ -2272,7 +2275,7 @@ impl From<TransactionBase64> for Transaction {
 
 #[serde_as]
 #[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize, Default)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Default)]
 pub struct SendTransactionParams(
     #[serde_as(as = "FromInto<TransactionBase64>")] Transaction,
     #[serde(default)] Option<RpcSendTransactionConfig>,
@@ -2311,7 +2314,7 @@ pub struct SendTransactionParams(
 ///      '{"method":"sendTransaction","jsonrpc":"2.0","id":0,"params":["AaVkKDb3UlpidO/ucBnOcmS+1dY8ZAC4vHxTxiccV8zPBlupuozppRjwrILZJaoKggAcVSD1XlAKstDVEPFOVgwBAAECiojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEAA2FiYw==",{"skipPreflight":false,"preflightCommitment":"confirmed","encoding":"base64","maxRetries":null,"minContextSlot":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct SendTransaction {
     #[serde(flatten)]
     base: RequestBase,
@@ -2347,7 +2350,7 @@ request_boilerplate!(SendTransaction);
 
 #[serde_as]
 #[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize, Default)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Default)]
 pub struct SimulateTransactionParams(
     #[serde_as(as = "FromInto<TransactionBase64>")] Transaction,
     #[serde(default)] Option<RpcSimulateTransactionConfig>,
@@ -2388,7 +2391,7 @@ pub struct SimulateTransactionParams(
 ///      '{"method":"simulateTransaction","jsonrpc":"2.0","id":0,"params":["AaVkKDb3UlpidO/ucBnOcmS+1dY8ZAC4vHxTxiccV8zPBlupuozppRjwrILZJaoKggAcVSD1XlAKstDVEPFOVgwBAAECiojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEAA2FiYw==",{"sigVerify":false,"replaceRecentBlockhash":false,"commitment":"confirmed","encoding":"base64","accounts":{"encoding":"base64+zstd","addresses":["11111111111111111111111111111111"]},"minContextSlot":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct SimulateTransaction {
     #[serde(flatten)]
     base: RequestBase,
@@ -2439,7 +2442,7 @@ request_boilerplate!(SimulateTransaction);
 ///     '{"method":"accountSubscribe","jsonrpc":"2.0","id":0,"params":["11111111111111111111111111111111",{"encoding":"base64","dataSlice":null,"minContextSlot":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct AccountSubscribe {
     #[serde(flatten)]
     base: RequestBase,
@@ -2475,7 +2478,7 @@ request_boilerplate!(AccountSubscribe);
 
 #[serde_as]
 #[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize, Default)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Default)]
 pub struct BlockSubscribeParams(
     #[serde_as(as = "FromInto<RpcBlockSubscribeFilter>")] RpcBlockSubscribeFilterWrapper,
     #[serde(default)] Option<RpcBlockSubscribeConfig>,
@@ -2501,7 +2504,7 @@ pub struct BlockSubscribeParams(
 ///      '{"method":"blockSubscribe","jsonrpc":"2.0","id":0,"params":[{"mentionsAccountOrProgram":"11111111111111111111111111111111"},{"encoding":null,"transactionDetails":"signatures","showRewards":null,"maxSupportedTransactionVersion":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct BlockSubscribe {
     #[serde(flatten)]
     base: RequestBase,
@@ -2541,7 +2544,7 @@ request_boilerplate!(BlockSubscribe);
 
 #[serde_as]
 #[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize, Default)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Default)]
 pub struct LogsSubscribeParams(
     #[serde_as(as = "FromInto<RpcTransactionLogsFilter>")] TransactionLogsFilterWrapper,
     #[serde(default)] Option<RpcTransactionLogsConfig>,
@@ -2566,7 +2569,7 @@ pub struct LogsSubscribeParams(
 ///      '{"method":"logsSubscribe","jsonrpc":"2.0","id":0,"params":[{"mentions":["11111111111111111111111111111111"]},{"commitment":"confirmed"}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct LogsSubscribe {
     #[serde(flatten)]
     base: RequestBase,
@@ -2623,7 +2626,7 @@ request_boilerplate!(LogsSubscribe);
 ///     '{"method":"programSubscribe","jsonrpc":"2.0","id":0,"params":["11111111111111111111111111111111",{"filters":[{"dataSize":10},{"memcmp":{"offset":10,"bytes":[49,50,51],"encoding":null}}],"encoding":null,"dataSlice":null,"minContextSlot":null,"withContext":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct ProgramSubscribe {
     #[serde(flatten)]
     base: RequestBase,
@@ -2659,7 +2662,7 @@ request_boilerplate!(ProgramSubscribe);
 
 #[serde_as]
 #[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize, Default)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Default)]
 pub struct SignatureSubscribeParams(
     #[serde_as(as = "DisplayFromStr")] Signature,
     #[serde(default)] Option<RpcSignatureSubscribeConfig>,
@@ -2681,7 +2684,7 @@ pub struct SignatureSubscribeParams(
 ///      '{"method":"signatureSubscribe","jsonrpc":"2.0","id":0,"params":["1111111111111111111111111111111111111111111111111111111111111111",{"enableReceivedNotification":false}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct SignatureSubscribe {
     #[serde(flatten)]
     base: RequestBase,

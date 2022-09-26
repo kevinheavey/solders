@@ -1,10 +1,17 @@
+use std::str::FromStr;
+
+use derive_more::{From, Into};
 use pyo3::{prelude::*, types::PyBytes};
 use serde::{Deserialize, Serialize};
 use solana_sdk::{account::Account as AccountOriginal, clock::Epoch};
 use solders_macros::{common_methods, richcmp_eq_only};
 
 use crate::{
-    impl_display, pubkey::Pubkey, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
+    account_decoder::ParsedAccount,
+    impl_display,
+    pubkey::Pubkey,
+    py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
+    tmp_account_decoder::{UiAccount, UiAccountData, UiAccountEncoding},
     CommonMethods, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly,
 };
 
@@ -18,7 +25,7 @@ use crate::{
 ///     epoch_info (int): The epoch at which this account will next owe rent. Defaults to 0.
 ///
 #[pyclass(module = "solders.account", subclass)]
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Default)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Default, From, Into)]
 pub struct Account(AccountOriginal);
 
 #[richcmp_eq_only]
@@ -93,14 +100,120 @@ py_from_bytes_general_via_bincode!(Account);
 impl CommonMethods<'_> for Account {}
 impl RichcmpEqualityOnly for Account {}
 
-impl From<AccountOriginal> for Account {
-    fn from(a: AccountOriginal) -> Self {
-        Self(a)
+impl From<UiAccount> for Account {
+    fn from(acc: UiAccount) -> Self {
+        acc.decode::<AccountOriginal>().unwrap().into()
+    }
+}
+
+impl From<Account> for UiAccount {
+    fn from(acc: Account) -> Self {
+        let underlying = acc.0;
+        Self {
+            lamports: underlying.lamports,
+            data: UiAccountData::Binary(base64::encode(underlying.data), UiAccountEncoding::Base64),
+            owner: underlying.owner.to_string(),
+            executable: underlying.executable,
+            rent_epoch: underlying.rent_epoch,
+        }
+    }
+}
+
+/// An Account with data that is stored on chain, where the data is parsed as a JSON string.
+///
+/// Args:
+///     lamports (int): Lamports in the account.
+///     data (ParsedAccount): Data held in this account.
+///     owner (Pubkey): The program that owns this account. If executable, the program that loads this account.
+///     executable (bool): Whether this account's data contains a loaded program (and is now read-only). Defaults to False.
+///     epoch_info (int): The epoch at which this account will next owe rent. Defaults to 0.
+///
+#[derive(Deserialize, Serialize, PartialEq, Eq, Clone, Debug)]
+#[serde(rename_all = "camelCase")]
+#[pyclass(module = "solders.account", subclass)]
+pub struct AccountJSON {
+    /// int: Lamports in the account.
+    #[pyo3(get)]
+    pub lamports: u64,
+    /// ParsedAccount: Data held in this account.
+    #[pyo3(get)]
+    pub data: ParsedAccount,
+    /// Pubkey: The program that owns this account. If executable, the program that loads this account.
+    #[pyo3(get)]
+    pub owner: Pubkey,
+    /// bool: Whether this account's data contains a loaded program (and is now read-only).
+    #[pyo3(get)]
+    pub executable: bool,
+    /// int: The epoch at which this account will next owe rent.
+    #[pyo3(get)]
+    pub rent_epoch: Epoch,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl AccountJSON {
+    #[new]
+    #[args(executable = "bool::default()", rent_epoch = "Epoch::default()")]
+    pub fn new(
+        lamports: u64,
+        data: ParsedAccount,
+        owner: Pubkey,
+        executable: bool,
+        rent_epoch: Epoch,
+    ) -> Self {
+        Self {
+            lamports,
+            data,
+            owner,
+            executable,
+            rent_epoch,
+        }
+    }
+}
+
+impl std::fmt::Display for AccountJSON {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+pybytes_general_via_bincode!(AccountJSON);
+py_from_bytes_general_via_bincode!(AccountJSON);
+
+impl CommonMethods<'_> for AccountJSON {}
+impl RichcmpEqualityOnly for AccountJSON {}
+
+impl From<UiAccount> for AccountJSON {
+    fn from(acc: UiAccount) -> Self {
+        let parsed_account = match acc.data {
+            UiAccountData::Json(p) => p,
+            _ => panic!("Expected UiAccountData::Json, found {:?}", acc.data),
+        };
+        Self {
+            lamports: acc.lamports,
+            data: parsed_account.into(),
+            owner: Pubkey::from_str(&acc.owner).unwrap(),
+            executable: acc.executable,
+            rent_epoch: acc.rent_epoch,
+        }
+    }
+}
+
+impl From<AccountJSON> for UiAccount {
+    fn from(acc: AccountJSON) -> Self {
+        Self {
+            lamports: acc.lamports,
+            data: UiAccountData::Json(acc.data.into()),
+            owner: acc.owner.to_string(),
+            executable: acc.executable,
+            rent_epoch: acc.rent_epoch,
+        }
     }
 }
 
 pub(crate) fn create_account_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "account")?;
     m.add_class::<Account>()?;
+    m.add_class::<AccountJSON>()?;
     Ok(m)
 }

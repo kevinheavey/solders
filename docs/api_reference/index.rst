@@ -10,7 +10,9 @@ Modules:
 
    account
    account_decoder
+   address_lookup_table_account
    commitment_config
+   epoch_schedule
    errors
    hash
    instruction

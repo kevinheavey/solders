@@ -1,5 +1,6 @@
 use std::str::FromStr;
 
+use derive_more::{From, Into};
 use pyo3::{create_exception, exceptions::PyException, prelude::*};
 use serde::{Deserialize, Serialize};
 use solana_sdk::hash::{
@@ -32,7 +33,19 @@ impl From<ParseHashErrorOriginal> for PyErrWrapper {
 ///     hash_bytes (bytes): the hashed bytes.
 ///
 #[derive(
-    Clone, Copy, Default, Eq, PartialEq, Ord, PartialOrd, Hash, Debug, Deserialize, Serialize,
+    Clone,
+    Copy,
+    Default,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Hash,
+    Debug,
+    Deserialize,
+    Serialize,
+    From,
+    Into,
 )]
 pub struct Hash(HashOriginal);
 
@@ -142,18 +155,6 @@ impl CommonMethods<'_> for Hash {}
 impl RichcmpFull for Hash {}
 
 impl PyHash for Hash {}
-
-impl From<HashOriginal> for Hash {
-    fn from(h: HashOriginal) -> Self {
-        Self(h)
-    }
-}
-
-impl From<Hash> for HashOriginal {
-    fn from(h: Hash) -> HashOriginal {
-        h.0
-    }
-}
 
 impl AsRef<HashOriginal> for Hash {
     fn as_ref(&self) -> &HashOriginal {

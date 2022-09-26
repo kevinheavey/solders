@@ -1,5 +1,6 @@
 from solders.solders import (  # type: ignore
     account_decoder,
+    address_lookup_table_account,
     commitment_config,
     errors,
     hash,
@@ -13,12 +14,14 @@ from solders.solders import (  # type: ignore
     rpc,
     transaction,
     transaction_status,
+    __version__ as _version_untyped,
 )
 from . import sysvar
 from . import system_program
 
 __all__ = [
     "account_decoder",
+    "address_lookup_table_account",
     "commitment_config",
     "errors",
     "hash",
@@ -35,3 +38,5 @@ __all__ = [
     "sysvar",
     "system_program",
 ]
+
+__version__: str = _version_untyped

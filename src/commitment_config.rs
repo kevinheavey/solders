@@ -1,5 +1,6 @@
 use std::str::FromStr;
 
+use derive_more::{From, Into};
 use pyo3::{create_exception, exceptions::PyException, prelude::*};
 use serde::{Deserialize, Serialize};
 use solana_sdk::commitment_config::{
@@ -95,7 +96,7 @@ impl From<CommitmentLevel> for CommitmentLevelOriginal {
 /// Args:
 ///     commitment (CommitmentLevel): Bank state to query.
 #[pyclass(module = "solders.commitment_config", subclass)]
-#[derive(Serialize, Deserialize, Default, Clone, Copy, Debug, PartialEq, Eq, Hash)]
+#[derive(Serialize, Deserialize, Default, Clone, Copy, Debug, PartialEq, Eq, Hash, From, Into)]
 pub struct CommitmentConfig(CommitmentConfigOriginal);
 
 #[pymethods]
@@ -158,18 +159,6 @@ impl CommitmentConfig {
     /// Check if using at least ``confirmed`` commitment.
     pub fn is_at_least_confirmed(&self) -> bool {
         self.0.is_at_least_confirmed()
-    }
-}
-
-impl From<CommitmentConfigOriginal> for CommitmentConfig {
-    fn from(c: CommitmentConfigOriginal) -> CommitmentConfig {
-        Self(c)
-    }
-}
-
-impl From<CommitmentConfig> for CommitmentConfigOriginal {
-    fn from(c: CommitmentConfig) -> Self {
-        c.0
     }
 }
 

@@ -24,10 +24,11 @@ jobs:
         uses: messense/maturin-action@v1
         with:
           command: build
-          args: --release --out dist --no-sdist
+          args: --release --out dist
       - name: Install module
         run: |
-          pip install solders --find-links dist --force-reinstall
+          pip install typing-extensions
+          pip install solders --no-index --no-dependencies --find-links dist --force-reinstall
 
       - name: Build documentation
         run: make html

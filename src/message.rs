@@ -1,9 +1,18 @@
-use pyo3::{prelude::*, types::PyBytes};
+use derive_more::{From, Into};
+use pyo3::{create_exception, exceptions::PyException, prelude::*, types::PyBytes};
 use serde::{Deserialize, Serialize};
+use serde_with::{serde_as, FromInto};
 use solana_sdk::{
+    address_lookup_table_account::AddressLookupTableAccount as AddressLookupTableAccountOriginal,
     instruction::CompiledInstruction as CompiledInstructionOriginal,
+    instruction::Instruction as InstructionOriginal,
     message::{
-        legacy::Message as MessageOriginal, MessageHeader as MessageHeaderOriginal,
+        legacy::Message as MessageOriginal,
+        v0::{
+            Message as MessageV0Original,
+            MessageAddressTableLookup as MessageAddressTableLookupOriginal,
+        },
+        MessageHeader as MessageHeaderOriginal, VersionedMessage as VersionedMessageOriginal,
         MESSAGE_HEADER_LENGTH,
     },
     pubkey::Pubkey as PubkeyOriginal,
@@ -11,13 +20,15 @@ use solana_sdk::{
 use solders_macros::{common_methods, richcmp_eq_only};
 
 use crate::{
-    convert_instructions, convert_optional_pubkey, impl_display, py_from_bytes_general_via_bincode,
+    address_lookup_table_account::AddressLookupTableAccount, convert_instructions,
+    convert_optional_pubkey, handle_py_err, impl_display, py_from_bytes_general_via_bincode,
     pybytes_general_via_bincode, CommonMethods, CompiledInstruction, Instruction, Pubkey,
-    PyBytesBincode, PyBytesGeneral, PyFromBytesBincode, RichcmpEqualityOnly, SolderHash,
+    PyBytesBincode, PyBytesGeneral, PyErrWrapper, PyFromBytesBincode, RichcmpEqualityOnly,
+    SolderHash,
 };
 
 #[pyclass(module = "solders.message", subclass)]
-#[derive(PartialEq, Eq, Debug, Default, Serialize, Deserialize, Clone)]
+#[derive(PartialEq, Eq, Debug, Default, Serialize, Deserialize, Clone, From, Into)]
 /// Describes the organization of a :class:`Message`'s account keys.
 ///
 /// Every :class:`~solders.instruction.Instruction` specifies which accounts it may reference, or
@@ -117,12 +128,6 @@ impl MessageHeader {
     }
 }
 
-impl From<MessageHeaderOriginal> for MessageHeader {
-    fn from(h: MessageHeaderOriginal) -> Self {
-        Self(h)
-    }
-}
-
 impl RichcmpEqualityOnly for MessageHeader {}
 pybytes_general_via_bincode!(MessageHeader);
 impl_display!(MessageHeader);
@@ -130,7 +135,7 @@ py_from_bytes_general_via_bincode!(MessageHeader);
 impl CommonMethods<'_> for MessageHeader {}
 
 #[pyclass(module = "solders.message", subclass)]
-#[derive(PartialEq, Eq, Debug, Clone, Default, Serialize, Deserialize)]
+#[derive(PartialEq, Eq, Debug, Clone, Default, Serialize, Deserialize, From, Into)]
 /// A Solana transaction message.
 ///
 /// Some constructors accept an optional `payer`, the account responsible for
@@ -528,20 +533,373 @@ impl_display!(Message);
 py_from_bytes_general_via_bincode!(Message);
 impl CommonMethods<'_> for Message {}
 
-impl From<MessageOriginal> for Message {
-    fn from(message: MessageOriginal) -> Self {
-        Self(message)
-    }
-}
-
-impl From<Message> for MessageOriginal {
-    fn from(message: Message) -> Self {
-        message.0
-    }
-}
-
 impl From<&Message> for MessageOriginal {
     fn from(message: &Message) -> Self {
         message.0.clone()
     }
+}
+
+#[pyclass(module = "solders.message", subclass)]
+#[derive(PartialEq, Eq, Debug, Clone, Default, Serialize, Deserialize, From, Into)]
+/// Address table lookups describe an on-chain address lookup table to use
+/// for loading more readonly and writable accounts in a single tx.
+///
+/// Args:
+///     account_key (Pubkey): Address lookup table account key.
+///     writable_indexes (bytes): List of u8 indexes used to load writable account addresses, represented as bytes.
+///     readonly_indexes (bytes): List of u8 indexes used to load readonly account addresses, represented as bytes.
+///
+pub struct MessageAddressTableLookup(pub MessageAddressTableLookupOriginal);
+
+impl RichcmpEqualityOnly for MessageAddressTableLookup {}
+pybytes_general_via_bincode!(MessageAddressTableLookup);
+impl_display!(MessageAddressTableLookup);
+py_from_bytes_general_via_bincode!(MessageAddressTableLookup);
+impl CommonMethods<'_> for MessageAddressTableLookup {}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl MessageAddressTableLookup {
+    #[new]
+    pub fn new(account_key: Pubkey, writable_indexes: Vec<u8>, readonly_indexes: Vec<u8>) -> Self {
+        MessageAddressTableLookupOriginal {
+            account_key: account_key.into(),
+            writable_indexes,
+            readonly_indexes,
+        }
+        .into()
+    }
+
+    /// Pubkey: Address lookup table account key.
+    #[getter]
+    pub fn account_key(&self) -> Pubkey {
+        self.0.account_key.into()
+    }
+
+    /// bytes: List of u8 indexes used to load writable account addresses, represented as bytes.
+    #[getter]
+    pub fn writable_indexes<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+        PyBytes::new(py, &self.0.writable_indexes)
+    }
+
+    /// bytes: List of u8 indexes used to load readonly account addresses, represented as bytes.
+    #[getter]
+    pub fn readonly_indexes<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+        PyBytes::new(py, &self.0.readonly_indexes)
+    }
+}
+
+create_exception!(
+    solders,
+    CompileError,
+    PyException,
+    "Raised when an error is encountered in compiling a message."
+);
+
+#[serde_as]
+#[pyclass(module = "solders.message", subclass)]
+#[derive(PartialEq, Eq, Debug, Clone, Default, Serialize, Deserialize, From, Into)]
+/// A Solana transaction message (v0).
+///
+/// This message format supports succinct account loading with
+/// on-chain address lookup tables
+///
+/// Args:
+///     header (MessageHeader): The message header, identifying signed and read-only `account_keys`.
+///         Header values only describe static `account_keys`, they do not describe
+///         any additional account keys loaded via address table lookups.
+///     account_keys (Sequence[Pubkey]): List of accounts loaded by this transaction.
+///     recent_blockhash (Hash): Hash of a recent block.
+///     instructions (Sequence[Instruction]): The instructions to include in the message.
+///     address_table_lookups (Sequence[MessageAddressTableLookup]): List of address table lookups used to load additional accounts
+///         for this transaction.
+///
+/// Example:
+///     >>> from solders.message import MessageV0, MessageHeader, MessageAddressTableLookup
+///     >>> from solders.instruction import CompiledInstruction
+///     >>> from solders.hash import Hash
+///     >>> from solders.pubkey import Pubkey
+///     >>> program_id = Pubkey.default()
+///     >>> arbitrary_instruction_data = bytes([1])
+///     >>> accounts = []
+///     >>> instructions=[CompiledInstruction(program_id_index=4, accounts=bytes([1, 2, 3, 5, 6]), data=bytes([]))]
+///     >>> account_keys = [Pubkey.new_unique()]
+///     >>> header = MessageHeader(1, 0, 0)
+///     >>> lookups = [MessageAddressTableLookup(Pubkey.new_unique(), bytes([1, 2, 3]), bytes([0]))]
+///     >>> blockhash = Hash.default()  # replace with a real blockhash
+///     >>> message = MessageV0(header, account_keys, blockhash, instructions, lookups)
+///
+pub struct MessageV0(#[serde_as(as = "FromInto<VersionedMessage>")] pub MessageV0Original);
+
+impl RichcmpEqualityOnly for MessageV0 {}
+pybytes_general_via_bincode!(MessageV0);
+impl_display!(MessageV0);
+py_from_bytes_general_via_bincode!(MessageV0);
+impl CommonMethods<'_> for MessageV0 {}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl MessageV0 {
+    #[new]
+    pub fn new(
+        header: MessageHeader,
+        account_keys: Vec<Pubkey>,
+        recent_blockhash: SolderHash,
+        instructions: Vec<CompiledInstruction>,
+        address_table_lookups: Vec<MessageAddressTableLookup>,
+    ) -> Self {
+        MessageV0Original {
+            header: header.into(),
+            account_keys: account_keys.into_iter().map(|p| p.into()).collect(),
+            recent_blockhash: recent_blockhash.into(),
+            instructions: instructions.into_iter().map(|ix| ix.into()).collect(),
+            address_table_lookups: address_table_lookups
+                .into_iter()
+                .map(|a| a.into())
+                .collect(),
+        }
+        .into()
+    }
+
+    #[getter]
+    pub fn header(&self) -> MessageHeader {
+        self.0.header.into()
+    }
+
+    #[getter]
+    pub fn account_keys(&self) -> Vec<Pubkey> {
+        self.0
+            .account_keys
+            .clone()
+            .into_iter()
+            .map(|p| p.into())
+            .collect()
+    }
+
+    #[getter]
+    pub fn recent_blockhash(&self) -> SolderHash {
+        self.0.recent_blockhash.into()
+    }
+
+    #[getter]
+    pub fn instructions(&self) -> Vec<CompiledInstruction> {
+        self.0
+            .instructions
+            .clone()
+            .into_iter()
+            .map(|p| p.into())
+            .collect()
+    }
+
+    #[getter]
+    pub fn address_table_lookups(&self) -> Vec<MessageAddressTableLookup> {
+        self.0
+            .address_table_lookups
+            .clone()
+            .into_iter()
+            .map(|p| p.into())
+            .collect()
+    }
+
+    /// Create a signable transaction message from a ``payer`` public key, ``recent_blockhash``,
+    /// list of ``instructions``, and a list of ``address_lookup_table_accounts``.
+    ///
+    /// Args:
+    ///     payer (Pubkey): The fee payer.
+    ///     instructions (Sequence[Instruction]): The instructions to include in the message.
+    ///     address_table_lookups (Sequence[MessageAddressTableLookup]): List of address table lookups used to load additional accounts
+    ///         for this transaction.
+    ///     recent_blockhash (Hash): Hash of a recent block.
+    ///
+    /// Example:
+    ///     >>> from solders.pubkey import Pubkey
+    ///     >>> from solders.instruction import Instruction, AccountMeta
+    ///     >>> from solders.message import Message
+    ///     >>> from solders.address_lookup_table_account import AddressLookupTableAccount
+    ///     >>> from solders.hash import Hash
+    ///     >>> keys = [Pubkey.new_unique() for i in range(7)]
+    ///     >>> payer = keys[0]
+    ///     >>> program_id = keys[6]
+    ///     >>> ix_accounts = [AccountMeta(keys[1], True, True), AccountMeta(keys[2], True, False), AccountMeta(keys[3], False, True),AccountMeta(keys[4], False, True),AccountMeta(keys[5], False, False),]
+    ///     >>> instructions = [Instruction(program_id, bytes([]), ix_accounts)]
+    ///     >>> lookup_acc0 = AddressLookupTableAccount(key=Pubkey.new_unique(), addresses=[keys[4], keys[5], keys[6]])
+    ///     >>> lookup_acc1 = AddressLookupTableAccount(key=Pubkey.new_unique(), addresses=[])
+    ///     >>> lookup_accs = [lookup_acc0, lookup_acc1]
+    ///     >>> recent_blockhash = Hash.new_unique()
+    ///     >>> msg = MessageV0.try_compile(payer, instructions, lookup_accs, recent_blockhash)
+    ///
+    #[staticmethod]
+    pub fn try_compile(
+        payer: &Pubkey,
+        instructions: Vec<Instruction>,
+        address_lookup_table_accounts: Vec<AddressLookupTableAccount>,
+        recent_blockhash: SolderHash,
+    ) -> PyResult<Self> {
+        MessageV0Original::try_compile(
+            payer.as_ref(),
+            &instructions
+                .into_iter()
+                .map(|ix| ix.into())
+                .collect::<Vec<InstructionOriginal>>(),
+            &address_lookup_table_accounts
+                .into_iter()
+                .map(|a| a.into())
+                .collect::<Vec<AddressLookupTableAccountOriginal>>()[..],
+            recent_blockhash.into(),
+        )
+        .map_or_else(
+            |e| {
+                Err(PyErr::from(PyErrWrapper(CompileError::new_err(
+                    e.to_string(),
+                ))))
+            },
+            |v| Ok(v.into()),
+        )
+    }
+
+    /// Sanitize message fields and compiled instruction indexes.
+    pub fn sanitize(&self, reject_dynamic_program_ids: bool) -> PyResult<()> {
+        handle_py_err(self.0.sanitize(reject_dynamic_program_ids))
+    }
+
+    /// Returns true if the account at the specified index is called as a program by an instruction
+    pub fn is_key_called_as_program(&self, key_index: usize) -> bool {
+        self.0.is_key_called_as_program(key_index)
+    }
+
+    /// Returns true if the account at the specified index was requested as writable.
+    /// Before loading addresses, we can't demote write locks for dynamically loaded
+    /// addresses so this should not be used by the runtime.
+    pub fn is_maybe_writable(&self, key_index: usize) -> bool {
+        self.0.is_maybe_writable(key_index)
+    }
+
+    /// Returns true if the account at the specified index signed this
+    /// message.
+    pub fn is_signer(&self, index: usize) -> bool {
+        VersionedMessageOriginal::from(self.clone()).is_signer(index)
+    }
+
+    /// Returns true if the account at the specified index is not invoked as a
+    /// program or, if invoked, is passed to a program.
+    pub fn is_non_loader_key(&self, key_index: usize) -> bool {
+        VersionedMessageOriginal::from(self.clone()).is_non_loader_key(key_index)
+    }
+
+    /// Compute the blake3 hash of this transaction's message.
+    ///
+    /// Returns:
+    ///     Hash: The blake3 hash.
+    pub fn hash(&self) -> SolderHash {
+        VersionedMessageOriginal::from(self.clone()).hash().into()
+    }
+
+    #[staticmethod]
+    /// Compute the blake3 hash of a raw transaction message.
+    ///
+    /// Returns:
+    ///     Hash: The blake3 hash.
+    pub fn hash_raw_message(message_bytes: &[u8]) -> SolderHash {
+        VersionedMessageOriginal::hash_raw_message(message_bytes).into()
+    }
+
+    #[staticmethod]
+    #[pyo3(name = "default")]
+    /// Create a new default ``MessageV0``.
+    ///
+    /// Returns:
+    ///     MessageV0: default ``MessageV0``.
+    pub fn new_default() -> Self {
+        Self::default()
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize, FromPyObject)]
+#[serde(from = "VersionedMessageOriginal", into = "VersionedMessageOriginal")]
+pub enum VersionedMessage {
+    Legacy(Message),
+    V0(MessageV0),
+}
+
+impl IntoPy<PyObject> for VersionedMessage {
+    fn into_py(self, py: Python<'_>) -> PyObject {
+        match self {
+            Self::Legacy(m) => m.into_py(py),
+            Self::V0(m) => m.into_py(py),
+        }
+    }
+}
+
+impl From<VersionedMessageOriginal> for VersionedMessage {
+    fn from(v: VersionedMessageOriginal) -> Self {
+        match v {
+            VersionedMessageOriginal::Legacy(m) => Self::Legacy(m.into()),
+            VersionedMessageOriginal::V0(m) => Self::V0(m.into()),
+        }
+    }
+}
+
+impl From<VersionedMessage> for VersionedMessageOriginal {
+    fn from(v: VersionedMessage) -> Self {
+        match v {
+            VersionedMessage::Legacy(m) => Self::Legacy(m.into()),
+            VersionedMessage::V0(m) => Self::V0(m.into()),
+        }
+    }
+}
+
+impl From<MessageV0> for VersionedMessage {
+    fn from(m: MessageV0) -> Self {
+        Self::V0(m)
+    }
+}
+
+impl From<VersionedMessage> for MessageV0 {
+    fn from(v: VersionedMessage) -> Self {
+        match v {
+            VersionedMessage::V0(m) => m,
+            _ => unreachable!(),
+        }
+    }
+}
+
+impl From<MessageV0> for VersionedMessageOriginal {
+    fn from(m: MessageV0) -> Self {
+        Self::V0(m.into())
+    }
+}
+
+impl From<VersionedMessageOriginal> for MessageV0 {
+    fn from(v: VersionedMessageOriginal) -> Self {
+        match v {
+            VersionedMessageOriginal::V0(m) => m.into(),
+            _ => unreachable!(),
+        }
+    }
+}
+
+impl From<MessageV0Original> for VersionedMessage {
+    fn from(m: MessageV0Original) -> Self {
+        Self::V0(m.into())
+    }
+}
+
+impl From<VersionedMessage> for MessageV0Original {
+    fn from(v: VersionedMessage) -> Self {
+        match v {
+            VersionedMessage::V0(m) => m.into(),
+            _ => unreachable!(),
+        }
+    }
+}
+
+pub(crate) fn create_message_mod(py: Python<'_>) -> PyResult<&PyModule> {
+    let m = PyModule::new(py, "message")?;
+    m.add_class::<Message>()?;
+    m.add_class::<MessageHeader>()?;
+    m.add_class::<MessageV0>()?;
+    m.add_class::<MessageAddressTableLookup>()?;
+    Ok(m)
 }

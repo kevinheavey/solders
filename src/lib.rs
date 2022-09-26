@@ -2,6 +2,7 @@
 //!
 //! If you're viewing them on docs.rs, the formatting won't make much sense.
 use account::create_account_mod;
+use address_lookup_table_account::create_address_lookup_table_account_mod;
 use bincode::ErrorKind;
 use commitment_config::{CommitmentConfig, CommitmentLevel};
 use pyo3::{
@@ -40,9 +41,9 @@ use instruction::{AccountMeta, CompiledInstruction, Instruction};
 pub mod hash;
 use hash::{Hash as SolderHash, ParseHashError};
 pub mod message;
-use message::{Message, MessageHeader};
+use message::create_message_mod;
 pub mod transaction;
-use transaction::{SanitizeError, Transaction, TransactionError};
+use transaction::create_transaction_mod;
 pub mod presigner;
 use presigner::Presigner;
 pub mod null_signer;
@@ -50,12 +51,16 @@ use null_signer::NullSigner;
 pub mod account_decoder;
 use account_decoder::create_account_decoder_mod;
 pub mod account;
+pub mod address_lookup_table_account;
 pub mod commitment_config;
+pub mod epoch_schedule;
 pub mod rpc;
 pub mod system_program;
 pub mod sysvar;
 mod tmp_account_decoder;
+mod tmp_transaction_status;
 pub mod transaction_status;
+use epoch_schedule::create_epoch_schedule_mod;
 
 struct PyErrWrapper(PyErr);
 
@@ -401,11 +406,11 @@ pub trait CommonMethods<'a>:
     }
 
     fn pyreduce(&self) -> PyResult<(PyObject, PyObject)> {
-        let gil = Python::acquire_gil();
-        let py = gil.python();
         let cloned = self.clone();
-        let constructor = cloned.into_py(py).getattr(py, "from_bytes")?;
-        Ok((constructor, (self.pybytes(py).to_object(py),).to_object(py)))
+        Python::with_gil(|py| {
+            let constructor = cloned.into_py(py).getattr(py, "from_bytes")?;
+            Ok((constructor, (self.pybytes(py).to_object(py),).to_object(py)))
+        })
     }
 
     fn py_to_json(&self) -> String {
@@ -433,15 +438,10 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
     keypair_mod.add_class::<Keypair>()?;
     let signature_mod = PyModule::new(py, "signature")?;
     signature_mod.add_class::<Signature>()?;
-    let message_mod = PyModule::new(py, "message")?;
-    message_mod.add_class::<Message>()?;
-    message_mod.add_class::<MessageHeader>()?;
+    let message_mod = create_message_mod(py)?;
     let null_signer_mod = PyModule::new(py, "null_signer")?;
     null_signer_mod.add_class::<NullSigner>()?;
-    let transaction_mod = PyModule::new(py, "transaction")?;
-    transaction_mod.add_class::<Transaction>()?;
-    transaction_mod.add("SanitizeError", py.get_type::<SanitizeError>())?;
-    transaction_mod.add("TransactionError", py.get_type::<TransactionError>())?;
+    let transaction_mod = create_transaction_mod(py)?;
     let system_program_mod = create_system_program_mod(py)?;
     let sysvar_mod = create_sysvar_mod(py)?;
     let presigner_mod = PyModule::new(py, "presigner")?;
@@ -457,6 +457,8 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
     let transaction_status_mod = create_transaction_status_mod(py)?;
     let account_decoder_mod = create_account_decoder_mod(py)?;
     let account_mod = create_account_mod(py)?;
+    let epoch_schedule_mod = create_epoch_schedule_mod(py)?;
+    let address_lookup_table_account_mod = create_address_lookup_table_account_mod(py)?;
     let submodules = [
         errors_mod,
         hash_mod,
@@ -475,6 +477,8 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
         transaction_status_mod,
         account_decoder_mod,
         account_mod,
+        address_lookup_table_account_mod,
+        epoch_schedule_mod,
     ];
     let modules: HashMap<String, &PyModule> = submodules
         .iter()
@@ -485,5 +489,6 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
     for submod in submodules {
         m.add_submodule(submod)?;
     }
+    m.add("__version__", env!("CARGO_PKG_VERSION"))?;
     Ok(())
 }

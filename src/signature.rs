@@ -1,5 +1,6 @@
 use std::str::FromStr;
 
+use derive_more::{From, Into};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use solana_sdk::signature::{ParseSignatureError, Signature as SignatureOriginal, SIGNATURE_BYTES};
@@ -12,7 +13,19 @@ use crate::{
 
 #[pyclass(module = "solders.signature", subclass)]
 #[derive(
-    Clone, Copy, Default, Eq, PartialEq, Ord, PartialOrd, Hash, Debug, Serialize, Deserialize,
+    Clone,
+    Copy,
+    Default,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Hash,
+    Debug,
+    Serialize,
+    Deserialize,
+    From,
+    Into,
 )]
 /// The ``Signature`` object is a wrapper around a raw bytes signature, typically
 /// returned by :meth:`~solders.keypair.Keypair.sign_message` or other similar methods.
@@ -141,19 +154,6 @@ impl PyFromBytesGeneral for Signature {
 impl CommonMethods<'_> for Signature {}
 impl RichcmpFull for Signature {}
 pybytes_general_via_slice!(Signature);
-
-impl From<SignatureOriginal> for Signature {
-    fn from(sig: SignatureOriginal) -> Self {
-        Self(sig)
-    }
-}
-
-impl From<Signature> for SignatureOriginal {
-    fn from(sig: Signature) -> Self {
-        sig.0
-    }
-}
-
 impl_display!(Signature);
 
 impl AsRef<[u8]> for Signature {

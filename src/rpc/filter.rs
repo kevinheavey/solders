@@ -5,6 +5,7 @@ use crate::rpc::tmp_filter::{
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 
+use derive_more::{From, Into};
 use solders_macros::{common_methods, enum_original_mapping, richcmp_eq_only};
 
 use crate::{
@@ -62,7 +63,7 @@ pub enum MemcmpEncoding {
 ///     bytes_ (str | Sequnce[int]): Bytes, encoded with specified encoding, or default Binary
 ///     encoding (Optional[MemcmpEncoding]): Optional encoding specification.
 ///
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.rpc.filter", subclass)]
 pub struct Memcmp(MemcmpOriginal);
 
@@ -106,18 +107,6 @@ impl Memcmp {
 impl RichcmpEqualityOnly for Memcmp {}
 impl CommonMethods<'_> for Memcmp {}
 
-impl From<Memcmp> for MemcmpOriginal {
-    fn from(m: Memcmp) -> Self {
-        m.0
-    }
-}
-
-impl From<MemcmpOriginal> for Memcmp {
-    fn from(m: MemcmpOriginal) -> Self {
-        Self(m)
-    }
-}
-
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, FromPyObject)]
 #[serde(rename_all = "camelCase")]
 pub enum RpcFilterType {
@@ -152,7 +141,7 @@ impl From<RpcFilterTypeOriginal> for RpcFilterType {
     }
 }
 
-pub fn create_filter_mod(py: Python<'_>) -> PyResult<&PyModule> {
+pub(crate) fn create_filter_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "filter")?;
     m.add_class::<MemcmpEncoding>()?;
     m.add_class::<Memcmp>()?;
