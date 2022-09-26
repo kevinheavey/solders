@@ -17,7 +17,7 @@ use crate::{
 /// Args:
 ///     slots_per_epoch (int): The maximum number of slots in each epoch.
 ///
-#[pyclass(module = "solders.account", subclass)]
+#[pyclass(module = "solders.epoch_schedule", subclass)]
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Default, From, Into)]
 pub struct EpochSchedule(EpochScheduleOriginal);
 
