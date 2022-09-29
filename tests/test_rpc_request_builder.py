@@ -52,6 +52,7 @@ from solders.rpc.requests import (
     MinimumLedgerSlot,
     RequestAirdrop,
     SendTransaction,
+    ValidatorExit,
     AccountSubscribe,
     BlockSubscribe,
     LogsSubscribe,
@@ -238,6 +239,12 @@ def test_get_identity() -> None:
     req = GetIdentity(123)
     as_json = req.to_json()
     assert GetIdentity.from_json(as_json) == req
+
+
+def test_validator_exit() -> None:
+    req = ValidatorExit(123)
+    as_json = req.to_json()
+    assert ValidatorExit.from_json(as_json) == req
 
 
 def test_get_inflation_governor() -> None:
