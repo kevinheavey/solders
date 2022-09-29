@@ -1,3 +1,4 @@
+use derive_more::{From, Into};
 use pyo3::{prelude::*, types::PyBytes};
 use serde::{Deserialize, Serialize};
 use solana_sdk::signer::{
@@ -7,7 +8,6 @@ use solana_sdk::signer::{
     Signer as SignerTrait,
 };
 use solders_macros::{common_methods, pyhash, richcmp_signer};
-use derive_more::{From, Into};
 
 use crate::{
     handle_py_value_err, impl_display, impl_signer_hash, pubkey::Pubkey, signature::Signature,
