@@ -60,6 +60,7 @@ from solders.rpc.responses import (
     IsBlockhashValidResp,
     MinimumLedgerSlotResp,
     RequestAirdropResp,
+    ValidatorExitResp,
     SendTransactionResp,
     SimulateTransactionResp,
     StakeActivationState,
@@ -2012,6 +2013,17 @@ def test_request_airdrop() -> None:
     assert parsed.value == Signature.from_string(
         "5VERv8NMvzbJMEkV8xnrLkEaWRtSz9CosKDYjCJjBRnbJLgp8uirBgmQpjKhoR4tjF3ZpRzrFmBV6UjKdiSZkQUW"
     )
+
+
+def test_validator_exit() -> None:
+    raw = """{
+  "jsonrpc": "2.0",
+  "result": true,
+  "id": 1
+}"""
+    parsed = ValidatorExitResp.from_json(raw)
+    assert isinstance(parsed, ValidatorExitResp)
+    assert parsed.value is True
 
 
 def test_send_transaction() -> None:
