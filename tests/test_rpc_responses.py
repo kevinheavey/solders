@@ -2021,8 +2021,8 @@ def test_validator_exit() -> None:
   "result": true,
   "id": 1
 }"""
-    parsed = ValidatoExitResp.from_json(raw)
-    assert isinstance(parsed, ValidatoExitResp)
+    parsed = ValidatorExitResp.from_json(raw)
+    assert isinstance(parsed, ValidatorExitResp)
     assert parsed.value is True
 
 
