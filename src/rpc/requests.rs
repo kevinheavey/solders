@@ -809,6 +809,7 @@ zero_param_req_def!(GetGenesisHash);
 zero_param_req_def!(GetHealth);
 zero_param_req_def!(GetHighestSnapshotSlot);
 zero_param_req_def!(GetIdentity);
+zero_param_req_def!(ValidatorExit);
 
 /// A ``getInflationGovernor`` request.
 ///
@@ -2796,6 +2797,7 @@ pyunion!(
     MinimumLedgerSlot,
     RequestAirdrop,
     SendTransaction,
+    ValidatorExit,
     AccountSubscribe,
     BlockSubscribe,
     LogsSubscribe,
@@ -2923,6 +2925,7 @@ pub fn create_requests_mod(py: Python<'_>) -> PyResult<&PyModule> {
             MinimumLedgerSlot::type_object(py),
             RequestAirdrop::type_object(py),
             SendTransaction::type_object(py),
+            ValidatorExit::type_object(py),
             AccountSubscribe::type_object(py),
             BlockSubscribe::type_object(py),
             LogsSubscribe::type_object(py),
@@ -2996,6 +2999,7 @@ pub fn create_requests_mod(py: Python<'_>) -> PyResult<&PyModule> {
     requests_mod.add_class::<MinimumLedgerSlot>()?;
     requests_mod.add_class::<RequestAirdrop>()?;
     requests_mod.add_class::<SendTransaction>()?;
+    requests_mod.add_class::<ValidatorExit>()?;
     requests_mod.add_class::<AccountSubscribe>()?;
     requests_mod.add_class::<BlockSubscribe>()?;
     requests_mod.add_class::<LogsSubscribe>()?;
