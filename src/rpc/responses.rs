@@ -2329,6 +2329,7 @@ impl SubscriptionError {
 
 contextless_resp_eq!(GetVoteAccountsResp, RpcVoteAccountStatus, clone);
 contextful_resp_eq!(IsBlockhashValidResp, bool);
+contextless_resp_eq!(ValidatorExitResp, bool);
 contextless_resp_eq!(MinimumLedgerSlotResp, u64);
 contextless_resp_eq!(RequestAirdropResp, Signature, "DisplayFromStr");
 contextless_resp_eq!(SendTransactionResp, Signature, "DisplayFromStr");
@@ -2471,6 +2472,7 @@ pyunion_resp!(
     MinimumLedgerSlotResp,
     RequestAirdropResp,
     SendTransactionResp,
+    ValidatorExitResp,
     SimulateTransactionResp
 );
 
@@ -2660,6 +2662,7 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
             RequestAirdropResp::type_object(py),
             SendTransactionResp::type_object(py),
             SimulateTransactionResp::type_object(py),
+            ValidatorExitResp::type_object(py),
         ],
     );
     let rpc_result_alias = union.get_item(rpc_result_members)?;
@@ -2788,6 +2791,7 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<RequestAirdropResp>()?;
     m.add_class::<SendTransactionResp>()?;
     m.add_class::<SimulateTransactionResp>()?;
+    m.add_class::<ValidatorExitResp>()?;
     m.add_class::<RpcLogsResponse>()?;
     m.add_class::<SlotInfo>()?;
     m.add_class::<SlotTransactionStats>()?;
