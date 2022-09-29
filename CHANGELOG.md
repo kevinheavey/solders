@@ -1,11 +1,17 @@
 # Changelog
 
+## [0.5.1] - 2022-09-29
+
+### Added
+
+- Add ValidatorExit request and response [(#11)](https://github.com/kevinheavey/solders/pull/11)
+
 ## [0.5.0] - 2022-09-26
 
 ### Added
 
-- Add RPC response parsing [(#8)](https://github.com/kevinheavey/solders/pull/10)
-- Add versioned transactions [(#8)](https://github.com/kevinheavey/solders/pull/10)
+- Add RPC response parsing [(#10)](https://github.com/kevinheavey/solders/pull/10)
+- Add versioned transactions [(#10)](https://github.com/kevinheavey/solders/pull/10)
 
 ## [0.4.0] - 2022-08-13
 
