@@ -2100,7 +2100,7 @@ SlotUpdate = Union[
     SlotUpdateFrozen,
 ]
 
-RPCResponse = Union[
+RPCResult = Union[
     RpcError,
     GetAccountInfoResp,
     GetAccountInfoJsonParsedResp,

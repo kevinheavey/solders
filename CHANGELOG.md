@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.5.2] - 2022-10-01
+
+### Fixed
+
+- Fix incorrect alias name in type stubs [(#12)](https://github.com/kevinheavey/solders/pull/11)
+
 ## [0.5.1] - 2022-09-29
 
 ### Added
