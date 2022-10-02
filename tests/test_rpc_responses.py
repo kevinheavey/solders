@@ -114,6 +114,7 @@ from solders.rpc.responses import (
     batch_to_json,
     parse_notification,
     parse_websocket_message,
+    parse_account_info_maybe_json,
 )
 from solders.rpc.errors import NodeUnhealthy
 from solders.hash import Hash
@@ -184,6 +185,8 @@ def test_get_account_info() -> None:
     # this happens when jsonParsed is requested but the RPC can't do it.
     with raises(SerdeJSONError):
         GetAccountInfoJsonParsedResp.from_json(raw)
+    parsed2 = parse_account_info_maybe_json(raw)
+    assert parsed == parsed2
 
 
 def test_get_account_info_null() -> None:

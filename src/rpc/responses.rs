@@ -650,6 +650,40 @@ contextful_resp_eq!(
     "Option<TryFromInto<UiAccount>>"
 );
 
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
+#[serde(untagged)]
+pub enum GetAccountInfoMaybeJsonParsedResp {
+    Parsed(Resp<GetAccountInfoJsonParsedResp>),
+    Binary(Resp<GetAccountInfoResp>),
+}
+
+impl IntoPy<PyObject> for GetAccountInfoMaybeJsonParsedResp {
+    fn into_py(self, py: Python<'_>) -> PyObject {
+        match self {
+            Self::Parsed(x) => x.into_py(py),
+            Self::Binary(x) => x.into_py(py),
+        }
+    }
+}
+
+/// Parse a GetAccountInfo response that may or may not be in jsonParsed format.
+///
+/// Args:
+///     raw (str): The raw JSON.
+///
+/// Returns:
+///     Union[GetAccountInfoResp, GetAccountInfoJsonParsedResp]: The parsed result.
+///
+/// Example:
+///     >>> from solders.rpc.responses import parse_account_info_maybe_json, GetBlockHeightResp, GetFirstAvailableBlockResp
+///     >>> batch_to_json([GetBlockHeightResp(1233), GetFirstAvailableBlockResp(1)])
+///     '[{"id":0,"jsonrpc":"2.0","result":1233},{"id":0,"jsonrpc":"2.0","result":1}]'
+///
+#[pyfunction]
+pub fn parse_account_info_maybe_json(raw: &str) -> GetAccountInfoMaybeJsonParsedResp {
+    serde_json::from_str(raw).unwrap()
+}
+
 contextful_resp_eq!(GetBalanceResp, u64);
 
 // The one in solana_client isn't clonable
@@ -2835,6 +2869,7 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
         wrap_pyfunction!(batch_from_json, m)?,
         wrap_pyfunction!(parse_websocket_message, m)?,
         wrap_pyfunction!(parse_notification, m)?,
+        wrap_pyfunction!(parse_account_info_maybe_json, m)?,
     ];
     for func in funcs {
         m.add_function(func)?;
