@@ -1,10 +1,16 @@
 # Changelog
 
+## [0.5.3] - 2022-10-02
+
+### Fixed
+
+- Replace panic with SerdeJSONError when expecting JsonParsed data [(#13)](https://github.com/kevinheavey/solders/pull/13)
+
 ## [0.5.2] - 2022-10-01
 
 ### Fixed
 
-- Fix incorrect alias name in type stubs [(#12)](https://github.com/kevinheavey/solders/pull/11)
+- Fix incorrect alias name in type stubs [(#12)](https://github.com/kevinheavey/solders/pull/12)
 
 ## [0.5.1] - 2022-09-29
 
