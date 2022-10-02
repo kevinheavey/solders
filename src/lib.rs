@@ -12,7 +12,7 @@ use pyo3::{
     pyclass::CompareOp,
     types::PyBytes,
 };
-use rpc::create_rpc_mod;
+use rpc::{create_rpc_mod, requests::SerdeJSONError};
 use serde::{Deserialize, Serialize};
 use solana_sdk::{
     instruction::Instruction as InstructionOriginal,
@@ -450,6 +450,7 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
     errors_mod.add("BincodeError", py.get_type::<BincodeError>())?;
     errors_mod.add("SignerError", py.get_type::<SignerError>())?;
     errors_mod.add("CborError", py.get_type::<CborError>())?;
+    errors_mod.add("SerdeJSONError", py.get_type::<SerdeJSONError>())?;
     let rpc_mod = create_rpc_mod(py)?;
     let commitment_config_mod = PyModule::new(py, "commitment_config")?;
     commitment_config_mod.add_class::<CommitmentConfig>()?;

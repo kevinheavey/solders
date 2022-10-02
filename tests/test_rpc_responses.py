@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import List, Union
-from pytest import mark
+from pytest import mark, raises
+from solders.errors import SerdeJSONError
 from solders.rpc.responses import (
     GetAccountInfoResp,
     GetAccountInfoJsonParsedResp,
@@ -179,6 +180,10 @@ def test_get_account_info() -> None:
     # It's good to test some properties in case we forget to add them
     assert parsed.value is not None
     assert parsed.value.rent_epoch == 2
+    # test trying to use GetAccountInfoJsonParsedResp when the data is not jsonParsed
+    # this happens when jsonParsed is requested but the RPC can't do it.
+    with raises(SerdeJSONError):
+        GetAccountInfoJsonParsedResp.from_json(raw)
 
 
 def test_get_account_info_null() -> None:

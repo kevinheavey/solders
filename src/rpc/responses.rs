@@ -11,7 +11,7 @@ use pyo3::{
     PyClass, PyTypeInfo,
 };
 use serde::{Deserialize, Serialize};
-use serde_with::{serde_as, DisplayFromStr, FromInto};
+use serde_with::{serde_as, DisplayFromStr, FromInto, TryFromInto};
 use solana_sdk::{
     clock::{Epoch, Slot, UnixTimestamp},
     epoch_info::EpochInfo as EpochInfoOriginal,
@@ -647,7 +647,7 @@ contextful_resp_eq!(
 contextful_resp_eq!(
     GetAccountInfoJsonParsedResp,
     Option<AccountJSON>,
-    "Option<FromInto<UiAccount>>"
+    "Option<TryFromInto<UiAccount>>"
 );
 
 contextful_resp_eq!(GetBalanceResp, u64);
@@ -1285,7 +1285,7 @@ contextful_resp_eq!(
 contextful_resp_eq!(
     GetMultipleAccountsJsonParsedResp,
     Vec<Option<AccountJSON>>,
-    "Vec<Option<FromInto<UiAccount>>>"
+    "Vec<Option<TryFromInto<UiAccount>>>"
 );
 
 // the one in solana_client uses UiAccount from account_decoder which currently isn't portable
@@ -1322,7 +1322,7 @@ pub struct RpcKeyedAccountJsonParsed {
     #[serde_as(as = "DisplayFromStr")]
     #[pyo3(get)]
     pub pubkey: Pubkey,
-    #[serde_as(as = "FromInto<UiAccount>")]
+    #[serde_as(as = "TryFromInto<UiAccount>")]
     #[pyo3(get)]
     pub account: AccountJSON,
 }
@@ -2339,7 +2339,7 @@ notification!(AccountNotification, Account, "FromInto<UiAccount>");
 notification!(
     AccountNotificationJsonParsed,
     AccountJSON,
-    "FromInto<UiAccount>"
+    "TryFromInto<UiAccount>"
 );
 notification_no_eq!(BlockNotification, RpcBlockUpdate);
 notification!(LogsNotification, RpcLogsResponse);

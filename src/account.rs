@@ -183,18 +183,22 @@ py_from_bytes_general_via_bincode!(AccountJSON);
 impl CommonMethods<'_> for AccountJSON {}
 impl RichcmpEqualityOnly for AccountJSON {}
 
-impl From<UiAccount> for AccountJSON {
-    fn from(acc: UiAccount) -> Self {
-        let parsed_account = match acc.data {
-            UiAccountData::Json(p) => p,
-            _ => panic!("Expected UiAccountData::Json, found {:?}", acc.data),
-        };
-        Self {
-            lamports: acc.lamports,
-            data: parsed_account.into(),
-            owner: Pubkey::from_str(&acc.owner).unwrap(),
-            executable: acc.executable,
-            rent_epoch: acc.rent_epoch,
+impl TryFrom<UiAccount> for AccountJSON {
+    type Error = String;
+    fn try_from(acc: UiAccount) -> Result<Self, Self::Error> {
+        if let UiAccountData::Json(parsed_account) = acc.data {
+            Ok(Self {
+                lamports: acc.lamports,
+                data: parsed_account.into(),
+                owner: Pubkey::from_str(&acc.owner).unwrap(),
+                executable: acc.executable,
+                rent_epoch: acc.rent_epoch,
+            })
+        } else {
+            Err(format!(
+                "Expected UiAccountData::Json, found {:?}",
+                acc.data
+            ))
         }
     }
 }
