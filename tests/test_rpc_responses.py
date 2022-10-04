@@ -144,7 +144,6 @@ from solders.transaction import VersionedTransaction
 from based58 import b58decode
 from base64 import b64decode
 
-
 def test_get_account_info() -> None:
     raw = """{
   "jsonrpc": "2.0",

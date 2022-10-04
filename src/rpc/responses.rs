@@ -650,39 +650,47 @@ contextful_resp_eq!(
     "Option<TryFromInto<UiAccount>>"
 );
 
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
-#[serde(untagged)]
-pub enum GetAccountInfoMaybeJsonParsedResp {
-    Parsed(Resp<GetAccountInfoJsonParsedResp>),
-    Binary(Resp<GetAccountInfoResp>),
-}
+macro_rules! parse_maybe_json {
+    ($resp:ident, $func:ident) => {
+        paste! {
+            #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+            #[serde(untagged)]
+            pub enum [<$resp MaybeJsonParsedResp>] {
+                Parsed(Resp<[<$resp JsonParsedResp>]>),
+                Binary(Resp<[<$resp Resp>]>),
+            }
 
-impl IntoPy<PyObject> for GetAccountInfoMaybeJsonParsedResp {
-    fn into_py(self, py: Python<'_>) -> PyObject {
-        match self {
-            Self::Parsed(x) => x.into_py(py),
-            Self::Binary(x) => x.into_py(py),
+            impl IntoPy<PyObject> for [<$resp MaybeJsonParsedResp>] {
+                fn into_py(self, py: Python<'_>) -> PyObject {
+                    match self {
+                        Self::Parsed(x) => x.into_py(py),
+                        Self::Binary(x) => x.into_py(py),
+                    }
+                }
+            }
+
+            #[doc = "Parse a ``" $resp "`` response that may or may not be in jsonParsed format.
+Args:
+    raw (str): The raw JSON.
+
+Returns:
+    Union[" $resp "Resp, " $resp "JsonParsedResp]: The parsed result.          
+"]
+            #[pyfunction]
+            pub fn [<parse_ $func _maybe_json>](raw: &str) -> PyResult<[<$resp MaybeJsonParsedResp>]> {
+                serde_json::from_str(raw).map_err(to_py_err)
+            }
         }
-    }
+    };
 }
 
-/// Parse a GetAccountInfo response that may or may not be in jsonParsed format.
-///
-/// Args:
-///     raw (str): The raw JSON.
-///
-/// Returns:
-///     Union[GetAccountInfoResp, GetAccountInfoJsonParsedResp]: The parsed result.
-///
-/// Example:
-///     >>> from solders.rpc.responses import parse_account_info_maybe_json, GetBlockHeightResp, GetFirstAvailableBlockResp
-///     >>> batch_to_json([GetBlockHeightResp(1233), GetFirstAvailableBlockResp(1)])
-///     '[{"id":0,"jsonrpc":"2.0","result":1233},{"id":0,"jsonrpc":"2.0","result":1}]'
-///
-#[pyfunction]
-pub fn parse_account_info_maybe_json(raw: &str) -> GetAccountInfoMaybeJsonParsedResp {
-    serde_json::from_str(raw).unwrap()
-}
+parse_maybe_json!(GetAccountInfo, account_info);
+parse_maybe_json!(GetMultipleAccounts, multiple_accounts);
+parse_maybe_json!(GetProgramAccountsWithContext, program_accounts_with_context);
+parse_maybe_json!(GetProgramAccountsWithoutContext, program_accounts_without_context);
+parse_maybe_json!(GetTokenAccountsByDelegate, token_accounts_by_delegate);
+parse_maybe_json!(GetTokenAccountsByOwner, token_accounts_by_owner);
+
 
 contextful_resp_eq!(GetBalanceResp, u64);
 
