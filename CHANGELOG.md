@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.6.0] - 2022-10-05
+
+### Added
+
+- Add parsers for responses that may or may not be `jsonParsed` [(#14)](https://github.com/kevinheavey/solders/pull/14)
+
 ## [0.5.3] - 2022-10-02
 
 ### Fixed
