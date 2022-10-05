@@ -686,11 +686,13 @@ Returns:
 
 parse_maybe_json!(GetAccountInfo, account_info);
 parse_maybe_json!(GetMultipleAccounts, multiple_accounts);
-parse_maybe_json!(GetProgramAccountsWithContext, program_accounts_with_context);
-parse_maybe_json!(GetProgramAccountsWithoutContext, program_accounts_without_context);
 parse_maybe_json!(GetTokenAccountsByDelegate, token_accounts_by_delegate);
 parse_maybe_json!(GetTokenAccountsByOwner, token_accounts_by_owner);
-
+parse_maybe_json!(GetProgramAccountsWithContext, program_accounts_with_context);
+parse_maybe_json!(
+    GetProgramAccountsWithoutContext,
+    program_accounts_without_context
+);
 
 contextful_resp_eq!(GetBalanceResp, u64);
 
@@ -2878,6 +2880,12 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
         wrap_pyfunction!(parse_websocket_message, m)?,
         wrap_pyfunction!(parse_notification, m)?,
         wrap_pyfunction!(parse_account_info_maybe_json, m)?,
+        wrap_pyfunction!(parse_multiple_accounts_maybe_json, m)?,
+        wrap_pyfunction!(parse_token_accounts_by_delegate_maybe_json, m)?,
+        wrap_pyfunction!(parse_token_accounts_by_owner_maybe_json, m)?,
+        wrap_pyfunction!(parse_account_info_maybe_json, m)?,
+        wrap_pyfunction!(parse_program_accounts_with_context_maybe_json, m)?,
+        wrap_pyfunction!(parse_program_accounts_without_context_maybe_json, m)?,
     ];
     for func in funcs {
         m.add_function(func)?;
