@@ -11,7 +11,7 @@ use pyo3::{
     PyClass, PyTypeInfo,
 };
 use serde::{Deserialize, Serialize};
-use serde_with::{serde_as, DisplayFromStr, FromInto};
+use serde_with::{serde_as, DisplayFromStr, FromInto, TryFromInto};
 use solana_sdk::{
     clock::{Epoch, Slot, UnixTimestamp},
     epoch_info::EpochInfo as EpochInfoOriginal,
@@ -647,7 +647,51 @@ contextful_resp_eq!(
 contextful_resp_eq!(
     GetAccountInfoJsonParsedResp,
     Option<AccountJSON>,
-    "Option<FromInto<UiAccount>>"
+    "Option<TryFromInto<UiAccount>>"
+);
+
+macro_rules! parse_maybe_json {
+    ($resp:ident, $func:ident) => {
+        paste! {
+            #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+            #[serde(untagged)]
+            pub enum [<$resp MaybeJsonParsedResp>] {
+                Parsed(Resp<[<$resp JsonParsedResp>]>),
+                Binary(Resp<[<$resp Resp>]>),
+            }
+
+            impl IntoPy<PyObject> for [<$resp MaybeJsonParsedResp>] {
+                fn into_py(self, py: Python<'_>) -> PyObject {
+                    match self {
+                        Self::Parsed(x) => x.into_py(py),
+                        Self::Binary(x) => x.into_py(py),
+                    }
+                }
+            }
+
+            #[doc = "Parse a ``" $resp "`` response that may or may not be in jsonParsed format.
+Args:
+    raw (str): The raw JSON.
+
+Returns:
+    Union[" $resp "Resp, " $resp "JsonParsedResp]: The parsed result.          
+"]
+            #[pyfunction]
+            pub fn [<parse_ $func _maybe_json>](raw: &str) -> PyResult<[<$resp MaybeJsonParsedResp>]> {
+                serde_json::from_str(raw).map_err(to_py_err)
+            }
+        }
+    };
+}
+
+parse_maybe_json!(GetAccountInfo, account_info);
+parse_maybe_json!(GetMultipleAccounts, multiple_accounts);
+parse_maybe_json!(GetTokenAccountsByDelegate, token_accounts_by_delegate);
+parse_maybe_json!(GetTokenAccountsByOwner, token_accounts_by_owner);
+parse_maybe_json!(GetProgramAccountsWithContext, program_accounts_with_context);
+parse_maybe_json!(
+    GetProgramAccountsWithoutContext,
+    program_accounts_without_context
 );
 
 contextful_resp_eq!(GetBalanceResp, u64);
@@ -1285,7 +1329,7 @@ contextful_resp_eq!(
 contextful_resp_eq!(
     GetMultipleAccountsJsonParsedResp,
     Vec<Option<AccountJSON>>,
-    "Vec<Option<FromInto<UiAccount>>>"
+    "Vec<Option<TryFromInto<UiAccount>>>"
 );
 
 // the one in solana_client uses UiAccount from account_decoder which currently isn't portable
@@ -1322,7 +1366,7 @@ pub struct RpcKeyedAccountJsonParsed {
     #[serde_as(as = "DisplayFromStr")]
     #[pyo3(get)]
     pub pubkey: Pubkey,
-    #[serde_as(as = "FromInto<UiAccount>")]
+    #[serde_as(as = "TryFromInto<UiAccount>")]
     #[pyo3(get)]
     pub account: AccountJSON,
 }
@@ -2339,7 +2383,7 @@ notification!(AccountNotification, Account, "FromInto<UiAccount>");
 notification!(
     AccountNotificationJsonParsed,
     AccountJSON,
-    "FromInto<UiAccount>"
+    "TryFromInto<UiAccount>"
 );
 notification_no_eq!(BlockNotification, RpcBlockUpdate);
 notification!(LogsNotification, RpcLogsResponse);
@@ -2835,6 +2879,13 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
         wrap_pyfunction!(batch_from_json, m)?,
         wrap_pyfunction!(parse_websocket_message, m)?,
         wrap_pyfunction!(parse_notification, m)?,
+        wrap_pyfunction!(parse_account_info_maybe_json, m)?,
+        wrap_pyfunction!(parse_multiple_accounts_maybe_json, m)?,
+        wrap_pyfunction!(parse_token_accounts_by_delegate_maybe_json, m)?,
+        wrap_pyfunction!(parse_token_accounts_by_owner_maybe_json, m)?,
+        wrap_pyfunction!(parse_account_info_maybe_json, m)?,
+        wrap_pyfunction!(parse_program_accounts_with_context_maybe_json, m)?,
+        wrap_pyfunction!(parse_program_accounts_without_context_maybe_json, m)?,
     ];
     for func in funcs {
         m.add_function(func)?;

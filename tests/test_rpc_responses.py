@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import List, Union
-from pytest import mark
+from pytest import mark, raises
+from solders.errors import SerdeJSONError
 from solders.rpc.responses import (
     GetAccountInfoResp,
     GetAccountInfoJsonParsedResp,
@@ -113,6 +114,12 @@ from solders.rpc.responses import (
     batch_to_json,
     parse_notification,
     parse_websocket_message,
+    parse_account_info_maybe_json,
+    parse_multiple_accounts_maybe_json,
+    parse_token_accounts_by_delegate_maybe_json,
+    parse_token_accounts_by_owner_maybe_json,
+    parse_program_accounts_with_context_maybe_json,
+    parse_program_accounts_without_context_maybe_json,
 )
 from solders.rpc.errors import NodeUnhealthy
 from solders.hash import Hash
@@ -179,6 +186,12 @@ def test_get_account_info() -> None:
     # It's good to test some properties in case we forget to add them
     assert parsed.value is not None
     assert parsed.value.rent_epoch == 2
+    # test trying to use GetAccountInfoJsonParsedResp when the data is not jsonParsed
+    # this happens when jsonParsed is requested but the RPC can't do it.
+    with raises(SerdeJSONError):
+        GetAccountInfoJsonParsedResp.from_json(raw)
+    parsed2 = parse_account_info_maybe_json(raw)
+    assert parsed == parsed2
 
 
 def test_get_account_info_null() -> None:
@@ -221,6 +234,8 @@ def test_get_account_info_json_parsed() -> None:
     assert parsed == GetAccountInfoJsonParsedResp(context=context, value=account_json)
     assert parsed.context.slot == 140702417
     assert parsed.value.data.program == "spl-token"
+    parsed2 = parse_account_info_maybe_json(raw)
+    assert parsed == parsed2
 
 
 def test_get_balance() -> None:
@@ -340,7 +355,6 @@ def test_get_block_commitment() -> None:
 def test_get_block(path: str) -> None:
     raw = (Path(__file__).parent / "data" / path).read_text()
     parsed = GetBlockResp.from_json(raw)
-    # pub transactions: Option<Vec<EncodedTransactionWithStatusMeta>>,
     assert isinstance(parsed, GetBlockResp)
     val = parsed.value
     assert isinstance(val.previous_blockhash, Hash)
@@ -986,6 +1000,8 @@ def test_get_multiple_accounts_base64() -> None:
         rent_epoch=2,
         data=b"",
     )
+    parsed2 = parse_multiple_accounts_maybe_json(raw)
+    assert parsed == parsed2
 
 
 def test_get_multiple_accounts_base58() -> None:
@@ -1036,6 +1052,8 @@ def test_get_multiple_accounts_base58() -> None:
         rent_epoch=2,
         data=b"",
     )
+    parsed2 = parse_multiple_accounts_maybe_json(raw)
+    assert parsed == parsed2
 
 
 def test_get_multiple_accounts_json_parsed() -> None:
@@ -1092,6 +1110,8 @@ def test_get_multiple_accounts_json_parsed() -> None:
     assert data.program == "spl-token"
     assert data.space == 165
     assert isinstance(data.parsed, str)
+    parsed2 = parse_multiple_accounts_maybe_json(raw)
+    assert parsed == parsed2
 
 
 def test_get_program_accounts_without_context() -> None:
@@ -1187,6 +1207,8 @@ def test_get_program_accounts_without_context_json_parsed() -> None:
     assert data.program == "spl-token-2022"
     assert data.space == 182
     assert isinstance(data.parsed, str)
+    parsed2 = parse_program_accounts_without_context_maybe_json(raw)
+    assert parsed == parsed2
 
 
 def test_get_program_accounts_with_context() -> None:
@@ -1194,6 +1216,9 @@ def test_get_program_accounts_with_context() -> None:
     parsed = GetProgramAccountsWithContextResp.from_json(raw)
     assert isinstance(parsed, GetProgramAccountsWithContextResp)
     assert not parsed.value
+    parsed2 = parse_program_accounts_with_context_maybe_json(raw)
+    # note: parsed2 thinks it's JsonParsed but doesn't matter because value is empty
+    assert parsed.context == parsed2.context and parsed.value == parsed2.value
 
 
 def test_get_program_accounts_with_context_json_parsed() -> None:
@@ -1264,6 +1289,8 @@ def test_get_program_accounts_with_context_json_parsed() -> None:
     assert data.program == "spl-token-2022"
     assert data.space == 182
     assert isinstance(data.parsed, str)
+    parsed2 = parse_program_accounts_with_context_maybe_json(raw)
+    assert parsed == parsed2
 
 
 def test_get_recent_performance_samples() -> None:
@@ -1561,6 +1588,8 @@ def test_get_token_accounts_by_owner_json_parsed() -> None:
     assert acc.owner == Pubkey.from_string(
         "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
     )
+    parsed2 = parse_token_accounts_by_owner_maybe_json(raw)
+    assert parsed == parsed2
 
 
 def test_get_token_accounts_by_owner_base64() -> None:
@@ -1609,6 +1638,8 @@ def test_get_token_accounts_by_owner_base64() -> None:
         executable=False,
         rent_epoch=341,
     )
+    parsed2 = parse_token_accounts_by_owner_maybe_json(raw)
+    assert parsed == parsed2
 
 
 def test_get_token_accounts_by_delegate_json_parsed() -> None:
@@ -1677,6 +1708,8 @@ def test_get_token_accounts_by_delegate_json_parsed() -> None:
     assert data.program == "spl-token"
     assert isinstance(data.parsed, str)
     assert data.space == 165
+    parsed2 = parse_token_accounts_by_delegate_maybe_json(raw)
+    assert parsed == parsed2
 
 
 def test_get_token_accounts_by_delegate_base64() -> None:
@@ -1725,6 +1758,8 @@ def test_get_token_accounts_by_delegate_base64() -> None:
         executable=False,
         rent_epoch=341,
     )
+    parsed2 = parse_token_accounts_by_delegate_maybe_json(raw)
+    assert parsed == parsed2
 
 
 def test_get_token_largest_accounts() -> None:
