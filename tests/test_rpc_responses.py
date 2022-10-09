@@ -35,6 +35,7 @@ from solders.rpc.responses import (
     GetMinimumBalanceForRentExemptionResp,
     GetMultipleAccountsResp,
     GetMultipleAccountsJsonParsedResp,
+    GetMultipleAccountsMaybeJsonParsedResp,
     GetProgramAccountsWithContextResp,
     GetProgramAccountsResp,
     GetProgramAccountsWithContextJsonParsedResp,
@@ -115,7 +116,6 @@ from solders.rpc.responses import (
     parse_notification,
     parse_websocket_message,
     parse_account_info_maybe_json,
-    parse_multiple_accounts_maybe_json,
     parse_token_accounts_by_delegate_maybe_json,
     parse_token_accounts_by_owner_maybe_json,
     parse_program_accounts_with_context_maybe_json,
@@ -1000,8 +1000,17 @@ def test_get_multiple_accounts_base64() -> None:
         rent_epoch=2,
         data=b"",
     )
-    parsed2 = parse_multiple_accounts_maybe_json(raw)
-    assert parsed == parsed2
+    parsed2 = GetMultipleAccountsMaybeJsonParsedResp.from_json(raw)
+    assert parsed.value == parsed2.value
+
+
+def test_get_multiple_accounts_maybe_json() -> None:
+    # mix of jsonParsed and base64
+    raw = '{"jsonrpc":"2.0","result":{"context":{"apiVersion":"1.13.2","slot":167617386},"value":[{"data":{"parsed":{"info":{"decimals":9,"freezeAuthority":null,"isInitialized":true,"mintAuthority":null,"supply":"0"},"type":"mint"},"program":"spl-token","space":82},"executable":false,"lamports":736771963562,"owner":"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA","rentEpoch":634},{"data":["AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==","base64"],"executable":false,"lamports":998763433,"owner":"2WRuhE4GJFoE23DYzp2ij6ZnuQ8p9mJeU6gDgfsjR4or","rentEpoch":371}]},"id":1}'
+    parsed = GetMultipleAccountsMaybeJsonParsedResp.from_json(raw)
+    val = parsed.value
+    assert isinstance(val[0], AccountJSON)
+    assert isinstance(val[1], Account)
 
 
 def test_get_multiple_accounts_base58() -> None:
@@ -1052,8 +1061,8 @@ def test_get_multiple_accounts_base58() -> None:
         rent_epoch=2,
         data=b"",
     )
-    parsed2 = parse_multiple_accounts_maybe_json(raw)
-    assert parsed == parsed2
+    parsed2 = GetMultipleAccountsMaybeJsonParsedResp.from_json(raw)
+    assert parsed.value == parsed2.value
 
 
 def test_get_multiple_accounts_json_parsed() -> None:
@@ -1110,8 +1119,8 @@ def test_get_multiple_accounts_json_parsed() -> None:
     assert data.program == "spl-token"
     assert data.space == 165
     assert isinstance(data.parsed, str)
-    parsed2 = parse_multiple_accounts_maybe_json(raw)
-    assert parsed == parsed2
+    parsed2 = GetMultipleAccountsMaybeJsonParsedResp.from_json(raw)
+    assert parsed.value == parsed2.value
 
 
 def test_get_program_accounts_without_context() -> None:

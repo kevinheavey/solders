@@ -47,7 +47,7 @@ use crate::{
     pubkey::Pubkey,
     py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
     signature::Signature,
-    tmp_account_decoder::{UiAccount, UiTokenAmount as UiTokenAmountOriginal},
+    tmp_account_decoder::{UiAccount, UiAccountData, UiTokenAmount as UiTokenAmountOriginal},
     tmp_transaction_status::{
         TransactionConfirmationStatus as TransactionConfirmationStatusOriginal,
         TransactionStatus as TransactionStatusOriginal, UiTransactionReturnData,
@@ -685,7 +685,6 @@ Returns:
 }
 
 parse_maybe_json!(GetAccountInfo, account_info);
-parse_maybe_json!(GetMultipleAccounts, multiple_accounts);
 parse_maybe_json!(GetTokenAccountsByDelegate, token_accounts_by_delegate);
 parse_maybe_json!(GetTokenAccountsByOwner, token_accounts_by_owner);
 parse_maybe_json!(GetProgramAccountsWithContext, program_accounts_with_context);
@@ -1326,6 +1325,81 @@ contextful_resp_eq!(
 contextful_resp_eq!(
     GetMultipleAccountsJsonParsedResp,
     Vec<Option<AccountJSON>>,
+    "Vec<Option<TryFromInto<UiAccount>>>"
+);
+
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromPyObject)]
+#[serde(untagged)]
+pub enum AccountMaybeJSON {
+    Binary(Account),
+    Parsed(AccountJSON),
+}
+
+impl IntoPy<PyObject> for AccountMaybeJSON {
+    fn into_py(self, py: Python<'_>) -> PyObject {
+        match self {
+            Self::Parsed(x) => x.into_py(py),
+            Self::Binary(x) => x.into_py(py),
+        }
+    }
+}
+
+impl From<Account> for AccountMaybeJSON {
+    fn from(a: Account) -> Self {
+        Self::Binary(a)
+    }
+}
+
+impl From<AccountJSON> for AccountMaybeJSON {
+    fn from(a: AccountJSON) -> Self {
+        Self::Parsed(a)
+    }
+}
+
+impl TryFrom<AccountMaybeJSON> for Account {
+    type Error = String;
+    fn try_from(acc: AccountMaybeJSON) -> Result<Self, Self::Error> {
+        if let AccountMaybeJSON::Binary(account) = acc {
+            Ok(account)
+        } else {
+            Err("Expected Account, found AccountJSON".to_string())
+        }
+    }
+}
+
+impl TryFrom<AccountMaybeJSON> for AccountJSON {
+    type Error = String;
+    fn try_from(acc: AccountMaybeJSON) -> Result<Self, Self::Error> {
+        if let AccountMaybeJSON::Parsed(account) = acc {
+            Ok(account)
+        } else {
+            Err("Expected AccountJSON, found Account".to_string())
+        }
+    }
+}
+
+impl From<UiAccount> for AccountMaybeJSON {
+    fn from(u: UiAccount) -> Self {
+        match u.data {
+            UiAccountData::LegacyBinary(_) => panic!("LegacyBinary data should not appear"),
+            UiAccountData::Json(_) => AccountJSON::try_from(u).unwrap().into(),
+            UiAccountData::Binary(..) => Account::from(u).into(),
+        }
+    }
+}
+
+impl From<AccountMaybeJSON> for UiAccount {
+    fn from(a: AccountMaybeJSON) -> Self {
+        match a {
+            AccountMaybeJSON::Binary(acc) => Self::from(acc),
+            AccountMaybeJSON::Parsed(acc) => Self::try_from(acc).unwrap(),
+        }
+    }
+}
+
+contextful_resp_eq!(
+    GetMultipleAccountsMaybeJsonParsedResp,
+    Vec<Option<AccountMaybeJSON>>,
     "Vec<Option<TryFromInto<UiAccount>>>"
 );
 
@@ -2789,6 +2863,7 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<GetMinimumBalanceForRentExemptionResp>()?;
     m.add_class::<GetMultipleAccountsResp>()?;
     m.add_class::<GetMultipleAccountsJsonParsedResp>()?;
+    m.add_class::<GetMultipleAccountsMaybeJsonParsedResp>()?;
     m.add_class::<RpcKeyedAccount>()?;
     m.add_class::<RpcKeyedAccountJsonParsed>()?;
     m.add_class::<GetProgramAccountsWithContextResp>()?;
@@ -2873,7 +2948,6 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
         wrap_pyfunction!(parse_websocket_message, m)?,
         wrap_pyfunction!(parse_notification, m)?,
         wrap_pyfunction!(parse_account_info_maybe_json, m)?,
-        wrap_pyfunction!(parse_multiple_accounts_maybe_json, m)?,
         wrap_pyfunction!(parse_token_accounts_by_delegate_maybe_json, m)?,
         wrap_pyfunction!(parse_token_accounts_by_owner_maybe_json, m)?,
         wrap_pyfunction!(parse_account_info_maybe_json, m)?,
