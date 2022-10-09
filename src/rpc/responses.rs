@@ -692,8 +692,6 @@ Returns:
 
 parse_maybe_json!(GetTokenAccountsByDelegate, token_accounts_by_delegate);
 parse_maybe_json!(GetTokenAccountsByOwner, token_accounts_by_owner);
-parse_maybe_json!(GetProgramAccountsWithContext, program_accounts_with_context);
-parse_maybe_json!(GetProgramAccounts, program_accounts_without_context);
 
 contextful_resp_eq!(GetBalanceResp, u64);
 
@@ -1469,6 +1467,32 @@ contextless_resp_eq!(GetProgramAccountsResp, Vec<RpcKeyedAccount>, clone);
 contextless_resp_eq!(
     GetProgramAccountsJsonParsedResp,
     Vec<RpcKeyedAccountJsonParsed>,
+    clone
+);
+
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromPyObject)]
+#[serde(untagged)]
+pub enum RpcKeyedAccountMaybeJSON {
+    Binary(RpcKeyedAccount),
+    Parsed(RpcKeyedAccountJsonParsed),
+}
+
+impl IntoPy<PyObject> for RpcKeyedAccountMaybeJSON {
+    fn into_py(self, py: Python<'_>) -> PyObject {
+        match self {
+            Self::Parsed(x) => x.into_py(py),
+            Self::Binary(x) => x.into_py(py),
+        }
+    }
+}
+
+contextful_resp_eq!(
+    GetProgramAccountsWithContextMaybeJsonParsedResp,
+    Vec<RpcKeyedAccountMaybeJSON>
+);
+contextless_resp_eq!(
+    GetProgramAccountsMaybeJsonParsedResp,
+    Vec<RpcKeyedAccountMaybeJSON>,
     clone
 );
 
@@ -2566,6 +2590,8 @@ pyunion_resp!(
     GetProgramAccountsResp,
     GetProgramAccountsWithContextJsonParsedResp,
     GetProgramAccountsJsonParsedResp,
+    GetProgramAccountsWithContextMaybeJsonParsedResp,
+    GetProgramAccountsMaybeJsonParsedResp,
     GetRecentPerformanceSamplesResp,
     GetSignaturesForAddressResp,
     GetSignatureStatusesResp,
@@ -2757,6 +2783,8 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
             GetProgramAccountsResp::type_object(py),
             GetProgramAccountsWithContextJsonParsedResp::type_object(py),
             GetProgramAccountsJsonParsedResp::type_object(py),
+            GetProgramAccountsMaybeJsonParsedResp::type_object(py),
+            GetProgramAccountsWithContextMaybeJsonParsedResp::type_object(py),
             GetRecentPerformanceSamplesResp::type_object(py),
             GetSignaturesForAddressResp::type_object(py),
             GetSignatureStatusesResp::type_object(py),
@@ -2880,6 +2908,8 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<GetProgramAccountsResp>()?;
     m.add_class::<GetProgramAccountsWithContextJsonParsedResp>()?;
     m.add_class::<GetProgramAccountsJsonParsedResp>()?;
+    m.add_class::<GetProgramAccountsWithContextMaybeJsonParsedResp>()?;
+    m.add_class::<GetProgramAccountsMaybeJsonParsedResp>()?;
     m.add_class::<RpcPerfSample>()?;
     m.add_class::<GetRecentPerformanceSamplesResp>()?;
     m.add_class::<RpcConfirmedTransactionStatusWithSignature>()?;
@@ -2959,8 +2989,6 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
         wrap_pyfunction!(parse_notification, m)?,
         wrap_pyfunction!(parse_token_accounts_by_delegate_maybe_json, m)?,
         wrap_pyfunction!(parse_token_accounts_by_owner_maybe_json, m)?,
-        wrap_pyfunction!(parse_program_accounts_with_context_maybe_json, m)?,
-        wrap_pyfunction!(parse_program_accounts_without_context_maybe_json, m)?,
     ];
     for func in funcs {
         m.add_function(func)?;
