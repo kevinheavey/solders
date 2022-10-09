@@ -689,10 +689,7 @@ parse_maybe_json!(GetMultipleAccounts, multiple_accounts);
 parse_maybe_json!(GetTokenAccountsByDelegate, token_accounts_by_delegate);
 parse_maybe_json!(GetTokenAccountsByOwner, token_accounts_by_owner);
 parse_maybe_json!(GetProgramAccountsWithContext, program_accounts_with_context);
-parse_maybe_json!(
-    GetProgramAccountsWithoutContext,
-    program_accounts_without_context
-);
+parse_maybe_json!(GetProgramAccounts, program_accounts_without_context);
 
 contextful_resp_eq!(GetBalanceResp, u64);
 
@@ -1389,13 +1386,9 @@ contextful_resp_eq!(
     Vec<RpcKeyedAccountJsonParsed>
 );
 
+contextless_resp_eq!(GetProgramAccountsResp, Vec<RpcKeyedAccount>, clone);
 contextless_resp_eq!(
-    GetProgramAccountsWithoutContextResp,
-    Vec<RpcKeyedAccount>,
-    clone
-);
-contextless_resp_eq!(
-    GetProgramAccountsWithoutContextJsonParsedResp,
+    GetProgramAccountsJsonParsedResp,
     Vec<RpcKeyedAccountJsonParsed>,
     clone
 );
@@ -2489,9 +2482,9 @@ pyunion_resp!(
     GetMultipleAccountsResp,
     GetMultipleAccountsJsonParsedResp,
     GetProgramAccountsWithContextResp,
-    GetProgramAccountsWithoutContextResp,
+    GetProgramAccountsResp,
     GetProgramAccountsWithContextJsonParsedResp,
-    GetProgramAccountsWithoutContextJsonParsedResp,
+    GetProgramAccountsJsonParsedResp,
     GetRecentPerformanceSamplesResp,
     GetSignaturesForAddressResp,
     GetSignatureStatusesResp,
@@ -2678,9 +2671,9 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
             GetMultipleAccountsResp::type_object(py),
             GetMultipleAccountsJsonParsedResp::type_object(py),
             GetProgramAccountsWithContextResp::type_object(py),
-            GetProgramAccountsWithoutContextResp::type_object(py),
+            GetProgramAccountsResp::type_object(py),
             GetProgramAccountsWithContextJsonParsedResp::type_object(py),
-            GetProgramAccountsWithoutContextJsonParsedResp::type_object(py),
+            GetProgramAccountsJsonParsedResp::type_object(py),
             GetRecentPerformanceSamplesResp::type_object(py),
             GetSignaturesForAddressResp::type_object(py),
             GetSignatureStatusesResp::type_object(py),
@@ -2799,9 +2792,9 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<RpcKeyedAccount>()?;
     m.add_class::<RpcKeyedAccountJsonParsed>()?;
     m.add_class::<GetProgramAccountsWithContextResp>()?;
-    m.add_class::<GetProgramAccountsWithoutContextResp>()?;
+    m.add_class::<GetProgramAccountsResp>()?;
     m.add_class::<GetProgramAccountsWithContextJsonParsedResp>()?;
-    m.add_class::<GetProgramAccountsWithoutContextJsonParsedResp>()?;
+    m.add_class::<GetProgramAccountsJsonParsedResp>()?;
     m.add_class::<RpcPerfSample>()?;
     m.add_class::<GetRecentPerformanceSamplesResp>()?;
     m.add_class::<RpcConfirmedTransactionStatusWithSignature>()?;

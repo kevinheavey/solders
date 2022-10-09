@@ -36,9 +36,9 @@ from solders.rpc.responses import (
     GetMultipleAccountsResp,
     GetMultipleAccountsJsonParsedResp,
     GetProgramAccountsWithContextResp,
-    GetProgramAccountsWithoutContextResp,
+    GetProgramAccountsResp,
     GetProgramAccountsWithContextJsonParsedResp,
-    GetProgramAccountsWithoutContextJsonParsedResp,
+    GetProgramAccountsJsonParsedResp,
     GetRecentPerformanceSamplesResp,
     GetSignaturesForAddressResp,
     GetSignatureStatusesResp,
@@ -1131,8 +1131,8 @@ def test_get_program_accounts_without_context() -> None:
   ],
   "id": 1
 }"""
-    parsed = GetProgramAccountsWithoutContextResp.from_json(raw)
-    assert isinstance(parsed, GetProgramAccountsWithoutContextResp)
+    parsed = GetProgramAccountsResp.from_json(raw)
+    assert isinstance(parsed, GetProgramAccountsResp)
     assert parsed.value[0] == RpcKeyedAccount(
         account=Account(
             data=b58decode(b"2R9jLfiAQ9bgdcw6h8s44439"),
@@ -1190,8 +1190,8 @@ def test_get_program_accounts_without_context_json_parsed() -> None:
         }
     ]
 }"""
-    parsed = GetProgramAccountsWithoutContextJsonParsedResp.from_json(raw)
-    assert isinstance(parsed, GetProgramAccountsWithoutContextJsonParsedResp)
+    parsed = GetProgramAccountsJsonParsedResp.from_json(raw)
+    assert isinstance(parsed, GetProgramAccountsJsonParsedResp)
     val = parsed.value[0]
     assert isinstance(val, RpcKeyedAccountJsonParsed)
     acc = val.account
