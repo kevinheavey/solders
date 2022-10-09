@@ -100,9 +100,13 @@ py_from_bytes_general_via_bincode!(Account);
 impl CommonMethods<'_> for Account {}
 impl RichcmpEqualityOnly for Account {}
 
-impl From<UiAccount> for Account {
-    fn from(acc: UiAccount) -> Self {
-        acc.decode::<AccountOriginal>().unwrap().into()
+impl TryFrom<UiAccount> for Account {
+    type Error = &'static str;
+    fn try_from(acc: UiAccount) -> Result<Self, Self::Error> {
+        let decoded = acc
+            .decode::<AccountOriginal>()
+            .ok_or("Cannot decode JsonParsed here.")?;
+        Ok(decoded.into())
     }
 }
 

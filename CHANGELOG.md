@@ -1,12 +1,17 @@
 # Changelog
 
+## [0.7.0] - 2022-10-09
+
+### Changed
+
+- Replace `parse_<name>_maybe_json` funcs with `<name>MaybeJsonParsed` classes. Also fix bugs with parsing mixed responses.
+- Make `batch_from_json` pure Rust instead of relying on the Python `from_json` method.
+
 ## [0.6.0] - 2022-10-05
 
 ### Added
 
-- Add parsers for responses that may or may not be `jsonParsed` [(#14)](https://github.com/kevinheavey/solders/pull/14)
-
-## [0.5.3] - 2022-10-02
+- Add parsers for responses that may or may not be `jsonParsed` [(#13)](https://github.com/kevinheavey/solders/pull/13)
 
 ### Fixed
 
