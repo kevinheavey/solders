@@ -5,6 +5,7 @@ from solders.errors import SerdeJSONError
 from solders.rpc.responses import (
     GetAccountInfoResp,
     GetAccountInfoJsonParsedResp,
+    GetAccountInfoMaybeJsonParsedResp,
     GetBalanceResp,
     GetBlockResp,
     GetBlockCommitmentResp,
@@ -40,6 +41,8 @@ from solders.rpc.responses import (
     GetProgramAccountsResp,
     GetProgramAccountsWithContextJsonParsedResp,
     GetProgramAccountsJsonParsedResp,
+    GetProgramAccountsWithContextMaybeJsonParsedResp,
+    GetProgramAccountsMaybeJsonParsedResp,
     GetRecentPerformanceSamplesResp,
     GetSignaturesForAddressResp,
     GetSignatureStatusesResp,
@@ -115,11 +118,8 @@ from solders.rpc.responses import (
     batch_to_json,
     parse_notification,
     parse_websocket_message,
-    parse_account_info_maybe_json,
     parse_token_accounts_by_delegate_maybe_json,
     parse_token_accounts_by_owner_maybe_json,
-    parse_program_accounts_with_context_maybe_json,
-    parse_program_accounts_without_context_maybe_json,
 )
 from solders.rpc.errors import NodeUnhealthy
 from solders.hash import Hash
@@ -190,8 +190,8 @@ def test_get_account_info() -> None:
     # this happens when jsonParsed is requested but the RPC can't do it.
     with raises(SerdeJSONError):
         GetAccountInfoJsonParsedResp.from_json(raw)
-    parsed2 = parse_account_info_maybe_json(raw)
-    assert parsed == parsed2
+    parsed2 = GetAccountInfoMaybeJsonParsedResp.from_json(raw)
+    assert parsed.value == parsed2.value
 
 
 def test_get_account_info_null() -> None:
@@ -234,8 +234,8 @@ def test_get_account_info_json_parsed() -> None:
     assert parsed == GetAccountInfoJsonParsedResp(context=context, value=account_json)
     assert parsed.context.slot == 140702417
     assert parsed.value.data.program == "spl-token"
-    parsed2 = parse_account_info_maybe_json(raw)
-    assert parsed == parsed2
+    parsed2 = GetAccountInfoMaybeJsonParsedResp.from_json(raw)
+    assert parsed.value == parsed2.value
 
 
 def test_get_balance() -> None:
@@ -1216,8 +1216,8 @@ def test_get_program_accounts_without_context_json_parsed() -> None:
     assert data.program == "spl-token-2022"
     assert data.space == 182
     assert isinstance(data.parsed, str)
-    parsed2 = parse_program_accounts_without_context_maybe_json(raw)
-    assert parsed == parsed2
+    parsed2 = GetProgramAccountsMaybeJsonParsedResp.from_json(raw)
+    assert parsed.value == parsed2.value
 
 
 def test_get_program_accounts_with_context() -> None:
@@ -1225,8 +1225,7 @@ def test_get_program_accounts_with_context() -> None:
     parsed = GetProgramAccountsWithContextResp.from_json(raw)
     assert isinstance(parsed, GetProgramAccountsWithContextResp)
     assert not parsed.value
-    parsed2 = parse_program_accounts_with_context_maybe_json(raw)
-    # note: parsed2 thinks it's JsonParsed but doesn't matter because value is empty
+    parsed2 = GetProgramAccountsWithContextMaybeJsonParsedResp.from_json(raw)
     assert parsed.context == parsed2.context and parsed.value == parsed2.value
 
 
@@ -1298,8 +1297,8 @@ def test_get_program_accounts_with_context_json_parsed() -> None:
     assert data.program == "spl-token-2022"
     assert data.space == 182
     assert isinstance(data.parsed, str)
-    parsed2 = parse_program_accounts_with_context_maybe_json(raw)
-    assert parsed == parsed2
+    parsed2 = GetProgramAccountsWithContextMaybeJsonParsedResp.from_json(raw)
+    assert parsed.value == parsed2.value
 
 
 def test_get_recent_performance_samples() -> None:

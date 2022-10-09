@@ -285,7 +285,7 @@ response_data_boilerplate!(RpcResponseContext);
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 #[serde(untagged)]
-pub enum Resp<T: PyClass + IntoPy<PyObject>> {
+pub enum Resp<T: IntoPy<PyObject>> {
     Result {
         #[serde(skip_deserializing)]
         jsonrpc: crate::rpc::requests::V2,
@@ -641,7 +641,7 @@ macro_rules! notification_contextless {
 contextful_resp_eq!(
     GetAccountInfoResp,
     Option<Account>,
-    "Option<FromInto<UiAccount>>"
+    "Option<TryFromInto<UiAccount>>"
 );
 
 contextful_resp_eq!(
@@ -1014,7 +1014,7 @@ pub struct RpcSimulateTransactionResult {
     pub err: Option<TransactionErrorType>,
     #[pyo3(get)]
     pub logs: Option<Vec<String>>,
-    #[serde_as(as = "Option<Vec<Option<FromInto<UiAccount>>>>")]
+    #[serde_as(as = "Option<Vec<Option<TryFromInto<UiAccount>>>>")]
     #[pyo3(get)]
     pub accounts: Option<Vec<Option<Account>>>,
     #[pyo3(get)]
@@ -1323,7 +1323,7 @@ contextless_resp_eq!(GetMinimumBalanceForRentExemptionResp, u64);
 contextful_resp_eq!(
     GetMultipleAccountsResp,
     Vec<Option<Account>>,
-    "Vec<Option<FromInto<UiAccount>>>"
+    "Vec<Option<TryFromInto<UiAccount>>>"
 );
 contextful_resp_eq!(
     GetMultipleAccountsJsonParsedResp,
@@ -1386,7 +1386,7 @@ impl From<UiAccount> for AccountMaybeJSON {
         match u.data {
             UiAccountData::LegacyBinary(_) => panic!("LegacyBinary data should not appear"),
             UiAccountData::Json(_) => AccountJSON::try_from(u).unwrap().into(),
-            UiAccountData::Binary(..) => Account::from(u).into(),
+            UiAccountData::Binary(..) => Account::try_from(u).unwrap().into(),
         }
     }
 }
@@ -1415,7 +1415,7 @@ pub struct RpcKeyedAccount {
     #[serde_as(as = "DisplayFromStr")]
     #[pyo3(get)]
     pub pubkey: Pubkey,
-    #[serde_as(as = "FromInto<UiAccount>")]
+    #[serde_as(as = "TryFromInto<UiAccount>")]
     #[pyo3(get)]
     pub account: Account,
 }
@@ -2475,7 +2475,7 @@ contextless_resp_eq!(RequestAirdropResp, Signature, "DisplayFromStr");
 contextless_resp_eq!(SendTransactionResp, Signature, "DisplayFromStr");
 contextful_resp_eq!(SimulateTransactionResp, RpcSimulateTransactionResult);
 
-notification!(AccountNotification, Account, "FromInto<UiAccount>");
+notification!(AccountNotification, Account, "TryFromInto<UiAccount>");
 notification!(
     AccountNotificationJsonParsed,
     AccountJSON,
@@ -2526,17 +2526,27 @@ impl IntoPy<PyObject> for ProgramNotificationType {
 contextless_resp_eq!(SubscriptionResp, u64);
 
 macro_rules ! pyunion_resp {
-    ($name:ident, $($variant:ident),+) => {
+    ($name:ident, $err_variant:ident, $($variant:ident),+) => {
         #[derive(FromPyObject, Clone, Debug, PartialEq, Serialize, Deserialize)]
         #[serde(untagged, rename_all = "camelCase")]
         pub enum $name {
+            $err_variant($err_variant),
             $($variant($variant),)+
         }
 
         impl $name {
             fn to_json(&self) -> String {
                 match self {
+                    Self::$err_variant(x) => x.py_to_json(),
                     $(Self::$variant(x) => x.py_to_json(),)+
+                }
+            }
+
+            fn from_json(raw: &str, parser: &str) -> PyResult<Self> {
+                match parser {
+                    stringify!($err_variant) => {let parsed = $err_variant::py_from_json(raw)?; let as_enum = Self::RpcError(parsed); Ok(as_enum)},
+                    $(stringify!($variant) => {let parsed = $variant::py_from_json(raw)?; let as_enum = match parsed {Resp::Error {error, ..} => Self::RpcError(error), Resp::Result {result, ..} => Self::$variant(result)};Ok(as_enum)},)+
+                    _ => Err(PyValueError::new_err(format!("Unrecognised parser: {}", parser)))
                 }
             }
         }
@@ -2544,6 +2554,7 @@ macro_rules ! pyunion_resp {
         impl IntoPy<PyObject> for $name {
             fn into_py(self, py: Python<'_>) -> PyObject {
                 match self {
+                    Self::$err_variant(x) => x.into_py(py),
                     $(Self::$variant(x) => x.into_py(py),)+
                 }
             }
@@ -2610,7 +2621,6 @@ pyunion_resp!(
     GetTransactionResp,
     GetTransactionCountResp,
     GetVersionResp,
-    RpcVersionInfo,
     GetVoteAccountsResp,
     IsBlockhashValidResp,
     MinimumLedgerSlotResp,
@@ -2646,9 +2656,10 @@ pub fn batch_to_json(resps: Vec<RPCResult>) -> String {
 ///
 /// Args:
 ///     raw (str): The batch JSON string.
+///     parsers (Sequence): The classes to parse.
 ///
 /// Returns:
-///     A list of request objects.
+///     A list of response objects.
 ///
 /// Example:
 ///     >>> from solders.rpc.responses import batch_from_json, GetBlockHeightResp, GetFirstAvailableBlockResp
@@ -2670,18 +2681,10 @@ pub fn batch_from_json(raw: &str, parsers: Vec<&PyType>) -> PyResult<Vec<PyObjec
         let msg = format!("Number of parsers does not match number of response objects. Num parsers: {}. Num responses: {}", parsers_len, raw_objects_len);
         Err(PyValueError::new_err(msg))
     } else {
-        Python::with_gil(|py| {
-            Ok(raw_objects
-                .iter()
-                .zip(parsers.iter())
-                .map(|(res, parser)| {
-                    parser
-                        .call_method1("from_json", (serde_json::to_string(res).unwrap(),))
-                        .unwrap()
-                        .into_py(py)
-                })
-                .collect())
-        })
+        let parsed = raw_objects.iter().zip(parsers.iter()).map(|(res, parser)| {
+            RPCResult::from_json(&serde_json::to_string(res).unwrap(), parser.name().unwrap())
+        });
+        Python::with_gil(|py| parsed.map(|obj| obj.map(|o| o.into_py(py))).collect())
     }
 }
 
