@@ -189,6 +189,7 @@ def test_get_account_info() -> None:
     with raises(SerdeJSONError):
         GetAccountInfoJsonParsedResp.from_json(raw)
     parsed2 = GetAccountInfoMaybeJsonParsedResp.from_json(raw)
+    assert isinstance(parsed2, GetAccountInfoMaybeJsonParsedResp)
     assert parsed.value == parsed2.value
 
 
@@ -233,6 +234,7 @@ def test_get_account_info_json_parsed() -> None:
     assert parsed.context.slot == 140702417
     assert parsed.value.data.program == "spl-token"
     parsed2 = GetAccountInfoMaybeJsonParsedResp.from_json(raw)
+    assert isinstance(parsed2, GetAccountInfoMaybeJsonParsedResp)
     assert parsed.value == parsed2.value
 
 
@@ -999,6 +1001,7 @@ def test_get_multiple_accounts_base64() -> None:
         data=b"",
     )
     parsed2 = GetMultipleAccountsMaybeJsonParsedResp.from_json(raw)
+    assert isinstance(parsed2, GetMultipleAccountsMaybeJsonParsedResp)
     assert parsed.value == parsed2.value
 
 
@@ -1006,6 +1009,7 @@ def test_get_multiple_accounts_maybe_json() -> None:
     # mix of jsonParsed and base64
     raw = '{"jsonrpc":"2.0","result":{"context":{"apiVersion":"1.13.2","slot":167617386},"value":[{"data":{"parsed":{"info":{"decimals":9,"freezeAuthority":null,"isInitialized":true,"mintAuthority":null,"supply":"0"},"type":"mint"},"program":"spl-token","space":82},"executable":false,"lamports":736771963562,"owner":"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA","rentEpoch":634},{"data":["AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==","base64"],"executable":false,"lamports":998763433,"owner":"2WRuhE4GJFoE23DYzp2ij6ZnuQ8p9mJeU6gDgfsjR4or","rentEpoch":371}]},"id":1}'
     parsed = GetMultipleAccountsMaybeJsonParsedResp.from_json(raw)
+    assert isinstance(parsed, GetMultipleAccountsMaybeJsonParsedResp)
     val = parsed.value
     assert isinstance(val[0], AccountJSON)
     assert isinstance(val[1], Account)
@@ -1060,6 +1064,7 @@ def test_get_multiple_accounts_base58() -> None:
         data=b"",
     )
     parsed2 = GetMultipleAccountsMaybeJsonParsedResp.from_json(raw)
+    assert isinstance(parsed2, GetMultipleAccountsMaybeJsonParsedResp)
     assert parsed.value == parsed2.value
 
 
@@ -1118,6 +1123,7 @@ def test_get_multiple_accounts_json_parsed() -> None:
     assert data.space == 165
     assert isinstance(data.parsed, str)
     parsed2 = GetMultipleAccountsMaybeJsonParsedResp.from_json(raw)
+    assert isinstance(parsed2, GetMultipleAccountsMaybeJsonParsedResp)
     assert parsed.value == parsed2.value
 
 
@@ -1215,6 +1221,7 @@ def test_get_program_accounts_without_context_json_parsed() -> None:
     assert data.space == 182
     assert isinstance(data.parsed, str)
     parsed2 = GetProgramAccountsMaybeJsonParsedResp.from_json(raw)
+    assert isinstance(parsed2, GetProgramAccountsMaybeJsonParsedResp)
     assert parsed.value == parsed2.value
 
 
@@ -1224,6 +1231,7 @@ def test_get_program_accounts_with_context() -> None:
     assert isinstance(parsed, GetProgramAccountsWithContextResp)
     assert not parsed.value
     parsed2 = GetProgramAccountsWithContextMaybeJsonParsedResp.from_json(raw)
+    assert isinstance(parsed2, GetProgramAccountsWithContextMaybeJsonParsedResp)
     assert parsed.context == parsed2.context and parsed.value == parsed2.value
 
 
@@ -1296,6 +1304,7 @@ def test_get_program_accounts_with_context_json_parsed() -> None:
     assert data.space == 182
     assert isinstance(data.parsed, str)
     parsed2 = GetProgramAccountsWithContextMaybeJsonParsedResp.from_json(raw)
+    assert isinstance(parsed2, GetProgramAccountsWithContextMaybeJsonParsedResp)
     assert parsed.value == parsed2.value
 
 
