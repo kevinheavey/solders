@@ -650,6 +650,12 @@ contextful_resp_eq!(
     "Option<TryFromInto<UiAccount>>"
 );
 
+contextful_resp_eq!(
+    GetAccountInfoMaybeJsonParsedResp,
+    Option<AccountMaybeJSON>,
+    "Option<TryFromInto<UiAccount>>"
+);
+
 macro_rules! parse_maybe_json {
     ($resp:ident, $func:ident) => {
         paste! {
@@ -684,7 +690,6 @@ Returns:
     };
 }
 
-parse_maybe_json!(GetAccountInfo, account_info);
 parse_maybe_json!(GetTokenAccountsByDelegate, token_accounts_by_delegate);
 parse_maybe_json!(GetTokenAccountsByOwner, token_accounts_by_owner);
 parse_maybe_json!(GetProgramAccountsWithContext, program_accounts_with_context);
@@ -2527,6 +2532,7 @@ pyunion_resp!(
     RpcError,
     GetAccountInfoResp,
     GetAccountInfoJsonParsedResp,
+    GetAccountInfoMaybeJsonParsedResp,
     GetBalanceResp,
     GetBlockProductionResp,
     GetBlockResp,
@@ -2555,6 +2561,7 @@ pyunion_resp!(
     GetMinimumBalanceForRentExemptionResp,
     GetMultipleAccountsResp,
     GetMultipleAccountsJsonParsedResp,
+    GetMultipleAccountsMaybeJsonParsedResp,
     GetProgramAccountsWithContextResp,
     GetProgramAccountsResp,
     GetProgramAccountsWithContextJsonParsedResp,
@@ -2716,6 +2723,7 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
             RpcError::type_object(py),
             GetAccountInfoResp::type_object(py),
             GetAccountInfoJsonParsedResp::type_object(py),
+            GetAccountInfoMaybeJsonParsedResp::type_object(py),
             GetBalanceResp::type_object(py),
             GetBlockProductionResp::type_object(py),
             GetBlockResp::type_object(py),
@@ -2744,6 +2752,7 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
             GetMinimumBalanceForRentExemptionResp::type_object(py),
             GetMultipleAccountsResp::type_object(py),
             GetMultipleAccountsJsonParsedResp::type_object(py),
+            GetMultipleAccountsMaybeJsonParsedResp::type_object(py),
             GetProgramAccountsWithContextResp::type_object(py),
             GetProgramAccountsResp::type_object(py),
             GetProgramAccountsWithContextJsonParsedResp::type_object(py),
@@ -2823,6 +2832,7 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<RpcError>()?;
     m.add_class::<GetAccountInfoResp>()?;
     m.add_class::<GetAccountInfoJsonParsedResp>()?;
+    m.add_class::<GetAccountInfoMaybeJsonParsedResp>()?;
     m.add_class::<GetBalanceResp>()?;
     m.add_class::<RpcBlockProduction>()?;
     m.add_class::<RpcBlockProductionRange>()?;
@@ -2947,10 +2957,8 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
         wrap_pyfunction!(batch_from_json, m)?,
         wrap_pyfunction!(parse_websocket_message, m)?,
         wrap_pyfunction!(parse_notification, m)?,
-        wrap_pyfunction!(parse_account_info_maybe_json, m)?,
         wrap_pyfunction!(parse_token_accounts_by_delegate_maybe_json, m)?,
         wrap_pyfunction!(parse_token_accounts_by_owner_maybe_json, m)?,
-        wrap_pyfunction!(parse_account_info_maybe_json, m)?,
         wrap_pyfunction!(parse_program_accounts_with_context_maybe_json, m)?,
         wrap_pyfunction!(parse_program_accounts_without_context_maybe_json, m)?,
     ];
