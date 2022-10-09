@@ -118,8 +118,6 @@ from solders.rpc.responses import (
     batch_to_json,
     parse_notification,
     parse_websocket_message,
-    parse_token_accounts_by_delegate_maybe_json,
-    parse_token_accounts_by_owner_maybe_json,
 )
 from solders.rpc.errors import NodeUnhealthy
 from solders.hash import Hash
@@ -1596,8 +1594,6 @@ def test_get_token_accounts_by_owner_json_parsed() -> None:
     assert acc.owner == Pubkey.from_string(
         "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
     )
-    parsed2 = parse_token_accounts_by_owner_maybe_json(raw)
-    assert parsed == parsed2
 
 
 def test_get_token_accounts_by_owner_base64() -> None:
@@ -1646,8 +1642,6 @@ def test_get_token_accounts_by_owner_base64() -> None:
         executable=False,
         rent_epoch=341,
     )
-    parsed2 = parse_token_accounts_by_owner_maybe_json(raw)
-    assert parsed == parsed2
 
 
 def test_get_token_accounts_by_delegate_json_parsed() -> None:
@@ -1716,8 +1710,6 @@ def test_get_token_accounts_by_delegate_json_parsed() -> None:
     assert data.program == "spl-token"
     assert isinstance(data.parsed, str)
     assert data.space == 165
-    parsed2 = parse_token_accounts_by_delegate_maybe_json(raw)
-    assert parsed == parsed2
 
 
 def test_get_token_accounts_by_delegate_base64() -> None:
@@ -1766,8 +1758,6 @@ def test_get_token_accounts_by_delegate_base64() -> None:
         executable=False,
         rent_epoch=341,
     )
-    parsed2 = parse_token_accounts_by_delegate_maybe_json(raw)
-    assert parsed == parsed2
 
 
 def test_get_token_largest_accounts() -> None:

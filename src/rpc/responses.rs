@@ -656,43 +656,6 @@ contextful_resp_eq!(
     "Option<TryFromInto<UiAccount>>"
 );
 
-macro_rules! parse_maybe_json {
-    ($resp:ident, $func:ident) => {
-        paste! {
-            #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
-            #[serde(untagged)]
-            pub enum [<$resp MaybeJsonParsedResp>] {
-                Parsed(Resp<[<$resp JsonParsedResp>]>),
-                Binary(Resp<[<$resp Resp>]>),
-            }
-
-            impl IntoPy<PyObject> for [<$resp MaybeJsonParsedResp>] {
-                fn into_py(self, py: Python<'_>) -> PyObject {
-                    match self {
-                        Self::Parsed(x) => x.into_py(py),
-                        Self::Binary(x) => x.into_py(py),
-                    }
-                }
-            }
-
-            #[doc = "Parse a ``" $resp "`` response that may or may not be in jsonParsed format.
-Args:
-    raw (str): The raw JSON.
-
-Returns:
-    Union[" $resp "Resp, " $resp "JsonParsedResp]: The parsed result.          
-"]
-            #[pyfunction]
-            pub fn [<parse_ $func _maybe_json>](raw: &str) -> PyResult<[<$resp MaybeJsonParsedResp>]> {
-                serde_json::from_str(raw).map_err(to_py_err)
-            }
-        }
-    };
-}
-
-parse_maybe_json!(GetTokenAccountsByDelegate, token_accounts_by_delegate);
-parse_maybe_json!(GetTokenAccountsByOwner, token_accounts_by_owner);
-
 contextful_resp_eq!(GetBalanceResp, u64);
 
 // The one in solana_client isn't clonable
@@ -2990,8 +2953,6 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
         wrap_pyfunction!(batch_from_json, m)?,
         wrap_pyfunction!(parse_websocket_message, m)?,
         wrap_pyfunction!(parse_notification, m)?,
-        wrap_pyfunction!(parse_token_accounts_by_delegate_maybe_json, m)?,
-        wrap_pyfunction!(parse_token_accounts_by_owner_maybe_json, m)?,
     ];
     for func in funcs {
         m.add_function(func)?;
