@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.1] - 2022-10-10
+
+### Fixed
+
+- Add missing getters to `UiTransactionStatusMeta` [(#16)](https://github.com/kevinheavey/solders/pull/16)
+
+
 ## [0.8.0] - 2022-10-10
 
 ### Changed
