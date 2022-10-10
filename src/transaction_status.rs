@@ -853,6 +853,63 @@ impl UiTransactionStatusMeta {
         }
         .into()
     }
+
+    #[getter]
+    pub fn err(&self) -> Option<TransactionErrorType> {
+        self.0.err.clone().map(|e| e.into())
+    }
+    #[getter]
+    pub fn fee(&self) -> u64 {
+        self.0.fee
+    }
+    #[getter]
+    pub fn pre_balances(&self) -> Vec<u64> {
+        self.0.pre_balances.clone()
+    }
+    #[getter]
+    pub fn post_balances(&self) -> Vec<u64> {
+        self.0.post_balances.clone()
+    }
+    #[getter]
+    pub fn inner_instructions(&self) -> Option<Vec<UiInnerInstructions>> {
+        self.0
+            .inner_instructions
+            .clone()
+            .map(|v| v.into_iter().map(|ix| ix.into()).collect())
+    }
+    #[getter]
+    pub fn log_messages(&self) -> Option<Vec<String>> {
+        self.0.log_messages.clone()
+    }
+    #[getter]
+    pub fn pre_token_balances(&self) -> Option<Vec<UiTransactionTokenBalance>> {
+        self.0
+            .pre_token_balances
+            .clone()
+            .map(|v| v.into_iter().map(|bal| bal.into()).collect())
+    }
+    #[getter]
+    pub fn post_token_balances(&self) -> Option<Vec<UiTransactionTokenBalance>> {
+        self.0
+            .post_token_balances
+            .clone()
+            .map(|v| v.into_iter().map(|bal| bal.into()).collect())
+    }
+    #[getter]
+    pub fn rewards(&self) -> Option<Rewards> {
+        self.0
+            .rewards
+            .clone()
+            .map(|v| v.into_iter().map(|r| r.into()).collect())
+    }
+    #[getter]
+    pub fn loaded_addresses(&self) -> Option<UiLoadedAddresses> {
+        self.0.loaded_addresses.clone().map(|a| a.into())
+    }
+    #[getter]
+    pub fn return_data(&self) -> Option<TransactionReturnData> {
+        self.0.return_data.clone().map(|r| r.into())
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
