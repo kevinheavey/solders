@@ -1250,7 +1250,9 @@ contextful_resp_eq!(GetLargestAccountsResp, Vec<RpcAccountBalance>);
 #[pyclass(module = "solders.rpc.responses", subclass)]
 pub struct RpcBlockhash {
     #[serde_as(as = "DisplayFromStr")]
+    #[pyo3(get)]
     pub blockhash: SolderHash,
+    #[pyo3(get)]
     pub last_valid_block_height: u64,
 }
 
