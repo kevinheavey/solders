@@ -11,7 +11,7 @@ use pyo3::{
     PyClass, PyTypeInfo,
 };
 use serde::{Deserialize, Serialize};
-use serde_with::{serde_as, DisplayFromStr, FromInto, TryFromInto};
+use serde_with::{serde_as, DisplayFromStr, FromInto, OneOrMany, TryFromInto};
 use solana_sdk::{
     clock::{Epoch, Slot, UnixTimestamp},
     epoch_info::EpochInfo as EpochInfoOriginal,
@@ -392,6 +392,16 @@ impl IntoPy<PyObject> for WebsocketMessage {
             Self::SubscriptionResult(x) => x.into_py(py),
             Self::SubscriptionError(x) => x.into_py(py),
         }
+    }
+}
+
+#[serde_as]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
+pub struct WebsocketMessages(#[serde_as(deserialize_as = "OneOrMany<_>")] Vec<WebsocketMessage>);
+
+impl IntoPy<PyObject> for WebsocketMessages {
+    fn into_py(self, py: Python<'_>) -> PyObject {
+        self.0.into_py(py)
     }
 }
 
@@ -1250,7 +1260,9 @@ contextful_resp_eq!(GetLargestAccountsResp, Vec<RpcAccountBalance>);
 #[pyclass(module = "solders.rpc.responses", subclass)]
 pub struct RpcBlockhash {
     #[serde_as(as = "DisplayFromStr")]
+    #[pyo3(get)]
     pub blockhash: SolderHash,
+    #[pyo3(get)]
     pub last_valid_block_height: u64,
 }
 
@@ -2673,7 +2685,7 @@ pub fn parse_notification(msg: &str) -> PyResult<Notification> {
     serde_json::from_str(msg).map_err(to_py_err)
 }
 
-/// Parse a message received by a Solana websocket subscription.
+/// Parse a message or array of messages received by a Solana websocket subscription.
 ///
 /// Args:
 ///     msg (str): The raw message JSON.
@@ -2685,13 +2697,24 @@ pub fn parse_notification(msg: &str) -> PyResult<Notification> {
 ///     >>> from solders.rpc.responses import parse_websocket_message
 ///     >>> raw = '{ "jsonrpc": "2.0", "method": "rootNotification", "params": { "result": 4, "subscription": 0 } }'
 ///     >>> parse_websocket_message(raw)
-///     RootNotification {
+///     [RootNotification {
 ///         result: 4,
 ///         subscription: 0,
-///     }
+///     }]
+///     >>> raw_multi = '[{"jsonrpc": "2.0", "result": 0, "id": 1}, {"jsonrpc": "2.0", "result": 1, "id": 2}]'
+///     >>> parse_websocket_message(raw_multi)
+///     [SubscriptionResult {
+///         jsonrpc: TwoPointOh,
+///         id: 1,
+///         result: 0,
+///     }, SubscriptionResult {
+///         jsonrpc: TwoPointOh,
+///         id: 2,
+///         result: 1,
+///     }]
 ///
 #[pyfunction]
-pub fn parse_websocket_message(msg: &str) -> PyResult<WebsocketMessage> {
+pub fn parse_websocket_message(msg: &str) -> PyResult<WebsocketMessages> {
     serde_json::from_str(msg).map_err(to_py_err)
 }
 

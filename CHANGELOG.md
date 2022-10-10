@@ -1,11 +1,21 @@
 # Changelog
 
+## [0.8.0] - 2022-10-10
+
+### Changed
+
+- `parse_websocket_message` now supports parsing an array of messages, and always returns a list [(#15)](https://github.com/kevinheavey/solders/pull/15)
+
+### Fixed
+
+- Add missing getters to `RpcBlockhash` [(#15)](https://github.com/kevinheavey/solders/pull/15)
+
 ## [0.7.0] - 2022-10-09
 
 ### Changed
 
-- Replace `parse_<name>_maybe_json` funcs with `<name>MaybeJsonParsed` classes. Also fix bugs with parsing mixed responses.
-- Make `batch_from_json` pure Rust instead of relying on the Python `from_json` method.
+- Replace `parse_<name>_maybe_json` funcs with `<name>MaybeJsonParsed` classes. Also fix bugs with parsing mixed responses. [(#14)](https://github.com/kevinheavey/
+- Make `batch_from_json` pure Rust instead of relying on the Python `from_json` method. [(#14)](https://github.com/kevinheavey/solders/pull/14)
 
 ## [0.6.0] - 2022-10-05
 

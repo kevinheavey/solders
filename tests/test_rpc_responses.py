@@ -2508,14 +2508,18 @@ def test_vote_notification() -> None:
 def test_parse_ws_message() -> None:
     raw_err = '{"jsonrpc":"2.0","error":{"code":-32602,"message":"Invalid param: WrongSize"},"id":1}'
     parsed_err = parse_websocket_message(raw_err)
-    assert isinstance(parsed_err, SubscriptionError)
-    assert isinstance(parsed_err.error, RpcError)
+    assert isinstance(parsed_err[0], SubscriptionError)
+    assert isinstance(parsed_err[0].error, RpcError)
     raw_ok = '{ "jsonrpc": "2.0", "result": 23784, "id": 3 }'
     parsed_ok = parse_websocket_message(raw_ok)
-    assert isinstance(parsed_ok, SubscriptionResult)
-    assert parsed_ok.result == 23784
-    assert parsed_ok.id == 3
+    assert isinstance(parsed_ok[0], SubscriptionResult)
+    assert parsed_ok[0].result == 23784
+    assert parsed_ok[0].id == 3
     raw_notification = '{ "jsonrpc": "2.0", "method": "rootNotification", "params": { "result": 4, "subscription": 0 } }'
     parsed_notification = parse_websocket_message(raw_notification)
-    assert isinstance(parsed_notification, RootNotification)
-    assert parsed_notification.result == 4
+    assert isinstance(parsed_notification[0], RootNotification)
+    assert parsed_notification[0].result == 4
+    raw_multi = '[{"jsonrpc": "2.0", "result": 0, "id": 1}, {"jsonrpc": "2.0", "result": 1, "id": 2}]'
+    parsed_multi = parse_websocket_message(raw_multi)
+    assert len(parsed_multi) == 2
+    assert isinstance(parsed_multi[0], SubscriptionResult)
