@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.9.1] - 2022-10-14
+
+### Fixed
+
+- Remove incorrect `encoding` param from  `RpcSimulateTransactionConfig` [(#18)](https://github.com/kevinheavey/solders/pull/18)
+
 ## [0.9.0] - 2022-10-14
 
 ### Fixed
