@@ -1049,10 +1049,25 @@ pub enum InstructionErrorFieldless {
 }
 
 #[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug)]
+pub enum InstructionErrorTagged {
+    Custom(InstructionErrorCustom),
+    BorshIoError(InstructionErrorBorshIO),
+}
+
+impl IntoPy<PyObject> for InstructionErrorTagged {
+    fn into_py(self, py: Python<'_>) -> PyObject {
+        match self {
+            Self::Custom(x) => x.into_py(py),
+            Self::BorshIoError(x) => x.into_py(py),
+        }
+    }
+}
+
+#[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug)]
+#[serde(untagged)]
 pub enum InstructionErrorType {
     Fieldless(InstructionErrorFieldless),
-    Custom(InstructionErrorCustom),
-    BorshIO(InstructionErrorBorshIO),
+    Tagged(InstructionErrorTagged),
 }
 
 impl Default for InstructionErrorType {
@@ -1064,8 +1079,10 @@ impl Default for InstructionErrorType {
 impl From<InstructionErrorType> for InstructionErrorOriginal {
     fn from(w: InstructionErrorType) -> Self {
         match w {
-            InstructionErrorType::Custom(custom) => Self::Custom(custom.0),
-            InstructionErrorType::BorshIO(borsh_io) => Self::BorshIoError(borsh_io.0),
+            InstructionErrorType::Tagged(t) => match t {
+                InstructionErrorTagged::Custom(custom) => Self::Custom(custom.0),
+                InstructionErrorTagged::BorshIoError(borsh_io) => Self::BorshIoError(borsh_io.0),
+            },
             InstructionErrorType::Fieldless(f) => match f {
                 InstructionErrorFieldless::GenericError => Self::GenericError,
                 InstructionErrorFieldless::InvalidArgument => Self::InvalidArgument,
@@ -1145,10 +1162,12 @@ impl From<InstructionErrorType> for InstructionErrorOriginal {
 impl From<InstructionErrorOriginal> for InstructionErrorType {
     fn from(e: InstructionErrorOriginal) -> Self {
         match e {
-            InstructionErrorOriginal::Custom(code) => Self::Custom(InstructionErrorCustom(code)),
-            InstructionErrorOriginal::BorshIoError(val) => {
-                Self::BorshIO(InstructionErrorBorshIO(val))
+            InstructionErrorOriginal::Custom(code) => {
+                Self::Tagged(InstructionErrorTagged::Custom(InstructionErrorCustom(code)))
             }
+            InstructionErrorOriginal::BorshIoError(val) => Self::Tagged(
+                InstructionErrorTagged::BorshIoError(InstructionErrorBorshIO(val)),
+            ),
             InstructionErrorOriginal::GenericError => {
                 Self::Fieldless(InstructionErrorFieldless::GenericError)
             }
@@ -1307,8 +1326,7 @@ impl IntoPy<PyObject> for InstructionErrorType {
     fn into_py(self, py: Python<'_>) -> PyObject {
         match self {
             Self::Fieldless(f) => f.into_py(py),
-            Self::Custom(m) => m.into_py(py),
-            Self::BorshIO(b) => b.into_py(py),
+            Self::Tagged(t) => t.into_py(py),
         }
     }
 }

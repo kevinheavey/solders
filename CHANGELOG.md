@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.9.2] - 2022-10-14
+
+### Fixed
+
+- Fix `InstructionError` parsing [(#19)](https://github.com/kevinheavey/solders/pull/19)
+
 ## [0.9.1] - 2022-10-14
 
 ### Fixed

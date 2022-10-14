@@ -1278,13 +1278,17 @@ impl From<UiTransactionReturnData> for TransactionReturnData {
 #[serde(rename_all = "camelCase")]
 #[pyclass(module = "solders.rpc.responses", subclass)]
 pub struct RpcSimulateTransactionResult {
+    #[serde(default)]
     #[pyo3(get)]
     pub err: Option<TransactionErrorType>,
+    #[serde(default)]
     #[pyo3(get)]
     pub logs: Option<Vec<String>>,
     #[serde_as(as = "Option<Vec<Option<TryFromInto<UiAccount>>>>")]
+    #[serde(default)]
     #[pyo3(get)]
     pub accounts: Option<Vec<Option<Account>>>,
+    #[serde(default)]
     #[pyo3(get)]
     pub units_consumed: Option<u64>,
     #[serde_as(as = "Option<FromInto<UiTransactionReturnData>>")]
