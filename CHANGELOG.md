@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.9.0] - 2022-10-14
+
+### Fixed
+
+- Fix RPC error parsing and introduce new classes for RPC error messages [(#17)](https://github.com/kevinheavey/solders/pull/17)
+
 ## [0.8.1] - 2022-10-10
 
 ### Fixed
