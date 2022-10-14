@@ -11,6 +11,53 @@ use std::fmt::Display;
 
 use super::responses::RpcSimulateTransactionResult;
 
+macro_rules! error_message {
+    ($name:ident) => {
+        #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
+        #[pyclass(module = "solders.rpc.errors", subclass)]
+        #[serde(rename_all = "camelCase")]
+        pub struct $name {
+            #[pyo3(get)]
+            message: String,
+        }
+
+        transaction_status_boilerplate!($name);
+
+        #[richcmp_eq_only]
+        #[common_methods]
+        #[pymethods]
+        impl $name {
+            #[new]
+            pub fn new(message: String) -> Self {
+                message.into()
+            }
+        }
+    };
+    ($name:ident, $data_type:ty) => {
+        #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
+        #[pyclass(module = "solders.rpc.errors", subclass)]
+        #[serde(rename_all = "camelCase")]
+        pub struct $name {
+            #[pyo3(get)]
+            message: String,
+            #[pyo3(get)]
+            data: $data_type,
+        }
+
+        transaction_status_boilerplate!($name);
+
+        #[richcmp_eq_only]
+        #[common_methods]
+        #[pymethods]
+        impl $name {
+            #[new]
+            pub fn new(message: String, data: $data_type) -> Self {
+                (message, data).into()
+            }
+        }
+    };
+}
+
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.rpc.errors", subclass)]
 #[serde(rename_all = "camelCase")]
@@ -33,6 +80,8 @@ impl BlockCleanedUp {
     }
 }
 
+error_message!(BlockCleanedUpMessage);
+
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.rpc.errors", subclass)]
 pub struct SendTransactionPreflightFailure {
@@ -53,6 +102,11 @@ impl SendTransactionPreflightFailure {
         (message, result).into()
     }
 }
+
+error_message!(
+    SendTransactionPreflightFailureMessage,
+    RpcSimulateTransactionResult
+);
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone)]
 #[pyclass(module = "solders.transaction_status")]
@@ -82,6 +136,8 @@ impl BlockNotAvailable {
     }
 }
 
+error_message!(BlockNotAvailableMessage);
+
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.rpc.errors", subclass)]
 #[serde(rename_all = "camelCase")]
@@ -101,6 +157,8 @@ impl NodeUnhealthy {
         num_slots_behind.into()
     }
 }
+
+error_message!(NodeUnhealthyMessage, NodeUnhealthy);
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.rpc.errors", subclass)]
@@ -123,6 +181,8 @@ impl TransactionPrecompileVerificationFailure {
     }
 }
 
+error_message!(TransactionPrecompileVerificationFailureMessage);
+
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.rpc.errors", subclass)]
 pub struct SlotSkipped {
@@ -142,6 +202,8 @@ impl SlotSkipped {
     }
 }
 
+error_message!(SlotSkippedMessage);
+
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.rpc.errors", subclass)]
 pub struct LongTermStorageSlotSkipped {
@@ -160,6 +222,8 @@ impl LongTermStorageSlotSkipped {
         slot.into()
     }
 }
+
+error_message!(LongTermStorageSlotSkippedMessage);
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.rpc.errors", subclass)]
@@ -181,6 +245,8 @@ impl KeyExcludedFromSecondaryIndex {
     }
 }
 
+error_message!(KeyExcludedFromSecondaryIndexMessage);
+
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.rpc.errors", subclass)]
 pub struct ScanError {
@@ -199,6 +265,8 @@ impl ScanError {
         message.into()
     }
 }
+
+error_message!(ScanErrorMessage);
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.rpc.errors", subclass)]
@@ -219,6 +287,8 @@ impl BlockStatusNotAvailableYet {
     }
 }
 
+error_message!(BlockStatusNotAvailableYetMessage);
+
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.rpc.errors", subclass)]
 #[serde(rename_all = "camelCase")]
@@ -238,6 +308,8 @@ impl MinContextSlotNotReached {
         context_slot.into()
     }
 }
+
+error_message!(MinContextSlotNotReachedMessage, MinContextSlotNotReached);
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.rpc.errors", subclass)]
@@ -260,6 +332,8 @@ impl UnsupportedTransactionVersion {
     }
 }
 
+error_message!(UnsupportedTransactionVersionMessage);
+
 #[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug)]
 #[serde(untagged)]
 pub enum RpcCustomError {
@@ -277,6 +351,12 @@ pub enum RpcCustomError {
     MinContextSlotNotReached(MinContextSlotNotReached),
     UnsupportedTransactionVersion(UnsupportedTransactionVersion),
 }
+
+error_message!(ParseErrorMessage);
+error_message!(InvalidRequestMessage);
+error_message!(MethodNotFoundMessage);
+error_message!(InvalidParamsMessage);
+error_message!(InternalErrorMessage);
 
 impl IntoPy<PyObject> for RpcCustomError {
     fn into_py(self, py: Python<'_>) -> PyObject {
@@ -304,16 +384,34 @@ pub(crate) fn create_errors_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<BlockCleanedUp>()?;
     m.add_class::<SendTransactionPreflightFailure>()?;
     m.add_class::<BlockNotAvailable>()?;
+    m.add_class::<BlockCleanedUpMessage>()?;
+    m.add_class::<SendTransactionPreflightFailureMessage>()?;
+    m.add_class::<BlockNotAvailableMessage>()?;
     m.add_class::<NodeUnhealthy>()?;
+    m.add_class::<NodeUnhealthyMessage>()?;
     m.add_class::<TransactionPrecompileVerificationFailure>()?;
     m.add_class::<SlotSkipped>()?;
     m.add_class::<LongTermStorageSlotSkipped>()?;
     m.add_class::<BlockCleanedUp>()?;
     m.add_class::<KeyExcludedFromSecondaryIndex>()?;
+    m.add_class::<TransactionPrecompileVerificationFailureMessage>()?;
+    m.add_class::<SlotSkippedMessage>()?;
+    m.add_class::<LongTermStorageSlotSkippedMessage>()?;
+    m.add_class::<BlockCleanedUpMessage>()?;
+    m.add_class::<KeyExcludedFromSecondaryIndexMessage>()?;
     m.add_class::<ScanError>()?;
     m.add_class::<BlockStatusNotAvailableYet>()?;
+    m.add_class::<ScanErrorMessage>()?;
+    m.add_class::<BlockStatusNotAvailableYetMessage>()?;
     m.add_class::<MinContextSlotNotReached>()?;
+    m.add_class::<MinContextSlotNotReachedMessage>()?;
     m.add_class::<UnsupportedTransactionVersion>()?;
+    m.add_class::<UnsupportedTransactionVersionMessage>()?;
+    m.add_class::<ParseErrorMessage>()?;
+    m.add_class::<InvalidRequestMessage>()?;
+    m.add_class::<MethodNotFoundMessage>()?;
+    m.add_class::<InvalidParamsMessage>()?;
+    m.add_class::<InternalErrorMessage>()?;
     let typing = py.import("typing")?;
     let union = typing.getattr("Union")?;
     let union_members = vec![

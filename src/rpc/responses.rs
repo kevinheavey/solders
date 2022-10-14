@@ -10,7 +10,8 @@ use pyo3::{
     types::{PyBytes, PyTuple},
     PyClass, PyTypeInfo,
 };
-use serde::{Deserialize, Serialize};
+use serde::{de::Error, Deserialize, Serialize, Serializer};
+use serde_json::Value;
 use serde_with::{serde_as, DisplayFromStr, FromInto, OneOrMany, TryFromInto};
 use solana_sdk::{
     clock::{Epoch, Slot, UnixTimestamp},
@@ -36,7 +37,18 @@ use crate::rpc::tmp_response::{
     RpcStakeActivation as RpcStakeActivationOriginal, RpcSupply as RpcSupplyOriginal,
     RpcVote as RpcVoteOriginal, SlotInfo as SlotInfoOriginal,
     SlotTransactionStats as SlotTransactionStatsOriginal, SlotUpdate as SlotUpdateOriginal,
-    StakeActivationState as StakeActivationStateOriginal,
+    StakeActivationState as StakeActivationStateOriginal, JSON_RPC_SCAN_ERROR,
+    JSON_RPC_SERVER_ERROR_BLOCK_CLEANED_UP, JSON_RPC_SERVER_ERROR_BLOCK_NOT_AVAILABLE,
+    JSON_RPC_SERVER_ERROR_BLOCK_STATUS_NOT_AVAILABLE_YET,
+    JSON_RPC_SERVER_ERROR_KEY_EXCLUDED_FROM_SECONDARY_INDEX,
+    JSON_RPC_SERVER_ERROR_LONG_TERM_STORAGE_SLOT_SKIPPED,
+    JSON_RPC_SERVER_ERROR_MIN_CONTEXT_SLOT_NOT_REACHED, JSON_RPC_SERVER_ERROR_NODE_UNHEALTHY,
+    JSON_RPC_SERVER_ERROR_NO_SNAPSHOT, JSON_RPC_SERVER_ERROR_SEND_TRANSACTION_PREFLIGHT_FAILURE,
+    JSON_RPC_SERVER_ERROR_SLOT_SKIPPED, JSON_RPC_SERVER_ERROR_TRANSACTION_HISTORY_NOT_AVAILABLE,
+    JSON_RPC_SERVER_ERROR_TRANSACTION_PRECOMPILE_VERIFICATION_FAILURE,
+    JSON_RPC_SERVER_ERROR_TRANSACTION_SIGNATURE_LEN_MISMATCH,
+    JSON_RPC_SERVER_ERROR_TRANSACTION_SIGNATURE_VERIFICATION_FAILURE,
+    JSON_RPC_SERVER_ERROR_UNSUPPORTED_TRANSACTION_VERSION,
 };
 use crate::transaction_status::{
     EncodedConfirmedTransactionWithStatusMeta, TransactionConfirmationStatus, TransactionErrorType,
@@ -58,9 +70,15 @@ use crate::{
 };
 use camelpaste::paste;
 
-use super::errors::{RpcCustomError, UnsupportedTransactionVersion};
-
-// note: the `data` field of the error struct is always None
+use super::errors::{
+    BlockCleanedUpMessage, BlockNotAvailableMessage, BlockStatusNotAvailableYetMessage,
+    InternalErrorMessage, InvalidParamsMessage, InvalidRequestMessage,
+    KeyExcludedFromSecondaryIndexMessage, LongTermStorageSlotSkippedMessage, MethodNotFoundMessage,
+    MinContextSlotNotReachedMessage, NodeUnhealthyMessage, ParseErrorMessage,
+    RpcCustomErrorFieldless, ScanErrorMessage, SendTransactionPreflightFailureMessage,
+    SlotSkippedMessage, TransactionPrecompileVerificationFailureMessage,
+    UnsupportedTransactionVersion, UnsupportedTransactionVersionMessage,
+};
 
 pub trait CommonMethodsRpcResp<'a>:
     std::fmt::Display
@@ -229,36 +247,313 @@ macro_rules! contextless_resp_no_eq {
     };
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct RpcError {
-    /// Code
-    #[pyo3(get)]
-    pub code: i64,
-    /// Message
-    #[pyo3(get)]
-    pub message: String,
-    /// Data
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[pyo3(get)]
-    pub data: Option<RpcCustomError>,
+#[derive(FromPyObject, Clone, Debug, PartialEq, Eq)]
+pub enum RPCError {
+    Fieldless(RpcCustomErrorFieldless),
+    BlockCleanedUpMessage(BlockCleanedUpMessage),
+    SendTransactionPreflightFailureMessage(SendTransactionPreflightFailureMessage),
+    BlockNotAvailableMessage(BlockNotAvailableMessage),
+    NodeUnhealthyMessage(NodeUnhealthyMessage),
+    TransactionPrecompileVerificationFailureMessage(
+        TransactionPrecompileVerificationFailureMessage,
+    ),
+    SlotSkippedMessage(SlotSkippedMessage),
+    LongTermStorageSlotSkippedMessage(LongTermStorageSlotSkippedMessage),
+    KeyExcludedFromSecondaryIndexMessage(KeyExcludedFromSecondaryIndexMessage),
+    ScanErrorMessage(ScanErrorMessage),
+    BlockStatusNotAvailableYetMessage(BlockStatusNotAvailableYetMessage),
+    MinContextSlotNotReachedMessage(MinContextSlotNotReachedMessage),
+    UnsupportedTransactionVersionMessage(UnsupportedTransactionVersionMessage),
+    ParseErrorMessage(ParseErrorMessage),
+    InvalidRequestMessage(InvalidRequestMessage),
+    MethodNotFoundMessage(MethodNotFoundMessage),
+    InvalidParamsMessage(InvalidParamsMessage),
+    InternalErrorMessage(InternalErrorMessage),
 }
 
-#[richcmp_eq_only]
-#[common_methods]
-#[pymethods]
-impl RpcError {
-    #[new]
-    pub fn new(code: i64, message: &str, data: Option<RpcCustomError>) -> Self {
-        Self {
-            code,
-            message: message.to_string(),
-            data,
+impl RPCError {
+    fn py_to_json(&self) -> String {
+        match self {
+            Self::Fieldless(x) => serde_json::to_string(x).unwrap(),
+            Self::BlockCleanedUpMessage(x) => serde_json::to_string(x).unwrap(),
+            Self::SendTransactionPreflightFailureMessage(x) => serde_json::to_string(x).unwrap(),
+            Self::BlockNotAvailableMessage(x) => serde_json::to_string(x).unwrap(),
+            Self::NodeUnhealthyMessage(x) => serde_json::to_string(x).unwrap(),
+            Self::TransactionPrecompileVerificationFailureMessage(x) => {
+                serde_json::to_string(x).unwrap()
+            }
+            Self::SlotSkippedMessage(x) => serde_json::to_string(x).unwrap(),
+            Self::LongTermStorageSlotSkippedMessage(x) => serde_json::to_string(x).unwrap(),
+            Self::KeyExcludedFromSecondaryIndexMessage(x) => serde_json::to_string(x).unwrap(),
+            Self::ScanErrorMessage(x) => serde_json::to_string(x).unwrap(),
+            Self::BlockStatusNotAvailableYetMessage(x) => serde_json::to_string(x).unwrap(),
+            Self::MinContextSlotNotReachedMessage(x) => serde_json::to_string(x).unwrap(),
+            Self::UnsupportedTransactionVersionMessage(x) => serde_json::to_string(x).unwrap(),
+            Self::ParseErrorMessage(x) => serde_json::to_string(x).unwrap(),
+            Self::InvalidRequestMessage(x) => serde_json::to_string(x).unwrap(),
+            Self::MethodNotFoundMessage(x) => serde_json::to_string(x).unwrap(),
+            Self::InvalidParamsMessage(x) => serde_json::to_string(x).unwrap(),
+            Self::InternalErrorMessage(x) => serde_json::to_string(x).unwrap(),
+        }
+    }
+
+    fn py_from_json(raw: &str) -> PyResult<Self> {
+        serde_json::from_str(raw).map_err(to_py_err)
+    }
+}
+
+impl IntoPy<PyObject> for RPCError {
+    fn into_py(self, py: Python<'_>) -> PyObject {
+        match self {
+            Self::Fieldless(x) => x.into_py(py),
+            Self::BlockCleanedUpMessage(x) => x.into_py(py),
+            Self::SendTransactionPreflightFailureMessage(x) => x.into_py(py),
+            Self::BlockNotAvailableMessage(x) => x.into_py(py),
+            Self::NodeUnhealthyMessage(x) => x.into_py(py),
+            Self::TransactionPrecompileVerificationFailureMessage(x) => x.into_py(py),
+            Self::SlotSkippedMessage(x) => x.into_py(py),
+            Self::LongTermStorageSlotSkippedMessage(x) => x.into_py(py),
+            Self::KeyExcludedFromSecondaryIndexMessage(x) => x.into_py(py),
+            Self::ScanErrorMessage(x) => x.into_py(py),
+            Self::BlockStatusNotAvailableYetMessage(x) => x.into_py(py),
+            Self::MinContextSlotNotReachedMessage(x) => x.into_py(py),
+            Self::UnsupportedTransactionVersionMessage(x) => x.into_py(py),
+            Self::ParseErrorMessage(x) => x.into_py(py),
+            Self::InvalidRequestMessage(x) => x.into_py(py),
+            Self::MethodNotFoundMessage(x) => x.into_py(py),
+            Self::InvalidParamsMessage(x) => x.into_py(py),
+            Self::InternalErrorMessage(x) => x.into_py(py),
         }
     }
 }
 
-response_data_boilerplate!(RpcError);
+impl<'de> serde::Deserialize<'de> for RPCError {
+    fn deserialize<D: serde::Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
+        let value = Value::deserialize(d)?;
+
+        Ok(
+            match value
+                .get("code")
+                .ok_or_else(|| D::Error::custom("Object has no field 'code'."))
+                .map(Value::as_i64)?
+            {
+                Some(JSON_RPC_SERVER_ERROR_TRANSACTION_SIGNATURE_VERIFICATION_FAILURE) => {
+                    Self::Fieldless(
+                        RpcCustomErrorFieldless::TransactionSignatureVerificationFailure,
+                    )
+                }
+                Some(JSON_RPC_SERVER_ERROR_NO_SNAPSHOT) => {
+                    Self::Fieldless(RpcCustomErrorFieldless::NoSnapshot)
+                }
+                Some(JSON_RPC_SERVER_ERROR_TRANSACTION_HISTORY_NOT_AVAILABLE) => {
+                    Self::Fieldless(RpcCustomErrorFieldless::TransactionHistoryNotAvailable)
+                }
+                Some(JSON_RPC_SERVER_ERROR_TRANSACTION_SIGNATURE_LEN_MISMATCH) => {
+                    Self::Fieldless(RpcCustomErrorFieldless::TransactionSignatureLenMismatch)
+                }
+                Some(JSON_RPC_SERVER_ERROR_BLOCK_CLEANED_UP) => {
+                    Self::BlockCleanedUpMessage(BlockCleanedUpMessage::deserialize(value).unwrap())
+                }
+                Some(JSON_RPC_SERVER_ERROR_SEND_TRANSACTION_PREFLIGHT_FAILURE) => {
+                    Self::SendTransactionPreflightFailureMessage(
+                        SendTransactionPreflightFailureMessage::deserialize(value).unwrap(),
+                    )
+                }
+                Some(JSON_RPC_SERVER_ERROR_BLOCK_NOT_AVAILABLE) => Self::BlockNotAvailableMessage(
+                    BlockNotAvailableMessage::deserialize(value).unwrap(),
+                ),
+                Some(JSON_RPC_SERVER_ERROR_NODE_UNHEALTHY) => {
+                    Self::NodeUnhealthyMessage(NodeUnhealthyMessage::deserialize(value).unwrap())
+                }
+                Some(JSON_RPC_SERVER_ERROR_TRANSACTION_PRECOMPILE_VERIFICATION_FAILURE) => {
+                    Self::TransactionPrecompileVerificationFailureMessage(
+                        TransactionPrecompileVerificationFailureMessage::deserialize(value)
+                            .unwrap(),
+                    )
+                }
+                Some(JSON_RPC_SERVER_ERROR_SLOT_SKIPPED) => {
+                    Self::SlotSkippedMessage(SlotSkippedMessage::deserialize(value).unwrap())
+                }
+                Some(JSON_RPC_SERVER_ERROR_LONG_TERM_STORAGE_SLOT_SKIPPED) => {
+                    Self::LongTermStorageSlotSkippedMessage(
+                        LongTermStorageSlotSkippedMessage::deserialize(value).unwrap(),
+                    )
+                }
+                Some(JSON_RPC_SERVER_ERROR_KEY_EXCLUDED_FROM_SECONDARY_INDEX) => {
+                    Self::KeyExcludedFromSecondaryIndexMessage(
+                        KeyExcludedFromSecondaryIndexMessage::deserialize(value).unwrap(),
+                    )
+                }
+                Some(JSON_RPC_SCAN_ERROR) => {
+                    Self::ScanErrorMessage(ScanErrorMessage::deserialize(value).unwrap())
+                }
+                Some(JSON_RPC_SERVER_ERROR_BLOCK_STATUS_NOT_AVAILABLE_YET) => {
+                    Self::BlockStatusNotAvailableYetMessage(
+                        BlockStatusNotAvailableYetMessage::deserialize(value).unwrap(),
+                    )
+                }
+                Some(JSON_RPC_SERVER_ERROR_MIN_CONTEXT_SLOT_NOT_REACHED) => {
+                    Self::MinContextSlotNotReachedMessage(
+                        MinContextSlotNotReachedMessage::deserialize(value).unwrap(),
+                    )
+                }
+                Some(JSON_RPC_SERVER_ERROR_UNSUPPORTED_TRANSACTION_VERSION) => {
+                    Self::UnsupportedTransactionVersionMessage(
+                        UnsupportedTransactionVersionMessage::deserialize(value).unwrap(),
+                    )
+                }
+                Some(-32700) => {
+                    Self::ParseErrorMessage(ParseErrorMessage::deserialize(value).unwrap())
+                }
+                Some(-32600) => {
+                    Self::InvalidRequestMessage(InvalidRequestMessage::deserialize(value).unwrap())
+                }
+                Some(-32601) => {
+                    Self::MethodNotFoundMessage(MethodNotFoundMessage::deserialize(value).unwrap())
+                }
+                Some(-32602) => {
+                    Self::InvalidParamsMessage(InvalidParamsMessage::deserialize(value).unwrap())
+                }
+                Some(-32603) => {
+                    Self::InternalErrorMessage(InternalErrorMessage::deserialize(value).unwrap())
+                }
+                type_ => panic!("unsupported type {:?}", type_),
+            },
+        )
+    }
+}
+
+impl Serialize for RPCError {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        #[derive(Serialize)]
+        #[serde(untagged)]
+        enum RPCError_<'a> {
+            Fieldless(&'a RpcCustomErrorFieldless),
+            BlockCleanedUpMessage(&'a BlockCleanedUpMessage),
+            SendTransactionPreflightFailureMessage(&'a SendTransactionPreflightFailureMessage),
+            BlockNotAvailableMessage(&'a BlockNotAvailableMessage),
+            NodeUnhealthyMessage(&'a NodeUnhealthyMessage),
+            TransactionPrecompileVerificationFailureMessage(
+                &'a TransactionPrecompileVerificationFailureMessage,
+            ),
+            SlotSkippedMessage(&'a SlotSkippedMessage),
+            LongTermStorageSlotSkippedMessage(&'a LongTermStorageSlotSkippedMessage),
+            KeyExcludedFromSecondaryIndexMessage(&'a KeyExcludedFromSecondaryIndexMessage),
+            ScanErrorMessage(&'a ScanErrorMessage),
+            BlockStatusNotAvailableYetMessage(&'a BlockStatusNotAvailableYetMessage),
+            MinContextSlotNotReachedMessage(&'a MinContextSlotNotReachedMessage),
+            UnsupportedTransactionVersionMessage(&'a UnsupportedTransactionVersionMessage),
+            ParseErrorMessage(&'a ParseErrorMessage),
+            InvalidRequestMessage(&'a InvalidRequestMessage),
+            MethodNotFoundMessage(&'a MethodNotFoundMessage),
+            InvalidParamsMessage(&'a InvalidParamsMessage),
+            InternalErrorMessage(&'a InternalErrorMessage),
+        }
+
+        #[derive(Serialize)]
+        struct RPCErrorWithCode<'a> {
+            #[serde(rename = "code")]
+            t: i64,
+            #[serde(flatten)]
+            err: RPCError_<'a>,
+        }
+
+        let msg = match self {
+            RPCError::Fieldless(f) => match f {
+                RpcCustomErrorFieldless::TransactionSignatureVerificationFailure => {
+                    RPCErrorWithCode {
+                        t: JSON_RPC_SERVER_ERROR_TRANSACTION_SIGNATURE_VERIFICATION_FAILURE,
+                        err: RPCError_::Fieldless(f),
+                    }
+                }
+                RpcCustomErrorFieldless::NoSnapshot => RPCErrorWithCode {
+                    t: JSON_RPC_SERVER_ERROR_NO_SNAPSHOT,
+                    err: RPCError_::Fieldless(f),
+                },
+                RpcCustomErrorFieldless::TransactionHistoryNotAvailable => RPCErrorWithCode {
+                    t: JSON_RPC_SERVER_ERROR_TRANSACTION_HISTORY_NOT_AVAILABLE,
+                    err: RPCError_::Fieldless(f),
+                },
+                RpcCustomErrorFieldless::TransactionSignatureLenMismatch => RPCErrorWithCode {
+                    t: JSON_RPC_SERVER_ERROR_TRANSACTION_SIGNATURE_LEN_MISMATCH,
+                    err: RPCError_::Fieldless(f),
+                },
+            },
+            RPCError::BlockCleanedUpMessage(x) => RPCErrorWithCode {
+                t: JSON_RPC_SERVER_ERROR_BLOCK_CLEANED_UP,
+                err: RPCError_::BlockCleanedUpMessage(x),
+            },
+            RPCError::SendTransactionPreflightFailureMessage(x) => RPCErrorWithCode {
+                t: JSON_RPC_SERVER_ERROR_SEND_TRANSACTION_PREFLIGHT_FAILURE,
+                err: RPCError_::SendTransactionPreflightFailureMessage(x),
+            },
+            RPCError::BlockNotAvailableMessage(x) => RPCErrorWithCode {
+                t: JSON_RPC_SERVER_ERROR_BLOCK_NOT_AVAILABLE,
+                err: RPCError_::BlockNotAvailableMessage(x),
+            },
+            RPCError::NodeUnhealthyMessage(x) => RPCErrorWithCode {
+                t: JSON_RPC_SERVER_ERROR_NODE_UNHEALTHY,
+                err: RPCError_::NodeUnhealthyMessage(x),
+            },
+            RPCError::TransactionPrecompileVerificationFailureMessage(x) => RPCErrorWithCode {
+                t: JSON_RPC_SERVER_ERROR_TRANSACTION_PRECOMPILE_VERIFICATION_FAILURE,
+                err: RPCError_::TransactionPrecompileVerificationFailureMessage(x),
+            },
+            RPCError::SlotSkippedMessage(x) => RPCErrorWithCode {
+                t: JSON_RPC_SERVER_ERROR_SLOT_SKIPPED,
+                err: RPCError_::SlotSkippedMessage(x),
+            },
+            RPCError::LongTermStorageSlotSkippedMessage(x) => RPCErrorWithCode {
+                t: JSON_RPC_SERVER_ERROR_LONG_TERM_STORAGE_SLOT_SKIPPED,
+                err: RPCError_::LongTermStorageSlotSkippedMessage(x),
+            },
+            RPCError::KeyExcludedFromSecondaryIndexMessage(x) => RPCErrorWithCode {
+                t: JSON_RPC_SERVER_ERROR_KEY_EXCLUDED_FROM_SECONDARY_INDEX,
+                err: RPCError_::KeyExcludedFromSecondaryIndexMessage(x),
+            },
+            RPCError::ScanErrorMessage(x) => RPCErrorWithCode {
+                t: JSON_RPC_SCAN_ERROR,
+                err: RPCError_::ScanErrorMessage(x),
+            },
+            RPCError::BlockStatusNotAvailableYetMessage(x) => RPCErrorWithCode {
+                t: JSON_RPC_SERVER_ERROR_BLOCK_STATUS_NOT_AVAILABLE_YET,
+                err: RPCError_::BlockStatusNotAvailableYetMessage(x),
+            },
+            RPCError::MinContextSlotNotReachedMessage(x) => RPCErrorWithCode {
+                t: JSON_RPC_SERVER_ERROR_MIN_CONTEXT_SLOT_NOT_REACHED,
+                err: RPCError_::MinContextSlotNotReachedMessage(x),
+            },
+            RPCError::UnsupportedTransactionVersionMessage(x) => RPCErrorWithCode {
+                t: JSON_RPC_SERVER_ERROR_UNSUPPORTED_TRANSACTION_VERSION,
+                err: RPCError_::UnsupportedTransactionVersionMessage(x),
+            },
+            RPCError::ParseErrorMessage(x) => RPCErrorWithCode {
+                t: -32700,
+                err: RPCError_::ParseErrorMessage(x),
+            },
+            RPCError::InvalidRequestMessage(x) => RPCErrorWithCode {
+                t: -32600,
+                err: RPCError_::InvalidRequestMessage(x),
+            },
+            RPCError::MethodNotFoundMessage(x) => RPCErrorWithCode {
+                t: -32601,
+                err: RPCError_::MethodNotFoundMessage(x),
+            },
+            RPCError::InvalidParamsMessage(x) => RPCErrorWithCode {
+                t: -32602,
+                err: RPCError_::InvalidParamsMessage(x),
+            },
+            RPCError::InternalErrorMessage(x) => RPCErrorWithCode {
+                t: -32603,
+                err: RPCError_::InternalErrorMessage(x),
+            },
+        };
+        msg.serialize(serializer)
+    }
+}
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -296,7 +591,7 @@ pub enum Resp<T: IntoPy<PyObject>> {
     Error {
         #[serde(skip_deserializing)]
         jsonrpc: crate::rpc::requests::V2,
-        error: RpcError,
+        error: RPCError,
         #[serde(skip_deserializing)]
         id: u64,
     },
@@ -993,6 +1288,7 @@ pub struct RpcSimulateTransactionResult {
     #[pyo3(get)]
     pub units_consumed: Option<u64>,
     #[serde_as(as = "Option<FromInto<UiTransactionReturnData>>")]
+    #[serde(default)]
     #[pyo3(get)]
     pub return_data: Option<TransactionReturnData>,
 }
@@ -2421,7 +2717,7 @@ pub struct SubscriptionError {
     #[serde(skip_deserializing)]
     jsonrpc: crate::rpc::requests::V2,
     #[pyo3(get)]
-    error: RpcError,
+    error: RPCError,
     #[pyo3(get)]
     id: u64,
 }
@@ -2433,7 +2729,7 @@ response_data_boilerplate!(SubscriptionError);
 #[pymethods]
 impl SubscriptionError {
     #[new]
-    pub fn new(id: u64, error: RpcError) -> Self {
+    pub fn new(id: u64, error: RPCError) -> Self {
         Self {
             id,
             error,
@@ -2519,8 +2815,8 @@ macro_rules ! pyunion_resp {
 
             fn from_json(raw: &str, parser: &str) -> PyResult<Self> {
                 match parser {
-                    stringify!($err_variant) => {let parsed = $err_variant::py_from_json(raw)?; let as_enum = Self::RpcError(parsed); Ok(as_enum)},
-                    $(stringify!($variant) => {let parsed = $variant::py_from_json(raw)?; let as_enum = match parsed {Resp::Error {error, ..} => Self::RpcError(error), Resp::Result {result, ..} => Self::$variant(result)};Ok(as_enum)},)+
+                    stringify!($err_variant) => {let parsed = $err_variant::py_from_json(raw)?; let as_enum = Self::RPCError(parsed); Ok(as_enum)},
+                    $(stringify!($variant) => {let parsed = $variant::py_from_json(raw)?; let as_enum = match parsed {Resp::Error {error, ..} => Self::RPCError(error), Resp::Result {result, ..} => Self::$variant(result)};Ok(as_enum)},)+
                     _ => Err(PyValueError::new_err(format!("Unrecognised parser: {}", parser)))
                 }
             }
@@ -2539,7 +2835,7 @@ macro_rules ! pyunion_resp {
 
 pyunion_resp!(
     RPCResult,
-    RpcError,
+    RPCError,
     GetAccountInfoResp,
     GetAccountInfoJsonParsedResp,
     GetAccountInfoMaybeJsonParsedResp,
@@ -2620,7 +2916,7 @@ pyunion_resp!(
 ///
 #[pyfunction]
 pub fn batch_to_json(resps: Vec<RPCResult>) -> String {
-    let objects: Vec<serde_json::Map<String, serde_json::Value>> = resps
+    let objects: Vec<serde_json::Map<String, Value>> = resps
         .iter()
         .map(|r| serde_json::from_str(&r.to_json()).unwrap())
         .collect();
@@ -2648,7 +2944,7 @@ pub fn batch_to_json(resps: Vec<RPCResult>) -> String {
 ///
 #[pyfunction]
 pub fn batch_from_json(raw: &str, parsers: Vec<&PyType>) -> PyResult<Vec<PyObject>> {
-    let raw_objects: Vec<serde_json::Map<String, serde_json::Value>> =
+    let raw_objects: Vec<serde_json::Map<String, Value>> =
         serde_json::from_str(raw).map_err(to_py_err)?;
     let raw_objects_len = raw_objects.len();
     let parsers_len = parsers.len();
@@ -2724,84 +3020,101 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let union = typing.getattr("Union")?;
     let typevar = typing.getattr("TypeVar")?;
     let t = typevar.call1(("T",))?;
-    m.add("T", t)?;
-    m.add(
-        "Resp",
-        union.get_item(PyTuple::new(
-            py,
-            vec![RpcError::type_object(py).as_ref(), t],
-        ))?,
-    )?;
-    let rpc_result_members = PyTuple::new(
-        py,
-        vec![
-            RpcError::type_object(py),
-            GetAccountInfoResp::type_object(py),
-            GetAccountInfoJsonParsedResp::type_object(py),
-            GetAccountInfoMaybeJsonParsedResp::type_object(py),
-            GetBalanceResp::type_object(py),
-            GetBlockProductionResp::type_object(py),
-            GetBlockResp::type_object(py),
-            GetBlockCommitmentResp::type_object(py),
-            GetBlockHeightResp::type_object(py),
-            GetBlocksResp::type_object(py),
-            GetBlocksWithLimitResp::type_object(py),
-            GetBlockTimeResp::type_object(py),
-            GetClusterNodesResp::type_object(py),
-            GetEpochInfoResp::type_object(py),
-            GetEpochScheduleResp::type_object(py),
-            GetFeeForMessageResp::type_object(py),
-            GetFirstAvailableBlockResp::type_object(py),
-            GetGenesisHashResp::type_object(py),
-            GetHealthResp::type_object(py),
-            GetHighestSnapshotSlotResp::type_object(py),
-            GetIdentityResp::type_object(py),
-            GetInflationGovernorResp::type_object(py),
-            GetInflationRateResp::type_object(py),
-            GetInflationRewardResp::type_object(py),
-            GetLargestAccountsResp::type_object(py),
-            GetLatestBlockhashResp::type_object(py),
-            GetLeaderScheduleResp::type_object(py),
-            GetMaxRetransmitSlotResp::type_object(py),
-            GetMaxShredInsertSlotResp::type_object(py),
-            GetMinimumBalanceForRentExemptionResp::type_object(py),
-            GetMultipleAccountsResp::type_object(py),
-            GetMultipleAccountsJsonParsedResp::type_object(py),
-            GetMultipleAccountsMaybeJsonParsedResp::type_object(py),
-            GetProgramAccountsWithContextResp::type_object(py),
-            GetProgramAccountsResp::type_object(py),
-            GetProgramAccountsWithContextJsonParsedResp::type_object(py),
-            GetProgramAccountsJsonParsedResp::type_object(py),
-            GetProgramAccountsMaybeJsonParsedResp::type_object(py),
-            GetProgramAccountsWithContextMaybeJsonParsedResp::type_object(py),
-            GetRecentPerformanceSamplesResp::type_object(py),
-            GetSignaturesForAddressResp::type_object(py),
-            GetSignatureStatusesResp::type_object(py),
-            GetSlotResp::type_object(py),
-            GetSlotLeaderResp::type_object(py),
-            GetSlotLeadersResp::type_object(py),
-            GetStakeActivationResp::type_object(py),
-            GetSupplyResp::type_object(py),
-            GetTokenAccountBalanceResp::type_object(py),
-            GetTokenAccountsByDelegateResp::type_object(py),
-            GetTokenAccountsByDelegateJsonParsedResp::type_object(py),
-            GetTokenAccountsByOwnerResp::type_object(py),
-            GetTokenAccountsByOwnerJsonParsedResp::type_object(py),
-            GetTokenLargestAccountsResp::type_object(py),
-            GetTokenSupplyResp::type_object(py),
-            GetTransactionResp::type_object(py),
-            GetTransactionCountResp::type_object(py),
-            GetVersionResp::type_object(py),
-            RpcVersionInfo::type_object(py),
-            GetVoteAccountsResp::type_object(py),
-            IsBlockhashValidResp::type_object(py),
-            MinimumLedgerSlotResp::type_object(py),
-            RequestAirdropResp::type_object(py),
-            SendTransactionResp::type_object(py),
-            SimulateTransactionResp::type_object(py),
-            ValidatorExitResp::type_object(py),
-        ],
+    let rpc_error_members_raw = vec![
+        RpcCustomErrorFieldless::type_object(py),
+        BlockCleanedUpMessage::type_object(py),
+        SendTransactionPreflightFailureMessage::type_object(py),
+        BlockNotAvailableMessage::type_object(py),
+        NodeUnhealthyMessage::type_object(py),
+        TransactionPrecompileVerificationFailureMessage::type_object(py),
+        SlotSkippedMessage::type_object(py),
+        LongTermStorageSlotSkippedMessage::type_object(py),
+        KeyExcludedFromSecondaryIndexMessage::type_object(py),
+        ScanErrorMessage::type_object(py),
+        BlockStatusNotAvailableYetMessage::type_object(py),
+        MinContextSlotNotReachedMessage::type_object(py),
+        UnsupportedTransactionVersionMessage::type_object(py),
+    ];
+    let rpc_error_members = PyTuple::new(py, rpc_error_members_raw.clone());
+    let rpc_error_alias = union.get_item(rpc_error_members)?;
+    let rpc_error_members_raw_cloned = rpc_error_members_raw.clone();
+    let mut resp_members = vec![t];
+    resp_members.extend(
+        rpc_error_members_raw_cloned
+            .iter()
+            .map(|x| x.as_ref())
+            .collect::<Vec<&PyAny>>(),
     );
+    m.add("T", t)?;
+    m.add("Resp", union.get_item(PyTuple::new(py, resp_members))?)?;
+    let mut rpc_result_members_raw = rpc_error_members_raw.clone();
+    rpc_result_members_raw.extend(vec![
+        GetAccountInfoResp::type_object(py),
+        GetAccountInfoJsonParsedResp::type_object(py),
+        GetAccountInfoMaybeJsonParsedResp::type_object(py),
+        GetBalanceResp::type_object(py),
+        GetBlockProductionResp::type_object(py),
+        GetBlockResp::type_object(py),
+        GetBlockCommitmentResp::type_object(py),
+        GetBlockHeightResp::type_object(py),
+        GetBlocksResp::type_object(py),
+        GetBlocksWithLimitResp::type_object(py),
+        GetBlockTimeResp::type_object(py),
+        GetClusterNodesResp::type_object(py),
+        GetEpochInfoResp::type_object(py),
+        GetEpochScheduleResp::type_object(py),
+        GetFeeForMessageResp::type_object(py),
+        GetFirstAvailableBlockResp::type_object(py),
+        GetGenesisHashResp::type_object(py),
+        GetHealthResp::type_object(py),
+        GetHighestSnapshotSlotResp::type_object(py),
+        GetIdentityResp::type_object(py),
+        GetInflationGovernorResp::type_object(py),
+        GetInflationRateResp::type_object(py),
+        GetInflationRewardResp::type_object(py),
+        GetLargestAccountsResp::type_object(py),
+        GetLatestBlockhashResp::type_object(py),
+        GetLeaderScheduleResp::type_object(py),
+        GetMaxRetransmitSlotResp::type_object(py),
+        GetMaxShredInsertSlotResp::type_object(py),
+        GetMinimumBalanceForRentExemptionResp::type_object(py),
+        GetMultipleAccountsResp::type_object(py),
+        GetMultipleAccountsJsonParsedResp::type_object(py),
+        GetMultipleAccountsMaybeJsonParsedResp::type_object(py),
+        GetProgramAccountsWithContextResp::type_object(py),
+        GetProgramAccountsResp::type_object(py),
+        GetProgramAccountsWithContextJsonParsedResp::type_object(py),
+        GetProgramAccountsJsonParsedResp::type_object(py),
+        GetProgramAccountsMaybeJsonParsedResp::type_object(py),
+        GetProgramAccountsWithContextMaybeJsonParsedResp::type_object(py),
+        GetRecentPerformanceSamplesResp::type_object(py),
+        GetSignaturesForAddressResp::type_object(py),
+        GetSignatureStatusesResp::type_object(py),
+        GetSlotResp::type_object(py),
+        GetSlotLeaderResp::type_object(py),
+        GetSlotLeadersResp::type_object(py),
+        GetStakeActivationResp::type_object(py),
+        GetSupplyResp::type_object(py),
+        GetTokenAccountBalanceResp::type_object(py),
+        GetTokenAccountsByDelegateResp::type_object(py),
+        GetTokenAccountsByDelegateJsonParsedResp::type_object(py),
+        GetTokenAccountsByOwnerResp::type_object(py),
+        GetTokenAccountsByOwnerJsonParsedResp::type_object(py),
+        GetTokenLargestAccountsResp::type_object(py),
+        GetTokenSupplyResp::type_object(py),
+        GetTransactionResp::type_object(py),
+        GetTransactionCountResp::type_object(py),
+        GetVersionResp::type_object(py),
+        RpcVersionInfo::type_object(py),
+        GetVoteAccountsResp::type_object(py),
+        IsBlockhashValidResp::type_object(py),
+        MinimumLedgerSlotResp::type_object(py),
+        RequestAirdropResp::type_object(py),
+        SendTransactionResp::type_object(py),
+        SimulateTransactionResp::type_object(py),
+        ValidatorExitResp::type_object(py),
+    ]);
+    let rpc_result_members = PyTuple::new(py, rpc_result_members_raw);
     let rpc_result_alias = union.get_item(rpc_result_members)?;
     let slot_update_members = PyTuple::new(
         py,
@@ -2846,7 +3159,6 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let websocket_message_members = PyTuple::new(py, websocket_message_members_raw);
     let websocket_message_alias = union.get_item(websocket_message_members)?;
     m.add_class::<RpcResponseContext>()?;
-    m.add_class::<RpcError>()?;
     m.add_class::<GetAccountInfoResp>()?;
     m.add_class::<GetAccountInfoJsonParsedResp>()?;
     m.add_class::<GetAccountInfoMaybeJsonParsedResp>()?;
@@ -2966,6 +3278,7 @@ pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<VoteNotification>()?;
     m.add_class::<RpcBlockUpdate>()?;
     m.add_class::<BlockStoreError>()?;
+    m.add("RPCError", rpc_error_alias)?;
     m.add("RPCResult", rpc_result_alias)?;
     m.add("SlotUpdate", slot_update_alias)?;
     m.add("Notification", notification_alias)?;
