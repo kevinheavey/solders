@@ -91,7 +91,6 @@ from solders.rpc.responses import (
     RpcVoteAccountStatus,
     RpcSignatureResponse,
     EpochInfo,
-    RpcError,
     RpcBlockUpdate,
     RpcLogsResponse,
     RpcVote,
@@ -119,7 +118,12 @@ from solders.rpc.responses import (
     parse_notification,
     parse_websocket_message,
 )
-from solders.rpc.errors import NodeUnhealthy
+from solders.rpc.errors import (
+    NodeUnhealthy,
+    NodeUnhealthyMessage,
+    SendTransactionPreflightFailureMessage,
+    InvalidParamsMessage,
+)
 from solders.hash import Hash
 from solders.account import Account, AccountJSON
 from solders.epoch_schedule import EpochSchedule
@@ -206,9 +210,8 @@ def test_get_account_info_null() -> None:
 def test_get_account_info_error() -> None:
     raw = '{"jsonrpc":"2.0","error":{"code":-32602,"message":"Invalid param: WrongSize"},"id":1}'
     parsed = GetAccountInfoResp.from_json(raw)
-    assert isinstance(parsed, RpcError)
-    error = RpcError(code=-32602, message="Invalid param: WrongSize")
-    assert parsed == error
+    assert isinstance(parsed, InvalidParamsMessage)
+    assert parsed.message == "Invalid param: WrongSize"
 
 
 def test_get_account_info_json_parsed() -> None:
@@ -633,10 +636,7 @@ def test_get_health_resp_unhealthy_generic() -> None:
   "id": 1
 }"""
     parsed = GetHealthResp.from_json(raw)
-    assert isinstance(parsed, RpcError)
-    # This is the only custom rpc error that can be empty.
-    # Thus, if the JSON error has `"data": {}`,
-    # it's implicitly a NodeUnhealthy error.
+    assert isinstance(parsed, NodeUnhealthyMessage)
     assert parsed.data == NodeUnhealthy()
 
 
@@ -653,7 +653,7 @@ def test_get_health_additional_info() -> None:
   "id": 1
 }"""
     parsed = GetHealthResp.from_json(raw)
-    assert isinstance(parsed, RpcError)
+    assert isinstance(parsed, NodeUnhealthyMessage)
     assert parsed.data == NodeUnhealthy(42)
 
 
@@ -2509,7 +2509,7 @@ def test_parse_ws_message() -> None:
     raw_err = '{"jsonrpc":"2.0","error":{"code":-32602,"message":"Invalid param: WrongSize"},"id":1}'
     parsed_err = parse_websocket_message(raw_err)
     assert isinstance(parsed_err[0], SubscriptionError)
-    assert isinstance(parsed_err[0].error, RpcError)
+    assert isinstance(parsed_err[0].error, InvalidParamsMessage)
     raw_ok = '{ "jsonrpc": "2.0", "result": 23784, "id": 3 }'
     parsed_ok = parse_websocket_message(raw_ok)
     assert isinstance(parsed_ok[0], SubscriptionResult)
@@ -2523,3 +2523,12 @@ def test_parse_ws_message() -> None:
     parsed_multi = parse_websocket_message(raw_multi)
     assert len(parsed_multi) == 2
     assert isinstance(parsed_multi[0], SubscriptionResult)
+
+
+def test_parse_preflight_error() -> None:
+    raw = '{"code":-32002,"message":"Transaction simulation failed: Error processing Instruction 0: custom program error: 0x1","data":{"accounts":null,"err":{"InstructionError":[0,{"Custom":1}]},"logs":["Program 11111111111111111111111111111111 invoke [1]","Transfer: insufficient lamports 995000, need 1000001","Program 11111111111111111111111111111111 failed: custom program error: 0x1"],"unitsConsumed":0}}'
+    raw_full = '{"jsonrpc":"2.0","error":{"code":-32002,"message":"Transaction simulation failed: Error processing Instruction 0: custom program error: 0x1","data":{"accounts":null,"err":{"InstructionError":[0,{"Custom":1}]},"logs":["Program 11111111111111111111111111111111 invoke [1]","Transfer: insufficient lamports 995000, need 1000001","Program 11111111111111111111111111111111 failed: custom program error: 0x1"],"unitsConsumed":0}},"id":0}'
+    err = SendTransactionPreflightFailureMessage.from_json(raw)
+    assert isinstance(err, SendTransactionPreflightFailureMessage)
+    err2 = SendTransactionResp.from_json(raw_full)
+    assert isinstance(err2, SendTransactionPreflightFailureMessage)

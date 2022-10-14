@@ -7,7 +7,28 @@ from solders.transaction_status import UiConfirmedBlock
 from solders.signature import Signature
 from solders.pubkey import Pubkey
 from solders.epoch_schedule import EpochSchedule
-from solders.rpc.errors import RpcCustomError, UnsupportedTransactionVersion
+from solders.rpc.errors import (
+    RpcCustomError,
+    UnsupportedTransactionVersion,
+    RpcCustomErrorFieldless,
+    BlockCleanedUpMessage,
+    SendTransactionPreflightFailureMessage,
+    BlockNotAvailableMessage,
+    NodeUnhealthyMessage,
+    TransactionPrecompileVerificationFailureMessage,
+    SlotSkippedMessage,
+    LongTermStorageSlotSkippedMessage,
+    KeyExcludedFromSecondaryIndexMessage,
+    ScanErrorMessage,
+    BlockStatusNotAvailableYetMessage,
+    MinContextSlotNotReachedMessage,
+    UnsupportedTransactionVersionMessage,
+    ParseErrorMessage,
+    InvalidRequestMessage,
+    MethodNotFoundMessage,
+    InvalidParamsMessage,
+    InternalErrorMessage,
+)
 from solders.transaction import VersionedTransaction
 from solders.transaction_status import (
     TransactionErrorType,
@@ -22,16 +43,29 @@ class RpcResponseContext:
     api_version: Optional[str]
     def __init__(self, slot: int, api_version: Optional[str] = None) -> None: ...
 
-class RpcError:
-    code: int
-    message: str
-    data: Optional[RpcCustomError]
-    def __init__(
-        self, code: int, message: str, data: Optional[RpcCustomError] = None
-    ) -> None: ...
+RPCError = Union[
+    RpcCustomErrorFieldless,
+    BlockCleanedUpMessage,
+    SendTransactionPreflightFailureMessage,
+    BlockNotAvailableMessage,
+    NodeUnhealthyMessage,
+    TransactionPrecompileVerificationFailureMessage,
+    SlotSkippedMessage,
+    LongTermStorageSlotSkippedMessage,
+    KeyExcludedFromSecondaryIndexMessage,
+    ScanErrorMessage,
+    BlockStatusNotAvailableYetMessage,
+    MinContextSlotNotReachedMessage,
+    UnsupportedTransactionVersionMessage,
+    ParseErrorMessage,
+    InvalidRequestMessage,
+    MethodNotFoundMessage,
+    InvalidParamsMessage,
+    InternalErrorMessage,
+]
 
 T = TypeVar("T")
-Resp = Union[RpcError, T]
+Resp = Union[RPCError, T]
 
 class GetAccountInfoResp:
     context: RpcResponseContext
@@ -2112,11 +2146,11 @@ class SubscriptionResult:
 
 class SubscriptionError:
     id: int
-    error: RpcError
+    error: RPCError
     def __init__(
         self,
         id: int,
-        error: RpcError,
+        error: RPCError,
     ) -> None: ...
     def to_json(self) -> str: ...
     @staticmethod
@@ -2175,7 +2209,7 @@ SlotUpdate = Union[
 ]
 
 RPCResult = Union[
-    RpcError,
+    RPCError,
     GetAccountInfoResp,
     GetAccountInfoJsonParsedResp,
     GetAccountInfoMaybeJsonParsedResp,
