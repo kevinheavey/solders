@@ -74,7 +74,6 @@ class RpcSimulateTransactionConfig:
         sig_verify: bool = False,
         replace_recent_blockhash: bool = False,
         commitment: Optional[CommitmentLevel] = None,
-        encoding: Optional[UiTransactionEncoding] = None,
         accounts: Optional[RpcSimulateTransactionAccountsConfig] = None,
         min_context_slot: Optional[int] = None,
     ): ...
@@ -84,8 +83,6 @@ class RpcSimulateTransactionConfig:
     def replace_recent_blockhash(self) -> bool: ...
     @property
     def commitment(self) -> Optional[CommitmentLevel]: ...
-    @property
-    def encoding(self) -> Optional[UiTransactionEncoding]: ...
     @property
     def accounts(self) -> Optional[RpcSimulateTransactionAccountsConfig]: ...
     @property
