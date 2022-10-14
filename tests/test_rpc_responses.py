@@ -2532,3 +2532,13 @@ def test_parse_preflight_error() -> None:
     assert isinstance(err, SendTransactionPreflightFailureMessage)
     err2 = SendTransactionResp.from_json(raw_full)
     assert isinstance(err2, SendTransactionPreflightFailureMessage)
+
+
+def test_parse_instruction_error() -> None:
+    raw = '[0,"ProgramFailedToComplete"]'
+    parsed = TransactionErrorInstructionError.from_json(raw)
+    assert isinstance(parsed, TransactionErrorInstructionError)
+    raw_full = """{"jsonrpc":"2.0","error":{"code":-32002,"message":"Transaction simulation failed: Error processing Instruction 0: Program failed to complete","data":{"accounts":null,"err":{"InstructionError":[0,"ProgramFailedToComplete"]},"logs":["Program Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS invoke [1]","Program log: Instruction: UpdateLargeAccount","Program log: panicked at 'index out of bounds: the len is 25000 but the index is 25000', programs/zero-copy/src/lib.rs:57:9","Program Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS consumed 4177 of 200000 compute units","Program failed to complete: BPF program panicked","Program Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS failed: Program failed to complete"],"unitsConsumed":0}},"id":0}"""
+    raw_data = """{"accounts":null,"err":{"InstructionError":[0,"ProgramFailedToComplete"]},"logs":["Program Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS invoke [1]","Program log: Instruction: UpdateLargeAccount","Program log: panicked at 'index out of bounds: the len is 25000 but the index is 25000', programs/zero-copy/src/lib.rs:57:9","Program Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS consumed 4177 of 200000 compute units","Program failed to complete: BPF program panicked","Program Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS failed: Program failed to complete"],"unitsConsumed":0}"""
+    parsed_data = RpcSimulateTransactionResult.from_json(raw_data)
+    parsed_full = SimulateTransactionResp.from_json(raw_full)
