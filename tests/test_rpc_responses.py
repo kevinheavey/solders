@@ -2549,5 +2549,7 @@ def test_parse_instruction_error() -> None:
 def test_parse_transaction_error() -> None:
     raw_data = '{"accounts":null,"err":"AccountNotFound","logs":[],"unitsConsumed":0}'
     parsed_data = RpcSimulateTransactionResult.from_json(raw_data)
+    assert isinstance(parsed_data, RpcSimulateTransactionResult)
     raw_full = '{"jsonrpc":"2.0","error":{"code":-32002,"message":"Transaction simulation failed: Attempt to debit an account but found no record of a prior credit.","data":{"accounts":null,"err":"AccountNotFound","logs":[],"unitsConsumed":0}},"id":0}'
     parsed_full = SimulateTransactionResp.from_json(raw_full)
+    assert isinstance(parsed_full, SendTransactionPreflightFailureMessage)

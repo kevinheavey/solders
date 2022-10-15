@@ -4,7 +4,7 @@
 
 ### Fixed
 
-- Fix `TransactionError` parsing [(#20)](https://github.com/kevinheavey/solders/pull/20)
+- Fix `TransactionError` parsing
 
 ## [0.9.2] - 2022-10-14
 
