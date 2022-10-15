@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.9.3] - 2022-10-15
+
+### Fixed
+
+- Fix `TransactionError` parsing [(#20)](https://github.com/kevinheavey/solders/pull/20)
+
 ## [0.9.2] - 2022-10-14
 
 ### Fixed
