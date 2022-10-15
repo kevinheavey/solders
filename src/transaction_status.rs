@@ -1429,11 +1429,27 @@ pub enum TransactionErrorFieldless {
 }
 
 #[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug)]
-pub enum TransactionErrorType {
-    Fieldless(TransactionErrorFieldless),
+pub enum TransactionErrorTypeTagged {
     InstructionError(TransactionErrorInstructionError),
     DuplicateInstruction(TransactionErrorDuplicateInstruction),
     InsufficientFundsForRent(TransactionErrorInsufficientFundsForRent),
+}
+
+impl IntoPy<PyObject> for TransactionErrorTypeTagged {
+    fn into_py(self, py: Python<'_>) -> PyObject {
+        match self {
+            Self::InstructionError(e) => e.into_py(py),
+            Self::DuplicateInstruction(d) => d.into_py(py),
+            Self::InsufficientFundsForRent(i) => i.into_py(py),
+        }
+    }
+}
+
+#[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug)]
+#[serde(untagged)]
+pub enum TransactionErrorType {
+    Fieldless(TransactionErrorFieldless),
+    Tagged(TransactionErrorTypeTagged),
 }
 
 impl Default for TransactionErrorType {
@@ -1445,12 +1461,18 @@ impl Default for TransactionErrorType {
 impl From<TransactionErrorType> for TransactionErrorOriginal {
     fn from(w: TransactionErrorType) -> Self {
         match w {
-            TransactionErrorType::InstructionError(e) => {
-                Self::InstructionError(e.0 .0, e.0 .1.into())
-            }
-            TransactionErrorType::DuplicateInstruction(e) => Self::DuplicateInstruction(e.0),
-            TransactionErrorType::InsufficientFundsForRent(e) => Self::InsufficientFundsForRent {
-                account_index: e.account_index,
+            TransactionErrorType::Tagged(t) => match t {
+                TransactionErrorTypeTagged::InstructionError(e) => {
+                    Self::InstructionError(e.0 .0, e.0 .1.into())
+                }
+                TransactionErrorTypeTagged::DuplicateInstruction(e) => {
+                    Self::DuplicateInstruction(e.0)
+                }
+                TransactionErrorTypeTagged::InsufficientFundsForRent(e) => {
+                    Self::InsufficientFundsForRent {
+                        account_index: e.account_index,
+                    }
+                }
             },
             TransactionErrorType::Fieldless(f) => match f {
                 TransactionErrorFieldless::AccountInUse => Self::AccountInUse,
@@ -1515,15 +1537,19 @@ impl From<TransactionErrorOriginal> for TransactionErrorType {
     fn from(w: TransactionErrorOriginal) -> Self {
         match w {
             TransactionErrorOriginal::InstructionError(index, err) => {
-                Self::InstructionError(TransactionErrorInstructionError((index, err.into())))
+                Self::Tagged(TransactionErrorTypeTagged::InstructionError(
+                    TransactionErrorInstructionError((index, err.into())),
+                ))
             }
             TransactionErrorOriginal::DuplicateInstruction(index) => {
-                Self::DuplicateInstruction(TransactionErrorDuplicateInstruction(index))
+                Self::Tagged(TransactionErrorTypeTagged::DuplicateInstruction(
+                    TransactionErrorDuplicateInstruction(index),
+                ))
             }
             TransactionErrorOriginal::InsufficientFundsForRent { account_index } => {
-                Self::InsufficientFundsForRent(TransactionErrorInsufficientFundsForRent {
-                    account_index,
-                })
+                Self::Tagged(TransactionErrorTypeTagged::InsufficientFundsForRent(
+                    TransactionErrorInsufficientFundsForRent { account_index },
+                ))
             }
             TransactionErrorOriginal::AccountInUse => {
                 Self::Fieldless(TransactionErrorFieldless::AccountInUse)
@@ -1620,9 +1646,7 @@ impl IntoPy<PyObject> for TransactionErrorType {
     fn into_py(self, py: Python<'_>) -> PyObject {
         match self {
             Self::Fieldless(f) => f.into_py(py),
-            Self::InstructionError(e) => e.into_py(py),
-            Self::DuplicateInstruction(d) => d.into_py(py),
-            Self::InsufficientFundsForRent(i) => i.into_py(py),
+            Self::Tagged(t) => t.into_py(py),
         }
     }
 }
