@@ -1464,7 +1464,7 @@ dependencies = [
 
 [[package]]
 name = "solders"
-version = "0.9.2"
+version = "0.9.3"
 dependencies = [
  "base64 0.13.0",
  "bincode",
