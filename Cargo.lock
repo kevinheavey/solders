@@ -999,6 +999,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "pythonize"
+version = "0.17.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0f7f0c136f5fbc01868185eef462800e49659eb23acca83b9e884367a006acb6"
+dependencies = [
+ "pyo3",
+ "serde",
+]
+
+[[package]]
 name = "qstring"
 version = "0.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1474,6 +1484,7 @@ dependencies = [
  "derive_more",
  "dict_derive",
  "pyo3",
+ "pythonize",
  "serde",
  "serde_cbor",
  "serde_json",

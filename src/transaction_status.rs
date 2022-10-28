@@ -1,12 +1,14 @@
 #![allow(clippy::too_many_arguments)]
 use derive_more::{From, Into};
 extern crate base64;
+use pythonize::{depythonize, pythonize};
 use std::fmt::Display;
 use std::str::FromStr;
 
 use crate::{
     account_decoder::UiTokenAmount,
     commitment_config::CommitmentConfig,
+    handle_py_value_err,
     message::MessageHeader,
     pubkey::Pubkey,
     signature::Signature,
@@ -296,13 +298,14 @@ transaction_status_boilerplate!(ParsedInstruction);
 #[pymethods]
 impl ParsedInstruction {
     #[new]
-    fn new(program: String, program_id: Pubkey, parsed: &str) -> Self {
-        ParsedInstructionOriginal {
+    fn new(program: String, program_id: Pubkey, parsed: &PyAny) -> PyResult<Self> {
+        let value = handle_py_value_err(depythonize::<Value>(parsed))?;
+        Ok(ParsedInstructionOriginal {
             program,
             program_id: program_id.to_string(),
-            parsed: Value::from_str(parsed).unwrap(),
+            parsed: value,
         }
-        .into()
+        .into())
     }
 
     #[getter]
@@ -316,8 +319,8 @@ impl ParsedInstruction {
     }
 
     #[getter]
-    pub fn parsed(&self) -> String {
-        self.0.parsed.to_string()
+    pub fn parsed(&self, py: Python<'_>) -> PyResult<PyObject> {
+        handle_py_value_err(pythonize(py, &self.0.parsed))
     }
 }
 
