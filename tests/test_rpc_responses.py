@@ -1,6 +1,7 @@
 from pathlib import Path
-from typing import List, Union
+from typing import List, Union, Dict
 from pytest import mark, raises
+from jsonalias import Json
 from solders.errors import SerdeJSONError
 from solders.rpc.responses import (
     GetAccountInfoResp,
@@ -221,7 +222,21 @@ def test_get_account_info_json_parsed() -> None:
     parsed_account = ParsedAccount(
         program="spl-token",
         space=165,
-        parsed='{"info":{"isNative":false,"mint":"EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v","owner":"vines1vzrYbzLMRdu58ou5XTby4qAqVRLmqo36NKPTg","state":"initialized","tokenAmount":{"amount":"36010000000","decimals":6,"uiAmount":36010.0,"uiAmountString":"36010"}},"type":"account"}',
+        parsed={
+            "info": {
+                "isNative": False,
+                "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+                "owner": "vines1vzrYbzLMRdu58ou5XTby4qAqVRLmqo36NKPTg",
+                "state": "initialized",
+                "tokenAmount": {
+                    "amount": "36010000000",
+                    "decimals": 6,
+                    "uiAmount": 36010.0,
+                    "uiAmountString": "36010",
+                },
+            },
+            "type": "account",
+        },
     )
     assert parsed.value is not None
     assert parsed.value.data == parsed_account
@@ -446,7 +461,20 @@ def test_get_block(path: str) -> None:
                 )
             ]
             assert msg.account_keys == expected_parsed_accounts
-            json_data = '{"info":{"clockSysvar":"SysvarC1ock11111111111111111111111111111111","slotHashesSysvar":"SysvarS1otHashes111111111111111111111111111","vote":{"hash":"RgNYwznrTfJZXsPkoWFPzvx4iRPV2GBvjA1LFkyzv9L","slots":[147078734],"timestamp":1657486664},"voteAccount":"5ZWgXcyqrrNpQHCme5SdC5hCeYb2o3fEJhF7Gok3bTVN","voteAuthority":"dv1ZAGvdsz5hHLwWXsVnM94hWf1pjbKVau1QVkaMJ92"},"type":"vote"}'
+            json_data: Dict[str, Json] = {
+                "info": {
+                    "clockSysvar": "SysvarC1ock11111111111111111111111111111111",
+                    "slotHashesSysvar": "SysvarS1otHashes111111111111111111111111111",
+                    "vote": {
+                        "hash": "RgNYwznrTfJZXsPkoWFPzvx4iRPV2GBvjA1LFkyzv9L",
+                        "slots": [147078734],
+                        "timestamp": 1657486664,
+                    },
+                    "voteAccount": "5ZWgXcyqrrNpQHCme5SdC5hCeYb2o3fEJhF7Gok3bTVN",
+                    "voteAuthority": "dv1ZAGvdsz5hHLwWXsVnM94hWf1pjbKVau1QVkaMJ92",
+                },
+                "type": "vote",
+            }
             assert msg.instructions == [
                 ParsedInstruction(
                     program="vote",
@@ -1717,7 +1745,7 @@ def test_get_token_accounts_by_delegate_json_parsed() -> None:
     assert acc.lamports == 1726080
     data = acc.data
     assert data.program == "spl-token"
-    assert isinstance(data.parsed, str)
+    assert isinstance(data.parsed, dict)
     assert data.space == 165
 
 
@@ -1912,7 +1940,20 @@ def test_get_transaction(path: str) -> None:
                 )
             ]
             assert msg.account_keys == expected_parsed_accounts
-            json_data = '{"info":{"clockSysvar":"SysvarC1ock11111111111111111111111111111111","slotHashesSysvar":"SysvarS1otHashes111111111111111111111111111","vote":{"hash":"EGPfU6nPLtV76PrQrsUKAmkLKf2q9prrzGtdn8xLmXqP","slots":[147558324, 147558325],"timestamp":1661417104},"voteAccount":"EsEtxoyhFTgfvudcy2VwwQJ1qA6BScLUW39PKpYczuxF","voteAuthority":"5p8qKVyKthA9DUb1rwQDzjcmTkaZdwN97J3LiaEywUjd"},"type":"vote"}'
+            json_data: Dict[str, Json] = {
+                "info": {
+                    "clockSysvar": "SysvarC1ock11111111111111111111111111111111",
+                    "slotHashesSysvar": "SysvarS1otHashes111111111111111111111111111",
+                    "vote": {
+                        "hash": "EGPfU6nPLtV76PrQrsUKAmkLKf2q9prrzGtdn8xLmXqP",
+                        "slots": [147558324, 147558325],
+                        "timestamp": 1661417104,
+                    },
+                    "voteAccount": "EsEtxoyhFTgfvudcy2VwwQJ1qA6BScLUW39PKpYczuxF",
+                    "voteAuthority": "5p8qKVyKthA9DUb1rwQDzjcmTkaZdwN97J3LiaEywUjd",
+                },
+                "type": "vote",
+            }
             assert msg.instructions == [
                 ParsedInstruction(
                     program="vote",
