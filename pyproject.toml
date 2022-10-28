@@ -22,9 +22,6 @@ sphinx-rtd-theme = "^1.0.0"
 solana = "0.23.3"
 bumpversion = "^0.6.0"
 
-[tool.mypy]
-enable_recursive_aliases = true
-
 [build-system]
 requires = ["maturin>=0.13.2,<0.14"]
 build-backend = "maturin"
