@@ -1149,7 +1149,7 @@ def test_get_multiple_accounts_json_parsed() -> None:
     assert isinstance(data, ParsedAccount)
     assert data.program == "spl-token"
     assert data.space == 165
-    assert isinstance(data.parsed, str)
+    assert isinstance(data.parsed, dict)
     parsed2 = GetMultipleAccountsMaybeJsonParsedResp.from_json(raw)
     assert isinstance(parsed2, GetMultipleAccountsMaybeJsonParsedResp)
     assert parsed.value == parsed2.value
@@ -1247,7 +1247,7 @@ def test_get_program_accounts_without_context_json_parsed() -> None:
     assert isinstance(data, ParsedAccount)
     assert data.program == "spl-token-2022"
     assert data.space == 182
-    assert isinstance(data.parsed, str)
+    assert isinstance(data.parsed, dict)
     parsed2 = GetProgramAccountsMaybeJsonParsedResp.from_json(raw)
     assert isinstance(parsed2, GetProgramAccountsMaybeJsonParsedResp)
     assert parsed.value == parsed2.value
@@ -1330,7 +1330,7 @@ def test_get_program_accounts_with_context_json_parsed() -> None:
     assert isinstance(data, ParsedAccount)
     assert data.program == "spl-token-2022"
     assert data.space == 182
-    assert isinstance(data.parsed, str)
+    assert isinstance(data.parsed, dict)
     parsed2 = GetProgramAccountsWithContextMaybeJsonParsedResp.from_json(raw)
     assert isinstance(parsed2, GetProgramAccountsWithContextMaybeJsonParsedResp)
     assert parsed.value == parsed2.value
@@ -1626,7 +1626,7 @@ def test_get_token_accounts_by_owner_json_parsed() -> None:
     data = acc.data
     assert isinstance(data, ParsedAccount)
     assert data.program == "spl-token"
-    assert isinstance(data.parsed, str)
+    assert isinstance(data.parsed, dict)
     assert data.space == 165
     assert acc.owner == Pubkey.from_string(
         "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
