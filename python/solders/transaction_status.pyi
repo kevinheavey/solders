@@ -1,9 +1,10 @@
 from typing import Sequence, Optional, List, Union, Tuple, Dict
+from jsonalias import Json
 from solders.hash import Hash
 from solders.pubkey import Pubkey
 from solders.message import MessageHeader
 from solders.signature import Signature
-from solders.account_decoder import UiTokenAmount, _Json
+from solders.account_decoder import UiTokenAmount, Json
 from solders.commitment_config import CommitmentConfig
 from solders.transaction import TransactionVersion, VersionedTransaction
 
@@ -138,14 +139,14 @@ class ParsedAccount:
 
 class ParsedInstruction:
     def __init__(
-        self, program: str, program_id: Pubkey, parsed: Dict[str, _Json]
+        self, program: str, program_id: Pubkey, parsed: Dict[str, Json]
     ) -> None: ...
     @property
     def program(self) -> str: ...
     @property
     def program_id(self) -> Pubkey: ...
     @property
-    def parsed(self) -> Dict[str, _Json]: ...
+    def parsed(self) -> Dict[str, Json]: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
     def __bytes__(self) -> bytes: ...
