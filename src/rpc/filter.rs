@@ -43,7 +43,7 @@ impl From<MemcmpEncodedBytesOriginal> for MemcmpEncodedBytes {
         match m {
             MemcmpEncodedBytesOriginal::Base58(s) => Self::Base58(s),
             MemcmpEncodedBytesOriginal::Bytes(v) => Self::Bytes(v),
-            _ => panic!("Unexpected variant: {:?}", m),
+            _ => panic!("Unexpected variant: {m:?}"),
         }
     }
 }

@@ -738,7 +738,7 @@ impl From<Message> for MessageBase64 {
 
 impl From<MessageBase64> for Message {
     fn from(m: MessageBase64) -> Self {
-        let bytes = base64::decode(&m.0).unwrap();
+        let bytes = base64::decode(m.0).unwrap();
         bincode::deserialize::<MessageOriginal>(&bytes)
             .unwrap()
             .into()
@@ -2267,7 +2267,7 @@ impl From<Transaction> for TransactionBase64 {
 
 impl From<TransactionBase64> for Transaction {
     fn from(tx: TransactionBase64) -> Self {
-        let bytes = base64::decode(&tx.0).unwrap();
+        let bytes = base64::decode(tx.0).unwrap();
         bincode::deserialize::<TransactionOriginal>(&bytes)
             .unwrap()
             .into()

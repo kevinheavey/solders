@@ -1,14 +1,16 @@
-use std::{fmt::Display, str::FromStr};
+use std::fmt::Display;
 
 use crate::{
+    handle_py_value_err,
     tmp_account_decoder::{
         ParsedAccount as ParsedAccountOriginal, UiDataSliceConfig as UiDataSliceConfigOriginal,
         UiTokenAmount as UiTokenAmountOriginal,
     },
-    to_py_err, CommonMethods,
+    CommonMethods,
 };
 use derive_more::{From, Into};
 use pyo3::prelude::*;
+use pythonize::{depythonize, pythonize};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use solders_macros::{common_methods, richcmp_eq_only};
@@ -47,7 +49,7 @@ impl UiDataSliceConfig {
     }
 
     pub fn __repr__(&self) -> String {
-        format!("{:#?}", self)
+        format!("{self:#?}")
     }
 }
 
@@ -73,7 +75,7 @@ pub struct ParsedAccount(ParsedAccountOriginal);
 impl RichcmpEqualityOnly for ParsedAccount {}
 impl Display for ParsedAccount {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "{:?}", self)
+        write!(f, "{self:?}")
     }
 }
 pybytes_general_via_bincode!(ParsedAccount);
@@ -85,8 +87,8 @@ impl<'a> CommonMethods<'a> for ParsedAccount {}
 #[pymethods]
 impl ParsedAccount {
     #[new]
-    pub fn new(program: &str, parsed: &str, space: u64) -> PyResult<Self> {
-        let value = Value::from_str(parsed).map_err(to_py_err)?;
+    pub fn new(program: &str, parsed: &PyAny, space: u64) -> PyResult<Self> {
+        let value = handle_py_value_err(depythonize::<Value>(parsed))?;
         Ok(ParsedAccountOriginal {
             program: program.to_owned(),
             parsed: value,
@@ -101,8 +103,8 @@ impl ParsedAccount {
     }
 
     #[getter]
-    pub fn parsed(&self) -> String {
-        self.0.parsed.to_string()
+    pub fn parsed(&self, py: Python<'_>) -> PyResult<PyObject> {
+        handle_py_value_err(pythonize(py, &self.0.parsed))
     }
 
     #[getter]
@@ -118,7 +120,7 @@ pub struct UiTokenAmount(UiTokenAmountOriginal);
 impl RichcmpEqualityOnly for UiTokenAmount {}
 impl Display for UiTokenAmount {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "{:?}", self)
+        write!(f, "{self:?}")
     }
 }
 pybytes_general_via_bincode!(UiTokenAmount);

@@ -27,7 +27,7 @@ jobs:
           args: --release --out dist
       - name: Install module
         run: |
-          pip install typing-extensions
+          pip install typing-extensions jsonalias
           pip install solders --no-index --no-dependencies --find-links dist --force-reinstall
 
       - name: Build documentation

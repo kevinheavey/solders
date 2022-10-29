@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.10.0] - Unreleased
+
+### Changed
+
+- Use `pythonize` for jsonParsed values [(#20)](https://github.com/kevinheavey/solders/pull/20)
+
 ## [0.9.3] - 2022-10-15
 
 ### Fixed

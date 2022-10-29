@@ -99,7 +99,7 @@ pub trait CommonMethodsRpcResp<'a>:
         self.to_string()
     }
     fn pyrepr(&self) -> String {
-        format!("{:#?}", self)
+        format!("{self:#?}")
     }
 
     fn py_from_bytes(raw: &'a [u8]) -> PyResult<Self> {
@@ -417,7 +417,7 @@ impl<'de> serde::Deserialize<'de> for RPCError {
                 Some(-32603) => {
                     Self::InternalErrorMessage(InternalErrorMessage::deserialize(value).unwrap())
                 }
-                type_ => panic!("unsupported type {:?}", type_),
+                type_ => panic!("unsupported type {type_:?}"),
             },
         )
     }
@@ -2953,7 +2953,7 @@ pub fn batch_from_json(raw: &str, parsers: Vec<&PyType>) -> PyResult<Vec<PyObjec
     let raw_objects_len = raw_objects.len();
     let parsers_len = parsers.len();
     if raw_objects_len != parsers_len {
-        let msg = format!("Number of parsers does not match number of response objects. Num parsers: {}. Num responses: {}", parsers_len, raw_objects_len);
+        let msg = format!("Number of parsers does not match number of response objects. Num parsers: {parsers_len}. Num responses: {raw_objects_len}");
         Err(PyValueError::new_err(msg))
     } else {
         let parsed = raw_objects.iter().zip(parsers.iter()).map(|(res, parser)| {

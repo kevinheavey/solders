@@ -127,7 +127,7 @@ fn convert_instructions(instructions: Vec<Instruction>) -> Vec<InstructionOrigin
 }
 
 fn richcmp_type_error(op: &str) -> PyErr {
-    let msg = format!("{} not supported.", op);
+    let msg = format!("{op} not supported.");
     PyTypeError::new_err(msg)
 }
 
@@ -398,7 +398,7 @@ pub trait CommonMethods<'a>:
         self.to_string()
     }
     fn pyrepr(&self) -> String {
-        format!("{:#?}", self)
+        format!("{self:#?}")
     }
 
     fn py_from_bytes(raw: &[u8]) -> PyResult<Self> {

@@ -178,7 +178,7 @@ impl AccountJSON {
 
 impl std::fmt::Display for AccountJSON {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "{:?}", self)
+        write!(f, "{self:?}")
     }
 }
 pybytes_general_via_bincode!(AccountJSON);
