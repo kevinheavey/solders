@@ -49,7 +49,7 @@ impl UiDataSliceConfig {
     }
 
     pub fn __repr__(&self) -> String {
-        format!("{:#?}", self)
+        format!("{self:#?}")
     }
 }
 
@@ -75,7 +75,7 @@ pub struct ParsedAccount(ParsedAccountOriginal);
 impl RichcmpEqualityOnly for ParsedAccount {}
 impl Display for ParsedAccount {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "{:?}", self)
+        write!(f, "{self:?}")
     }
 }
 pybytes_general_via_bincode!(ParsedAccount);
@@ -120,7 +120,7 @@ pub struct UiTokenAmount(UiTokenAmountOriginal);
 impl RichcmpEqualityOnly for UiTokenAmount {}
 impl Display for UiTokenAmount {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "{:?}", self)
+        write!(f, "{self:?}")
     }
 }
 pybytes_general_via_bincode!(UiTokenAmount);

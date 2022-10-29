@@ -861,7 +861,7 @@ impl RpcTransactionLogsFilterMentions {
     }
 
     pub fn __repr__(&self) -> String {
-        format!("{:#?}", self)
+        format!("{self:#?}")
     }
 
     #[getter]
@@ -967,7 +967,7 @@ impl RpcTokenAccountsFilterMint {
     }
 
     pub fn __repr__(&self) -> String {
-        format!("{:#?}", self)
+        format!("{self:#?}")
     }
 
     #[getter]
@@ -996,7 +996,7 @@ impl RpcTokenAccountsFilterProgramId {
     }
 
     pub fn __repr__(&self) -> String {
-        format!("{:#?}", self)
+        format!("{self:#?}")
     }
 
     #[getter]
@@ -1117,7 +1117,7 @@ impl RpcBlockSubscribeFilterMentions {
     }
 
     pub fn __repr__(&self) -> String {
-        format!("{:#?}", self)
+        format!("{self:#?}")
     }
 
     #[getter]
