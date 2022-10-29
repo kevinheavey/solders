@@ -577,9 +577,9 @@ i18n = ["Babel (>=2.7)"]
 
 [[package]]
 name = "jsonalias"
-version = "0.1.0"
+version = "0.1.1"
 description = "A microlibrary that defines a Json type alias for Python."
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7,<4.0"
 
@@ -1256,7 +1256,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "flake8 
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "af7c115b19d9659db87582335da59393e2f4ee8c418b7151e55589678d3411e5"
+content-hash = "fa0bde45d3d5b403d59074c799025fcb4d7d5639ec742af12e05f857fa89c349"
 
 [metadata.files]
 alabaster = [
@@ -1548,8 +1548,8 @@ jinja2 = [
     {file = "Jinja2-3.1.2.tar.gz", hash = "sha256:31351a702a408a9e7595a8fc6150fc3f43bb6bf7e319770cbc0db9df9437e852"},
 ]
 jsonalias = [
-    {file = "jsonalias-0.1.0-py3-none-any.whl", hash = "sha256:9fbbde0acd1304747555d2bec09024dc3e1add90609175ef59d85f75bf5c77b3"},
-    {file = "jsonalias-0.1.0.tar.gz", hash = "sha256:5625d67ce59cfb43e7928e6050f7e91fb8616ae12b75100a85bc169a9eae2cba"},
+    {file = "jsonalias-0.1.1-py3-none-any.whl", hash = "sha256:a56d2888e6397812c606156504e861e8ec00e188005af149f003c787db3d3f18"},
+    {file = "jsonalias-0.1.1.tar.gz", hash = "sha256:64f04d935397d579fc94509e1fcb6212f2d081235d9d6395bd10baedf760a769"},
 ]
 jsonrpcclient = [
     {file = "jsonrpcclient-4.0.2.tar.gz", hash = "sha256:c0d475494b3e1b591ecdee7883739accaf5695edb673f16b7383b8c6bbdb1ca3"},
