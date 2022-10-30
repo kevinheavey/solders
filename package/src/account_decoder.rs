@@ -1,12 +1,12 @@
+use solders_traits::{
+    handle_py_value_err, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
+    CommonMethods, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly,
+};
 use std::fmt::Display;
 
-use crate::{
-    handle_py_value_err,
-    tmp_account_decoder::{
-        ParsedAccount as ParsedAccountOriginal, UiDataSliceConfig as UiDataSliceConfigOriginal,
-        UiTokenAmount as UiTokenAmountOriginal,
-    },
-    CommonMethods,
+use crate::tmp_account_decoder::{
+    ParsedAccount as ParsedAccountOriginal, UiDataSliceConfig as UiDataSliceConfigOriginal,
+    UiTokenAmount as UiTokenAmountOriginal,
 };
 use derive_more::{From, Into};
 use pyo3::prelude::*;
@@ -14,11 +14,6 @@ use pythonize::{depythonize, pythonize};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use solders_macros::{common_methods, richcmp_eq_only};
-
-use crate::{
-    py_from_bytes_general_via_bincode, pybytes_general_via_bincode, PyBytesBincode,
-    PyFromBytesBincode, RichcmpEqualityOnly,
-};
 
 /// Configuration object for limiting returned account data.
 ///

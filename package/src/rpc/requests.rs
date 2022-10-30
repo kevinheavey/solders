@@ -2,16 +2,13 @@
 use crate::{
     commitment_config::{CommitmentConfig, CommitmentLevel},
     message::Message,
-    py_from_bytes_general_via_cbor, pybytes_general_via_cbor, to_py_err,
     transaction::Transaction,
-    CommonMethods, Pubkey, PyBytesCbor, PyErrWrapper, PyFromBytesCbor, RichcmpEqualityOnly,
+    Pubkey,
 };
-use pyo3::{
-    create_exception,
-    exceptions::{PyException, PyValueError},
-    prelude::*,
-    types::PyTuple,
-    PyTypeInfo,
+use pyo3::{exceptions::PyValueError, prelude::*, types::PyTuple, PyTypeInfo};
+use solders_traits::{
+    py_from_bytes_general_via_cbor, pybytes_general_via_cbor, to_py_err, CommonMethods,
+    PyBytesCbor, PyFromBytesCbor, RichcmpEqualityOnly,
 };
 extern crate base64;
 use crate::rpc::tmp_config::{
@@ -36,13 +33,6 @@ use super::config::{
     RpcSupplyConfig, RpcTokenAccountsFilterWrapper, RpcTransactionConfig, RpcTransactionLogsConfig,
     TransactionLogsFilterWrapper,
 };
-
-create_exception!(
-    solders,
-    SerdeJSONError,
-    PyException,
-    "Raised when an error is encountered during JSON (de)serialization."
-);
 
 macro_rules! rpc_impl_display {
     ($ident:ident) => {
@@ -178,12 +168,6 @@ unsubscribe_def!(SlotUnsubscribe);
 unsubscribe_def!(SlotsUpdatesUnsubscribe);
 unsubscribe_def!(RootUnsubscribe);
 unsubscribe_def!(VoteUnsubscribe);
-
-impl From<serde_json::Error> for PyErrWrapper {
-    fn from(e: serde_json::Error) -> Self {
-        Self(SerdeJSONError::new_err(e.to_string()))
-    }
-}
 
 #[derive(Deserialize, Serialize, PartialEq, Eq, Clone, Debug, Default)]
 pub enum V2 {

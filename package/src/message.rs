@@ -18,13 +18,15 @@ use solana_sdk::{
     pubkey::Pubkey as PubkeyOriginal,
 };
 use solders_macros::{common_methods, richcmp_eq_only};
+use solders_traits::{
+    handle_py_err, impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
+    CommonMethods, PyBytesBincode, PyBytesGeneral, PyErrWrapper, PyFromBytesBincode,
+    RichcmpEqualityOnly,
+};
 
 use crate::{
     address_lookup_table_account::AddressLookupTableAccount, convert_instructions,
-    convert_optional_pubkey, handle_py_err, impl_display, py_from_bytes_general_via_bincode,
-    pybytes_general_via_bincode, CommonMethods, CompiledInstruction, Instruction, Pubkey,
-    PyBytesBincode, PyBytesGeneral, PyErrWrapper, PyFromBytesBincode, RichcmpEqualityOnly,
-    SolderHash,
+    convert_optional_pubkey, CompiledInstruction, Instruction, Pubkey, SolderHash,
 };
 
 #[pyclass(module = "solders.message", subclass)]

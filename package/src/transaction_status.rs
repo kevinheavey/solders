@@ -2,13 +2,15 @@
 use derive_more::{From, Into};
 extern crate base64;
 use pythonize::{depythonize, pythonize};
+use solders_traits::{
+    handle_py_value_err, CommonMethods, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly,
+};
 use std::fmt::Display;
 use std::str::FromStr;
 
 use crate::{
     account_decoder::UiTokenAmount,
     commitment_config::CommitmentConfig,
-    handle_py_value_err,
     message::MessageHeader,
     pubkey::Pubkey,
     signature::Signature,
@@ -34,7 +36,7 @@ use crate::{
         UiTransactionTokenBalance as UiTransactionTokenBalanceOriginal,
     },
     transaction::{TransactionVersion, VersionedTransaction},
-    CommonMethods, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly, SolderHash,
+    SolderHash,
 };
 use pyo3::{
     prelude::*,
@@ -58,8 +60,8 @@ macro_rules! transaction_status_boilerplate {
                 write!(f, "{:?}", self)
             }
         }
-        crate::pybytes_general_via_bincode!($name);
-        crate::py_from_bytes_general_via_bincode!($name);
+        solders_traits::pybytes_general_via_bincode!($name);
+        solders_traits::py_from_bytes_general_via_bincode!($name);
         impl<'a> CommonMethods<'a> for $name {}
     };
 }

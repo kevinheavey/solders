@@ -1,25 +1,13 @@
-use pyo3::{create_exception, exceptions::PyException, prelude::*};
+use pyo3::prelude::*;
 
 use solana_sdk::{
     pubkey::Pubkey as PubkeyOriginal,
     signature::Signature as SignatureOriginal,
     signer::{signers::Signers, Signer as SignerTrait, SignerError as SignerErrorOriginal},
 };
+use solders_traits::{SignerTraitWrapper, ToSignerOriginal};
 
-use crate::{Keypair, NullSigner, Presigner, PyErrWrapper, SignerTraitWrapper, ToSignerOriginal};
-
-create_exception!(
-    solders,
-    SignerError,
-    PyException,
-    "Raised when an error is encountered during transaction signing."
-);
-
-impl From<SignerErrorOriginal> for PyErrWrapper {
-    fn from(e: SignerErrorOriginal) -> Self {
-        Self(SignerError::new_err(e.to_string()))
-    }
-}
+use crate::{Keypair, NullSigner, Presigner};
 
 #[derive(FromPyObject, Debug)]
 pub enum Signer {

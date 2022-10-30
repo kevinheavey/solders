@@ -57,18 +57,20 @@ use crate::transaction_status::{
 use crate::{
     account::{Account, AccountJSON},
     pubkey::Pubkey,
-    py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
     signature::Signature,
     tmp_account_decoder::{UiAccount, UiAccountData, UiTokenAmount as UiTokenAmountOriginal},
     tmp_transaction_status::{
         TransactionConfirmationStatus as TransactionConfirmationStatusOriginal,
         TransactionStatus as TransactionStatusOriginal, UiTransactionReturnData,
     },
-    to_py_err,
     transaction_status::UiConfirmedBlock,
-    CommonMethods, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly, SolderHash,
+    SolderHash,
 };
 use camelpaste::paste;
+use solders_traits::{
+    py_from_bytes_general_via_bincode, pybytes_general_via_bincode, to_py_err, CommonMethods,
+    PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly,
+};
 
 use super::errors::{
     BlockCleanedUpMessage, BlockNotAvailableMessage, BlockStatusNotAvailableYetMessage,
