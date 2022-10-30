@@ -33,7 +33,7 @@ name = "solders"
 version = "0.9.3"
 description = "Python binding to the Solana Rust SDK"
 authors = [ {name = "kevinheavey", email = "kevinheavey123@gmail.com"} ]
-license = {file = "../LICENSE"} # relative to the package/ directory
+license = {file = "LICENSE"} # relative to the package/ directory
 requires-python = ">=3.7"
 classifiers = [
     "Programming Language :: Rust",
