@@ -1,10 +1,11 @@
 # Changelog
 
-## [0.10.0] - Unreleased
+## [0.10.0] - 2022-10-31
 
 ### Changed
 
 - Use `pythonize` for jsonParsed values [(#20)](https://github.com/kevinheavey/solders/pull/20)
+- Extract `solders-traits` into its own crate [(#21)](https://github.com/kevinheavey/solders/pull/21)
 
 ## [0.9.3] - 2022-10-15
 
