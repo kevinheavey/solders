@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "solders"
-version = "0.9.3"
+version = "0.10.0"
 description = "Python bindings for Solana Rust tools"
 authors = ["kevinheavey <kevinheavey123@gmail.com>"]
 license = "Apache"
@@ -30,7 +30,7 @@ build-backend = "maturin"
 
 [project]
 name = "solders"
-version = "0.9.3"
+version = "0.10.0"
 description = "Python binding to the Solana Rust SDK"
 authors = [ {name = "kevinheavey", email = "kevinheavey123@gmail.com"} ]
 license = {file = "LICENSE"} # relative to the package/ directory

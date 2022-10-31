@@ -1,6 +1,6 @@
 [package]
 name = "solders"
-version = "0.9.3"
+version = "0.10.0"
 edition = "2021"
 include = ["/src", "/LICENSE", "/pyproject.toml"]
 description = "Python binding to the Solana Rust SDK"
@@ -30,7 +30,7 @@ bs58 = "^0.4.0"
 zstd = "0.11.2"
 derive_more = "0.99.17"
 pythonize = "0.17.0"
-solders-traits = { path = "./traits", version = "0.9.3" }
+solders-traits = { path = "./traits", version = "0.10.0" }
 
 
 [workspace]
