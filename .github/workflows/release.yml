@@ -18,7 +18,7 @@ jobs:
         with:
           command: upload
           args: --skip-existing *
-  release_crate:
+  release_crates:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
@@ -31,7 +31,9 @@ jobs:
           toolchain: nightly
           override: true
       - uses: Swatinem/rust-cache@v2
-      - run: cargo install cargo-release
-      - run: cargo release --workspace --no-tag --no-push --allow-branch HEAD --execute
+      - run: cargo publish
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+      - run: cd traits && cargo publish
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
