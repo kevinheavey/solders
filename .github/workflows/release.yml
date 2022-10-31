@@ -30,6 +30,7 @@ jobs:
           profile: minimal
           toolchain: nightly
           override: true
-      - run: cargo publish
+      - run: cargo install cargo-release
+      - run: cargo release --workspace --execute
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}

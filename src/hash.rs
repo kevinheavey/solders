@@ -1,30 +1,17 @@
 use std::str::FromStr;
 
 use derive_more::{From, Into};
-use pyo3::{create_exception, exceptions::PyException, prelude::*};
+use pyo3::{prelude::*};
 use serde::{Deserialize, Serialize};
 use solana_sdk::hash::{
     hash, Hash as HashOriginal, ParseHashError as ParseHashErrorOriginal, HASH_BYTES,
 };
 use solders_macros::{common_methods, pyhash, richcmp_full};
 
-use crate::{
+use solders_traits::{
     handle_py_err, impl_display, pybytes_general_via_slice, CommonMethods, PyBytesSlice,
-    PyErrWrapper, PyFromBytesGeneral, PyHash, RichcmpFull,
+    PyFromBytesGeneral, PyHash, RichcmpFull,
 };
-
-create_exception!(
-    solders,
-    ParseHashError,
-    PyException,
-    "Raised when an error is encountered converting a string into a ``Hash``."
-);
-
-impl From<ParseHashErrorOriginal> for PyErrWrapper {
-    fn from(e: ParseHashErrorOriginal) -> Self {
-        Self(ParseHashError::new_err(e.to_string()))
-    }
-}
 
 #[pyclass(module = "solders.hash", subclass)]
 /// A SHA-256 hash, most commonly used for blockhashes.

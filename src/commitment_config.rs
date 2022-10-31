@@ -1,27 +1,13 @@
 use std::str::FromStr;
 
 use derive_more::{From, Into};
-use pyo3::{create_exception, exceptions::PyException, prelude::*};
+use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use solana_sdk::commitment_config::{
     CommitmentConfig as CommitmentConfigOriginal, CommitmentLevel as CommitmentLevelOriginal,
-    ParseCommitmentLevelError as ParseCommitmentLevelErrorOriginal,
 };
 
-use crate::{handle_py_err, PyErrWrapper};
-
-create_exception!(
-    solders,
-    ParseCommitmentLevelError,
-    PyException,
-    "Raised when an error is encountered converting a string into a ``CommitmentConfig``."
-);
-
-impl From<ParseCommitmentLevelErrorOriginal> for PyErrWrapper {
-    fn from(e: ParseCommitmentLevelErrorOriginal) -> Self {
-        Self(ParseCommitmentLevelError::new_err(e.to_string()))
-    }
-}
+use solders_traits::{handle_py_err};
 
 /// RPC request `commitment <https://docs.solana.com/developing/clients/jsonrpc-api#configuring-state-commitment>`_ options.
 #[pyclass(module = "solders.commitment_config")]

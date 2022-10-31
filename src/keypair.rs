@@ -1,3 +1,4 @@
+use crate::{pubkey::Pubkey, signature::Signature};
 use derive_more::{From, Into};
 use pyo3::{prelude::*, types::PyBytes};
 use serde::{Deserialize, Serialize};
@@ -9,10 +10,9 @@ use solana_sdk::signer::{
 };
 use solders_macros::{common_methods, pyhash, richcmp_signer};
 
-use crate::{
-    handle_py_value_err, impl_display, impl_signer_hash, pubkey::Pubkey, signature::Signature,
-    CommonMethods, PyBytesGeneral, PyFromBytesGeneral, PyHash, RichcmpSigner, SignerTraitWrapper,
-    ToSignerOriginal,
+use solders_traits::{
+    handle_py_value_err, impl_display, impl_signer_hash, CommonMethods, PyBytesGeneral,
+    PyFromBytesGeneral, PyHash, RichcmpSigner, SignerTraitWrapper, ToSignerOriginal,
 };
 
 mod keypair_serde {

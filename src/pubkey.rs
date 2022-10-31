@@ -1,29 +1,18 @@
 use std::{hash::Hash, str::FromStr};
 
-use crate::{
+use solders_traits::{
     handle_py_err, handle_py_value_err, pybytes_general_via_slice, CommonMethods, PyBytesSlice,
-    PyErrWrapper, PyFromBytesGeneral, PyHash, RichcmpFull,
+    PyFromBytesGeneral, PyHash, RichcmpFull,
 };
 use derive_more::{From, Into};
-use pyo3::{create_exception, exceptions::PyException, prelude::*};
+use pyo3::{prelude::*};
 use serde::{Deserialize, Serialize};
 use solana_sdk::pubkey::{
-    ParsePubkeyError, Pubkey as PubkeyOriginal, PubkeyError as PubkeyErrorOriginal, PUBKEY_BYTES,
+    ParsePubkeyError, Pubkey as PubkeyOriginal, PUBKEY_BYTES,
 };
 use solders_macros::{common_methods, pyhash, richcmp_full};
 
-create_exception!(
-    solders,
-    PubkeyError,
-    PyException,
-    "Umbrella error for the ``Pubkey`` object."
-);
 
-impl From<PubkeyErrorOriginal> for PyErrWrapper {
-    fn from(e: PubkeyErrorOriginal) -> Self {
-        Self(PubkeyError::new_err(e.to_string()))
-    }
-}
 /// A public key.
 ///
 /// Args:

@@ -30,3 +30,8 @@ bs58 = "^0.4.0"
 zstd = "0.11.2"
 derive_more = "0.99.17"
 pythonize = "0.17.0"
+solders-traits = { path = "./traits", version = "0.9.3" }
+
+
+[workspace]
+members = [".", "traits"]

@@ -1,12 +1,13 @@
+use crate::{Pubkey, Signature};
 use derive_more::{From, Into};
 use pyo3::{prelude::*, types::PyBytes};
 use serde::{Deserialize, Serialize};
 use solana_sdk::signer::{null_signer::NullSigner as NullSignerOriginal, Signer as SignerTrait};
 use solders_macros::{common_methods, pyhash, richcmp_signer};
 
-use crate::{
-    impl_display, impl_signer_hash, CommonMethods, Pubkey, PyBytesGeneral, PyFromBytesGeneral,
-    PyHash, RichcmpSigner, Signature, SignerTraitWrapper, ToSignerOriginal,
+use solders_traits::{
+    impl_display, impl_signer_hash, CommonMethods, PyBytesGeneral, PyFromBytesGeneral, PyHash,
+    RichcmpSigner, SignerTraitWrapper, ToSignerOriginal,
 };
 
 mod null_signer_serde {

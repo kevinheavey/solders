@@ -1,8 +1,6 @@
 #![allow(deprecated)]
 use derive_more::{From, Into};
 use pyo3::{
-    create_exception,
-    exceptions::PyException,
     prelude::*,
     types::{PyBytes, PyInt, PyTuple},
     PyTypeInfo,
@@ -10,51 +8,27 @@ use pyo3::{
 use serde::{Deserialize, Serialize};
 use solana_sdk::{
     pubkey::Pubkey as PubkeyOriginal,
-    sanitize::{Sanitize, SanitizeError as SanitizeErrorOriginal},
+    sanitize::Sanitize,
     signature::Signature as SignatureOriginal,
     transaction::{
         get_nonce_pubkey_from_instruction, uses_durable_nonce, Legacy as LegacyOriginal,
-        Transaction as TransactionOriginal, TransactionError as TransactionErrorOriginal,
-        TransactionVersion as TransactionVersionOriginal,
+        Transaction as TransactionOriginal, TransactionVersion as TransactionVersionOriginal,
         VersionedTransaction as VersionedTransactionOriginal,
     },
 };
 use solders_macros::{common_methods, richcmp_eq_only};
-
-use crate::{
-    convert_instructions, convert_optional_pubkey, handle_py_err, impl_display,
-    message::{Message, VersionedMessage},
-    py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
-    signer::SignerVec,
-    CommonMethods, CompiledInstruction, Instruction, Pubkey, PyBytesBincode, PyErrWrapper,
-    PyFromBytesBincode, RichcmpEqualityOnly, Signature, Signer, SolderHash,
+use solders_traits::{
+    handle_py_err, impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
+    CommonMethods, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly, SanitizeError,
+    TransactionError,
 };
 
-create_exception!(
-    solders,
-    TransactionError,
-    PyException,
-    "Umbrella error for the ``Transaction`` object."
-);
-
-impl From<TransactionErrorOriginal> for PyErrWrapper {
-    fn from(e: TransactionErrorOriginal) -> Self {
-        Self(TransactionError::new_err(e.to_string()))
-    }
-}
-
-create_exception!(
-    solders,
-    SanitizeError,
-    PyException,
-    "Raised when an error is encountered during transaction sanitization."
-);
-
-impl From<SanitizeErrorOriginal> for PyErrWrapper {
-    fn from(e: SanitizeErrorOriginal) -> Self {
-        Self(SanitizeError::new_err(e.to_string()))
-    }
-}
+use crate::{
+    convert_instructions, convert_optional_pubkey,
+    message::{Message, VersionedMessage},
+    signer::SignerVec,
+    CompiledInstruction, Instruction, Pubkey, Signature, Signer, SolderHash,
+};
 
 /// An atomic transaction
 ///

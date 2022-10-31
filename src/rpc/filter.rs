@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use derive_more::{From, Into};
 use solders_macros::{common_methods, enum_original_mapping, richcmp_eq_only};
 
-use crate::{
+use solders_traits::{
     impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode, CommonMethods,
     PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly,
 };

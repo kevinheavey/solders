@@ -1,7 +1,8 @@
 use crate::{
     transaction_status::{transaction_status_boilerplate, TransactionErrorType},
-    CommonMethods, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly,
+    
 };
+use solders_traits::{CommonMethods, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly,};
 use derive_more::{From, Into};
 use pyo3::{prelude::*, types::PyTuple, PyTypeInfo};
 use serde::{Deserialize, Serialize};
