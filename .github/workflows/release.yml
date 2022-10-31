@@ -30,7 +30,8 @@ jobs:
           profile: minimal
           toolchain: nightly
           override: true
+      - uses: Swatinem/rust-cache@v2
       - run: cargo install cargo-release
-      - run: cargo release --workspace --execute
+      - run: cargo release --workspace --no-tag --no-push --allow-branch HEAD --execute
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
