@@ -30,10 +30,10 @@ jobs:
           profile: minimal
           toolchain: nightly
           override: true
-      - uses: Swatinem/rust-cache@v2
-      - run: cargo publish
+      - run: cd traits && cargo publish
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-      - run: cd traits && cargo publish
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo publish
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
