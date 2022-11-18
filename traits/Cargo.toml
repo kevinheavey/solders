@@ -8,7 +8,7 @@ license = "MIT"
 repository = "https://github.com/kevinheavey/solders"
 
 [dependencies]
-pyo3 = { version = "0.17.1", default-features = false }
+pyo3 = { workspace = true }
 solana-sdk = "^1.14.1"
 bincode = "^1.3.3"
 serde = "^1.0.136"

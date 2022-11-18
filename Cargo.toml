@@ -13,14 +13,13 @@ name = "solders"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-pyo3 = { version = "0.17.1", features = ["extension-module", "abi3-py37"] }
+pyo3 = { workspace = true, features = ["macros", "extension-module", "abi3-py37"] }
 solana-sdk = "^1.14.1"
 bincode = "^1.3.3"
 serde = "^1.0.136"
 serde_json = "^1.0.59"
 borsh = "^0.9.3"
 dict_derive = "0.4.0"
-solders-macros = "^0.6.0"
 serde_with = "^1.14.0"
 base64 = "^0.13.0"
 camelpaste = "0.1.0"
@@ -31,7 +30,10 @@ zstd = "0.11.2"
 derive_more = "0.99.17"
 pythonize = "0.17.0"
 solders-traits = { path = "./traits", version = "0.10.0" }
-
+solders-macros = { path = "./macros", version = "0.10.0" }
 
 [workspace]
-members = [".", "traits"]
+members = [".", "traits", "macros"]
+
+[workspace.dependencies]
+pyo3 = { version = "0.17.1", default-features = false }

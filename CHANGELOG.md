@@ -1,5 +1,9 @@
 # Changelog
 
+# [0.11.0] - Unreleased
+
+- Move solders-macros into the monorepo.
+
 ## [0.10.0] - 2022-10-31
 
 ### Changed
