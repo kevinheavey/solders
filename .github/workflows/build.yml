@@ -117,7 +117,7 @@ jobs:
           toolchain: nightly
           profile: minimal
           default: true
-      - run: sudo apt get libssl-dev
+      - run: sudo apt install libssl-dev
       - name: Build Wheels
         uses: messense/maturin-action@v1
         with:
@@ -156,7 +156,7 @@ jobs:
           toolchain: nightly
           profile: minimal
           default: true
-      - run: sudo apt get libssl-dev
+      - run: sudo apt install libssl-dev
       - name: Build wheels
         uses: messense/maturin-action@v1
         with:
@@ -197,7 +197,7 @@ jobs:
           toolchain: nightly
           profile: minimal
           default: true
-      - run: sudo apt get libssl-dev
+      - run: sudo apt install libssl-dev
       - name: Build Wheels
         uses: messense/maturin-action@v1
         with:
