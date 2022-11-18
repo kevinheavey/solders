@@ -10,8 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: tmp
-        run: ls
       - uses: hecrj/setup-rust-action@v1
         with:
           rust-version: nightly
