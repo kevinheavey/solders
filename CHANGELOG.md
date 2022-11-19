@@ -2,7 +2,8 @@
 
 # [0.11.0] - Unreleased
 
-- Move solders-macros into the monorepo.
+- Move solders-macros into the monorepo [(#22)](https://github.com/kevinheavey/solders/pull/22)
+- Extract solders-primitives into its own crate [(#23)](https://github.com/kevinheavey/solders/pull/23)
 
 ## [0.10.0] - 2022-10-31
 
