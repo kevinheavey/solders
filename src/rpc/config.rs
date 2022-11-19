@@ -103,7 +103,7 @@ pyclass_boilerplate_with_default!(
 #[pymethods]
 impl RpcSendTransactionConfig {
     #[new]
-    #[args(skip_preflight = "false")]
+    #[pyo3(signature = (skip_preflight=false, preflight_commitment=None, max_retries=None, min_context_slot=None))]
     pub fn new(
         skip_preflight: bool,
         preflight_commitment: Option<CommitmentLevel>,
@@ -227,7 +227,7 @@ pyclass_boilerplate_with_default!(
 #[pymethods]
 impl RpcSimulateTransactionConfig {
     #[new]
-    #[args(sig_verify = "false", replace_recent_blockhash = "false")]
+    #[pyo3(signature = (sig_verify=false, replace_recent_blockhash=false, commitment=None, accounts=None, min_context_slot=None))]
     fn new(
         sig_verify: bool,
         replace_recent_blockhash: bool,

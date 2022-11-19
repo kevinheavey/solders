@@ -1,3 +1,4 @@
+#![allow(clippy::redundant_closure)]
 use std::str::FromStr;
 
 use derive_more::{From, Into};
@@ -34,7 +35,7 @@ pub struct Account(AccountOriginal);
 #[pymethods]
 impl Account {
     #[new]
-    #[args(executable = "bool::default()", rent_epoch = "Epoch::default()")]
+    #[pyo3(signature = (lamports, data, owner, executable = false, rent_epoch = Epoch::default()))]
     pub fn new(
         lamports: u64,
         data: &[u8],
@@ -159,7 +160,7 @@ pub struct AccountJSON {
 #[pymethods]
 impl AccountJSON {
     #[new]
-    #[args(executable = "bool::default()", rent_epoch = "Epoch::default()")]
+    #[pyo3(signature = (lamports, data, owner, executable=false, rent_epoch=Epoch::default()))]
     pub fn new(
         lamports: u64,
         data: ParsedAccount,
