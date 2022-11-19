@@ -1,27 +1,7 @@
 #![allow(clippy::large_enum_variant, clippy::too_many_arguments)]
+use std::collections::HashMap;
 use std::fmt::Display;
-use std::{collections::HashMap, str::FromStr};
-
-use derive_more::{From, Into};
-use pyo3::exceptions::PyValueError;
-use pyo3::types::PyType;
-use pyo3::{
-    prelude::*,
-    types::{PyBytes, PyTuple},
-    PyClass, PyTypeInfo,
-};
-use serde::{de::Error, Deserialize, Serialize, Serializer};
-use serde_json::Value;
-use serde_with::{serde_as, DisplayFromStr, FromInto, OneOrMany, TryFromInto};
-use solana_sdk::{
-    clock::{Epoch, Slot, UnixTimestamp},
-    epoch_info::EpochInfo as EpochInfoOriginal,
-    transaction::TransactionError as TransactionErrorOriginal,
-    transaction_context::TransactionReturnData as TransactionReturnDataOriginal,
-};
-use solders_macros::{
-    common_methods, common_methods_rpc_resp, enum_original_mapping, richcmp_eq_only,
-};
+use std::str::FromStr;
 
 use crate::account_decoder::UiTokenAmount;
 use crate::epoch_schedule::EpochSchedule;
@@ -56,8 +36,6 @@ use crate::transaction_status::{
 };
 use crate::{
     account::{Account, AccountJSON},
-    pubkey::Pubkey,
-    signature::Signature,
     tmp_account_decoder::{UiAccount, UiAccountData, UiTokenAmount as UiTokenAmountOriginal},
     tmp_transaction_status::{
         TransactionConfirmationStatus as TransactionConfirmationStatusOriginal,
@@ -67,6 +45,27 @@ use crate::{
     SolderHash,
 };
 use camelpaste::paste;
+use derive_more::{From, Into};
+use pyo3::exceptions::PyValueError;
+use pyo3::types::PyType;
+use pyo3::{
+    prelude::*,
+    types::{PyBytes, PyTuple},
+    PyClass, PyTypeInfo,
+};
+use serde::{de::Error, Deserialize, Serialize, Serializer};
+use serde_json::Value;
+use serde_with::{serde_as, DisplayFromStr, FromInto, OneOrMany, TryFromInto};
+use solana_sdk::{
+    clock::{Epoch, Slot, UnixTimestamp},
+    epoch_info::EpochInfo as EpochInfoOriginal,
+    transaction::TransactionError as TransactionErrorOriginal,
+    transaction_context::TransactionReturnData as TransactionReturnDataOriginal,
+};
+use solders_macros::{
+    common_methods, common_methods_rpc_resp, enum_original_mapping, richcmp_eq_only,
+};
+use solders_primitives::{pubkey::Pubkey, signature::Signature};
 use solders_traits::{
     py_from_bytes_general_via_bincode, pybytes_general_via_bincode, to_py_err, CommonMethods,
     PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly,

@@ -1,11 +1,11 @@
+use crate::{pubkey::Pubkey, signature::Signature};
 use pyo3::prelude::*;
 use solana_sdk::signer::{presigner::Presigner as PresignerOriginal, Signer as SignerTrait};
 use solders_macros::{pyhash, richcmp_signer};
-use crate::{Pubkey, Signature};
 
 use solders_traits::{
-    handle_py_err, impl_display, impl_signer_hash, PyHash, RichcmpSigner,
-    SignerTraitWrapper, ToSignerOriginal,
+    handle_py_err, impl_display, impl_signer_hash, PyHash, RichcmpSigner, SignerTraitWrapper,
+    ToSignerOriginal,
 };
 
 #[derive(Clone, Debug, Default, PartialEq)]

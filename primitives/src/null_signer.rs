@@ -1,4 +1,4 @@
-use crate::{Pubkey, Signature};
+use crate::{pubkey::Pubkey, signature::Signature};
 use derive_more::{From, Into};
 use pyo3::{prelude::*, types::PyBytes};
 use serde::{Deserialize, Serialize};

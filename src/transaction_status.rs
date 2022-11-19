@@ -2,6 +2,7 @@
 use derive_more::{From, Into};
 extern crate base64;
 use pythonize::{depythonize, pythonize};
+use solders_primitives::{message::MessageHeader, pubkey::Pubkey, signature::Signature};
 use solders_traits::{
     handle_py_value_err, CommonMethods, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly,
 };
@@ -11,9 +12,6 @@ use std::str::FromStr;
 use crate::{
     account_decoder::UiTokenAmount,
     commitment_config::CommitmentConfig,
-    message::MessageHeader,
-    pubkey::Pubkey,
-    signature::Signature,
     tmp_transaction_status::{
         EncodedConfirmedTransactionWithStatusMeta as EncodedConfirmedTransactionWithStatusMetaOriginal,
         EncodedTransaction as EncodedTransactionOriginal,
@@ -35,7 +33,6 @@ use crate::{
         UiTransactionStatusMeta as UiTransactionStatusMetaOriginal,
         UiTransactionTokenBalance as UiTransactionTokenBalanceOriginal,
     },
-    transaction::{TransactionVersion, VersionedTransaction},
     SolderHash,
 };
 use pyo3::{
@@ -51,6 +48,7 @@ use solana_sdk::{
     transaction_context::TransactionReturnData as TransactionReturnDataOriginal,
 };
 use solders_macros::{common_methods, enum_original_mapping, richcmp_eq_only};
+use solders_primitives::transaction::{TransactionVersion, VersionedTransaction};
 
 macro_rules! transaction_status_boilerplate {
     ($name:ident) => {

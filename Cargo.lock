@@ -1489,6 +1489,7 @@ dependencies = [
  "serde_with",
  "solana-sdk",
  "solders-macros",
+ "solders-primitives",
  "solders-traits",
  "thiserror",
  "zstd",
@@ -1501,6 +1502,23 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
+]
+
+[[package]]
+name = "solders-primitives"
+version = "0.10.0"
+dependencies = [
+ "base64 0.13.1",
+ "bincode",
+ "derive_more",
+ "pyo3",
+ "serde",
+ "serde_cbor",
+ "serde_json",
+ "serde_with",
+ "solana-sdk",
+ "solders-macros",
+ "solders-traits",
 ]
 
 [[package]]

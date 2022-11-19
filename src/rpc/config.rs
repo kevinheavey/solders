@@ -5,6 +5,7 @@ use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use solana_sdk::commitment_config::CommitmentLevel as CommitmentLevelOriginal;
 use solders_macros::{common_methods, richcmp_eq_only};
+use solders_primitives::{hash::Hash as SolderHash, pubkey::Pubkey, signature::Signature};
 use solders_traits::{
     impl_display, py_from_bytes_general_via_cbor, pybytes_general_via_cbor, CommonMethods,
     PyBytesCbor, PyFromBytesCbor, RichcmpEqualityOnly,
@@ -13,9 +14,7 @@ use solders_traits::{
 use crate::{
     account_decoder::{UiAccountEncoding, UiDataSliceConfig},
     commitment_config::CommitmentLevel,
-    hash::Hash as SolderHash,
     transaction_status::{TransactionDetails, UiTransactionEncoding},
-    Pubkey, Signature,
 };
 
 use super::filter::RpcFilterType;
