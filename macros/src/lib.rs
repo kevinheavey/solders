@@ -80,7 +80,7 @@ pub fn richcmp_eq_only(_: TokenStream, item: TokenStream) -> TokenStream {
 #[proc_macro_attribute]
 pub fn richcmp_signer(_: TokenStream, item: TokenStream) -> TokenStream {
     let mut ast = parse_macro_input!(item as ItemImpl);
-    let to_add = quote! {pub fn __richcmp__(&self, other: crate::Signer, op: pyo3::basic::CompareOp) -> pyo3::prelude::PyResult<bool> {self.richcmp(other, op)}};
+    let to_add = quote! {pub fn __richcmp__(&self, other: crate::signer::Signer, op: pyo3::basic::CompareOp) -> pyo3::prelude::PyResult<bool> {self.richcmp(other, op)}};
     ast.items.push(ImplItem::Verbatim(to_add));
     TokenStream::from(ast.to_token_stream())
 }
