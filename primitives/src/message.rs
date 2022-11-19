@@ -250,13 +250,13 @@ impl Message {
     ///
     pub fn new_with_blockhash(
         instructions: Vec<Instruction>,
-        payer: Option<&Pubkey>,
+        payer: Option<Pubkey>,
         blockhash: &SolderHash,
     ) -> Self {
         let instructions_inner = convert_instructions(instructions);
         MessageOriginal::new_with_blockhash(
             &instructions_inner,
-            convert_optional_pubkey(payer),
+            convert_optional_pubkey(payer.as_ref()),
             blockhash.as_ref(),
         )
         .into()
@@ -296,14 +296,14 @@ impl Message {
     ///     
     pub fn new_with_nonce(
         instructions: Vec<Instruction>,
-        payer: Option<&Pubkey>,
+        payer: Option<Pubkey>,
         nonce_account_pubkey: &Pubkey,
         nonce_authority_pubkey: &Pubkey,
     ) -> Self {
         let instructions_inner = convert_instructions(instructions);
         MessageOriginal::new_with_nonce(
             instructions_inner,
-            convert_optional_pubkey(payer),
+            convert_optional_pubkey(payer.as_ref()),
             nonce_account_pubkey.as_ref(),
             nonce_authority_pubkey.as_ref(),
         )

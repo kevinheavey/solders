@@ -938,9 +938,8 @@ dependencies = [
 
 [[package]]
 name = "pyo3"
-version = "0.17.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "201b6887e5576bf2f945fe65172c1fcbf3fcf285b23e4d71eb171d9736e38d32"
+version = "0.17.3"
+source = "git+https://github.com/PyO3/pyo3?rev=1d20f2a#1d20f2a5317585c13750e4433fe502dd25230775"
 dependencies = [
  "cfg-if",
  "indoc",
@@ -955,9 +954,8 @@ dependencies = [
 
 [[package]]
 name = "pyo3-build-config"
-version = "0.17.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bf0708c9ed01692635cbf056e286008e5a2927ab1a5e48cdd3aeb1ba5a6fef47"
+version = "0.17.3"
+source = "git+https://github.com/PyO3/pyo3?rev=1d20f2a#1d20f2a5317585c13750e4433fe502dd25230775"
 dependencies = [
  "once_cell",
  "target-lexicon",
@@ -965,9 +963,8 @@ dependencies = [
 
 [[package]]
 name = "pyo3-ffi"
-version = "0.17.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "90352dea4f486932b72ddf776264d293f85b79a1d214de1d023927b41461132d"
+version = "0.17.3"
+source = "git+https://github.com/PyO3/pyo3?rev=1d20f2a#1d20f2a5317585c13750e4433fe502dd25230775"
 dependencies = [
  "libc",
  "pyo3-build-config",
@@ -975,9 +972,8 @@ dependencies = [
 
 [[package]]
 name = "pyo3-macros"
-version = "0.17.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7eb24b804a2d9e88bfcc480a5a6dd76f006c1e3edaf064e8250423336e2cd79d"
+version = "0.17.3"
+source = "git+https://github.com/PyO3/pyo3?rev=1d20f2a#1d20f2a5317585c13750e4433fe502dd25230775"
 dependencies = [
  "proc-macro2",
  "pyo3-macros-backend",
@@ -987,9 +983,8 @@ dependencies = [
 
 [[package]]
 name = "pyo3-macros-backend"
-version = "0.17.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f22bb49f6a7348c253d7ac67a6875f2dc65f36c2ae64a82c381d528972bea6d6"
+version = "0.17.3"
+source = "git+https://github.com/PyO3/pyo3?rev=1d20f2a#1d20f2a5317585c13750e4433fe502dd25230775"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -999,8 +994,7 @@ dependencies = [
 [[package]]
 name = "pythonize"
 version = "0.17.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0f7f0c136f5fbc01868185eef462800e49659eb23acca83b9e884367a006acb6"
+source = "git+https://github.com/kevinheavey/pythonize?rev=001db40#001db40c6e2f4555b9300a874cd0428704bc6d40"
 dependencies = [
  "pyo3",
  "serde",

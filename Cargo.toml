@@ -27,7 +27,7 @@ thiserror = "^1.0.31"
 bs58 = "^0.4.0"
 zstd = "0.11.2"
 derive_more = { workspace = true }
-pythonize = "0.17.0"
+pythonize = { git = "https://github.com/kevinheavey/pythonize", rev = "001db40" }
 solders-traits = { workspace = true }
 solders-macros = { workspace = true }
 solders-primitives = { workspace = true }
@@ -36,7 +36,7 @@ solders-primitives = { workspace = true }
 members = [".", "traits", "macros", "primitives"]
 
 [workspace.dependencies]
-pyo3 = { version = "0.17.1", default-features = false }
+pyo3 = { git = "https://github.com/PyO3/pyo3", rev = "1d20f2a", default-features = false }
 solders-macros = { path = "./macros", version = "0.10.0" }
 solders-traits = { path = "./traits", version = "0.10.0" }
 serde_with = "^1.14.0"

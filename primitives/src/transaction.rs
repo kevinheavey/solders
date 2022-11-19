@@ -330,13 +330,13 @@ impl Transaction {
     ///
     pub fn new_signed_with_payer(
         instructions: Vec<Instruction>,
-        payer: Option<&Pubkey>,
+        payer: Option<Pubkey>,
         signing_keypairs: Vec<Signer>,
         recent_blockhash: SolderHash,
     ) -> Self {
         TransactionOriginal::new_signed_with_payer(
             &convert_instructions(instructions),
-            convert_optional_pubkey(payer),
+            convert_optional_pubkey(payer.as_ref()),
             &SignerVec(signing_keypairs),
             recent_blockhash.into(),
         )
