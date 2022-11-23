@@ -232,6 +232,7 @@ pub struct TransferParams {
     from_pubkey: Pubkey,
     to_pubkey: Pubkey,
     lamports: u64,
+    allow_unfunded_receipt: bool,
 }
 
 #[pyfunction]
@@ -240,6 +241,7 @@ pub fn transfer(params: TransferParams) -> Instruction {
         params.from_pubkey.as_ref(),
         params.to_pubkey.as_ref(),
         params.lamports,
+        params.allow_unfunded_receipt
     )
     .into()
 }
@@ -257,6 +259,7 @@ pub fn decode_transfer(instruction: Instruction) -> PyResult<TransferParams> {
             from_pubkey: from_pubkey.into(),
             to_pubkey: to_pubkey.into(),
             lamports,
+            allow_unfunded_receipt,
         }),
         _ => Err(PyValueError::new_err("Not a Transfer instruction")),
     }

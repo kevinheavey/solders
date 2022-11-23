@@ -58,7 +58,7 @@ def test_create_account() -> None:
 def test_transfer() -> None:
     """Test creating a transaction for transfer."""
     params = sp.TransferParams(
-        from_pubkey=Keypair().pubkey(), to_pubkey=Keypair().pubkey(), lamports=123
+        from_pubkey=Keypair().pubkey(), to_pubkey=Keypair().pubkey(), lamports=123, allow_unfunded_receipt=True
     )
     assert sp.decode_transfer(sp.transfer(params)) == params
 
