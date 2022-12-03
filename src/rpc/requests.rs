@@ -1,9 +1,7 @@
 #![allow(deprecated)]
-use crate::{
-    commitment_config::{CommitmentConfig, CommitmentLevel},
-};
+use crate::commitment_config::{CommitmentConfig, CommitmentLevel};
 use pyo3::{exceptions::PyValueError, prelude::*, types::PyTuple, PyTypeInfo};
-use solders_primitives::{message::Message, transaction::Transaction, pubkey::Pubkey};
+use solders_primitives::{message::Message, pubkey::Pubkey, transaction::Transaction};
 use solders_traits::{
     py_from_bytes_general_via_cbor, pybytes_general_via_cbor, to_py_err, CommonMethods,
     PyBytesCbor, PyFromBytesCbor, RichcmpEqualityOnly,
