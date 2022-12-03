@@ -3,7 +3,6 @@ from typing import cast, Union
 from pytest import mark, raises, fixture
 from solders.instruction import Instruction, CompiledInstruction, AccountMeta
 from solders.pubkey import Pubkey
-from solders.errors import BincodeError
 
 
 @fixture
