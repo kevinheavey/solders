@@ -62,7 +62,7 @@ def test_compiled_accounts_eq(compiled_ix: CompiledInstruction) -> None:
 
 @mark.parametrize("to_deserialize", [Instruction, CompiledInstruction])
 def test_bincode_error(to_deserialize: Union[Instruction, CompiledInstruction]) -> None:
-    with raises(BincodeError) as excinfo:
+    with raises(ValueError) as excinfo:
         Instruction.from_bytes(b"foo")
     assert excinfo.value.args[0] == "io error: unexpected end of file"
 
