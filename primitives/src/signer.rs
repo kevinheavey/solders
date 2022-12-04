@@ -7,7 +7,7 @@ use solana_sdk::{
 };
 use solders_traits::{SignerTraitWrapper, ToSignerOriginal};
 
-use crate::{Keypair, NullSigner, Presigner};
+use crate::{keypair::Keypair, null_signer::NullSigner, presigner::Presigner};
 
 #[derive(FromPyObject, Debug)]
 pub enum Signer {

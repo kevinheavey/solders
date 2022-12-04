@@ -5,6 +5,7 @@ use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use solana_sdk::commitment_config::CommitmentLevel as CommitmentLevelOriginal;
 use solders_macros::{common_methods, richcmp_eq_only};
+use solders_primitives::{hash::Hash as SolderHash, pubkey::Pubkey, signature::Signature};
 use solders_traits::{
     impl_display, py_from_bytes_general_via_cbor, pybytes_general_via_cbor, CommonMethods,
     PyBytesCbor, PyFromBytesCbor, RichcmpEqualityOnly,
@@ -13,9 +14,7 @@ use solders_traits::{
 use crate::{
     account_decoder::{UiAccountEncoding, UiDataSliceConfig},
     commitment_config::CommitmentLevel,
-    hash::Hash as SolderHash,
     transaction_status::{TransactionDetails, UiTransactionEncoding},
-    Pubkey, Signature,
 };
 
 use super::filter::RpcFilterType;
@@ -104,7 +103,7 @@ pyclass_boilerplate_with_default!(
 #[pymethods]
 impl RpcSendTransactionConfig {
     #[new]
-    #[args(skip_preflight = "false")]
+    #[pyo3(signature = (skip_preflight=false, preflight_commitment=None, max_retries=None, min_context_slot=None))]
     pub fn new(
         skip_preflight: bool,
         preflight_commitment: Option<CommitmentLevel>,
@@ -228,7 +227,7 @@ pyclass_boilerplate_with_default!(
 #[pymethods]
 impl RpcSimulateTransactionConfig {
     #[new]
-    #[args(sig_verify = "false", replace_recent_blockhash = "false")]
+    #[pyo3(signature = (sig_verify=false, replace_recent_blockhash=false, commitment=None, accounts=None, min_context_slot=None))]
     fn new(
         sig_verify: bool,
         replace_recent_blockhash: bool,

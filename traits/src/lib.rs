@@ -393,7 +393,7 @@ macro_rules! py_from_bytes_general_via_bincode {
 pub trait PyFromBytesBincode<'b>: Deserialize<'b> {
     fn py_from_bytes_bincode(raw: &'b [u8]) -> PyResult<Self> {
         let deser = bincode::deserialize::<Self>(raw);
-        handle_py_err(deser)
+        handle_py_value_err(deser)
     }
 }
 
@@ -408,7 +408,7 @@ macro_rules! py_from_bytes_general_via_cbor {
 pub trait PyFromBytesCbor<'b>: Deserialize<'b> {
     fn py_from_bytes_cbor(raw: &'b [u8]) -> PyResult<Self> {
         let deser = serde_cbor::from_slice::<Self>(raw);
-        handle_py_err(deser)
+        handle_py_value_err(deser)
     }
 }
 
@@ -454,6 +454,6 @@ pub trait CommonMethods<'a>:
     }
 
     fn py_from_json(raw: &'a str) -> PyResult<Self> {
-        serde_json::from_str(raw).map_err(to_py_err)
+        serde_json::from_str(raw).map_err(|e| to_py_value_err(&e))
     }
 }

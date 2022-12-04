@@ -1,3 +1,4 @@
+#![allow(clippy::redundant_closure)]
 use std::str::FromStr;
 
 use derive_more::{From, Into};
@@ -5,6 +6,7 @@ use pyo3::{prelude::*, types::PyBytes};
 use serde::{Deserialize, Serialize};
 use solana_sdk::{account::Account as AccountOriginal, clock::Epoch};
 use solders_macros::{common_methods, richcmp_eq_only};
+use solders_primitives::pubkey::Pubkey;
 use solders_traits::{
     impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode, CommonMethods,
     PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly,
@@ -12,7 +14,6 @@ use solders_traits::{
 
 use crate::{
     account_decoder::ParsedAccount,
-    pubkey::Pubkey,
     tmp_account_decoder::{UiAccount, UiAccountData, UiAccountEncoding},
 };
 
@@ -34,7 +35,7 @@ pub struct Account(AccountOriginal);
 #[pymethods]
 impl Account {
     #[new]
-    #[args(executable = "bool::default()", rent_epoch = "Epoch::default()")]
+    #[pyo3(signature = (lamports, data, owner, executable = false, rent_epoch = Epoch::default()))]
     pub fn new(
         lamports: u64,
         data: &[u8],
@@ -159,7 +160,7 @@ pub struct AccountJSON {
 #[pymethods]
 impl AccountJSON {
     #[new]
-    #[args(executable = "bool::default()", rent_epoch = "Epoch::default()")]
+    #[pyo3(signature = (lamports, data, owner, executable=false, rent_epoch=Epoch::default()))]
     pub fn new(
         lamports: u64,
         data: ParsedAccount,
