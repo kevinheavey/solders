@@ -1,5 +1,6 @@
 use std::hash::Hasher;
 
+use crate::pubkey::Pubkey;
 use derive_more::{From, Into};
 use pyo3::{prelude::*, types::PyBytes};
 use serde::{Deserialize, Serialize};
@@ -11,11 +12,10 @@ use solana_sdk::{
     pubkey::Pubkey as PubkeyOriginal,
 };
 use solders_macros::{common_methods, pyhash, richcmp_eq_only};
-use crate::pubkey::Pubkey;
 
 use solders_traits::{
-    impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
-    CommonMethods, PyBytesBincode, PyFromBytesBincode, PyHash, RichcmpEqualityOnly,
+    impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode, CommonMethods,
+    PyBytesBincode, PyHash, RichcmpEqualityOnly,
 };
 
 /// Describes a single account read or written by a program during instruction

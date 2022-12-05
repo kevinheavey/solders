@@ -93,19 +93,31 @@ pub fn common_methods(_: TokenStream, item: TokenStream) -> TokenStream {
     let mut ast = parse_macro_input!(item as ItemImpl);
     let mut methods = vec![
         ImplItem::Verbatim(
-            quote! {pub fn __bytes__<'a>(&self, py: pyo3::prelude::Python<'a>) -> &'a pyo3::types::PyBytes  {self.pybytes(py)}},
+            quote! {pub fn __bytes__<'a>(&self, py: pyo3::prelude::Python<'a>) -> &'a pyo3::types::PyBytes  {
+                solders_traits::CommonMethods::pybytes(self, py)
+            }},
         ),
-        ImplItem::Verbatim(quote! { pub fn __str__(&self) -> String {self.pystr()} }),
-        ImplItem::Verbatim(quote! { pub fn __repr__(&self) -> String {self.pyrepr()} }),
+        ImplItem::Verbatim(quote! { pub fn __str__(&self) -> String {
+            solders_traits::CommonMethods::pystr(self)
+        } }),
+        ImplItem::Verbatim(quote! { pub fn __repr__(&self) -> String {
+            solders_traits::CommonMethods::pyrepr(self)
+        } }),
         ImplItem::Verbatim(
-            quote! { pub fn __reduce__(&self) -> pyo3::prelude::PyResult<(pyo3::prelude::PyObject, pyo3::prelude::PyObject)> {self.pyreduce()} },
+            quote! { pub fn __reduce__(&self) -> pyo3::prelude::PyResult<(pyo3::prelude::PyObject, pyo3::prelude::PyObject)> {
+                solders_traits::CommonMethods::pyreduce(self)
+            } },
         ),
         ImplItem::Verbatim(quote! {
         /// Convert to a JSON string.
-        pub fn to_json(&self) -> String {self.py_to_json()} }),
+        pub fn to_json(&self) -> String {
+            solders_traits::CommonMethods::py_to_json(self)
+        } }),
         ImplItem::Verbatim(quote! {
         /// Build from a JSON string.
-        #[staticmethod] pub fn from_json(raw: &str) -> PyResult<Self> {Self::py_from_json(raw)} }),
+        #[staticmethod] pub fn from_json(raw: &str) -> PyResult<Self> {
+            <Self as solders_traits::CommonMethods>::py_from_json(raw)
+        } }),
     ];
     if !ast.items.iter().any(|item| match item {
         ImplItem::Method(m) => m.sig.ident == "from_bytes",
@@ -121,7 +133,7 @@ pub fn common_methods(_: TokenStream, item: TokenStream) -> TokenStream {
             ///
             #[staticmethod]
             pub fn from_bytes(data: &[u8]) -> PyResult<Self> {
-                Self::py_from_bytes(data)
+                <Self as solders_traits::CommonMethods>::py_from_bytes(data)
             }
         });
         methods.push(from_bytes);
@@ -138,14 +150,22 @@ pub fn common_methods_rpc_resp(_: TokenStream, item: TokenStream) -> TokenStream
         ImplItem::Verbatim(
             quote! {pub fn __bytes__<'a>(&self, py: pyo3::prelude::Python<'a>) -> &'a pyo3::types::PyBytes  {self.pybytes(py)}},
         ),
-        ImplItem::Verbatim(quote! { pub fn __str__(&self) -> String {self.pystr()} }),
-        ImplItem::Verbatim(quote! { pub fn __repr__(&self) -> String {self.pyrepr()} }),
+        ImplItem::Verbatim(quote! { pub fn __str__(&self) -> String {
+            solders::rpc::responses::CommonMethodsRpcResp::pystr(self)
+        } }),
+        ImplItem::Verbatim(quote! { pub fn __repr__(&self) -> String {
+            solders::rpc::responses::CommonMethodsRpcResp::pyrepr(self)
+        } }),
         ImplItem::Verbatim(
-            quote! { pub fn __reduce__(&self) -> pyo3::prelude::PyResult<(pyo3::prelude::PyObject, pyo3::prelude::PyObject)> {self.pyreduce()} },
+            quote! { pub fn __reduce__(&self) -> pyo3::prelude::PyResult<(pyo3::prelude::PyObject, pyo3::prelude::PyObject)> {
+                solders::rpc::responses::CommonMethodsRpcResp::pyreduce(self)
+            } },
         ),
         ImplItem::Verbatim(quote! {
         /// Convert to a JSON string.
-        pub fn to_json(&self) -> String {self.py_to_json()} }),
+        pub fn to_json(&self) -> String {
+            solders::rpc::responses::CommonMethodsRpcResp::py_to_json(self)
+        } }),
         ImplItem::Verbatim(quote! {
         /// Build from a JSON string.
         ///
@@ -156,7 +176,9 @@ pub fn common_methods_rpc_resp(_: TokenStream, item: TokenStream) -> TokenStream
         ///     Either the deserialized object or ``RPCError``.
         ///
         #[staticmethod]
-        pub fn from_json(raw: &str) -> PyResult<crate::rpc::responses::Resp<Self>> {Self::py_from_json(raw)} }),
+        pub fn from_json(raw: &str) -> PyResult<crate::rpc::responses::Resp<Self>> {
+            <Self as solders::rpc::responses::CommonMethodsRpcResp>::py_from_json(raw)
+        } }),
         ImplItem::Verbatim(quote! {
             /// Deserialize from bytes.
             ///
@@ -167,59 +189,13 @@ pub fn common_methods_rpc_resp(_: TokenStream, item: TokenStream) -> TokenStream
             ///
             #[staticmethod]
             pub fn from_bytes(data: &[u8]) -> PyResult<Self> {
-                Self::py_from_bytes(data)
+                <Self as solders::rpc::responses::CommonMethodsRpcResp>::py_from_bytes(data)
             }
         }),
         ImplItem::Verbatim(
-            quote! {pub fn __richcmp__(&self, other: &Self, op: pyo3::basic::CompareOp) -> pyo3::prelude::PyResult<bool> {self.richcmp(other, op)}},
-        ),
-    ];
-    ast.items.extend_from_slice(&methods);
-    TokenStream::from(ast.to_token_stream())
-}
-
-/// Add `__bytes__`, `__str__`, `__repr__`, `__reduce__`, `to_json`, `from_json`, `from_bytes` and `__richcmp__` using the `CommonMethodsRpcResp` trait.
-#[proc_macro_attribute]
-pub fn common_methods_rpc_resp_no_context(_: TokenStream, item: TokenStream) -> TokenStream {
-    let mut ast = parse_macro_input!(item as ItemImpl);
-    let methods = vec![
-        ImplItem::Verbatim(
-            quote! {pub fn __bytes__<'a>(&self, py: pyo3::prelude::Python<'a>) -> &'a pyo3::types::PyBytes  {self.pybytes(py)}},
-        ),
-        ImplItem::Verbatim(quote! { pub fn __str__(&self) -> String {self.pystr()} }),
-        ImplItem::Verbatim(quote! { pub fn __repr__(&self) -> String {self.pyrepr()} }),
-        ImplItem::Verbatim(
-            quote! { pub fn __reduce__(&self) -> pyo3::prelude::PyResult<(pyo3::prelude::PyObject, pyo3::prelude::PyObject)> {self.pyreduce()} },
-        ),
-        ImplItem::Verbatim(quote! {
-        /// Convert to a JSON string.
-        pub fn to_json(&self) -> String {self.py_to_json()} }),
-        ImplItem::Verbatim(quote! {
-        /// Build from a JSON string.
-        ///
-        /// Args:
-        ///     raw (str): The RPC JSON response (can be an error response).
-        ///
-        /// Returns:
-        ///     Either the deserialized object or ``RPCError``.
-        ///
-        #[staticmethod]
-        pub fn from_json(raw: &str) -> PyResult<Self> {Self::py_from_json(raw)} }),
-        ImplItem::Verbatim(quote! {
-            /// Deserialize from bytes.
-            ///
-            /// Args:
-            ///     data (bytes): the serialized object.
-            ///
-            /// Returns: the deserialized object.
-            ///
-            #[staticmethod]
-            pub fn from_bytes(data: &[u8]) -> PyResult<Self> {
-                Self::py_from_bytes(data)
-            }
-        }),
-        ImplItem::Verbatim(
-            quote! {pub fn __richcmp__(&self, other: &Self, op: pyo3::basic::CompareOp) -> pyo3::prelude::PyResult<bool> {self.richcmp(other, op)}},
+            quote! {pub fn __richcmp__(&self, other: &Self, op: pyo3::basic::CompareOp) -> pyo3::prelude::PyResult<bool> {
+                solders_traits::RichcmpEqualityOnly::richcmp(self, other, op)
+            }},
         ),
     ];
     ast.items.extend_from_slice(&methods);

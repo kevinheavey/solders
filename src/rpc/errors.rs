@@ -2,7 +2,7 @@ use crate::{
     transaction_status::{transaction_status_boilerplate, TransactionErrorType},
     
 };
-use solders_traits::{CommonMethods, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly,};
+use solders_traits::{CommonMethods, PyBytesBincode, RichcmpEqualityOnly,};
 use derive_more::{From, Into};
 use pyo3::{prelude::*, types::PyTuple, PyTypeInfo};
 use serde::{Deserialize, Serialize};
