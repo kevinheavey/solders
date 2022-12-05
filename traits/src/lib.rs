@@ -365,7 +365,7 @@ macro_rules! py_from_bytes_general_for_py_from_bytes_bincode {
     ($ident:ident) => {
         impl $crate::PyFromBytesGeneral for $ident {
             fn py_from_bytes_general(raw: &[u8]) -> PyResult<Self> {
-                Self::py_from_bytes_bincode(raw)
+                <Self as $crate::PyFromBytesBincode>::py_from_bytes_bincode(raw)
             }
         }
     };
@@ -376,7 +376,7 @@ macro_rules! py_from_bytes_general_for_py_from_bytes_cbor {
     ($ident:ident) => {
         impl $crate::PyFromBytesGeneral for $ident {
             fn py_from_bytes_general(raw: &[u8]) -> PyResult<Self> {
-                Self::py_from_bytes_cbor(raw)
+                <Self as $crate::PyFromBytesCbor>::py_from_bytes_cbor(raw)
             }
         }
     };
@@ -438,7 +438,7 @@ pub trait CommonMethods<'a>:
     }
 
     fn py_from_bytes(raw: &[u8]) -> PyResult<Self> {
-        Self::py_from_bytes_general(raw)
+        <Self as PyFromBytesGeneral>::py_from_bytes_general(raw)
     }
 
     fn pyreduce(&self) -> PyResult<(PyObject, PyObject)> {
