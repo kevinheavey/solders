@@ -281,7 +281,7 @@ pub fn enum_original_mapping(original: TokenStream, item: TokenStream) -> TokenS
     TokenStream::from(new_stream)
 }
 
-/// Impl IntoPy<PyObject> for an ADT.
+/// Impl IntoPy<PyObject> for an ADT where each variant is a newtype.
 ///
 /// # Example
 ///

@@ -45,7 +45,7 @@ use solana_sdk::{
     slot_history::Slot, transaction::TransactionError as TransactionErrorOriginal,
     transaction_context::TransactionReturnData as TransactionReturnDataOriginal,
 };
-use solders_macros::{common_methods, enum_original_mapping, richcmp_eq_only};
+use solders_macros::{common_methods, enum_original_mapping, richcmp_eq_only, EnumIntoPy};
 use solders_primitives::transaction::{TransactionVersion, VersionedTransaction};
 
 macro_rules! transaction_status_boilerplate {
@@ -363,20 +363,11 @@ impl UiPartiallyDecodedInstruction {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, FromPyObject)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, FromPyObject, EnumIntoPy)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum UiParsedInstruction {
     Parsed(ParsedInstruction),
     PartiallyDecoded(UiPartiallyDecodedInstruction),
-}
-
-impl IntoPy<PyObject> for UiParsedInstruction {
-    fn into_py(self, py: Python<'_>) -> PyObject {
-        match self {
-            Self::Parsed(m) => m.into_py(py),
-            Self::PartiallyDecoded(m) => m.into_py(py),
-        }
-    }
 }
 
 impl From<UiParsedInstruction> for UiParsedInstructionOriginal {
@@ -398,20 +389,11 @@ impl From<UiParsedInstructionOriginal> for UiParsedInstruction {
 }
 
 /// A duplicate representation of an Instruction for pretty JSON serialization
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, FromPyObject)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, FromPyObject, EnumIntoPy)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum UiInstruction {
     Compiled(UiCompiledInstruction),
     Parsed(UiParsedInstruction),
-}
-
-impl IntoPy<PyObject> for UiInstruction {
-    fn into_py(self, py: Python<'_>) -> PyObject {
-        match self {
-            Self::Compiled(m) => m.into_py(py),
-            Self::Parsed(m) => m.into_py(py),
-        }
-    }
 }
 
 impl From<UiInstruction> for UiInstructionOriginal {
@@ -494,7 +476,7 @@ impl UiParsedMessage {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, FromPyObject)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, FromPyObject, EnumIntoPy)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum UiMessage {
     Parsed(UiParsedMessage),
@@ -515,15 +497,6 @@ impl From<UiMessage> for UiMessageOriginal {
         match m {
             UiMessage::Parsed(msg) => Self::Parsed(msg.into()),
             UiMessage::Raw(msg) => Self::Raw(msg.into()),
-        }
-    }
-}
-
-impl IntoPy<PyObject> for UiMessage {
-    fn into_py(self, py: Python<'_>) -> PyObject {
-        match self {
-            Self::Parsed(p) => p.into_py(py),
-            Self::Raw(r) => r.into_py(py),
         }
     }
 }
@@ -562,7 +535,7 @@ impl UiTransaction {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, FromPyObject)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, FromPyObject, EnumIntoPy)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum EncodedVersionedTransaction {
     Binary(VersionedTransaction),
@@ -610,15 +583,6 @@ pub enum EncodedTransaction {
     LegacyBinary(String), // Old way of expressing base-58, retained for RPC backwards compatibility
     Binary(String, TransactionBinaryEncoding),
     Json(UiTransaction),
-}
-
-impl IntoPy<PyObject> for EncodedVersionedTransaction {
-    fn into_py(self, py: Python<'_>) -> PyObject {
-        match self {
-            Self::Binary(b) => b.into_py(py),
-            Self::Json(u) => u.into_py(py),
-        }
-    }
 }
 
 impl From<EncodedTransactionOriginal> for EncodedTransaction {
@@ -1049,22 +1013,13 @@ pub enum InstructionErrorFieldless {
     MaxAccountsExceeded,
 }
 
-#[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug)]
+#[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, EnumIntoPy)]
 pub enum InstructionErrorTagged {
     Custom(InstructionErrorCustom),
     BorshIoError(InstructionErrorBorshIO),
 }
 
-impl IntoPy<PyObject> for InstructionErrorTagged {
-    fn into_py(self, py: Python<'_>) -> PyObject {
-        match self {
-            Self::Custom(x) => x.into_py(py),
-            Self::BorshIoError(x) => x.into_py(py),
-        }
-    }
-}
-
-#[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug)]
+#[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, EnumIntoPy)]
 #[serde(untagged)]
 pub enum InstructionErrorType {
     Fieldless(InstructionErrorFieldless),
@@ -1323,15 +1278,6 @@ impl From<InstructionErrorOriginal> for InstructionErrorType {
     }
 }
 
-impl IntoPy<PyObject> for InstructionErrorType {
-    fn into_py(self, py: Python<'_>) -> PyObject {
-        match self {
-            Self::Fieldless(f) => f.into_py(py),
-            Self::Tagged(t) => t.into_py(py),
-        }
-    }
-}
-
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.transaction_status", subclass)]
 pub struct TransactionErrorInstructionError(pub (u8, InstructionErrorType));
@@ -1429,24 +1375,14 @@ pub enum TransactionErrorFieldless {
     WouldExceedAccountDataTotalLimit,
 }
 
-#[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug)]
+#[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, EnumIntoPy)]
 pub enum TransactionErrorTypeTagged {
     InstructionError(TransactionErrorInstructionError),
     DuplicateInstruction(TransactionErrorDuplicateInstruction),
     InsufficientFundsForRent(TransactionErrorInsufficientFundsForRent),
 }
 
-impl IntoPy<PyObject> for TransactionErrorTypeTagged {
-    fn into_py(self, py: Python<'_>) -> PyObject {
-        match self {
-            Self::InstructionError(e) => e.into_py(py),
-            Self::DuplicateInstruction(d) => d.into_py(py),
-            Self::InsufficientFundsForRent(i) => i.into_py(py),
-        }
-    }
-}
-
-#[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug)]
+#[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, EnumIntoPy)]
 #[serde(untagged)]
 pub enum TransactionErrorType {
     Fieldless(TransactionErrorFieldless),
@@ -1639,15 +1575,6 @@ impl From<TransactionErrorOriginal> for TransactionErrorType {
             TransactionErrorOriginal::WouldExceedAccountDataTotalLimit => {
                 Self::Fieldless(TransactionErrorFieldless::WouldExceedAccountDataTotalLimit)
             }
-        }
-    }
-}
-
-impl IntoPy<PyObject> for TransactionErrorType {
-    fn into_py(self, py: Python<'_>) -> PyObject {
-        match self {
-            Self::Fieldless(f) => f.into_py(py),
-            Self::Tagged(t) => t.into_py(py),
         }
     }
 }

@@ -6,27 +6,18 @@ use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 
 use derive_more::{From, Into};
-use solders_macros::{common_methods, enum_original_mapping, richcmp_eq_only};
+use solders_macros::{common_methods, enum_original_mapping, richcmp_eq_only, EnumIntoPy};
 
 use solders_traits::{
     impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode, CommonMethods,
     RichcmpEqualityOnly,
 };
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, FromPyObject)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, FromPyObject, EnumIntoPy)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum MemcmpEncodedBytes {
     Base58(String),
     Bytes(Vec<u8>),
-}
-
-impl IntoPy<PyObject> for MemcmpEncodedBytes {
-    fn into_py(self, py: Python<'_>) -> PyObject {
-        match self {
-            Self::Base58(s) => s.into_py(py),
-            Self::Bytes(v) => v.into_py(py),
-        }
-    }
 }
 
 impl From<MemcmpEncodedBytes> for MemcmpEncodedBytesOriginal {
@@ -107,20 +98,11 @@ impl Memcmp {
 impl RichcmpEqualityOnly for Memcmp {}
 impl CommonMethods<'_> for Memcmp {}
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, FromPyObject)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, FromPyObject, EnumIntoPy)]
 #[serde(rename_all = "camelCase")]
 pub enum RpcFilterType {
     DataSize(u64),
     Memcmp(Memcmp),
-}
-
-impl IntoPy<PyObject> for RpcFilterType {
-    fn into_py(self, py: Python<'_>) -> PyObject {
-        match self {
-            RpcFilterType::DataSize(num) => num.into_py(py),
-            RpcFilterType::Memcmp(mem) => mem.into_py(py),
-        }
-    }
 }
 
 impl From<RpcFilterType> for RpcFilterTypeOriginal {
