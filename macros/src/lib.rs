@@ -286,10 +286,9 @@ pub fn enum_original_mapping(original: TokenStream, item: TokenStream) -> TokenS
 /// # Example
 ///
 /// ```rust
-/// use solders_macros::enum_into_py;
+/// use solders_macros::EnumIntoPy;
 ///
-/// #[enum_into_py]
-/// #[derive(PartialEq, Debug)]
+/// #[derive(PartialEq, Debug, EnumIntoPy)]
 /// pub enum Foo {
 ///   A(u8),
 ///   B(u8)
