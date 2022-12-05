@@ -16,7 +16,7 @@ use serde_with::{serde_as, skip_serializing_none, DisplayFromStr, FromInto};
 use solana_sdk::{
     message::Message as MessageOriginal, transaction::Transaction as TransactionOriginal,
 };
-use solders_macros::{common_methods, richcmp_eq_only, rpc_id_getter};
+use solders_macros::{common_methods, richcmp_eq_only, rpc_id_getter, EnumIntoPy};
 
 use crate::{Signature, SolderHash};
 
@@ -2709,18 +2709,10 @@ zero_param_req_def!(VoteSubscribe);
 
 macro_rules ! pyunion {
     ($name:ident, $($variant:ident),+) => {
-        #[derive(FromPyObject, Clone, Debug, PartialEq, Serialize, Deserialize)]
+        #[derive(FromPyObject, Clone, Debug, PartialEq, Serialize, Deserialize, EnumIntoPy)]
         #[serde(tag = "method", rename_all = "camelCase")]
         pub enum $name {
             $($variant($variant),)+
-        }
-
-        impl IntoPy<PyObject> for $name {
-            fn into_py(self, py: Python<'_>) -> PyObject {
-                match self {
-                    $(Self::$variant(x) => x.into_py(py),)+
-                }
-            }
         }
     }
 }

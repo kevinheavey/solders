@@ -12,7 +12,7 @@ use solana_sdk::{
         VersionedTransaction as VersionedTransactionOriginal,
     },
 };
-use solders_macros::{common_methods, richcmp_eq_only};
+use solders_macros::{common_methods, richcmp_eq_only, EnumIntoPy};
 use solders_traits::{
     handle_py_err, impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
     CommonMethods, RichcmpEqualityOnly,
@@ -713,20 +713,11 @@ impl From<LegacyOriginal> for Legacy {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, FromPyObject)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, FromPyObject, EnumIntoPy)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum TransactionVersion {
     Legacy(Legacy),
     Number(u8),
-}
-
-impl IntoPy<PyObject> for TransactionVersion {
-    fn into_py(self, py: Python<'_>) -> PyObject {
-        match self {
-            Self::Legacy(v) => v.into_py(py),
-            Self::Number(v) => v.into_py(py),
-        }
-    }
 }
 
 impl From<TransactionVersion> for TransactionVersionOriginal {

@@ -280,3 +280,33 @@ pub fn enum_original_mapping(original: TokenStream, item: TokenStream) -> TokenS
     new_stream.extend(from_impl);
     TokenStream::from(new_stream)
 }
+
+/// Impl IntoPy<PyObject> for an ADT where each variant is a newtype.
+///
+/// # Example
+///
+/// ```rust
+/// use solders_macros::EnumIntoPy;
+///
+/// #[derive(PartialEq, Debug, EnumIntoPy)]
+/// pub enum Foo {
+///   A(u8),
+///   B(u8)
+/// }
+///
+#[proc_macro_derive(EnumIntoPy)]
+pub fn enum_into_py(item: TokenStream) -> TokenStream {
+    let ast = parse_macro_input!(item as ItemEnum);
+    let enum_name = ast.ident;
+    let variant_names: Vec<Ident> = ast.variants.into_iter().map(|v| v.ident).collect();
+    let into_py_impl = quote! {
+        impl IntoPy<PyObject> for #enum_name {
+            fn into_py(self, py: Python<'_>) -> PyObject {
+                match self {
+                    #(Self::#variant_names(x) => x.into_py(py)),*,
+                }
+            }
+        }
+    };
+    into_py_impl.to_token_stream().into()
+}

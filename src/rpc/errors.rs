@@ -1,13 +1,10 @@
-use crate::{
-    transaction_status::{transaction_status_boilerplate, TransactionErrorType},
-    
-};
-use solders_traits::{CommonMethods, RichcmpEqualityOnly,};
+use crate::transaction_status::{transaction_status_boilerplate, TransactionErrorType};
 use derive_more::{From, Into};
 use pyo3::{prelude::*, types::PyTuple, PyTypeInfo};
 use serde::{Deserialize, Serialize};
 use solana_sdk::slot_history::Slot;
-use solders_macros::{common_methods, richcmp_eq_only};
+use solders_macros::{common_methods, richcmp_eq_only, EnumIntoPy};
+use solders_traits::{CommonMethods, RichcmpEqualityOnly};
 use std::fmt::Display;
 
 use super::responses::RpcSimulateTransactionResult;
@@ -335,7 +332,7 @@ impl UnsupportedTransactionVersion {
 
 error_message!(UnsupportedTransactionVersionMessage);
 
-#[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug)]
+#[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, EnumIntoPy)]
 #[serde(untagged)]
 pub enum RpcCustomError {
     Fieldless(RpcCustomErrorFieldless),
@@ -358,26 +355,6 @@ error_message!(InvalidRequestMessage);
 error_message!(MethodNotFoundMessage);
 error_message!(InvalidParamsMessage);
 error_message!(InternalErrorMessage);
-
-impl IntoPy<PyObject> for RpcCustomError {
-    fn into_py(self, py: Python<'_>) -> PyObject {
-        match self {
-            Self::BlockCleanedUp(x) => x.into_py(py),
-            Self::SendTransactionPreflightFailure(x) => x.into_py(py),
-            Self::BlockNotAvailable(x) => x.into_py(py),
-            Self::NodeUnhealthy(x) => x.into_py(py),
-            Self::TransactionPrecompileVerificationFailure(x) => x.into_py(py),
-            Self::SlotSkipped(x) => x.into_py(py),
-            Self::LongTermStorageSlotSkipped(x) => x.into_py(py),
-            Self::KeyExcludedFromSecondaryIndex(x) => x.into_py(py),
-            Self::ScanError(x) => x.into_py(py),
-            Self::BlockStatusNotAvailableYet(x) => x.into_py(py),
-            Self::MinContextSlotNotReached(x) => x.into_py(py),
-            Self::UnsupportedTransactionVersion(x) => x.into_py(py),
-            Self::Fieldless(x) => x.into_py(py),
-        }
-    }
-}
 
 pub(crate) fn create_errors_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "errors")?;

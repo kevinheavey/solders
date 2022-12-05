@@ -64,7 +64,7 @@ use solana_sdk::{
     transaction_context::TransactionReturnData as TransactionReturnDataOriginal,
 };
 use solders_macros::{
-    common_methods, common_methods_rpc_resp, enum_original_mapping, richcmp_eq_only,
+    common_methods, common_methods_rpc_resp, enum_original_mapping, richcmp_eq_only, EnumIntoPy
 };
 use solders_primitives::{pubkey::Pubkey, signature::Signature};
 use solders_traits::{
@@ -249,7 +249,7 @@ macro_rules! contextless_resp_no_eq {
     };
 }
 
-#[derive(FromPyObject, Clone, Debug, PartialEq, Eq)]
+#[derive(FromPyObject, Clone, Debug, PartialEq, Eq, EnumIntoPy)]
 pub enum RPCError {
     Fieldless(RpcCustomErrorFieldless),
     BlockCleanedUpMessage(BlockCleanedUpMessage),
@@ -301,31 +301,6 @@ impl RPCError {
 
     fn py_from_json(raw: &str) -> PyResult<Self> {
         serde_json::from_str(raw).map_err(to_py_err)
-    }
-}
-
-impl IntoPy<PyObject> for RPCError {
-    fn into_py(self, py: Python<'_>) -> PyObject {
-        match self {
-            Self::Fieldless(x) => x.into_py(py),
-            Self::BlockCleanedUpMessage(x) => x.into_py(py),
-            Self::SendTransactionPreflightFailureMessage(x) => x.into_py(py),
-            Self::BlockNotAvailableMessage(x) => x.into_py(py),
-            Self::NodeUnhealthyMessage(x) => x.into_py(py),
-            Self::TransactionPrecompileVerificationFailureMessage(x) => x.into_py(py),
-            Self::SlotSkippedMessage(x) => x.into_py(py),
-            Self::LongTermStorageSlotSkippedMessage(x) => x.into_py(py),
-            Self::KeyExcludedFromSecondaryIndexMessage(x) => x.into_py(py),
-            Self::ScanErrorMessage(x) => x.into_py(py),
-            Self::BlockStatusNotAvailableYetMessage(x) => x.into_py(py),
-            Self::MinContextSlotNotReachedMessage(x) => x.into_py(py),
-            Self::UnsupportedTransactionVersionMessage(x) => x.into_py(py),
-            Self::ParseErrorMessage(x) => x.into_py(py),
-            Self::InvalidRequestMessage(x) => x.into_py(py),
-            Self::MethodNotFoundMessage(x) => x.into_py(py),
-            Self::InvalidParamsMessage(x) => x.into_py(py),
-            Self::InternalErrorMessage(x) => x.into_py(py),
-        }
     }
 }
 
@@ -674,22 +649,12 @@ impl IntoPy<PyObject> for Notification {
     }
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, EnumIntoPy)]
 #[serde(untagged)]
 pub enum WebsocketMessage {
     Notification(Notification),
     SubscriptionResult(SubscriptionResult),
     SubscriptionError(SubscriptionError),
-}
-
-impl IntoPy<PyObject> for WebsocketMessage {
-    fn into_py(self, py: Python<'_>) -> PyObject {
-        match self {
-            Self::Notification(x) => x.into_py(py),
-            Self::SubscriptionResult(x) => x.into_py(py),
-            Self::SubscriptionError(x) => x.into_py(py),
-        }
-    }
 }
 
 #[serde_as]
@@ -1608,20 +1573,11 @@ contextful_resp_eq!(
     "Vec<Option<TryFromInto<UiAccount>>>"
 );
 
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromPyObject)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromPyObject, EnumIntoPy)]
 #[serde(untagged)]
 pub enum AccountMaybeJSON {
     Binary(Account),
     Parsed(AccountJSON),
-}
-
-impl IntoPy<PyObject> for AccountMaybeJSON {
-    fn into_py(self, py: Python<'_>) -> PyObject {
-        match self {
-            Self::Parsed(x) => x.into_py(py),
-            Self::Binary(x) => x.into_py(py),
-        }
-    }
 }
 
 impl From<Account> for AccountMaybeJSON {
@@ -1747,20 +1703,11 @@ contextless_resp_eq!(
     clone
 );
 
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromPyObject)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromPyObject, EnumIntoPy)]
 #[serde(untagged)]
 pub enum RpcKeyedAccountMaybeJSON {
     Binary(RpcKeyedAccount),
     Parsed(RpcKeyedAccountJsonParsed),
-}
-
-impl IntoPy<PyObject> for RpcKeyedAccountMaybeJSON {
-    fn into_py(self, py: Python<'_>) -> PyObject {
-        match self {
-            Self::Parsed(x) => x.into_py(py),
-            Self::Binary(x) => x.into_py(py),
-        }
-    }
 }
 
 contextful_resp_eq!(
@@ -2472,7 +2419,7 @@ impl From<SlotUpdateFrozen> for SlotUpdateOriginal {
     }
 }
 
-#[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug)]
+#[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, EnumIntoPy)]
 #[serde(rename_all = "camelCase", tag = "type")]
 pub enum SlotUpdate {
     FirstShredReceived(SlotUpdateFirstShredReceived),
@@ -2544,20 +2491,6 @@ impl From<SlotUpdateOriginal> for SlotUpdate {
     }
 }
 
-impl IntoPy<PyObject> for SlotUpdate {
-    fn into_py(self, py: Python<'_>) -> PyObject {
-        match self {
-            Self::FirstShredReceived(x) => x.into_py(py),
-            Self::Completed(x) => x.into_py(py),
-            Self::CreatedBank(x) => x.into_py(py),
-            Self::Frozen(x) => x.into_py(py),
-            Self::Dead(x) => x.into_py(py),
-            Self::OptimisticConfirmation(x) => x.into_py(py),
-            Self::Root(x) => x.into_py(py),
-        }
-    }
-}
-
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
 pub struct RpcVote(RpcVoteOriginal);
@@ -2613,20 +2546,11 @@ pub enum BlockStoreError {
     BlockStoreError,
 }
 
-#[derive(FromPyObject, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+#[derive(FromPyObject, Serialize, Deserialize, Clone, Debug, PartialEq, Eq, EnumIntoPy)]
 #[serde(untagged)]
 pub enum RpcBlockUpdateError {
     BlockStoreError(BlockStoreError),
     UnsupportedTransactionVersion(UnsupportedTransactionVersion),
-}
-
-impl IntoPy<PyObject> for RpcBlockUpdateError {
-    fn into_py(self, py: Python<'_>) -> PyObject {
-        match self {
-            Self::BlockStoreError(x) => x.into_py(py),
-            Self::UnsupportedTransactionVersion(x) => x.into_py(py),
-        }
-    }
 }
 
 impl From<RpcBlockUpdateError> for RpcBlockUpdateErrorOriginal {
@@ -2768,36 +2692,18 @@ notification_contextless!(SlotUpdateNotification, SlotUpdate);
 notification_contextless!(RootNotification, u64);
 notification_contextless!(VoteNotification, RpcVote);
 
-#[derive(FromPyObject, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+#[derive(FromPyObject, Serialize, Deserialize, Clone, Debug, PartialEq, Eq, EnumIntoPy)]
 #[serde(untagged)]
 pub enum AccountNotificationType {
     JsonParsed(AccountNotificationJsonParsed),
     Binary(AccountNotification),
 }
 
-impl IntoPy<PyObject> for AccountNotificationType {
-    fn into_py(self, py: Python<'_>) -> PyObject {
-        match self {
-            Self::Binary(x) => x.into_py(py),
-            Self::JsonParsed(x) => x.into_py(py),
-        }
-    }
-}
-
-#[derive(FromPyObject, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+#[derive(FromPyObject, Serialize, Deserialize, Clone, Debug, PartialEq, Eq, EnumIntoPy)]
 #[serde(untagged)]
 pub enum ProgramNotificationType {
     Binary(ProgramNotification),
     JsonParsed(ProgramNotificationJsonParsed),
-}
-
-impl IntoPy<PyObject> for ProgramNotificationType {
-    fn into_py(self, py: Python<'_>) -> PyObject {
-        match self {
-            Self::Binary(x) => x.into_py(py),
-            Self::JsonParsed(x) => x.into_py(py),
-        }
-    }
 }
 
 contextless_resp_eq!(SubscriptionResp, u64);

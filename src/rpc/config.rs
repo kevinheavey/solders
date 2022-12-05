@@ -4,7 +4,7 @@ use crate::rpc::tmp_config as rpc_config;
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use solana_sdk::commitment_config::CommitmentLevel as CommitmentLevelOriginal;
-use solders_macros::{common_methods, richcmp_eq_only};
+use solders_macros::{common_methods, richcmp_eq_only, EnumIntoPy};
 use solders_primitives::{hash::Hash as SolderHash, pubkey::Pubkey, signature::Signature};
 use solders_traits::{
     impl_display, py_from_bytes_general_via_cbor, pybytes_general_via_cbor, CommonMethods,
@@ -874,7 +874,7 @@ impl RpcTransactionLogsFilterMentions {
 
 impl RichcmpEqualityOnly for RpcTransactionLogsFilterMentions {}
 
-#[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug)]
+#[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, EnumIntoPy)]
 pub enum TransactionLogsFilterWrapper {
     Plain(RpcTransactionLogsFilter),
     Mentions(RpcTransactionLogsFilterMentions),
@@ -912,15 +912,6 @@ impl From<rpc_config::RpcTransactionLogsFilter> for TransactionLogsFilterWrapper
             rpc_config::RpcTransactionLogsFilter::Mentions(v) => {
                 Self::Mentions(RpcTransactionLogsFilterMentions(v))
             }
-        }
-    }
-}
-
-impl IntoPy<PyObject> for TransactionLogsFilterWrapper {
-    fn into_py(self, py: Python<'_>) -> PyObject {
-        match self {
-            Self::Plain(f) => f.into_py(py),
-            Self::Mentions(m) => m.into_py(py),
         }
     }
 }
@@ -1009,7 +1000,7 @@ impl RpcTokenAccountsFilterProgramId {
 
 impl RichcmpEqualityOnly for RpcTokenAccountsFilterProgramId {}
 
-#[derive(FromPyObject, Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(FromPyObject, Clone, Debug, PartialEq, Eq, Serialize, Deserialize, EnumIntoPy)]
 pub enum RpcTokenAccountsFilterWrapper {
     Mint(RpcTokenAccountsFilterMint),
     ProgramId(RpcTokenAccountsFilterProgramId),
@@ -1033,15 +1024,6 @@ impl From<rpc_config::RpcTokenAccountsFilter> for RpcTokenAccountsFilterWrapper 
             rpc_config::RpcTokenAccountsFilter::ProgramId(s) => Self::ProgramId(
                 RpcTokenAccountsFilterProgramId(Pubkey::from_str(&s).unwrap()),
             ),
-        }
-    }
-}
-
-impl IntoPy<PyObject> for RpcTokenAccountsFilterWrapper {
-    fn into_py(self, py: Python<'_>) -> PyObject {
-        match self {
-            RpcTokenAccountsFilterWrapper::Mint(m) => m.into_py(py),
-            RpcTokenAccountsFilterWrapper::ProgramId(m) => m.into_py(py),
         }
     }
 }
@@ -1130,7 +1112,7 @@ impl RpcBlockSubscribeFilterMentions {
 
 impl RichcmpEqualityOnly for RpcBlockSubscribeFilterMentions {}
 
-#[derive(FromPyObject, Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+#[derive(FromPyObject, Serialize, Deserialize, Clone, Debug, PartialEq, Eq, EnumIntoPy)]
 pub enum RpcBlockSubscribeFilterWrapper {
     All(RpcBlockSubscribeFilter),
     MentionsAccountOrProgram(RpcBlockSubscribeFilterMentions),
@@ -1160,15 +1142,6 @@ impl From<rpc_config::RpcBlockSubscribeFilter> for RpcBlockSubscribeFilterWrappe
             rpc_config::RpcBlockSubscribeFilter::MentionsAccountOrProgram(p) => {
                 Self::MentionsAccountOrProgram(RpcBlockSubscribeFilterMentions(p))
             }
-        }
-    }
-}
-
-impl IntoPy<PyObject> for RpcBlockSubscribeFilterWrapper {
-    fn into_py(self, py: Python<'_>) -> PyObject {
-        match self {
-            Self::All(m) => m.into_py(py),
-            Self::MentionsAccountOrProgram(m) => m.into_py(py),
         }
     }
 }
