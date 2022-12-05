@@ -260,7 +260,7 @@ macro_rules! impl_signer_hash {
         #[allow(clippy::derive_hash_xor_eq)]
         impl std::hash::Hash for $ident {
             fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-                self.pubkey().hash(state);
+                $crate::SignerTraitWrapper::pubkey(self).hash(state);
             }
         }
     };
@@ -274,7 +274,7 @@ pub trait PyHash: Hash {
 
 pub trait PyBytesSlice: AsRef<[u8]> {
     fn pybytes_slice<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        PyBytes::new(py, self.as_ref())
+        PyBytes::new(py, AsRef::<[u8]>::as_ref(self))
     }
 }
 
@@ -286,7 +286,7 @@ macro_rules! pybytes_general_for_pybytes_slice {
                 &self,
                 py: pyo3::prelude::Python<'a>,
             ) -> &'a pyo3::types::PyBytes {
-                self.pybytes_slice(py)
+                $crate::PyBytesSlice::pybytes_slice(self, py)
             }
         }
     };
@@ -300,7 +300,7 @@ macro_rules! pybytes_general_for_pybytes_bincode {
                 &self,
                 py: pyo3::prelude::Python<'a>,
             ) -> &'a pyo3::types::PyBytes {
-                self.pybytes_bincode(py)
+                $crate::PyBytesBincode::pybytes_bincode(self, py)
             }
         }
     };
@@ -314,7 +314,7 @@ macro_rules! pybytes_general_for_pybytes_cbor {
                 &self,
                 py: pyo3::prelude::Python<'a>,
             ) -> &'a pyo3::types::PyBytes {
-                self.pybytes_cbor(py)
+                $crate::PyBytesCbor::pybytes_cbor(self, py)
             }
         }
     };
@@ -427,7 +427,7 @@ pub trait CommonMethods<'a>:
     + Deserialize<'a>
 {
     fn pybytes<'b>(&self, py: Python<'b>) -> &'b PyBytes {
-        self.pybytes_general(py)
+        PyBytesGeneral::pybytes_general(self, py)
     }
 
     fn pystr(&self) -> String {
@@ -445,7 +445,10 @@ pub trait CommonMethods<'a>:
         let cloned = self.clone();
         Python::with_gil(|py| {
             let constructor = cloned.into_py(py).getattr(py, "from_bytes")?;
-            Ok((constructor, (self.pybytes(py).to_object(py),).to_object(py)))
+            Ok((
+                constructor,
+                (PyBytesGeneral::pybytes_general(self, py).to_object(py),).to_object(py),
+            ))
         })
     }
 
