@@ -295,9 +295,8 @@ pub fn enum_original_mapping(original: TokenStream, item: TokenStream) -> TokenS
 ///   B(u8)
 /// }
 ///
-#[proc_macro_attribute]
-pub fn enum_into_py(_: TokenStream, item: TokenStream) -> TokenStream {
-    let mut new_stream = proc_macro2::TokenStream::from(item.clone());
+#[proc_macro_derive(EnumIntoPy)]
+pub fn enum_into_py(item: TokenStream) -> TokenStream {
     let ast = parse_macro_input!(item as ItemEnum);
     let enum_name = ast.ident;
     let variant_names: Vec<Ident> = ast.variants.into_iter().map(|v| v.ident).collect();
@@ -310,6 +309,5 @@ pub fn enum_into_py(_: TokenStream, item: TokenStream) -> TokenStream {
             }
         }
     };
-    new_stream.extend(into_py_impl);
-    TokenStream::from(new_stream)
+    into_py_impl.to_token_stream().into()
 }
