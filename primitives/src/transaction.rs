@@ -15,7 +15,7 @@ use solana_sdk::{
 use solders_macros::{common_methods, richcmp_eq_only};
 use solders_traits::{
     handle_py_err, impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
-    CommonMethods, PyBytesBincode, RichcmpEqualityOnly,
+    CommonMethods, RichcmpEqualityOnly,
 };
 
 use crate::{

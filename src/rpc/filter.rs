@@ -10,7 +10,7 @@ use solders_macros::{common_methods, enum_original_mapping, richcmp_eq_only};
 
 use solders_traits::{
     impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode, CommonMethods,
-    PyBytesBincode, RichcmpEqualityOnly,
+    RichcmpEqualityOnly,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, FromPyObject)]

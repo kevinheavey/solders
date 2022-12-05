@@ -15,7 +15,7 @@ use solders_macros::{common_methods, pyhash, richcmp_eq_only};
 
 use solders_traits::{
     impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode, CommonMethods,
-    PyBytesBincode, PyHash, RichcmpEqualityOnly,
+    PyHash, RichcmpEqualityOnly,
 };
 
 /// Describes a single account read or written by a program during instruction

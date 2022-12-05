@@ -3,7 +3,7 @@ use derive_more::{From, Into};
 extern crate base64;
 use pythonize::{depythonize, pythonize};
 use solders_primitives::{message::MessageHeader, pubkey::Pubkey, signature::Signature};
-use solders_traits::{handle_py_value_err, CommonMethods, PyBytesBincode, RichcmpEqualityOnly};
+use solders_traits::{handle_py_value_err, CommonMethods, RichcmpEqualityOnly};
 use std::fmt::Display;
 use std::str::FromStr;
 

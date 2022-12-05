@@ -9,7 +9,7 @@ use solana_sdk::hash::{
 use solders_macros::{common_methods, pyhash, richcmp_full};
 
 use solders_traits::{
-    handle_py_err, impl_display, pybytes_general_via_slice, CommonMethods, PyBytesSlice,
+    handle_py_err, impl_display, pybytes_general_via_slice, CommonMethods,
     PyFromBytesGeneral, PyHash, RichcmpFull,
 };
 
