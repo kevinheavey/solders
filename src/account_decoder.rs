@@ -1,6 +1,6 @@
 use solders_traits::{
     handle_py_value_err, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
-    CommonMethods, PyBytesBincode, RichcmpEqualityOnly,
+    CommonMethods, RichcmpEqualityOnly,
 };
 use std::fmt::Display;
 

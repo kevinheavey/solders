@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use solana_sdk::pubkey::{ParsePubkeyError, Pubkey as PubkeyOriginal, PUBKEY_BYTES};
 use solders_macros::{common_methods, pyhash, richcmp_full};
 use solders_traits::{
-    handle_py_err, handle_py_value_err, pybytes_general_via_slice, CommonMethods, PyBytesSlice,
+    handle_py_err, handle_py_value_err, pybytes_general_via_slice, CommonMethods,
     PyFromBytesGeneral, PyHash, RichcmpFull,
 };
 

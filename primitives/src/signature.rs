@@ -9,7 +9,7 @@ use crate::Pubkey;
 
 use solders_traits::{
     handle_py_value_err, impl_display, pybytes_general_via_slice, CommonMethods,
-    PyBytesSlice, PyFromBytesGeneral, PyHash, RichcmpFull,
+    PyFromBytesGeneral, PyHash, RichcmpFull,
 };
 
 #[pyclass(module = "solders.signature", subclass)]

@@ -94,18 +94,18 @@ pub trait CommonMethodsRpcResp<'a>:
     + PyClass
 {
     fn pybytes<'b>(&self, py: Python<'b>) -> &'b PyBytes {
-        self.pybytes_bincode(py)
+        PyBytesBincode::pybytes_bincode(self, py)
     }
 
     fn pystr(&self) -> String {
-        self.to_string()
+        std::string::ToString::to_string(self)
     }
     fn pyrepr(&self) -> String {
         format!("{self:#?}")
     }
 
     fn py_from_bytes(raw: &'a [u8]) -> PyResult<Self> {
-        Self::py_from_bytes_bincode(raw)
+        <Self as PyFromBytesBincode>::py_from_bytes_bincode(raw)
     }
 
     fn pyreduce(&self) -> PyResult<(PyObject, PyObject)> {

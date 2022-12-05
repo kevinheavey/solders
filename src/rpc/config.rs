@@ -8,7 +8,7 @@ use solders_macros::{common_methods, richcmp_eq_only};
 use solders_primitives::{hash::Hash as SolderHash, pubkey::Pubkey, signature::Signature};
 use solders_traits::{
     impl_display, py_from_bytes_general_via_cbor, pybytes_general_via_cbor, CommonMethods,
-    PyBytesCbor, RichcmpEqualityOnly,
+    RichcmpEqualityOnly,
 };
 
 use crate::{

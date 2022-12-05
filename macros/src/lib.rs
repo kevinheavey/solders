@@ -32,7 +32,9 @@ use syn::{parse_macro_input, ImplItem, ItemEnum, ItemImpl};
 #[proc_macro_attribute]
 pub fn pyhash(_: TokenStream, item: TokenStream) -> TokenStream {
     let mut ast = parse_macro_input!(item as ItemImpl);
-    let to_add = quote! {pub fn __hash__(&self) -> u64 {self.pyhash()}};
+    let to_add = quote! {pub fn __hash__(&self) -> u64 {
+        solders_traits::PyHash::pyhash(self)
+    }};
     ast.items.push(ImplItem::Verbatim(to_add));
     TokenStream::from(ast.to_token_stream())
 }
@@ -62,7 +64,9 @@ pub fn pyhash(_: TokenStream, item: TokenStream) -> TokenStream {
 #[proc_macro_attribute]
 pub fn richcmp_full(_: TokenStream, item: TokenStream) -> TokenStream {
     let mut ast = parse_macro_input!(item as ItemImpl);
-    let to_add = quote! {pub fn __richcmp__(&self, other: &Self, op: pyo3::basic::CompareOp) -> bool {self.richcmp(other, op)}};
+    let to_add = quote! {pub fn __richcmp__(&self, other: &Self, op: pyo3::basic::CompareOp) -> bool {
+        solders_traits::RichcmpFull::richcmp(self, other, op)
+    }};
     ast.items.push(ImplItem::Verbatim(to_add));
     TokenStream::from(ast.to_token_stream())
 }
@@ -71,7 +75,9 @@ pub fn richcmp_full(_: TokenStream, item: TokenStream) -> TokenStream {
 #[proc_macro_attribute]
 pub fn richcmp_eq_only(_: TokenStream, item: TokenStream) -> TokenStream {
     let mut ast = parse_macro_input!(item as ItemImpl);
-    let to_add = quote! {pub fn __richcmp__(&self, other: &Self, op: pyo3::basic::CompareOp) -> pyo3::prelude::PyResult<bool> {self.richcmp(other, op)}};
+    let to_add = quote! {pub fn __richcmp__(&self, other: &Self, op: pyo3::basic::CompareOp) -> pyo3::prelude::PyResult<bool> {
+        solders_traits::RichcmpEqualityOnly::richcmp(self, other, op)
+    }};
     ast.items.push(ImplItem::Verbatim(to_add));
     TokenStream::from(ast.to_token_stream())
 }
@@ -80,7 +86,9 @@ pub fn richcmp_eq_only(_: TokenStream, item: TokenStream) -> TokenStream {
 #[proc_macro_attribute]
 pub fn richcmp_signer(_: TokenStream, item: TokenStream) -> TokenStream {
     let mut ast = parse_macro_input!(item as ItemImpl);
-    let to_add = quote! {pub fn __richcmp__(&self, other: crate::signer::Signer, op: pyo3::basic::CompareOp) -> pyo3::prelude::PyResult<bool> {self.richcmp(other, op)}};
+    let to_add = quote! {pub fn __richcmp__(&self, other: crate::signer::Signer, op: pyo3::basic::CompareOp) -> pyo3::prelude::PyResult<bool> {
+        solders_traits::RichcmpSigner::richcmp(self, other, op)
+    }};
     ast.items.push(ImplItem::Verbatim(to_add));
     TokenStream::from(ast.to_token_stream())
 }
@@ -148,7 +156,9 @@ pub fn common_methods_rpc_resp(_: TokenStream, item: TokenStream) -> TokenStream
     let mut ast = parse_macro_input!(item as ItemImpl);
     let methods = vec![
         ImplItem::Verbatim(
-            quote! {pub fn __bytes__<'a>(&self, py: pyo3::prelude::Python<'a>) -> &'a pyo3::types::PyBytes  {self.pybytes(py)}},
+            quote! {pub fn __bytes__<'a>(&self, py: pyo3::prelude::Python<'a>) -> &'a pyo3::types::PyBytes  {
+                solders::rpc::responses::CommonMethodsRpcResp::pybytes(self, py)
+            }},
         ),
         ImplItem::Verbatim(quote! { pub fn __str__(&self) -> String {
             solders::rpc::responses::CommonMethodsRpcResp::pystr(self)
