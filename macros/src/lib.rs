@@ -202,54 +202,6 @@ pub fn common_methods_rpc_resp(_: TokenStream, item: TokenStream) -> TokenStream
     TokenStream::from(ast.to_token_stream())
 }
 
-/// Add `__bytes__`, `__str__`, `__repr__`, `__reduce__`, `to_json`, `from_json`, `from_bytes` and `__richcmp__` using the `CommonMethodsRpcResp` trait.
-#[proc_macro_attribute]
-pub fn common_methods_rpc_resp_no_context(_: TokenStream, item: TokenStream) -> TokenStream {
-    let mut ast = parse_macro_input!(item as ItemImpl);
-    let methods = vec![
-        ImplItem::Verbatim(
-            quote! {pub fn __bytes__<'a>(&self, py: pyo3::prelude::Python<'a>) -> &'a pyo3::types::PyBytes  {self.pybytes(py)}},
-        ),
-        ImplItem::Verbatim(quote! { pub fn __str__(&self) -> String {self.pystr()} }),
-        ImplItem::Verbatim(quote! { pub fn __repr__(&self) -> String {self.pyrepr()} }),
-        ImplItem::Verbatim(
-            quote! { pub fn __reduce__(&self) -> pyo3::prelude::PyResult<(pyo3::prelude::PyObject, pyo3::prelude::PyObject)> {self.pyreduce()} },
-        ),
-        ImplItem::Verbatim(quote! {
-        /// Convert to a JSON string.
-        pub fn to_json(&self) -> String {self.py_to_json()} }),
-        ImplItem::Verbatim(quote! {
-        /// Build from a JSON string.
-        ///
-        /// Args:
-        ///     raw (str): The RPC JSON response (can be an error response).
-        ///
-        /// Returns:
-        ///     Either the deserialized object or ``RPCError``.
-        ///
-        #[staticmethod]
-        pub fn from_json(raw: &str) -> PyResult<Self> {Self::py_from_json(raw)} }),
-        ImplItem::Verbatim(quote! {
-            /// Deserialize from bytes.
-            ///
-            /// Args:
-            ///     data (bytes): the serialized object.
-            ///
-            /// Returns: the deserialized object.
-            ///
-            #[staticmethod]
-            pub fn from_bytes(data: &[u8]) -> PyResult<Self> {
-                Self::py_from_bytes(data)
-            }
-        }),
-        ImplItem::Verbatim(
-            quote! {pub fn __richcmp__(&self, other: &Self, op: pyo3::basic::CompareOp) -> pyo3::prelude::PyResult<bool> {self.richcmp(other, op)}},
-        ),
-    ];
-    ast.items.extend_from_slice(&methods);
-    TokenStream::from(ast.to_token_stream())
-}
-
 /// Add an `id` getter to an RPC request object.
 ///
 /// By convention, assumes the `id` lives at `self.base.id`.
