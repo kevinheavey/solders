@@ -416,15 +416,8 @@ pub trait PyFromBytesGeneral: Sized {
     fn py_from_bytes_general(raw: &[u8]) -> PyResult<Self>;
 }
 
-pub trait CommonMethods<'a>:
-    fmt::Display
-    + fmt::Debug
-    + PyBytesGeneral
-    + PyFromBytesGeneral
-    + IntoPy<PyObject>
-    + Clone
-    + Serialize
-    + Deserialize<'a>
+pub trait CommonMethodsCore:
+    fmt::Display + fmt::Debug + PyBytesGeneral + PyFromBytesGeneral + IntoPy<PyObject> + Clone
 {
     fn pybytes<'b>(&self, py: Python<'b>) -> &'b PyBytes {
         PyBytesGeneral::pybytes_general(self, py)
@@ -451,7 +444,9 @@ pub trait CommonMethods<'a>:
             ))
         })
     }
+}
 
+pub trait CommonMethods<'a>: CommonMethodsCore + Serialize + Deserialize<'a> {
     fn py_to_json(&self) -> String {
         serde_json::to_string(self).unwrap()
     }
@@ -459,4 +454,12 @@ pub trait CommonMethods<'a>:
     fn py_from_json(raw: &'a str) -> PyResult<Self> {
         serde_json::from_str(raw).map_err(|e| to_py_value_err(&e))
     }
+}
+
+#[macro_export]
+macro_rules! common_methods_default {
+    ($ty:ty) => {
+        impl $crate::CommonMethodsCore for $ty {}
+        impl $crate::CommonMethods<'_> for $ty {}
+    };
 }

@@ -11,8 +11,9 @@ use solana_sdk::signer::{
 use solders_macros::{common_methods, pyhash, richcmp_signer};
 
 use solders_traits::{
-    handle_py_value_err, impl_display, impl_signer_hash, CommonMethods, PyBytesGeneral,
-    PyFromBytesGeneral, PyHash, RichcmpSigner, SignerTraitWrapper, ToSignerOriginal,
+    handle_py_value_err, impl_display, impl_signer_hash, CommonMethods, CommonMethodsCore,
+    PyBytesGeneral, PyFromBytesGeneral, PyHash, RichcmpSigner, SignerTraitWrapper,
+    ToSignerOriginal,
 };
 
 mod keypair_serde {
@@ -236,11 +237,12 @@ impl PyFromBytesGeneral for Keypair {
     }
 }
 
-impl CommonMethods<'_> for Keypair {
+impl CommonMethodsCore for Keypair {
     fn pystr(&self) -> String {
         self.0.to_base58_string()
     }
 }
+impl CommonMethods<'_> for Keypair {}
 
 impl RichcmpSigner for Keypair {}
 

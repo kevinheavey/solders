@@ -15,7 +15,7 @@ use solana_sdk::{
 use solders_macros::{common_methods, richcmp_eq_only, EnumIntoPy};
 use solders_traits::{
     handle_py_err, impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
-    CommonMethods, RichcmpEqualityOnly,
+    CommonMethodsCore, RichcmpEqualityOnly,
 };
 
 use crate::{
@@ -51,7 +51,7 @@ impl RichcmpEqualityOnly for VersionedTransaction {}
 pybytes_general_via_bincode!(VersionedTransaction);
 py_from_bytes_general_via_bincode!(VersionedTransaction);
 impl_display!(VersionedTransaction);
-impl CommonMethods<'_> for VersionedTransaction {}
+solders_traits::common_methods_default!(VersionedTransaction);
 
 #[richcmp_eq_only]
 #[common_methods]
@@ -681,7 +681,7 @@ impl RichcmpEqualityOnly for Transaction {}
 pybytes_general_via_bincode!(Transaction);
 py_from_bytes_general_via_bincode!(Transaction);
 impl_display!(Transaction);
-impl CommonMethods<'_> for Transaction {}
+solders_traits::common_methods_default!(Transaction);
 
 impl AsRef<TransactionOriginal> for Transaction {
     fn as_ref(&self) -> &TransactionOriginal {

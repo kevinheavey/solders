@@ -1,6 +1,6 @@
 use solders_traits::{
     handle_py_value_err, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
-    CommonMethods, RichcmpEqualityOnly,
+    RichcmpEqualityOnly,
 };
 use std::fmt::Display;
 
@@ -75,7 +75,7 @@ impl Display for ParsedAccount {
 }
 pybytes_general_via_bincode!(ParsedAccount);
 py_from_bytes_general_via_bincode!(ParsedAccount);
-impl<'a> CommonMethods<'a> for ParsedAccount {}
+solders_traits::common_methods_default!(ParsedAccount);
 
 #[richcmp_eq_only]
 #[common_methods]
@@ -120,7 +120,7 @@ impl Display for UiTokenAmount {
 }
 pybytes_general_via_bincode!(UiTokenAmount);
 py_from_bytes_general_via_bincode!(UiTokenAmount);
-impl<'a> CommonMethods<'a> for UiTokenAmount {}
+solders_traits::common_methods_default!(UiTokenAmount);
 
 #[richcmp_eq_only]
 #[common_methods]

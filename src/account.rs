@@ -8,8 +8,8 @@ use solana_sdk::{account::Account as AccountOriginal, clock::Epoch};
 use solders_macros::{common_methods, richcmp_eq_only};
 use solders_primitives::pubkey::Pubkey;
 use solders_traits::{
-    impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode, CommonMethods,
-     RichcmpEqualityOnly,
+    impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
+    RichcmpEqualityOnly,
 };
 
 use crate::{
@@ -99,7 +99,7 @@ impl_display!(Account);
 pybytes_general_via_bincode!(Account);
 py_from_bytes_general_via_bincode!(Account);
 
-impl CommonMethods<'_> for Account {}
+solders_traits::common_methods_default!(Account);
 impl RichcmpEqualityOnly for Account {}
 
 impl TryFrom<UiAccount> for Account {
@@ -186,7 +186,7 @@ impl std::fmt::Display for AccountJSON {
 pybytes_general_via_bincode!(AccountJSON);
 py_from_bytes_general_via_bincode!(AccountJSON);
 
-impl CommonMethods<'_> for AccountJSON {}
+solders_traits::common_methods_default!(AccountJSON);
 impl RichcmpEqualityOnly for AccountJSON {}
 
 impl TryFrom<UiAccount> for AccountJSON {

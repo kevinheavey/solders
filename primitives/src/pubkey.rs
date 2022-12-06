@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use solana_sdk::pubkey::{ParsePubkeyError, Pubkey as PubkeyOriginal, PUBKEY_BYTES};
 use solders_macros::{common_methods, pyhash, richcmp_full};
 use solders_traits::{
-    handle_py_err, handle_py_value_err, pybytes_general_via_slice, CommonMethods,
+    handle_py_err, handle_py_value_err, pybytes_general_via_slice, CommonMethodsCore,
     PyFromBytesGeneral, PyHash, RichcmpFull,
 };
 
@@ -259,7 +259,7 @@ impl PyFromBytesGeneral for Pubkey {
         Ok(PubkeyOriginal::new(raw).into())
     }
 }
-impl CommonMethods<'_> for Pubkey {}
+solders_traits::common_methods_default!(Pubkey);
 
 impl AsRef<[u8]> for Pubkey {
     fn as_ref(&self) -> &[u8] {

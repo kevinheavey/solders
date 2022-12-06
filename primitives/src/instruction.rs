@@ -14,8 +14,8 @@ use solana_sdk::{
 use solders_macros::{common_methods, pyhash, richcmp_eq_only};
 
 use solders_traits::{
-    impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode, CommonMethods,
-    PyHash, RichcmpEqualityOnly,
+    impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
+    CommonMethodsCore, PyHash, RichcmpEqualityOnly,
 };
 
 /// Describes a single account read or written by a program during instruction
@@ -97,7 +97,7 @@ pybytes_general_via_bincode!(AccountMeta);
 impl RichcmpEqualityOnly for AccountMeta {}
 py_from_bytes_general_via_bincode!(AccountMeta);
 
-impl CommonMethods<'_> for AccountMeta {}
+solders_traits::common_methods_default!(AccountMeta);
 
 impl PyHash for AccountMeta {}
 impl_display!(AccountMeta);
@@ -246,7 +246,7 @@ pybytes_general_via_bincode!(Instruction);
 impl RichcmpEqualityOnly for Instruction {}
 py_from_bytes_general_via_bincode!(Instruction);
 
-impl CommonMethods<'_> for Instruction {}
+solders_traits::common_methods_default!(Instruction);
 
 impl_display!(Instruction);
 
@@ -336,7 +336,7 @@ pybytes_general_via_bincode!(CompiledInstruction);
 impl RichcmpEqualityOnly for CompiledInstruction {}
 py_from_bytes_general_via_bincode!(CompiledInstruction);
 
-impl CommonMethods<'_> for CompiledInstruction {}
+solders_traits::common_methods_default!(CompiledInstruction);
 
 impl_display!(CompiledInstruction);
 

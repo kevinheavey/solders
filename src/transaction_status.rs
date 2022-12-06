@@ -3,7 +3,7 @@ use derive_more::{From, Into};
 extern crate base64;
 use pythonize::{depythonize, pythonize};
 use solders_primitives::{message::MessageHeader, pubkey::Pubkey, signature::Signature};
-use solders_traits::{handle_py_value_err, CommonMethods, RichcmpEqualityOnly};
+use solders_traits::{handle_py_value_err, RichcmpEqualityOnly};
 use std::fmt::Display;
 use std::str::FromStr;
 
@@ -58,7 +58,7 @@ macro_rules! transaction_status_boilerplate {
         }
         solders_traits::pybytes_general_via_bincode!($name);
         solders_traits::py_from_bytes_general_via_bincode!($name);
-        impl<'a> CommonMethods<'a> for $name {}
+        solders_traits::common_methods_default!($name);
     };
 }
 
