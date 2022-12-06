@@ -102,18 +102,18 @@ pub fn common_methods(_: TokenStream, item: TokenStream) -> TokenStream {
     let mut methods = vec![
         ImplItem::Verbatim(
             quote! {pub fn __bytes__<'a>(&self, py: pyo3::prelude::Python<'a>) -> &'a pyo3::types::PyBytes  {
-                solders_traits::CommonMethods::pybytes(self, py)
+                solders_traits::CommonMethodsCore::pybytes(self, py)
             }},
         ),
         ImplItem::Verbatim(quote! { pub fn __str__(&self) -> String {
-            solders_traits::CommonMethods::pystr(self)
+            solders_traits::CommonMethodsCore::pystr(self)
         } }),
         ImplItem::Verbatim(quote! { pub fn __repr__(&self) -> String {
-            solders_traits::CommonMethods::pyrepr(self)
+            solders_traits::CommonMethodsCore::pyrepr(self)
         } }),
         ImplItem::Verbatim(
             quote! { pub fn __reduce__(&self) -> pyo3::prelude::PyResult<(pyo3::prelude::PyObject, pyo3::prelude::PyObject)> {
-                solders_traits::CommonMethods::pyreduce(self)
+                solders_traits::CommonMethodsCore::pyreduce(self)
             } },
         ),
         ImplItem::Verbatim(quote! {
@@ -141,7 +141,7 @@ pub fn common_methods(_: TokenStream, item: TokenStream) -> TokenStream {
             ///
             #[staticmethod]
             pub fn from_bytes(data: &[u8]) -> PyResult<Self> {
-                <Self as solders_traits::CommonMethods>::py_from_bytes(data)
+                <Self as solders_traits::CommonMethodsCore>::py_from_bytes(data)
             }
         });
         methods.push(from_bytes);
