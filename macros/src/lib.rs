@@ -93,12 +93,7 @@ pub fn richcmp_signer(_: TokenStream, item: TokenStream) -> TokenStream {
     TokenStream::from(ast.to_token_stream())
 }
 
-/// Add `__bytes__`, `__str__`, `__repr__` and `__reduce__`, `to_json` and `from_json` using the `CommonMethods` trait.
-///
-/// Also add `from_bytes` if not already defined.
-#[proc_macro_attribute]
-pub fn common_methods(_: TokenStream, item: TokenStream) -> TokenStream {
-    let mut ast = parse_macro_input!(item as ItemImpl);
+fn add_core_methods(ast: &mut ItemImpl) {
     let mut methods = vec![
         ImplItem::Verbatim(
             quote! {pub fn __bytes__<'a>(&self, py: pyo3::prelude::Python<'a>) -> &'a pyo3::types::PyBytes  {
@@ -116,16 +111,6 @@ pub fn common_methods(_: TokenStream, item: TokenStream) -> TokenStream {
                 solders_traits::CommonMethodsCore::pyreduce(self)
             } },
         ),
-        ImplItem::Verbatim(quote! {
-        /// Convert to a JSON string.
-        pub fn to_json(&self) -> String {
-            solders_traits::CommonMethods::py_to_json(self)
-        } }),
-        ImplItem::Verbatim(quote! {
-        /// Build from a JSON string.
-        #[staticmethod] pub fn from_json(raw: &str) -> PyResult<Self> {
-            <Self as solders_traits::CommonMethods>::py_from_json(raw)
-        } }),
     ];
     if !ast.items.iter().any(|item| match item {
         ImplItem::Method(m) => m.sig.ident == "from_bytes",
@@ -146,6 +131,38 @@ pub fn common_methods(_: TokenStream, item: TokenStream) -> TokenStream {
         });
         methods.push(from_bytes);
     };
+    ast.items.extend_from_slice(&methods);
+}
+
+/// Add `__bytes__`, `__str__`, `__repr__` and `__reduce__` using the `CommonMethodsCore` trait.
+///
+/// Also add `from_bytes` if not already defined.
+#[proc_macro_attribute]
+pub fn common_methods_core(_: TokenStream, item: TokenStream) -> TokenStream {
+    let mut ast = parse_macro_input!(item as ItemImpl);
+    add_core_methods(&mut ast);
+    TokenStream::from(ast.to_token_stream())
+}
+
+/// Add `__bytes__`, `__str__`, `__repr__` and `__reduce__`, `to_json` and `from_json` using the `CommonMethods` trait.
+///
+/// Also add `from_bytes` if not already defined.
+#[proc_macro_attribute]
+pub fn common_methods(_: TokenStream, item: TokenStream) -> TokenStream {
+    let mut ast = parse_macro_input!(item as ItemImpl);
+    add_core_methods(&mut ast);
+    let methods = vec![
+        ImplItem::Verbatim(quote! {
+        /// Convert to a JSON string.
+        pub fn to_json(&self) -> String {
+            solders_traits::CommonMethods::py_to_json(self)
+        } }),
+        ImplItem::Verbatim(quote! {
+        /// Build from a JSON string.
+        #[staticmethod] pub fn from_json(raw: &str) -> PyResult<Self> {
+            <Self as solders_traits::CommonMethods>::py_from_json(raw)
+        } }),
+    ];
     ast.items.extend_from_slice(&methods);
     TokenStream::from(ast.to_token_stream())
 }
