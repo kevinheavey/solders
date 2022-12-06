@@ -9,7 +9,7 @@ use derive_more::{From, Into};
 use solders_macros::{common_methods, enum_original_mapping, richcmp_eq_only, EnumIntoPy};
 
 use solders_traits::{
-    impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode, CommonMethods,
+    impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
     RichcmpEqualityOnly,
 };
 
@@ -96,7 +96,7 @@ impl Memcmp {
 }
 
 impl RichcmpEqualityOnly for Memcmp {}
-impl CommonMethods<'_> for Memcmp {}
+solders_traits::common_methods_default!(Memcmp);
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, FromPyObject, EnumIntoPy)]
 #[serde(rename_all = "camelCase")]

@@ -6,7 +6,7 @@ use solana_sdk::signer::{null_signer::NullSigner as NullSignerOriginal, Signer a
 use solders_macros::{common_methods, pyhash, richcmp_signer};
 
 use solders_traits::{
-    impl_display, impl_signer_hash, CommonMethods, PyBytesGeneral, PyFromBytesGeneral, PyHash,
+    impl_display, impl_signer_hash, CommonMethodsCore, PyBytesGeneral, PyFromBytesGeneral, PyHash,
     RichcmpSigner, SignerTraitWrapper, ToSignerOriginal,
 };
 
@@ -115,7 +115,7 @@ impl PyFromBytesGeneral for NullSigner {
     }
 }
 
-impl CommonMethods<'_> for NullSigner {}
+solders_traits::common_methods_default!(NullSigner);
 
 impl ToSignerOriginal for NullSigner {
     fn to_inner(&self) -> Box<dyn SignerTrait> {

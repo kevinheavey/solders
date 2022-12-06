@@ -3,7 +3,7 @@ use crate::commitment_config::{CommitmentConfig, CommitmentLevel};
 use pyo3::{exceptions::PyValueError, prelude::*, types::PyTuple, PyTypeInfo};
 use solders_primitives::{message::Message, pubkey::Pubkey, transaction::Transaction};
 use solders_traits::{
-    py_from_bytes_general_via_cbor, pybytes_general_via_cbor, to_py_err, CommonMethods,
+    py_from_bytes_general_via_cbor, pybytes_general_via_cbor, to_py_err,
     RichcmpEqualityOnly,
 };
 extern crate base64;
@@ -43,7 +43,8 @@ macro_rules! rpc_impl_display {
 macro_rules! request_boilerplate {
     ($name:ident) => {
         rpc_impl_display!($name);
-        impl CommonMethods<'_> for $name {
+        impl solders_traits::CommonMethodsCore for $name {}
+        impl solders_traits::CommonMethods<'_> for $name {
             fn py_to_json(&self) -> String {
                 let wrapped = Body::from(self.clone());
                 serde_json::to_string(&wrapped).unwrap()

@@ -1,14 +1,14 @@
 use std::str::FromStr;
 
+use crate::Pubkey;
 use derive_more::{From, Into};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use solana_sdk::signature::{ParseSignatureError, Signature as SignatureOriginal, SIGNATURE_BYTES};
 use solders_macros::{common_methods, pyhash, richcmp_full};
-use crate::Pubkey;
 
 use solders_traits::{
-    handle_py_value_err, impl_display, pybytes_general_via_slice, CommonMethods,
+    handle_py_value_err, impl_display, pybytes_general_via_slice, CommonMethodsCore,
     PyFromBytesGeneral, PyHash, RichcmpFull,
 };
 
@@ -152,7 +152,7 @@ impl PyFromBytesGeneral for Signature {
         Ok(SignatureOriginal::new(raw).into())
     }
 }
-impl CommonMethods<'_> for Signature {}
+solders_traits::common_methods_default!(Signature);
 impl RichcmpFull for Signature {}
 pybytes_general_via_slice!(Signature);
 impl_display!(Signature);

@@ -4,7 +4,7 @@ use pyo3::{prelude::*, types::PyTuple, PyTypeInfo};
 use serde::{Deserialize, Serialize};
 use solana_sdk::slot_history::Slot;
 use solders_macros::{common_methods, richcmp_eq_only, EnumIntoPy};
-use solders_traits::{CommonMethods, RichcmpEqualityOnly};
+use solders_traits::RichcmpEqualityOnly;
 use std::fmt::Display;
 
 use super::responses::RpcSimulateTransactionResult;

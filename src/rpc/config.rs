@@ -7,8 +7,7 @@ use solana_sdk::commitment_config::CommitmentLevel as CommitmentLevelOriginal;
 use solders_macros::{common_methods, richcmp_eq_only, EnumIntoPy};
 use solders_primitives::{hash::Hash as SolderHash, pubkey::Pubkey, signature::Signature};
 use solders_traits::{
-    impl_display, py_from_bytes_general_via_cbor, pybytes_general_via_cbor, CommonMethods,
-    RichcmpEqualityOnly,
+    impl_display, py_from_bytes_general_via_cbor, pybytes_general_via_cbor, RichcmpEqualityOnly,
 };
 
 use crate::{
@@ -25,7 +24,7 @@ macro_rules! rpc_config_impls {
         py_from_bytes_general_via_cbor!($ident);
         impl_display!($ident);
         impl RichcmpEqualityOnly for $ident {}
-        impl CommonMethods<'_> for $ident {}
+        solders_traits::common_methods_default!($ident);
         impl From<rpc_config::$ident> for $ident {
             fn from(c: rpc_config::$ident) -> Self {
                 Self(c)

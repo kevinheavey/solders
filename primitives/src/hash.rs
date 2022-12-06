@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
 use derive_more::{From, Into};
-use pyo3::{prelude::*};
+use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use solana_sdk::hash::{
     hash, Hash as HashOriginal, ParseHashError as ParseHashErrorOriginal, HASH_BYTES,
@@ -9,8 +9,8 @@ use solana_sdk::hash::{
 use solders_macros::{common_methods, pyhash, richcmp_full};
 
 use solders_traits::{
-    handle_py_err, impl_display, pybytes_general_via_slice, CommonMethods,
-    PyFromBytesGeneral, PyHash, RichcmpFull,
+    handle_py_err, impl_display, pybytes_general_via_slice, CommonMethodsCore, PyFromBytesGeneral,
+    PyHash, RichcmpFull,
 };
 
 #[pyclass(module = "solders.hash", subclass)]
@@ -137,7 +137,7 @@ impl PyFromBytesGeneral for Hash {
 }
 
 pybytes_general_via_slice!(Hash);
-impl CommonMethods<'_> for Hash {}
+solders_traits::common_methods_default!(Hash);
 
 impl RichcmpFull for Hash {}
 

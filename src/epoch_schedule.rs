@@ -8,7 +8,7 @@ use solana_sdk::{
 use solders_macros::{common_methods, richcmp_eq_only};
 
 use solders_traits::{
-    impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode, CommonMethods,
+    impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
     RichcmpEqualityOnly,
 };
 
@@ -114,7 +114,7 @@ impl EpochSchedule {
 impl_display!(EpochSchedule);
 pybytes_general_via_bincode!(EpochSchedule);
 py_from_bytes_general_via_bincode!(EpochSchedule);
-impl CommonMethods<'_> for EpochSchedule {}
+solders_traits::common_methods_default!(EpochSchedule);
 impl RichcmpEqualityOnly for EpochSchedule {}
 
 pub(crate) fn create_epoch_schedule_mod(py: Python<'_>) -> PyResult<&PyModule> {

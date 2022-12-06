@@ -64,12 +64,12 @@ use solana_sdk::{
     transaction_context::TransactionReturnData as TransactionReturnDataOriginal,
 };
 use solders_macros::{
-    common_methods, common_methods_rpc_resp, enum_original_mapping, richcmp_eq_only, EnumIntoPy
+    common_methods, common_methods_rpc_resp, enum_original_mapping, richcmp_eq_only, EnumIntoPy,
 };
 use solders_primitives::{pubkey::Pubkey, signature::Signature};
 use solders_traits::{
-    py_from_bytes_general_via_bincode, pybytes_general_via_bincode, to_py_err, CommonMethods,
-    PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly,
+    py_from_bytes_general_via_bincode, pybytes_general_via_bincode, to_py_err, PyBytesBincode,
+    PyFromBytesBincode, RichcmpEqualityOnly,
 };
 
 use super::errors::{
@@ -154,7 +154,7 @@ macro_rules! response_data_boilerplate {
         }
         pybytes_general_via_bincode!($name);
         py_from_bytes_general_via_bincode!($name);
-        impl<'a> CommonMethods<'a> for $name {}
+        solders_traits::common_methods_default!($name);
     };
 }
 
