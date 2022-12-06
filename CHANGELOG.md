@@ -1,12 +1,18 @@
 # Changelog
 
-# [0.11.0] - Unreleased
+## [0.11.0] - Unreleased
+
+### Changed
 
 - Move solders-macros into the monorepo [(#22)](https://github.com/kevinheavey/solders/pull/22)
-- Extract solders-primitives into its own crate [(#24)](https://github.com/kevinheavey/solders/pull/24)
 - Don't leak custom error types in solders-traits; use ValueError instead [(#26)](https://github.com/kevinheavey/solders/pull/26)
 - Improve macro hygiene [(#27)](https://github.com/kevinheavey/solders/pull/27) and [(#28)]([(#27)](https://github.com/kevinheavey/solders/pull/27))
-- Add EnumIntoPy derive macro [(#29)](https://github.com/kevinheavey/solders/pull/29) 
+
+### Added
+
+- Extract solders-primitives into its own crate [(#24)](https://github.com/kevinheavey/solders/pull/24)
+- Add EnumIntoPy derive macro [(#29)](https://github.com/kevinheavey/solders/pull/29)
+- Add `common_methods_core` macro [(#30)](https://github.com/kevinheavey/solders/pull/30)
 
 ## [0.10.0] - 2022-10-31
 
