@@ -129,7 +129,7 @@ impl From<Account> for UiAccount {
 ///
 /// Args:
 ///     lamports (int): Lamports in the account.
-///     data (ParsedAccount): Data held in this account.
+///     data (solders.account_decoder.ParsedAccount): Data held in this account.
 ///     owner (Pubkey): The program that owns this account. If executable, the program that loads this account.
 ///     executable (bool): Whether this account's data contains a loaded program (and is now read-only). Defaults to False.
 ///     epoch_info (int): The epoch at which this account will next owe rent. Defaults to 0.
@@ -141,7 +141,7 @@ pub struct AccountJSON {
     /// int: Lamports in the account.
     #[pyo3(get)]
     pub lamports: u64,
-    /// ParsedAccount: Data held in this account.
+    /// solders.account_decoder.ParsedAccount: Data held in this account.
     #[pyo3(get)]
     pub data: ParsedAccount,
     /// Pubkey: The program that owns this account. If executable, the program that loads this account.
