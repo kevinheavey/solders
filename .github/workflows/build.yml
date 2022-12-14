@@ -11,6 +11,7 @@ env:
   python_version: "3.7"
   CARGO_INCREMENTAL: 0
   RUSTFLAGS: "-D warnings"
+  OPENSSLDIR: "/usr/lib/ssl"
 
 jobs:
   macos_x86_64:
