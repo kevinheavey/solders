@@ -31,6 +31,7 @@ pythonize = { git = "https://github.com/kevinheavey/pythonize", rev = "001db40" 
 solders-traits = { workspace = true }
 solders-macros = { workspace = true }
 solders-primitives = { workspace = true }
+solana-program-test = "1.14.10"
 
 [workspace]
 members = [".", "traits", "macros", "primitives"]
