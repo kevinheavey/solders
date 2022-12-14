@@ -158,8 +158,7 @@ jobs:
       - name: Build wheels
         uses: messense/maturin-action@v1
         with:
-          target: ${{ matrix.target }}
-          manylinux: musllinux_1_2
+          container: kheavey/${{ matrix.target }}
           args: --release --out dist
       - name: Install built wheel
         if: matrix.target == 'x86_64-unknown-linux-musl'
@@ -198,8 +197,7 @@ jobs:
       - name: Build Wheels
         uses: messense/maturin-action@v1
         with:
-          target: ${{ matrix.target }}
-          manylinux: auto
+          container: kheavey/${{ matrix.target }}
           args: --release --out dist
       - name: Upload wheels
         uses: actions/upload-artifact@v2
