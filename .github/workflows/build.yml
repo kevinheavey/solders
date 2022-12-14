@@ -157,6 +157,7 @@ jobs:
           profile: minimal
           default: true
       - run: sudo apt install libssl-dev
+      - run: openssl version -d
       - name: Build wheels
         uses: messense/maturin-action@v1
         with:
