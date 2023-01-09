@@ -1,4 +1,4 @@
-from typing import ClassVar, Sequence, Optional, List
+from typing import ClassVar, Sequence, Optional, List, Union
 from solders.instruction import Instruction, CompiledInstruction
 from solders.pubkey import Pubkey
 from solders.hash import Hash
@@ -157,3 +157,5 @@ class MessageV0:
     def to_json(self) -> str: ...
     @staticmethod
     def from_json(raw: str) -> "MessageV0": ...
+
+VersionedMessage = Union[Message, MessageV0]
