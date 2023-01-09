@@ -1,5 +1,7 @@
 use pyo3::prelude::*;
-use solders_primitives::message::{Message, MessageAddressTableLookup, MessageHeader, MessageV0, VersionedMessage};
+use solders_primitives::message::{
+    Message, MessageAddressTableLookup, MessageHeader, MessageV0, VersionedMessage,
+};
 
 pub(crate) fn create_message_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "message")?;
