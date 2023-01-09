@@ -82,6 +82,11 @@ impl VersionedTransaction {
             .collect()
     }
 
+    #[setter]
+    fn set_signatures(&mut self, signatures: Vec<Signature>) {
+        self.signatures = signatures;
+    }
+
     /// Create a fully-signed transaction from a message and its signatures.
     ///
     /// Args:
@@ -233,6 +238,11 @@ impl Transaction {
             .into_iter()
             .map(Signature::from)
             .collect()
+    }
+
+    #[setter]
+    fn set_signatures(&mut self, signatures: Vec<Signature>) {
+        self.signatures = signatures;
     }
 
     #[getter]
