@@ -25,6 +25,7 @@ use crate::{
     message::{Message, VersionedMessage},
     pubkey::Pubkey,
     signature::Signature,
+    signature::{originals_into_solders, solders_into_originals},
     signer::Signer,
     signer::SignerVec,
 };
@@ -74,17 +75,12 @@ impl VersionedTransaction {
     /// List[Signature]: The transaction signatures.
     #[getter]
     pub fn signatures(&self) -> Vec<Signature> {
-        self.0
-            .signatures
-            .clone()
-            .into_iter()
-            .map(Signature::from)
-            .collect()
+        originals_into_solders(self.0.signatures.clone())
     }
 
     #[setter]
     fn set_signatures(&mut self, signatures: Vec<Signature>) {
-        self.signatures = signatures;
+        self.0.signatures = solders_into_originals(signatures);
     }
 
     /// Create a fully-signed transaction from a message and its signatures.
@@ -232,17 +228,12 @@ impl Transaction {
     /// where the number of signatures is equal to ``num_required_signatures`` of the `Message`'s
     /// :class:`~solders.message.MessageHeader`.
     pub fn signatures(&self) -> Vec<Signature> {
-        self.0
-            .signatures
-            .clone()
-            .into_iter()
-            .map(Signature::from)
-            .collect()
+        originals_into_solders(self.0.signatures.clone())
     }
 
     #[setter]
     fn set_signatures(&mut self, signatures: Vec<Signature>) {
-        self.signatures = signatures;
+        self.0.signatures = solders_into_originals(signatures);
     }
 
     #[getter]
@@ -684,6 +675,10 @@ impl Transaction {
     /// Deprecated in the Solana Rust SDK, expose here only for testing.
     pub fn get_nonce_pubkey_from_instruction(&self, ix: &CompiledInstruction) -> Option<Pubkey> {
         get_nonce_pubkey_from_instruction(ix.as_ref(), self.as_ref()).map(Pubkey::from)
+    }
+
+    pub fn to_versioned(&self) -> VersionedTransaction {
+        VersionedTransaction::from(*self)
     }
 }
 
