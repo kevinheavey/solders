@@ -39,7 +39,7 @@ members = [".", "traits", "macros", "primitives"]
 pyo3 = { git = "https://github.com/PyO3/pyo3", rev = "1d20f2a", default-features = false }
 solders-macros = { path = "./macros", version = "0.11.0" }
 solders-traits = { path = "./traits", version = "0.11.0" }
-serde_with = "^1.14.0"
+serde_with = { version = "^1.14.0", features = ["base64"] }
 solders-primitives = { path = "./primitives", version = "0.11.0" }
 solana-sdk = "^1.14.1"
 bincode = "1.3.3"

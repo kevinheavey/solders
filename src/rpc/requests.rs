@@ -11,7 +11,7 @@ use crate::rpc::tmp_config::{
 };
 use camelpaste::paste;
 use serde::{Deserialize, Serialize};
-use serde_with::{serde_as, skip_serializing_none, DisplayFromStr, FromInto, Bytes};
+use serde_with::{serde_as, skip_serializing_none, DisplayFromStr, FromInto, base64::Base64};
 use solana_sdk::{
     message::Message as MessageOriginal, transaction::Transaction as TransactionOriginal,
 };
@@ -2333,7 +2333,7 @@ request_boilerplate!(SendTransaction);
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Default)]
 pub struct SendRawTransactionParams(
-    #[serde_as(as = "Bytes")] Vec<u8>,
+    #[serde_as(as = "Base64")] Vec<u8>,
     #[serde(default)] Option<RpcSendTransactionConfig>,
 );
 
@@ -2788,6 +2788,8 @@ macro_rules ! pyunion {
         #[serde(tag = "method", rename_all = "camelCase")]
         pub enum $name {
             $($variant($variant),)+
+            #[serde(rename = "sendTransaction")]
+            SendRawTransaction(SendRawTransaction)
         }
     }
 }
@@ -2843,7 +2845,6 @@ pyunion!(
     IsBlockhashValid,
     MinimumLedgerSlot,
     RequestAirdrop,
-    SendRawTransaction,
     SendTransaction,
     ValidatorExit,
     AccountSubscribe,
