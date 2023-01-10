@@ -16,6 +16,7 @@
 - Add `VersionedMessage` type alias [(#34)](https://github.com/kevinheavey/solders/pull/34)
 - Make `signatures` writable for `VersionedTransaction` and `Transaction` [(#34)](https://github.com/kevinheavey/solders/pull/34)
 - Add `from_legacy` to `VersionedTransaction` [(#34)](https://github.com/kevinheavey/solders/pull/34)
+- Add `Signer` type alias [(#34)](https://github.com/kevinheavey/solders/pull/34)
 
 ### Fixed
 
