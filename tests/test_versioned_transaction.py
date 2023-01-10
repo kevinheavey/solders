@@ -1,7 +1,7 @@
 from pytest import raises
 
 from solders.keypair import Keypair
-from solders.message import Message, MessageV0
+from solders.message import Message
 from solders.instruction import Instruction, AccountMeta
 from solders.pubkey import Pubkey
 from solders.hash import Hash
@@ -11,8 +11,6 @@ from solders.system_program import (
     transfer,
     withdraw_nonce_account,
 )
-from solders.sysvar import RECENT_BLOCKHASHES
-from solders.system_program import ID
 from solders.errors import SignerError
 
 
@@ -79,20 +77,18 @@ def test_tx_uses_nonce_empty_ix_fail() -> None:
     assert not VersionedTransaction.default().uses_durable_nonce()
 
 
-def tx_uses_nonce_bad_prog_id_idx_fail() -> None:
-    (_, _, tx) = nonced_transfer_tx()
-    tx.message.instructions[0].program_id_index = 255
-    assert not tx.uses_durable_nonce()
-
-
-def tx_uses_nonce_first_prog_id_not_nonce_fail() -> None:
+def test_tx_uses_nonce_first_prog_id_not_nonce_fail() -> None:
     from_keypair = Keypair()
     from_pubkey = from_keypair.pubkey()
     nonce_keypair = Keypair()
     nonce_pubkey = nonce_keypair.pubkey()
     instructions = [
-        transfer(from_pubkey, nonce_pubkey, 42),
-        advance_nonce_account(nonce_pubkey, nonce_pubkey),
+        transfer(
+            {"from_pubkey": from_pubkey, "to_pubkey": nonce_pubkey, "lamports": 42}
+        ),
+        advance_nonce_account(
+            {"nonce_pubkey": nonce_pubkey, "authorized_pubkey": nonce_pubkey}
+        ),
     ]
     message = Message(instructions, from_pubkey)
     tx = Transaction([from_keypair, nonce_keypair], message, Hash.default())
@@ -100,19 +96,23 @@ def tx_uses_nonce_first_prog_id_not_nonce_fail() -> None:
     assert not versioned.uses_durable_nonce()
 
 
-def tx_uses_nonce_wrong_first_nonce_ix_fail() -> None:
+def test_tx_uses_nonce_wrong_first_nonce_ix_fail() -> None:
     from_keypair = Keypair()
     from_pubkey = from_keypair.pubkey()
     nonce_keypair = Keypair()
     nonce_pubkey = nonce_keypair.pubkey()
     instructions = [
         withdraw_nonce_account(
-            nonce_pubkey,
-            nonce_pubkey,
-            from_pubkey,
-            42,
+            {
+                "nonce_pubkey": nonce_pubkey,
+                "authorized_pubkey": nonce_pubkey,
+                "to_pubkey": from_pubkey,
+                "lamports": 42,
+            }
         ),
-        transfer(from_pubkey, nonce_pubkey, 42),
+        transfer(
+            {"from_pubkey": from_pubkey, "to_pubkey": nonce_pubkey, "lamports": 42}
+        ),
     ]
     message = Message(instructions, nonce_pubkey)
     tx = Transaction([from_keypair, nonce_keypair], message, Hash.default())
