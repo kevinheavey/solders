@@ -157,6 +157,12 @@ impl VersionedTransaction {
     pub fn new_default() -> Self {
         Self::default()
     }
+
+    /// Convert a lega
+    #[staticmethod]
+    pub fn from_legacy(tx: Transaction) -> Self {
+        Self::from(tx)
+    }
 }
 
 #[pyclass(module = "solders.transaction", subclass)]
@@ -675,10 +681,6 @@ impl Transaction {
     /// Deprecated in the Solana Rust SDK, expose here only for testing.
     pub fn get_nonce_pubkey_from_instruction(&self, ix: &CompiledInstruction) -> Option<Pubkey> {
         get_nonce_pubkey_from_instruction(ix.as_ref(), self.as_ref()).map(Pubkey::from)
-    }
-
-    pub fn to_versioned(&self) -> VersionedTransaction {
-        VersionedTransaction::from(*self)
     }
 }
 
