@@ -158,10 +158,21 @@ impl VersionedTransaction {
         Self::default()
     }
 
-    /// Convert a lega
+    /// Convert a legacy transaction to a VersionedTransaction.
+    /// 
+    /// Returns:
+    ///     VersionedTransaction: The versioned tx.
     #[staticmethod]
     pub fn from_legacy(tx: Transaction) -> Self {
         Self::from(tx)
+    }
+
+    /// Returns true if transaction begins with a valid advance nonce instruction.
+    /// 
+    /// Returns:
+    ///     bool 
+    pub fn uses_durable_nonce(&self) -> bool {
+        self.0.uses_durable_nonce()
     }
 }
 
