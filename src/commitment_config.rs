@@ -7,7 +7,7 @@ use solana_sdk::commitment_config::{
     CommitmentConfig as CommitmentConfigOriginal, CommitmentLevel as CommitmentLevelOriginal,
 };
 
-use solders_traits::{handle_py_err};
+use solders_traits::handle_py_err;
 
 /// RPC request `commitment <https://docs.solana.com/developing/clients/jsonrpc-api#configuring-state-commitment>`_ options.
 #[pyclass(module = "solders.commitment_config")]

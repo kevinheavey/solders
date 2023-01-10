@@ -2290,7 +2290,7 @@ impl SlotTransactionStats {
 
     #[getter]
     pub fn max_transactions_per_entry(&self) -> u64 {
-        self.0.num_failed_transactions
+        self.0.max_transactions_per_entry
     }
 }
 
