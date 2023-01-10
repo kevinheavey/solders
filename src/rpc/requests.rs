@@ -11,7 +11,7 @@ use crate::rpc::tmp_config::{
 };
 use camelpaste::paste;
 use serde::{Deserialize, Serialize};
-use serde_with::{serde_as, skip_serializing_none, DisplayFromStr, FromInto};
+use serde_with::{serde_as, skip_serializing_none, DisplayFromStr, FromInto, base64::Base64};
 use solana_sdk::{
     message::Message as MessageOriginal, transaction::Transaction as TransactionOriginal,
 };
@@ -2332,6 +2332,81 @@ request_boilerplate!(SendTransaction);
 #[serde_as]
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Default)]
+pub struct SendRawTransactionParams(
+    #[serde_as(as = "Base64")] Vec<u8>,
+    #[serde(default)] Option<RpcSendTransactionConfig>,
+);
+
+/// A raw ``sendTransaction`` request.
+///
+/// Args:
+///     tx (bytes): The signed, serialized transaction to send.
+///     config (Optional[RpcSendTransactionConfig]): Extra configuration.
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///      >>> from typing import List
+///      >>> from solders.rpc.requests import SendRawTransaction
+///      >>> from solders.rpc.config import RpcSendTransactionConfig
+///      >>> from solders.transaction import Transaction
+///      >>> from solders.message import Message
+///      >>> from solders.keypair import Keypair
+///      >>> from solders.instruction import Instruction, AccountMeta
+///      >>> from solders.hash import Hash
+///      >>> from solders.pubkey import Pubkey
+///      >>> from solders.commitment_config import CommitmentLevel
+///      >>> program_id = Pubkey.default()
+///      >>> arbitrary_instruction_data = b"abc"
+///      >>> accounts: List[AccountMeta] = []
+///      >>> instruction = Instruction(program_id, arbitrary_instruction_data, accounts)
+///      >>> seed = bytes([1] * 32)
+///      >>> payer = Keypair.from_seed(seed)
+///      >>> message = Message([instruction], payer.pubkey())
+///      >>> blockhash = Hash.default()  # replace with a real blockhash
+///      >>> tx = Transaction([payer], message, blockhash)
+///      >>> commitment = CommitmentLevel.Confirmed
+///      >>> config = RpcSendTransactionConfig(preflight_commitment=commitment)
+///      >>> SendRawTransaction(bytes(tx), config).to_json()
+///      '{"method":"sendTransaction","jsonrpc":"2.0","id":0,"params":["AaVkKDb3UlpidO/ucBnOcmS+1dY8ZAC4vHxTxiccV8zPBlupuozppRjwrILZJaoKggAcVSD1XlAKstDVEPFOVgwBAAECiojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEAA2FiYw==",{"skipPreflight":false,"preflightCommitment":"confirmed","encoding":"base64","maxRetries":null,"minContextSlot":null}]}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
+pub struct SendRawTransaction {
+    #[serde(flatten)]
+    base: RequestBase,
+    params: SendRawTransactionParams,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl SendRawTransaction {
+    #[new]
+    fn new(tx: Vec<u8>, config: Option<RpcSendTransactionConfig>, id: Option<u64>) -> Self {
+        let params = SendRawTransactionParams(tx, config);
+        let base = RequestBase::new(id);
+        Self { base, params }
+    }
+
+    /// List[int]: The raw signed transaction to send.
+    #[getter]
+    fn tx(&self) -> Vec<u8> {
+        self.params.0.clone()
+    }
+
+    /// Optional[RpcSendTransactionConfig]: Extra configuration.
+    #[getter]
+    fn config(&self) -> Option<RpcSendTransactionConfig> {
+        self.params.1.clone()
+    }
+}
+
+request_boilerplate!(SendRawTransaction);
+
+#[serde_as]
+#[skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Default)]
 pub struct SimulateTransactionParams(
     #[serde_as(as = "FromInto<TransactionBase64>")] Transaction,
     #[serde(default)] Option<RpcSimulateTransactionConfig>,
@@ -2713,6 +2788,8 @@ macro_rules ! pyunion {
         #[serde(tag = "method", rename_all = "camelCase")]
         pub enum $name {
             $($variant($variant),)+
+            #[serde(rename = "sendTransaction")]
+            SendRawTransaction(SendRawTransaction)
         }
     }
 }
@@ -2896,6 +2973,7 @@ pub fn create_requests_mod(py: Python<'_>) -> PyResult<&PyModule> {
             IsBlockhashValid::type_object(py),
             MinimumLedgerSlot::type_object(py),
             RequestAirdrop::type_object(py),
+            SendRawTransaction::type_object(py),
             SendTransaction::type_object(py),
             ValidatorExit::type_object(py),
             AccountSubscribe::type_object(py),
@@ -2971,6 +3049,7 @@ pub fn create_requests_mod(py: Python<'_>) -> PyResult<&PyModule> {
     requests_mod.add_class::<MinimumLedgerSlot>()?;
     requests_mod.add_class::<RequestAirdrop>()?;
     requests_mod.add_class::<SendTransaction>()?;
+    requests_mod.add_class::<SendRawTransaction>()?;
     requests_mod.add_class::<ValidatorExit>()?;
     requests_mod.add_class::<AccountSubscribe>()?;
     requests_mod.add_class::<BlockSubscribe>()?;

@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.12.0] - 2023-01-10
+
+### Added
+
+- Add `SendRawTransaction` [(#35)](https://github.com/kevinheavey/solders/pull/35
+
 ## [0.11.0] - 2023-01-10
 
 ### Changed
