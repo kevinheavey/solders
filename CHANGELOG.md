@@ -13,6 +13,13 @@
 - Extract solders-primitives into its own crate [(#24)](https://github.com/kevinheavey/solders/pull/24)
 - Add EnumIntoPy derive macro [(#29)](https://github.com/kevinheavey/solders/pull/29)
 - Add `common_methods_core` macro [(#30)](https://github.com/kevinheavey/solders/pull/30)
+- Add `VersionedMessage` type alias [(#34)](https://github.com/kevinheavey/solders/pull/34)
+- Make `signatures` writable for `VersionedTransaction` and `Transaction` [(#34)](https://github.com/kevinheavey/solders/pull/34)
+- Add `from_legacy` to `VersionedTransaction` [(#34)](https://github.com/kevinheavey/solders/pull/34)
+
+### Fixed
+
+- Fix incorrect field access in `max_transactions_per_entry` [(#34)](https://github.com/kevinheavey/solders/pull/34)
 
 ## [0.10.0] - 2022-10-31
 
