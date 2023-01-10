@@ -1,3 +1,5 @@
+from typing import Tuple
+
 from pytest import raises
 
 from solders.keypair import Keypair
@@ -50,7 +52,7 @@ def test_try_new() -> None:
     assert tx.verify_with_results() == [True, True]
 
 
-def nonced_transfer_tx() -> tuple[Pubkey, Pubkey, VersionedTransaction]:
+def nonced_transfer_tx() -> Tuple[Pubkey, Pubkey, VersionedTransaction]:
     from_keypair = Keypair()
     from_pubkey = from_keypair.pubkey()
     nonce_keypair = Keypair()
