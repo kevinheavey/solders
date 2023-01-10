@@ -1,16 +1,19 @@
 from typing import Sequence, Union, List, Optional, Tuple
 from solders.keypair import Keypair
 from solders.presigner import Presigner
+from solders.null_signer import NullSigner
 from solders.message import Message, MessageV0
 from solders.signature import Signature
 from solders.instruction import Instruction, CompiledInstruction
 from solders.pubkey import Pubkey
 from solders.hash import Hash
 
+Signer = Union[Keypair, Presigner, NullSigner]
+
 class Transaction:
     def __init__(
         self,
-        from_keypairs: Sequence[Union[Presigner, Keypair]],
+        from_keypairs: Sequence[Signer],
         message: Message,
         recent_blockhash: Hash,
     ) -> None: ...
@@ -31,12 +34,12 @@ class Transaction:
     def new_signed_with_payer(
         instructions: Sequence[Instruction],
         payer: Optional[Pubkey],
-        signing_keypairs: Sequence[Union[Presigner, Keypair]],
+        signing_keypairs: Sequence[Signer],
         recent_blockhash: Hash,
     ) -> "Transaction": ...
     @staticmethod
     def new_with_compiled_instructions(
-        from_keypairs: Sequence[Union[Presigner, Keypair]],
+        from_keypairs: Sequence[Signer],
         keys: Sequence[Pubkey],
         recent_blockhash: Hash,
         program_ids: Sequence[Pubkey],
@@ -53,11 +56,11 @@ class Transaction:
     ) -> Optional[Pubkey]: ...
     def message_data(self) -> bytes: ...
     def sign(
-        self, keypairs: Sequence[Union[Presigner, Keypair]], recent_blockhash: Hash
+        self, keypairs: Sequence[Signer], recent_blockhash: Hash
     ) -> None: ...
     def partial_sign(
         self,
-        keypairs: Sequence[Union[Presigner, Keypair]],
+        keypairs: Sequence[Signer],
         recent_blockhash: Hash,
     ) -> None: ...
     def verify(self) -> None: ...
@@ -99,7 +102,7 @@ class VersionedTransaction:
     def __init__(
         self,
         message: Union[Message, MessageV0],
-        keypairs: Sequence[Union[Presigner, Keypair]],
+        keypairs: Sequence[Signer],
     ) -> None: ...
     @property
     def signatures(self) -> List[Signature]: ...
