@@ -14,6 +14,7 @@ from solders.system_program import (
     withdraw_nonce_account,
 )
 from solders.errors import SignerError
+from solders.null_signer import NullSigner
 
 
 def test_try_new() -> None:
@@ -120,3 +121,26 @@ def test_tx_uses_nonce_wrong_first_nonce_ix_fail() -> None:
     tx = Transaction([from_keypair, nonce_keypair], message, Hash.default())
     versioned = VersionedTransaction.from_legacy(tx)
     assert not versioned.uses_durable_nonce()
+
+def test_partial_signing() -> None:
+    keypair0 = Keypair()
+    keypair1 = Keypair()
+
+    message = Message(
+        [Instruction(
+            Pubkey.new_unique(),b"",
+            [AccountMeta(keypair1.pubkey(), True, False)])
+        ],
+    keypair0.pubkey())
+    signers = [keypair0, NullSigner(keypair1.pubkey())]
+    partially_signed = VersionedTransaction(message, signers)
+    serialized = bytes(partially_signed)
+    deserialized = VersionedTransaction.from_bytes(serialized)
+    assert deserialized == partially_signed
+    deserialized_message = deserialized.message
+    keypair1_sig_index = next(i for i, key in enumerate(deserialized_message.account_keys) if key == keypair1.pubkey()) 
+    sigs = deserialized.signatures
+    sigs[keypair1_sig_index] = keypair1.sign_message(bytes(deserialized_message))
+    deserialized.signatures = sigs
+    fully_signed = VersionedTransaction(message, [keypair0, keypair1])
+    assert deserialized.signatures == fully_signed.signatures
