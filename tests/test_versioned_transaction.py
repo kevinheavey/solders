@@ -135,7 +135,7 @@ def test_partial_signing() -> None:
         ],
         keypair0.pubkey(),
     )
-    signers = [keypair0, NullSigner(keypair1.pubkey())]
+    signers = (keypair0, NullSigner(keypair1.pubkey()))
     partially_signed = VersionedTransaction(message, signers)
     serialized = bytes(partially_signed)
     deserialized = VersionedTransaction.from_bytes(serialized)
