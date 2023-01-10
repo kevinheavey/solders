@@ -1,6 +1,6 @@
-use pyo3::prelude::*;
+use pyo3::{prelude::*, PyTypeInfo, types::PyTuple};
 use solders_primitives::message::{
-    Message, MessageAddressTableLookup, MessageHeader, MessageV0, VersionedMessage,
+    Message, MessageAddressTableLookup, MessageHeader, MessageV0,
 };
 
 pub(crate) fn create_message_mod(py: Python<'_>) -> PyResult<&PyModule> {
