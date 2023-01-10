@@ -1,0 +1,108 @@
+from pytest import raises
+
+from solders.keypair import Keypair
+from solders.message import Message, MessageV0
+from solders.instruction import Instruction, AccountMeta
+from solders.pubkey import Pubkey
+from solders.hash import Hash
+from solders.transaction import Transaction, VersionedTransaction
+from solders.system_program import advance_nonce_account, transfer, withdraw_nonce_account
+from solders.sysvar import RECENT_BLOCKHASHES
+from solders.system_program import ID
+from solders.errors import SignerError
+
+def test_try_new() -> None:
+    keypair0 = Keypair()
+    keypair1 = Keypair()
+    keypair2 = Keypair()
+
+    message = Message(
+        [Instruction(
+            Pubkey.new_unique(),
+            b"",
+            [
+                AccountMeta(keypair1.pubkey(), True, False),
+                AccountMeta(keypair2.pubkey(), False, False),
+            ],
+        )],
+        keypair0.pubkey(),
+    )
+
+    with raises(SignerError) as excinfo:
+        VersionedTransaction(message, [keypair0])
+    assert "not enough signers" in str(excinfo)
+    with raises(SignerError) as excinfo:
+        VersionedTransaction(message, [keypair0, keypair0])
+    assert "keypair-pubkey mismatch" in str(excinfo)
+    with raises(SignerError) as excinfo:
+        VersionedTransaction(message, [keypair1, keypair2])
+    assert "keypair-pubkey mismatch" in str(excinfo)
+    
+    tx = VersionedTransaction(message, [keypair0, keypair1])
+    assert tx.verify_with_results() == [True, True]
+
+    tx = VersionedTransaction(message, [keypair1, keypair0])
+    assert tx.verify_with_results() == [True, True]
+
+def nonced_transfer_tx() -> tuple[Pubkey, Pubkey, VersionedTransaction]:
+    from_keypair = Keypair()
+    from_pubkey = from_keypair.pubkey()
+    nonce_keypair = Keypair()
+    nonce_pubkey = nonce_keypair.pubkey()
+    instructions = [
+        advance_nonce_account({"nonce_pubkey": nonce_pubkey, "authorized_pubkey": nonce_pubkey}),
+        transfer({"from_pubkey": from_pubkey, "to_pubkey": nonce_pubkey, "lamports": 42}),
+    ]
+    message = Message(instructions, nonce_pubkey)
+    tx = Transaction([from_keypair, nonce_keypair], message, Hash.default())
+    return (from_pubkey, nonce_pubkey, VersionedTransaction.from_legacy(tx))
+
+
+
+def test_tx_uses_nonce_ok() -> None:
+    _, _, tx = nonced_transfer_tx()
+    assert tx.uses_durable_nonce()
+
+
+def test_tx_uses_nonce_empty_ix_fail() -> None:
+    assert not VersionedTransaction.default().uses_durable_nonce()
+
+
+def tx_uses_nonce_bad_prog_id_idx_fail() -> None:
+    (_, _, tx) = nonced_transfer_tx()
+    tx.message.instructions[0].program_id_index = 255
+    assert not tx.uses_durable_nonce()
+
+def tx_uses_nonce_first_prog_id_not_nonce_fail() -> None:
+    from_keypair = Keypair()
+    from_pubkey = from_keypair.pubkey()
+    nonce_keypair = Keypair()
+    nonce_pubkey = nonce_keypair.pubkey()
+    instructions = [
+        transfer(from_pubkey, nonce_pubkey, 42),
+        advance_nonce_account(nonce_pubkey, nonce_pubkey),
+    ]
+    message = Message(instructions, from_pubkey)
+    tx = Transaction([from_keypair, nonce_keypair], message, Hash.default())
+    versioned = VersionedTransaction.from_legacy(tx)
+    assert not versioned.uses_durable_nonce()
+
+
+def tx_uses_nonce_wrong_first_nonce_ix_fail() -> None:
+    from_keypair = Keypair()
+    from_pubkey = from_keypair.pubkey()
+    nonce_keypair = Keypair()
+    nonce_pubkey = nonce_keypair.pubkey()
+    instructions = [
+        withdraw_nonce_account(
+            nonce_pubkey,
+            nonce_pubkey,
+            from_pubkey,
+            42,
+        ),
+        transfer(from_pubkey, nonce_pubkey, 42),
+    ]
+    message = Message(instructions, nonce_pubkey)
+    tx = Transaction([from_keypair, nonce_keypair], message, Hash.default())
+    versioned = VersionedTransaction.from_legacy(tx)
+    assert not versioned.uses_durable_nonce()
