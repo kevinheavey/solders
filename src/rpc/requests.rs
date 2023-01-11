@@ -2,7 +2,7 @@
 use crate::commitment_config::{CommitmentConfig, CommitmentLevel};
 use pyo3::{exceptions::PyValueError, prelude::*, types::PyTuple, PyTypeInfo};
 use solders_primitives::{
-    message::Message,
+    message::{VersionedMessage},
     pubkey::Pubkey,
     transaction::{Transaction, VersionedTransaction},
 };
@@ -17,7 +17,7 @@ use camelpaste::paste;
 use serde::{Deserialize, Serialize};
 use serde_with::{base64::Base64, serde_as, skip_serializing_none, DisplayFromStr, FromInto};
 use solana_sdk::{
-    message::Message as MessageOriginal,
+    message::{VersionedMessage as VersionedMessageOriginal},
     transaction::{
         Transaction as TransactionOriginal, VersionedTransaction as VersionedTransactionOriginal,
     },
@@ -719,7 +719,7 @@ zero_param_req_def!(GetEpochSchedule);
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetFeeForMessageParams(
-    #[serde_as(as = "FromInto<Base64String>")] Message,
+    #[serde_as(as = "FromInto<Base64String>")] VersionedMessage,
     #[serde_as(as = "Option<FromInto<CommitmentConfig>>")]
     #[serde(default)]
     Option<CommitmentLevel>,
@@ -728,16 +728,16 @@ pub struct GetFeeForMessageParams(
 /// A ``getFeeForMessage`` request.
 ///
 /// Args:
-///     message (Message): The message for which to calculate the fee.
+///     message (VersionedMessage): The message for which to calculate the fee.
 ///     commitment (Optional[CommitmentLevel]): Bank state to query.
 ///     id (Optional[int]): Request ID.
 ///
 /// Example:
 ///     >>> from solders.rpc.requests import GetFeeForMessage
 ///     >>> from solders.commitment_config import CommitmentLevel
-///     >>> from solders.message import Message
-///     >>> GetFeeForMessage(Message.default(), commitment=CommitmentLevel.Processed).to_json()
-///     '{"method":"getFeeForMessage","jsonrpc":"2.0","id":0,"params":["AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",{"commitment":"processed"}]}'
+///     >>> from solders.message import MessageV0
+///     >>> GetFeeForMessage(MessageV0.default(), commitment=CommitmentLevel.Processed).to_json()
+///     '{"method":"getFeeForMessage","jsonrpc":"2.0","id":0,"params":["gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",{"commitment":"processed"}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
@@ -753,15 +753,15 @@ pub struct GetFeeForMessage {
 #[pymethods]
 impl GetFeeForMessage {
     #[new]
-    fn new(message: Message, commitment: Option<CommitmentLevel>, id: Option<u64>) -> Self {
+    fn new(message: VersionedMessage, commitment: Option<CommitmentLevel>, id: Option<u64>) -> Self {
         let params = GetFeeForMessageParams(message, commitment);
         let base = RequestBase::new(id);
         Self { base, params }
     }
 
-    /// Message: The message for which to calculate the fee.
+    /// VersionedMessage: The message for which to calculate the fee.
     #[getter]
-    pub fn message(&self) -> Message {
+    pub fn message(&self) -> VersionedMessage {
         self.params.0.clone()
     }
 
@@ -2271,16 +2271,17 @@ impl From<Base64String> for Vec<u8> {
     }
 }
 
-impl From<Message> for Base64String {
-    fn from(m: Message) -> Self {
-        Self(base64::encode(m.0.serialize()))
+impl From<VersionedMessage> for Base64String {
+    fn from(m: VersionedMessage) -> Self {
+        let orig = VersionedMessageOriginal::from(m);
+        Self(base64::encode(&orig.serialize()))
     }
 }
 
-impl From<Base64String> for Message {
+impl From<Base64String> for VersionedMessage {
     fn from(m: Base64String) -> Self {
         let bytes = base64::decode(m.0).unwrap();
-        bincode::deserialize::<MessageOriginal>(&bytes)
+        bincode::deserialize::<VersionedMessageOriginal>(&bytes)
             .unwrap()
             .into()
     }

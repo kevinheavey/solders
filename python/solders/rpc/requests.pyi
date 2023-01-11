@@ -1,4 +1,4 @@
-from typing import Optional, Sequence, List, Union
+from typing import Optional, Sequence, List, Union, TypeVar
 from solders.pubkey import Pubkey
 from solders.rpc.config import (
     RpcAccountInfoConfig,
@@ -29,7 +29,7 @@ from solders.rpc.config import (
 )
 from solders.commitment_config import CommitmentLevel
 from solders.signature import Signature
-from solders.message import Message
+from solders.message import MessageV0, Message
 from solders.hash import Hash
 from solders.transaction import Transaction, VersionedTransaction
 
@@ -252,15 +252,17 @@ class GetEpochInfo:
     def __bytes__(self) -> bytes: ...
     def __hash__(self) -> int: ...
 
+__T = TypeVar("__T", MessageV0, Message)
+
 class GetFeeForMessage:
     def __init__(
         self,
-        message: Message,
+        message: __T,
         commitment: Optional[CommitmentLevel] = None,
         id: Optional[int] = None,
     ): ...
     @property
-    def message(self) -> Message: ...
+    def message(self) -> __T: ...
     @property
     def commitment(self) -> Optional[CommitmentLevel]: ...
     @property
