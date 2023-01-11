@@ -1,7 +1,7 @@
 #![allow(deprecated)]
 use crate::commitment_config::{CommitmentConfig, CommitmentLevel};
 use pyo3::{exceptions::PyValueError, prelude::*, types::PyTuple, PyTypeInfo};
-use solders_primitives::{message::Message, pubkey::Pubkey, transaction::Transaction};
+use solders_primitives::{message::Message, pubkey::Pubkey, transaction::{Transaction, VersionedTransaction}};
 use solders_traits::{
     py_from_bytes_general_via_cbor, pybytes_general_via_cbor, to_py_err, RichcmpEqualityOnly,
 };
@@ -13,7 +13,7 @@ use camelpaste::paste;
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, skip_serializing_none, DisplayFromStr, FromInto, base64::Base64};
 use solana_sdk::{
-    message::Message as MessageOriginal, transaction::Transaction as TransactionOriginal,
+    message::Message as MessageOriginal, transaction::{Transaction as TransactionOriginal, VersionedTransaction as VersionedTransactionOriginal},
 };
 use solders_macros::{common_methods, richcmp_eq_only, rpc_id_getter, EnumIntoPy};
 
@@ -2254,10 +2254,100 @@ impl From<TransactionBase64> for Transaction {
     }
 }
 
+impl From<VersionedTransaction> for TransactionBase64 {
+    fn from(tx: VersionedTransaction) -> Self {
+        Self(base64::encode(bincode::serialize(&tx).unwrap()))
+    }
+}
+
+impl From<TransactionBase64> for VersionedTransaction {
+    fn from(tx: TransactionBase64) -> Self {
+        let bytes = base64::decode(tx.0).unwrap();
+        bincode::deserialize::<VersionedTransactionOriginal>(&bytes)
+            .unwrap()
+            .into()
+    }
+}
+
 #[serde_as]
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Default)]
-pub struct SendTransactionParams(
+pub struct SendVersionedTransactionParams(
+    #[serde_as(as = "FromInto<TransactionBase64>")] VersionedTransaction,
+    #[serde(default)] Option<RpcSendTransactionConfig>,
+);
+
+/// A ``sendTransaction`` request.
+///
+/// Args:
+///     tx (VersionedTransaction): The signed transaction to send.
+///     config (Optional[RpcSendTransactionConfig]): Extra configuration.
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///      >>> from typing import List
+///      >>> from solders.rpc.requests import SendVersionedTransaction
+///      >>> from solders.rpc.config import RpcSendTransactionConfig
+///      >>> from solders.transaction import VersionedTransaction
+///      >>> from solders.message import Message
+///      >>> from solders.keypair import Keypair
+///      >>> from solders.instruction import Instruction, AccountMeta
+///      >>> from solders.hash import Hash
+///      >>> from solders.pubkey import Pubkey
+///      >>> from solders.commitment_config import CommitmentLevel
+///      >>> program_id = Pubkey.default()
+///      >>> arbitrary_instruction_data = b"abc"
+///      >>> accounts: List[AccountMeta] = []
+///      >>> instruction = Instruction(program_id, arbitrary_instruction_data, accounts)
+///      >>> seed = bytes([1] * 32)
+///      >>> payer = Keypair.from_seed(seed)
+///      >>> blockhash = Hash.default()  # replace with a real blockhash
+///      >>> message = Message.new_with_blockhash([instruction], payer.pubkey(), blockhash)
+///      >>> tx = VersionedTransaction(message, [payer])
+///      >>> commitment = CommitmentLevel.Confirmed
+///      >>> config = RpcSendTransactionConfig(preflight_commitment=commitment)
+///      >>> SendVersionedTransaction(tx, config).to_json()
+///      '{"method":"sendTransaction","jsonrpc":"2.0","id":0,"params":["AaVkKDb3UlpidO/ucBnOcmS+1dY8ZAC4vHxTxiccV8zPBlupuozppRjwrILZJaoKggAcVSD1XlAKstDVEPFOVgwBAAECiojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEAA2FiYw==",{"skipPreflight":false,"preflightCommitment":"confirmed","encoding":"base64","maxRetries":null,"minContextSlot":null}]}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
+pub struct SendVersionedTransaction {
+    #[serde(flatten)]
+    base: RequestBase,
+    params: SendVersionedTransactionParams,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl SendVersionedTransaction {
+    #[new]
+    fn new(tx: VersionedTransaction, config: Option<RpcSendTransactionConfig>, id: Option<u64>) -> Self {
+        let params = SendVersionedTransactionParams(tx, config);
+        let base = RequestBase::new(id);
+        Self { base, params }
+    }
+
+    /// VersionedTransaction: The signed transaction to send.
+    #[getter]
+    fn tx(&self) -> VersionedTransaction {
+        self.params.0.clone()
+    }
+
+    /// Optional[RpcSendTransactionConfig]: Extra configuration.
+    #[getter]
+    fn config(&self) -> Option<RpcSendTransactionConfig> {
+        self.params.1.clone()
+    }
+}
+
+request_boilerplate!(SendVersionedTransaction);
+
+#[serde_as]
+#[skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Default)]
+pub struct SendLegacyTransactionParams(
     #[serde_as(as = "FromInto<TransactionBase64>")] Transaction,
     #[serde(default)] Option<RpcSendTransactionConfig>,
 );
@@ -2296,20 +2386,20 @@ pub struct SendTransactionParams(
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
-pub struct SendTransaction {
+pub struct SendLegacyTransaction {
     #[serde(flatten)]
     base: RequestBase,
-    params: SendTransactionParams,
+    params: SendLegacyTransactionParams,
 }
 
 #[richcmp_eq_only]
 #[common_methods]
 #[rpc_id_getter]
 #[pymethods]
-impl SendTransaction {
+impl SendLegacyTransaction {
     #[new]
     fn new(tx: Transaction, config: Option<RpcSendTransactionConfig>, id: Option<u64>) -> Self {
-        let params = SendTransactionParams(tx, config);
+        let params = SendLegacyTransactionParams(tx, config);
         let base = RequestBase::new(id);
         Self { base, params }
     }
@@ -2327,7 +2417,7 @@ impl SendTransaction {
     }
 }
 
-request_boilerplate!(SendTransaction);
+request_boilerplate!(SendLegacyTransaction);
 
 #[serde_as]
 #[skip_serializing_none]
@@ -2789,7 +2879,11 @@ macro_rules ! pyunion {
         pub enum $name {
             $($variant($variant),)+
             #[serde(rename = "sendTransaction")]
-            SendRawTransaction(SendRawTransaction)
+            SendRawTransaction(SendRawTransaction),
+            #[serde(rename = "sendTransaction")]
+            SendLegacyTransaction(SendLegacyTransaction),
+            #[serde(rename = "sendTransaction")]
+            SendVersionedTransaction(SendVersionedTransaction)
         }
     }
 }
@@ -2845,7 +2939,6 @@ pyunion!(
     IsBlockhashValid,
     MinimumLedgerSlot,
     RequestAirdrop,
-    SendTransaction,
     ValidatorExit,
     AccountSubscribe,
     BlockSubscribe,
@@ -2974,7 +3067,7 @@ pub fn create_requests_mod(py: Python<'_>) -> PyResult<&PyModule> {
             MinimumLedgerSlot::type_object(py),
             RequestAirdrop::type_object(py),
             SendRawTransaction::type_object(py),
-            SendTransaction::type_object(py),
+            SendLegacyTransaction::type_object(py),
             ValidatorExit::type_object(py),
             AccountSubscribe::type_object(py),
             BlockSubscribe::type_object(py),
@@ -3048,8 +3141,9 @@ pub fn create_requests_mod(py: Python<'_>) -> PyResult<&PyModule> {
     requests_mod.add_class::<IsBlockhashValid>()?;
     requests_mod.add_class::<MinimumLedgerSlot>()?;
     requests_mod.add_class::<RequestAirdrop>()?;
-    requests_mod.add_class::<SendTransaction>()?;
+    requests_mod.add_class::<SendLegacyTransaction>()?;
     requests_mod.add_class::<SendRawTransaction>()?;
+    requests_mod.add_class::<SendVersionedTransaction>()?;
     requests_mod.add_class::<ValidatorExit>()?;
     requests_mod.add_class::<AccountSubscribe>()?;
     requests_mod.add_class::<BlockSubscribe>()?;
