@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.14.0] - 2023-01-11
+
+### Added
+
+- Add `SimulateVersionedTransaction` [(#37)](https://github.com/kevinheavey/solders/pull/37
+- Support `VersionedMessage` in `GetFeeForMessage` [(#37)](https://github.com/kevinheavey/solders/pull/37
+
 ## [0.13.0] - 2023-01-11
 
 ### Changed

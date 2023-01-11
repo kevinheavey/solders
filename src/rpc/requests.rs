@@ -2,7 +2,7 @@
 use crate::commitment_config::{CommitmentConfig, CommitmentLevel};
 use pyo3::{exceptions::PyValueError, prelude::*, types::PyTuple, PyTypeInfo};
 use solders_primitives::{
-    message::Message,
+    message::{VersionedMessage},
     pubkey::Pubkey,
     transaction::{Transaction, VersionedTransaction},
 };
@@ -17,7 +17,7 @@ use camelpaste::paste;
 use serde::{Deserialize, Serialize};
 use serde_with::{base64::Base64, serde_as, skip_serializing_none, DisplayFromStr, FromInto};
 use solana_sdk::{
-    message::Message as MessageOriginal,
+    message::{VersionedMessage as VersionedMessageOriginal},
     transaction::{
         Transaction as TransactionOriginal, VersionedTransaction as VersionedTransactionOriginal,
     },
@@ -714,29 +714,12 @@ request_boilerplate!(GetEpochInfo);
 
 zero_param_req_def!(GetEpochSchedule);
 
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
-struct MessageBase64(pub String);
-
-impl From<Message> for MessageBase64 {
-    fn from(m: Message) -> Self {
-        Self(base64::encode(m.0.serialize()))
-    }
-}
-
-impl From<MessageBase64> for Message {
-    fn from(m: MessageBase64) -> Self {
-        let bytes = base64::decode(m.0).unwrap();
-        bincode::deserialize::<MessageOriginal>(&bytes)
-            .unwrap()
-            .into()
-    }
-}
 
 #[serde_as]
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetFeeForMessageParams(
-    #[serde_as(as = "FromInto<MessageBase64>")] Message,
+    #[serde_as(as = "FromInto<Base64String>")] VersionedMessage,
     #[serde_as(as = "Option<FromInto<CommitmentConfig>>")]
     #[serde(default)]
     Option<CommitmentLevel>,
@@ -745,16 +728,16 @@ pub struct GetFeeForMessageParams(
 /// A ``getFeeForMessage`` request.
 ///
 /// Args:
-///     message (Message): The message for which to calculate the fee.
+///     message (VersionedMessage): The message for which to calculate the fee.
 ///     commitment (Optional[CommitmentLevel]): Bank state to query.
 ///     id (Optional[int]): Request ID.
 ///
 /// Example:
 ///     >>> from solders.rpc.requests import GetFeeForMessage
 ///     >>> from solders.commitment_config import CommitmentLevel
-///     >>> from solders.message import Message
-///     >>> GetFeeForMessage(Message.default(), commitment=CommitmentLevel.Processed).to_json()
-///     '{"method":"getFeeForMessage","jsonrpc":"2.0","id":0,"params":["AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",{"commitment":"processed"}]}'
+///     >>> from solders.message import MessageV0
+///     >>> GetFeeForMessage(MessageV0.default(), commitment=CommitmentLevel.Processed).to_json()
+///     '{"method":"getFeeForMessage","jsonrpc":"2.0","id":0,"params":["gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",{"commitment":"processed"}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
@@ -770,15 +753,15 @@ pub struct GetFeeForMessage {
 #[pymethods]
 impl GetFeeForMessage {
     #[new]
-    fn new(message: Message, commitment: Option<CommitmentLevel>, id: Option<u64>) -> Self {
+    fn new(message: VersionedMessage, commitment: Option<CommitmentLevel>, id: Option<u64>) -> Self {
         let params = GetFeeForMessageParams(message, commitment);
         let base = RequestBase::new(id);
         Self { base, params }
     }
 
-    /// Message: The message for which to calculate the fee.
+    /// VersionedMessage: The message for which to calculate the fee.
     #[getter]
-    pub fn message(&self) -> Message {
+    pub fn message(&self) -> VersionedMessage {
         self.params.0.clone()
     }
 
@@ -2244,16 +2227,16 @@ impl RequestAirdrop {
 request_boilerplate!(RequestAirdrop);
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
-struct TransactionBase64(pub String);
+pub struct Base64String(pub String);
 
-impl From<Transaction> for TransactionBase64 {
+impl From<Transaction> for Base64String {
     fn from(tx: Transaction) -> Self {
         Self(base64::encode(bincode::serialize(&tx).unwrap()))
     }
 }
 
-impl From<TransactionBase64> for Transaction {
-    fn from(tx: TransactionBase64) -> Self {
+impl From<Base64String> for Transaction {
+    fn from(tx: Base64String) -> Self {
         let bytes = base64::decode(tx.0).unwrap();
         bincode::deserialize::<TransactionOriginal>(&bytes)
             .unwrap()
@@ -2261,16 +2244,44 @@ impl From<TransactionBase64> for Transaction {
     }
 }
 
-impl From<VersionedTransaction> for TransactionBase64 {
+impl From<VersionedTransaction> for Base64String {
     fn from(tx: VersionedTransaction) -> Self {
         Self(base64::encode(bincode::serialize(&tx).unwrap()))
     }
 }
 
-impl From<TransactionBase64> for VersionedTransaction {
-    fn from(tx: TransactionBase64) -> Self {
+impl From<Base64String> for VersionedTransaction {
+    fn from(tx: Base64String) -> Self {
         let bytes = base64::decode(tx.0).unwrap();
         bincode::deserialize::<VersionedTransactionOriginal>(&bytes)
+            .unwrap()
+            .into()
+    }
+}
+
+impl From<Vec<u8>> for Base64String {
+    fn from(tx: Vec<u8>) -> Self {
+        Self(base64::encode(tx))
+    }
+}
+
+impl From<Base64String> for Vec<u8> {
+    fn from(tx: Base64String) -> Self {
+        base64::decode(tx.0).unwrap()
+    }
+}
+
+impl From<VersionedMessage> for Base64String {
+    fn from(m: VersionedMessage) -> Self {
+        let orig = VersionedMessageOriginal::from(m);
+        Self(base64::encode(orig.serialize()))
+    }
+}
+
+impl From<Base64String> for VersionedMessage {
+    fn from(m: Base64String) -> Self {
+        let bytes = base64::decode(m.0).unwrap();
+        bincode::deserialize::<VersionedMessageOriginal>(&bytes)
             .unwrap()
             .into()
     }
@@ -2279,8 +2290,8 @@ impl From<TransactionBase64> for VersionedTransaction {
 #[serde_as]
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Default)]
-pub struct SendVersionedTransactionParams(
-    #[serde_as(as = "FromInto<TransactionBase64>")] VersionedTransaction,
+pub struct SendTransactionParams<T: From<Base64String> + Into<Base64String> + Clone>(
+    #[serde_as(as = "FromInto<Base64String>")] T,
     #[serde(default)] Option<RpcSendTransactionConfig>,
 );
 
@@ -2321,7 +2332,7 @@ pub struct SendVersionedTransactionParams(
 pub struct SendVersionedTransaction {
     #[serde(flatten)]
     base: RequestBase,
-    params: SendVersionedTransactionParams,
+    params: SendTransactionParams<VersionedTransaction>,
 }
 
 #[richcmp_eq_only]
@@ -2335,7 +2346,7 @@ impl SendVersionedTransaction {
         config: Option<RpcSendTransactionConfig>,
         id: Option<u64>,
     ) -> Self {
-        let params = SendVersionedTransactionParams(tx, config);
+        let params = SendTransactionParams(tx, config);
         let base = RequestBase::new(id);
         Self { base, params }
     }
@@ -2354,14 +2365,6 @@ impl SendVersionedTransaction {
 }
 
 request_boilerplate!(SendVersionedTransaction);
-
-#[serde_as]
-#[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Default)]
-pub struct SendLegacyTransactionParams(
-    #[serde_as(as = "FromInto<TransactionBase64>")] Transaction,
-    #[serde(default)] Option<RpcSendTransactionConfig>,
-);
 
 /// A ``sendTransaction`` request.
 ///
@@ -2400,7 +2403,7 @@ pub struct SendLegacyTransactionParams(
 pub struct SendLegacyTransaction {
     #[serde(flatten)]
     base: RequestBase,
-    params: SendLegacyTransactionParams,
+    params: SendTransactionParams<Transaction>,
 }
 
 #[richcmp_eq_only]
@@ -2410,7 +2413,7 @@ pub struct SendLegacyTransaction {
 impl SendLegacyTransaction {
     #[new]
     fn new(tx: Transaction, config: Option<RpcSendTransactionConfig>, id: Option<u64>) -> Self {
-        let params = SendLegacyTransactionParams(tx, config);
+        let params = SendTransactionParams(tx, config);
         let base = RequestBase::new(id);
         Self { base, params }
     }
@@ -2475,7 +2478,7 @@ pub struct SendRawTransactionParams(
 pub struct SendRawTransaction {
     #[serde(flatten)]
     base: RequestBase,
-    params: SendRawTransactionParams,
+    params: SendTransactionParams<Vec<u8>>,
 }
 
 #[richcmp_eq_only]
@@ -2485,7 +2488,7 @@ pub struct SendRawTransaction {
 impl SendRawTransaction {
     #[new]
     fn new(tx: Vec<u8>, config: Option<RpcSendTransactionConfig>, id: Option<u64>) -> Self {
-        let params = SendRawTransactionParams(tx, config);
+        let params = SendTransactionParams(tx, config);
         let base = RequestBase::new(id);
         Self { base, params }
     }
@@ -2508,8 +2511,8 @@ request_boilerplate!(SendRawTransaction);
 #[serde_as]
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Default)]
-pub struct SimulateTransactionParams(
-    #[serde_as(as = "FromInto<TransactionBase64>")] Transaction,
+pub struct SimulateTransactionParams<T: From<Base64String> + Into<Base64String> + Clone>(
+    #[serde_as(as = "FromInto<Base64String>")] T,
     #[serde(default)] Option<RpcSimulateTransactionConfig>,
 );
 
@@ -2521,7 +2524,7 @@ pub struct SimulateTransactionParams(
 ///     id (Optional[int]): Request ID.
 ///
 /// Example:
-///      >>> from solders.rpc.requests import SimulateTransaction
+///      >>> from solders.rpc.requests import SimulateLegacyTransaction
 ///      >>> from solders.rpc.config import RpcSimulateTransactionConfig, RpcSimulateTransactionAccountsConfig
 ///      >>> from solders.account_decoder import UiAccountEncoding
 ///      >>> from solders.transaction import Transaction
@@ -2544,22 +2547,22 @@ pub struct SimulateTransactionParams(
 ///      >>> accounts_config = RpcSimulateTransactionAccountsConfig([Pubkey.default()], account_encoding)
 ///      >>> commitment = CommitmentLevel.Confirmed
 ///      >>> config = RpcSimulateTransactionConfig(commitment=commitment, accounts=accounts_config)
-///      >>> SimulateTransaction(tx, config).to_json()
+///      >>> SimulateLegacyTransaction(tx, config).to_json()
 ///      '{"method":"simulateTransaction","jsonrpc":"2.0","id":0,"params":["AaVkKDb3UlpidO/ucBnOcmS+1dY8ZAC4vHxTxiccV8zPBlupuozppRjwrILZJaoKggAcVSD1XlAKstDVEPFOVgwBAAECiojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEAA2FiYw==",{"sigVerify":false,"replaceRecentBlockhash":false,"commitment":"confirmed","encoding":"base64","accounts":{"encoding":"base64+zstd","addresses":["11111111111111111111111111111111"]},"minContextSlot":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
-pub struct SimulateTransaction {
+pub struct SimulateLegacyTransaction {
     #[serde(flatten)]
     base: RequestBase,
-    params: SimulateTransactionParams,
+    params: SimulateTransactionParams<Transaction>,
 }
 
 #[richcmp_eq_only]
 #[common_methods]
 #[rpc_id_getter]
 #[pymethods]
-impl SimulateTransaction {
+impl SimulateLegacyTransaction {
     #[new]
     fn new(tx: Transaction, config: Option<RpcSimulateTransactionConfig>, id: Option<u64>) -> Self {
         let params = SimulateTransactionParams(tx, config);
@@ -2567,7 +2570,7 @@ impl SimulateTransaction {
         Self { base, params }
     }
 
-    /// Transaction: The signed transaction to send.
+    /// Transaction: The transaction to simulate.
     #[getter]
     fn tx(&self) -> Transaction {
         self.params.0.clone()
@@ -2580,7 +2583,76 @@ impl SimulateTransaction {
     }
 }
 
-request_boilerplate!(SimulateTransaction);
+request_boilerplate!(SimulateLegacyTransaction);
+
+/// A ``simulateTransaction`` request.
+///
+/// Args:
+///     tx (Transaction): The (possibly unsigned) transaction to simulate.
+///     config (Optional[RpcSimulateTransactionConfig]): Extra configuration.
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///      >>> from solders.rpc.requests import SimulateVersionedTransaction
+///      >>> from solders.rpc.config import RpcSimulateTransactionConfig, RpcSimulateTransactionAccountsConfig
+///      >>> from solders.account_decoder import UiAccountEncoding
+///      >>> from solders.transaction import VersionedTransaction
+///      >>> from solders.message import Message
+///      >>> from solders.keypair import Keypair
+///      >>> from solders.instruction import Instruction
+///      >>> from solders.hash import Hash
+///      >>> from solders.pubkey import Pubkey
+///      >>> from solders.commitment_config import CommitmentLevel
+///      >>> program_id = Pubkey.default()
+///      >>> arbitrary_instruction_data = b"abc"
+///      >>> accounts = []
+///      >>> instruction = Instruction(program_id, arbitrary_instruction_data, accounts)
+///      >>> seed = bytes([1] * 32)
+///      >>> blockhash = Hash.default()  # replace with a real blockhash
+///      >>> payer = Keypair.from_seed(seed)
+///      >>> message = Message.new_with_blockhash([instruction], payer.pubkey(), blockhash)
+///      >>> tx = VersionedTransaction.populate(message, [])
+///      >>> account_encoding = UiAccountEncoding.Base64Zstd
+///      >>> accounts_config = RpcSimulateTransactionAccountsConfig([Pubkey.default()], account_encoding)
+///      >>> commitment = CommitmentLevel.Confirmed
+///      >>> config = RpcSimulateTransactionConfig(commitment=commitment, accounts=accounts_config)
+///      >>> SimulateVersionedTransaction(tx, config).to_json()
+///      '{"method":"simulateTransaction","jsonrpc":"2.0","id":0,"params":["AAEAAQKKiOPddAnxlf1S2y08ul1yymcJvx2UEhvzdIgBtA9vXAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAQADYWJj",{"sigVerify":false,"replaceRecentBlockhash":false,"commitment":"confirmed","encoding":"base64","accounts":{"encoding":"base64+zstd","addresses":["11111111111111111111111111111111"]},"minContextSlot":null}]}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
+pub struct SimulateVersionedTransaction {
+    #[serde(flatten)]
+    base: RequestBase,
+    params: SimulateTransactionParams<VersionedTransaction>,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl SimulateVersionedTransaction {
+    #[new]
+    fn new(tx: VersionedTransaction, config: Option<RpcSimulateTransactionConfig>, id: Option<u64>) -> Self {
+        let params = SimulateTransactionParams(tx, config);
+        let base = RequestBase::new(id);
+        Self { base, params }
+    }
+
+    /// VersionedTransaction: The transaction to simulate.
+    #[getter]
+    fn tx(&self) -> VersionedTransaction {
+        self.params.0.clone()
+    }
+
+    /// Optional[RpcSimulateTransactionConfig]: Extra configuration.
+    #[getter]
+    fn config(&self) -> Option<RpcSimulateTransactionConfig> {
+        self.params.1.clone()
+    }
+}
+
+request_boilerplate!(SimulateVersionedTransaction);
 
 /// An ``accountSubscribe`` request.
 ///
@@ -2895,6 +2967,10 @@ macro_rules ! pyunion {
             SendVersionedTransaction(SendVersionedTransaction),
             #[serde(rename = "sendTransaction")]
             SendRawTransaction(SendRawTransaction),
+            #[serde(rename = "simulateTransaction")]
+            SimulateLegacyTransaction(SimulateLegacyTransaction),
+            #[serde(rename = "simulateTransaction")]
+            SimulateVersionedTransaction(SimulateVersionedTransaction),
         }
     }
 }
@@ -2965,7 +3041,6 @@ pyunion!(
     LogsUnsubscribe,
     ProgramUnsubscribe,
     SignatureUnsubscribe,
-    SimulateTransaction,
     SlotUnsubscribe,
     SlotsUpdatesUnsubscribe,
     RootUnsubscribe,
@@ -3094,7 +3169,7 @@ pub fn create_requests_mod(py: Python<'_>) -> PyResult<&PyModule> {
             LogsUnsubscribe::type_object(py),
             ProgramUnsubscribe::type_object(py),
             SignatureUnsubscribe::type_object(py),
-            SimulateTransaction::type_object(py),
+            SimulateLegacyTransaction::type_object(py),
             SlotUnsubscribe::type_object(py),
             SlotsUpdatesUnsubscribe::type_object(py),
             RootUnsubscribe::type_object(py),
@@ -3170,7 +3245,8 @@ pub fn create_requests_mod(py: Python<'_>) -> PyResult<&PyModule> {
     requests_mod.add_class::<LogsUnsubscribe>()?;
     requests_mod.add_class::<ProgramUnsubscribe>()?;
     requests_mod.add_class::<SignatureUnsubscribe>()?;
-    requests_mod.add_class::<SimulateTransaction>()?;
+    requests_mod.add_class::<SimulateLegacyTransaction>()?;
+    requests_mod.add_class::<SimulateVersionedTransaction>()?;
     requests_mod.add_class::<SlotUnsubscribe>()?;
     requests_mod.add_class::<SlotsUpdatesUnsubscribe>()?;
     requests_mod.add_class::<RootUnsubscribe>()?;

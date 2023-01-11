@@ -67,7 +67,7 @@ from solders.rpc.requests import (
     LogsUnsubscribe,
     ProgramUnsubscribe,
     SignatureUnsubscribe,
-    SimulateTransaction,
+    SimulateLegacyTransaction,
     SlotUnsubscribe,
     SlotsUpdatesUnsubscribe,
     RootUnsubscribe,
@@ -516,9 +516,9 @@ def test_simulate_transaction() -> None:
     config = RpcSimulateTransactionConfig(
         commitment=commitment, accounts=accounts_config
     )
-    req = SimulateTransaction(tx, config)
+    req = SimulateLegacyTransaction(tx, config)
     as_json = req.to_json()
-    assert SimulateTransaction.from_json(as_json) == req
+    assert SimulateLegacyTransaction.from_json(as_json) == req
 
 
 def test_account_subscribe() -> None:
