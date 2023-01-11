@@ -50,3 +50,6 @@ changelog = "https://github.com/kevinheavey/solders/blob/main/CHANGELOG.md"
 
 [tool.maturin]
 python-source = "python"
+
+[tool.pyright]
+reportMissingModuleSource = false
