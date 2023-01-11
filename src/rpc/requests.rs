@@ -714,29 +714,12 @@ request_boilerplate!(GetEpochInfo);
 
 zero_param_req_def!(GetEpochSchedule);
 
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
-struct MessageBase64(pub String);
-
-impl From<Message> for MessageBase64 {
-    fn from(m: Message) -> Self {
-        Self(base64::encode(m.0.serialize()))
-    }
-}
-
-impl From<MessageBase64> for Message {
-    fn from(m: MessageBase64) -> Self {
-        let bytes = base64::decode(m.0).unwrap();
-        bincode::deserialize::<MessageOriginal>(&bytes)
-            .unwrap()
-            .into()
-    }
-}
 
 #[serde_as]
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetFeeForMessageParams(
-    #[serde_as(as = "FromInto<MessageBase64>")] Message,
+    #[serde_as(as = "FromInto<Base64String>")] Message,
     #[serde_as(as = "Option<FromInto<CommitmentConfig>>")]
     #[serde(default)]
     Option<CommitmentLevel>,
@@ -2244,16 +2227,16 @@ impl RequestAirdrop {
 request_boilerplate!(RequestAirdrop);
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
-pub struct TransactionBase64(pub String);
+pub struct Base64String(pub String);
 
-impl From<Transaction> for TransactionBase64 {
+impl From<Transaction> for Base64String {
     fn from(tx: Transaction) -> Self {
         Self(base64::encode(bincode::serialize(&tx).unwrap()))
     }
 }
 
-impl From<TransactionBase64> for Transaction {
-    fn from(tx: TransactionBase64) -> Self {
+impl From<Base64String> for Transaction {
+    fn from(tx: Base64String) -> Self {
         let bytes = base64::decode(tx.0).unwrap();
         bincode::deserialize::<TransactionOriginal>(&bytes)
             .unwrap()
@@ -2261,14 +2244,14 @@ impl From<TransactionBase64> for Transaction {
     }
 }
 
-impl From<VersionedTransaction> for TransactionBase64 {
+impl From<VersionedTransaction> for Base64String {
     fn from(tx: VersionedTransaction) -> Self {
         Self(base64::encode(bincode::serialize(&tx).unwrap()))
     }
 }
 
-impl From<TransactionBase64> for VersionedTransaction {
-    fn from(tx: TransactionBase64) -> Self {
+impl From<Base64String> for VersionedTransaction {
+    fn from(tx: Base64String) -> Self {
         let bytes = base64::decode(tx.0).unwrap();
         bincode::deserialize::<VersionedTransactionOriginal>(&bytes)
             .unwrap()
@@ -2276,23 +2259,38 @@ impl From<TransactionBase64> for VersionedTransaction {
     }
 }
 
-impl From<Vec<u8>> for TransactionBase64 {
+impl From<Vec<u8>> for Base64String {
     fn from(tx: Vec<u8>) -> Self {
         Self(base64::encode(tx))
     }
 }
 
-impl From<TransactionBase64> for Vec<u8> {
-    fn from(tx: TransactionBase64) -> Self {
+impl From<Base64String> for Vec<u8> {
+    fn from(tx: Base64String) -> Self {
         base64::decode(tx.0).unwrap()
+    }
+}
+
+impl From<Message> for Base64String {
+    fn from(m: Message) -> Self {
+        Self(base64::encode(m.0.serialize()))
+    }
+}
+
+impl From<Base64String> for Message {
+    fn from(m: Base64String) -> Self {
+        let bytes = base64::decode(m.0).unwrap();
+        bincode::deserialize::<MessageOriginal>(&bytes)
+            .unwrap()
+            .into()
     }
 }
 
 #[serde_as]
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Default)]
-pub struct SendTransactionParams<T: From<TransactionBase64> + Into<TransactionBase64> + Clone>(
-    #[serde_as(as = "FromInto<TransactionBase64>")] T,
+pub struct SendTransactionParams<T: From<Base64String> + Into<Base64String> + Clone>(
+    #[serde_as(as = "FromInto<Base64String>")] T,
     #[serde(default)] Option<RpcSendTransactionConfig>,
 );
 
@@ -2512,8 +2510,8 @@ request_boilerplate!(SendRawTransaction);
 #[serde_as]
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Default)]
-pub struct SimulateTransactionParams<T: From<TransactionBase64> + Into<TransactionBase64> + Clone>(
-    #[serde_as(as = "FromInto<TransactionBase64>")] T,
+pub struct SimulateTransactionParams<T: From<Base64String> + Into<Base64String> + Clone>(
+    #[serde_as(as = "FromInto<Base64String>")] T,
     #[serde(default)] Option<RpcSimulateTransactionConfig>,
 );
 
