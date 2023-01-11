@@ -51,7 +51,7 @@ from solders.rpc.requests import (
     IsBlockhashValid,
     MinimumLedgerSlot,
     RequestAirdrop,
-    SendTransaction,
+    SendLegacyTransaction,
     ValidatorExit,
     AccountSubscribe,
     BlockSubscribe,
@@ -493,9 +493,9 @@ def test_send_transaction() -> None:
     tx = Transaction([payer], message, blockhash)
     commitment = CommitmentLevel.Confirmed
     config = RpcSendTransactionConfig(preflight_commitment=commitment)
-    req = SendTransaction(tx, config)
+    req = SendLegacyTransaction(tx, config)
     as_json = req.to_json()
-    assert SendTransaction.from_json(as_json) == req
+    assert SendLegacyTransaction.from_json(as_json) == req
 
 
 def test_simulate_transaction() -> None:
