@@ -2571,7 +2571,7 @@ impl SimulateLegacyTransaction {
         Self { base, params }
     }
 
-    /// Transaction: The signed transaction to send.
+    /// Transaction: The transaction to simulate.
     #[getter]
     fn tx(&self) -> Transaction {
         self.params.0.clone()
@@ -2585,6 +2585,75 @@ impl SimulateLegacyTransaction {
 }
 
 request_boilerplate!(SimulateLegacyTransaction);
+
+/// A ``simulateTransaction`` request.
+///
+/// Args:
+///     tx (Transaction): The (possibly unsigned) transaction to simulate.
+///     config (Optional[RpcSimulateTransactionConfig]): Extra configuration.
+///     id (Optional[int]): Request ID.
+///
+/// Example:
+///      >>> from solders.rpc.requests import SimulateVersionedTransaction
+///      >>> from solders.rpc.config import RpcSimulateTransactionConfig, RpcSimulateTransactionAccountsConfig
+///      >>> from solders.account_decoder import UiAccountEncoding
+///      >>> from solders.transaction import Transaction
+///      >>> from solders.message import Message
+///      >>> from solders.keypair import Keypair
+///      >>> from solders.instruction import Instruction
+///      >>> from solders.hash import Hash
+///      >>> from solders.pubkey import Pubkey
+///      >>> from solders.commitment_config import CommitmentLevel
+///      >>> program_id = Pubkey.default()
+///      >>> arbitrary_instruction_data = b"abc"
+///      >>> accounts = []
+///      >>> instruction = Instruction(program_id, arbitrary_instruction_data, accounts)
+///      >>> seed = bytes([1] * 32)
+///      >>> payer = Keypair.from_seed(seed)
+///      >>> message = Message([instruction], payer.pubkey())
+///      >>> blockhash = Hash.default()  # replace with a real blockhash
+///      >>> tx = Transaction([payer], message, blockhash)
+///      >>> account_encoding = UiAccountEncoding.Base64Zstd
+///      >>> accounts_config = RpcSimulateTransactionAccountsConfig([Pubkey.default()], account_encoding)
+///      >>> commitment = CommitmentLevel.Confirmed
+///      >>> config = RpcSimulateTransactionConfig(commitment=commitment, accounts=accounts_config)
+///      >>> SimulateVersionedTransaction(tx, config).to_json()
+///      '{"method":"simulateTransaction","jsonrpc":"2.0","id":0,"params":["AaVkKDb3UlpidO/ucBnOcmS+1dY8ZAC4vHxTxiccV8zPBlupuozppRjwrILZJaoKggAcVSD1XlAKstDVEPFOVgwBAAECiojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEAA2FiYw==",{"sigVerify":false,"replaceRecentBlockhash":false,"commitment":"confirmed","encoding":"base64","accounts":{"encoding":"base64+zstd","addresses":["11111111111111111111111111111111"]},"minContextSlot":null}]}'
+///
+#[pyclass(module = "solders.rpc.requests")]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
+pub struct SimulateVersionedTransaction {
+    #[serde(flatten)]
+    base: RequestBase,
+    params: SimulateTransactionParams<VersionedTransaction>,
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[rpc_id_getter]
+#[pymethods]
+impl SimulateVersionedTransaction {
+    #[new]
+    fn new(tx: VersionedTransaction, config: Option<RpcSimulateTransactionConfig>, id: Option<u64>) -> Self {
+        let params = SimulateTransactionParams(tx, config);
+        let base = RequestBase::new(id);
+        Self { base, params }
+    }
+
+    /// VersionedTransaction: The transaction to simulate.
+    #[getter]
+    fn tx(&self) -> VersionedTransaction {
+        self.params.0.clone()
+    }
+
+    /// Optional[RpcSimulateTransactionConfig]: Extra configuration.
+    #[getter]
+    fn config(&self) -> Option<RpcSimulateTransactionConfig> {
+        self.params.1.clone()
+    }
+}
+
+request_boilerplate!(SimulateVersionedTransaction);
 
 /// An ``accountSubscribe`` request.
 ///
@@ -2899,6 +2968,10 @@ macro_rules ! pyunion {
             SendVersionedTransaction(SendVersionedTransaction),
             #[serde(rename = "sendTransaction")]
             SendRawTransaction(SendRawTransaction),
+            #[serde(rename = "simulateTransaction")]
+            SimulateLegacyTransaction(SimulateLegacyTransaction),
+            #[serde(rename = "simulateTransaction")]
+            SimulateVersionedTransaction(SimulateVersionedTransaction),
         }
     }
 }
@@ -2969,7 +3042,6 @@ pyunion!(
     LogsUnsubscribe,
     ProgramUnsubscribe,
     SignatureUnsubscribe,
-    SimulateLegacyTransaction,
     SlotUnsubscribe,
     SlotsUpdatesUnsubscribe,
     RootUnsubscribe,
@@ -3175,6 +3247,7 @@ pub fn create_requests_mod(py: Python<'_>) -> PyResult<&PyModule> {
     requests_mod.add_class::<ProgramUnsubscribe>()?;
     requests_mod.add_class::<SignatureUnsubscribe>()?;
     requests_mod.add_class::<SimulateLegacyTransaction>()?;
+    requests_mod.add_class::<SimulateVersionedTransaction>()?;
     requests_mod.add_class::<SlotUnsubscribe>()?;
     requests_mod.add_class::<SlotsUpdatesUnsubscribe>()?;
     requests_mod.add_class::<RootUnsubscribe>()?;
