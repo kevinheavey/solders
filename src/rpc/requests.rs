@@ -2274,7 +2274,7 @@ impl From<Base64String> for Vec<u8> {
 impl From<VersionedMessage> for Base64String {
     fn from(m: VersionedMessage) -> Self {
         let orig = VersionedMessageOriginal::from(m);
-        Self(base64::encode(&orig.serialize()))
+        Self(base64::encode(orig.serialize()))
     }
 }
 
