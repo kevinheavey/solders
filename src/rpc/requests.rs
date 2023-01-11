@@ -2597,7 +2597,7 @@ request_boilerplate!(SimulateLegacyTransaction);
 ///      >>> from solders.rpc.requests import SimulateVersionedTransaction
 ///      >>> from solders.rpc.config import RpcSimulateTransactionConfig, RpcSimulateTransactionAccountsConfig
 ///      >>> from solders.account_decoder import UiAccountEncoding
-///      >>> from solders.transaction import Transaction
+///      >>> from solders.transaction import VersionedTransaction
 ///      >>> from solders.message import Message
 ///      >>> from solders.keypair import Keypair
 ///      >>> from solders.instruction import Instruction
@@ -2609,16 +2609,16 @@ request_boilerplate!(SimulateLegacyTransaction);
 ///      >>> accounts = []
 ///      >>> instruction = Instruction(program_id, arbitrary_instruction_data, accounts)
 ///      >>> seed = bytes([1] * 32)
-///      >>> payer = Keypair.from_seed(seed)
-///      >>> message = Message([instruction], payer.pubkey())
 ///      >>> blockhash = Hash.default()  # replace with a real blockhash
-///      >>> tx = Transaction([payer], message, blockhash)
+///      >>> payer = Keypair.from_seed(seed)
+///      >>> message = Message.new_with_blockhash([instruction], payer.pubkey(), blockhash)
+///      >>> tx = VersionedTransaction.populate(message, [])
 ///      >>> account_encoding = UiAccountEncoding.Base64Zstd
 ///      >>> accounts_config = RpcSimulateTransactionAccountsConfig([Pubkey.default()], account_encoding)
 ///      >>> commitment = CommitmentLevel.Confirmed
 ///      >>> config = RpcSimulateTransactionConfig(commitment=commitment, accounts=accounts_config)
 ///      >>> SimulateVersionedTransaction(tx, config).to_json()
-///      '{"method":"simulateTransaction","jsonrpc":"2.0","id":0,"params":["AaVkKDb3UlpidO/ucBnOcmS+1dY8ZAC4vHxTxiccV8zPBlupuozppRjwrILZJaoKggAcVSD1XlAKstDVEPFOVgwBAAECiojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEAA2FiYw==",{"sigVerify":false,"replaceRecentBlockhash":false,"commitment":"confirmed","encoding":"base64","accounts":{"encoding":"base64+zstd","addresses":["11111111111111111111111111111111"]},"minContextSlot":null}]}'
+///      '{"method":"simulateTransaction","jsonrpc":"2.0","id":0,"params":["AAEAAQKKiOPddAnxlf1S2y08ul1yymcJvx2UEhvzdIgBtA9vXAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAQADYWJj",{"sigVerify":false,"replaceRecentBlockhash":false,"commitment":"confirmed","encoding":"base64","accounts":{"encoding":"base64+zstd","addresses":["11111111111111111111111111111111"]},"minContextSlot":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
