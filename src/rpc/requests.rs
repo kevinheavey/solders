@@ -2361,7 +2361,7 @@ pub struct SendLegacyTransactionParams(
 ///
 /// Example:
 ///      >>> from typing import List
-///      >>> from solders.rpc.requests import SendTransaction
+///      >>> from solders.rpc.requests import SendLegacyTransaction
 ///      >>> from solders.rpc.config import RpcSendTransactionConfig
 ///      >>> from solders.transaction import Transaction
 ///      >>> from solders.message import Message
@@ -2381,7 +2381,7 @@ pub struct SendLegacyTransactionParams(
 ///      >>> tx = Transaction([payer], message, blockhash)
 ///      >>> commitment = CommitmentLevel.Confirmed
 ///      >>> config = RpcSendTransactionConfig(preflight_commitment=commitment)
-///      >>> SendTransaction(tx, config).to_json()
+///      >>> SendLegacyTransaction(tx, config).to_json()
 ///      '{"method":"sendTransaction","jsonrpc":"2.0","id":0,"params":["AaVkKDb3UlpidO/ucBnOcmS+1dY8ZAC4vHxTxiccV8zPBlupuozppRjwrILZJaoKggAcVSD1XlAKstDVEPFOVgwBAAECiojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEAA2FiYw==",{"skipPreflight":false,"preflightCommitment":"confirmed","encoding":"base64","maxRetries":null,"minContextSlot":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
@@ -2879,11 +2879,11 @@ macro_rules ! pyunion {
         pub enum $name {
             $($variant($variant),)+
             #[serde(rename = "sendTransaction")]
-            SendRawTransaction(SendRawTransaction),
-            #[serde(rename = "sendTransaction")]
             SendLegacyTransaction(SendLegacyTransaction),
             #[serde(rename = "sendTransaction")]
-            SendVersionedTransaction(SendVersionedTransaction)
+            SendVersionedTransaction(SendVersionedTransaction),
+            #[serde(rename = "sendTransaction")]
+            SendRawTransaction(SendRawTransaction),
         }
     }
 }
