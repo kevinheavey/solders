@@ -2244,7 +2244,7 @@ impl RequestAirdrop {
 request_boilerplate!(RequestAirdrop);
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
-struct TransactionBase64(pub String);
+pub struct TransactionBase64(pub String);
 
 impl From<Transaction> for TransactionBase64 {
     fn from(tx: Transaction) -> Self {
@@ -2276,11 +2276,23 @@ impl From<TransactionBase64> for VersionedTransaction {
     }
 }
 
+impl From<Vec<u8>> for TransactionBase64 {
+    fn from(tx: Vec<u8>) -> Self {
+        Self(base64::encode(tx))
+    }
+}
+
+impl From<TransactionBase64> for Vec<u8> {
+    fn from(tx: TransactionBase64) -> Self {
+        base64::decode(tx.0).unwrap()
+    }
+}
+
 #[serde_as]
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Default)]
-pub struct SendVersionedTransactionParams(
-    #[serde_as(as = "FromInto<TransactionBase64>")] VersionedTransaction,
+pub struct SendTransactionParams<T: From<TransactionBase64> + Into<TransactionBase64> + Clone>(
+    #[serde_as(as = "FromInto<TransactionBase64>")] T,
     #[serde(default)] Option<RpcSendTransactionConfig>,
 );
 
@@ -2321,7 +2333,7 @@ pub struct SendVersionedTransactionParams(
 pub struct SendVersionedTransaction {
     #[serde(flatten)]
     base: RequestBase,
-    params: SendVersionedTransactionParams,
+    params: SendTransactionParams<VersionedTransaction>,
 }
 
 #[richcmp_eq_only]
@@ -2335,7 +2347,7 @@ impl SendVersionedTransaction {
         config: Option<RpcSendTransactionConfig>,
         id: Option<u64>,
     ) -> Self {
-        let params = SendVersionedTransactionParams(tx, config);
+        let params = SendTransactionParams(tx, config);
         let base = RequestBase::new(id);
         Self { base, params }
     }
@@ -2354,14 +2366,6 @@ impl SendVersionedTransaction {
 }
 
 request_boilerplate!(SendVersionedTransaction);
-
-#[serde_as]
-#[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Default)]
-pub struct SendLegacyTransactionParams(
-    #[serde_as(as = "FromInto<TransactionBase64>")] Transaction,
-    #[serde(default)] Option<RpcSendTransactionConfig>,
-);
 
 /// A ``sendTransaction`` request.
 ///
@@ -2400,7 +2404,7 @@ pub struct SendLegacyTransactionParams(
 pub struct SendLegacyTransaction {
     #[serde(flatten)]
     base: RequestBase,
-    params: SendLegacyTransactionParams,
+    params: SendTransactionParams<Transaction>,
 }
 
 #[richcmp_eq_only]
@@ -2410,7 +2414,7 @@ pub struct SendLegacyTransaction {
 impl SendLegacyTransaction {
     #[new]
     fn new(tx: Transaction, config: Option<RpcSendTransactionConfig>, id: Option<u64>) -> Self {
-        let params = SendLegacyTransactionParams(tx, config);
+        let params = SendTransactionParams(tx, config);
         let base = RequestBase::new(id);
         Self { base, params }
     }
@@ -2475,7 +2479,7 @@ pub struct SendRawTransactionParams(
 pub struct SendRawTransaction {
     #[serde(flatten)]
     base: RequestBase,
-    params: SendRawTransactionParams,
+    params: SendTransactionParams<Vec<u8>>,
 }
 
 #[richcmp_eq_only]
@@ -2485,7 +2489,7 @@ pub struct SendRawTransaction {
 impl SendRawTransaction {
     #[new]
     fn new(tx: Vec<u8>, config: Option<RpcSendTransactionConfig>, id: Option<u64>) -> Self {
-        let params = SendRawTransactionParams(tx, config);
+        let params = SendTransactionParams(tx, config);
         let base = RequestBase::new(id);
         Self { base, params }
     }
@@ -2508,8 +2512,8 @@ request_boilerplate!(SendRawTransaction);
 #[serde_as]
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Default)]
-pub struct SimulateTransactionParams(
-    #[serde_as(as = "FromInto<TransactionBase64>")] Transaction,
+pub struct SimulateTransactionParams<T: From<TransactionBase64> + Into<TransactionBase64> + Clone>(
+    #[serde_as(as = "FromInto<TransactionBase64>")] T,
     #[serde(default)] Option<RpcSimulateTransactionConfig>,
 );
 
@@ -2521,7 +2525,7 @@ pub struct SimulateTransactionParams(
 ///     id (Optional[int]): Request ID.
 ///
 /// Example:
-///      >>> from solders.rpc.requests import SimulateTransaction
+///      >>> from solders.rpc.requests import SimulateLegacyTransaction
 ///      >>> from solders.rpc.config import RpcSimulateTransactionConfig, RpcSimulateTransactionAccountsConfig
 ///      >>> from solders.account_decoder import UiAccountEncoding
 ///      >>> from solders.transaction import Transaction
@@ -2544,22 +2548,22 @@ pub struct SimulateTransactionParams(
 ///      >>> accounts_config = RpcSimulateTransactionAccountsConfig([Pubkey.default()], account_encoding)
 ///      >>> commitment = CommitmentLevel.Confirmed
 ///      >>> config = RpcSimulateTransactionConfig(commitment=commitment, accounts=accounts_config)
-///      >>> SimulateTransaction(tx, config).to_json()
+///      >>> SimulateLegacyTransaction(tx, config).to_json()
 ///      '{"method":"simulateTransaction","jsonrpc":"2.0","id":0,"params":["AaVkKDb3UlpidO/ucBnOcmS+1dY8ZAC4vHxTxiccV8zPBlupuozppRjwrILZJaoKggAcVSD1XlAKstDVEPFOVgwBAAECiojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEAA2FiYw==",{"sigVerify":false,"replaceRecentBlockhash":false,"commitment":"confirmed","encoding":"base64","accounts":{"encoding":"base64+zstd","addresses":["11111111111111111111111111111111"]},"minContextSlot":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
-pub struct SimulateTransaction {
+pub struct SimulateLegacyTransaction {
     #[serde(flatten)]
     base: RequestBase,
-    params: SimulateTransactionParams,
+    params: SimulateTransactionParams<Transaction>,
 }
 
 #[richcmp_eq_only]
 #[common_methods]
 #[rpc_id_getter]
 #[pymethods]
-impl SimulateTransaction {
+impl SimulateLegacyTransaction {
     #[new]
     fn new(tx: Transaction, config: Option<RpcSimulateTransactionConfig>, id: Option<u64>) -> Self {
         let params = SimulateTransactionParams(tx, config);
@@ -2580,7 +2584,7 @@ impl SimulateTransaction {
     }
 }
 
-request_boilerplate!(SimulateTransaction);
+request_boilerplate!(SimulateLegacyTransaction);
 
 /// An ``accountSubscribe`` request.
 ///
@@ -2965,7 +2969,7 @@ pyunion!(
     LogsUnsubscribe,
     ProgramUnsubscribe,
     SignatureUnsubscribe,
-    SimulateTransaction,
+    SimulateLegacyTransaction,
     SlotUnsubscribe,
     SlotsUpdatesUnsubscribe,
     RootUnsubscribe,
@@ -3094,7 +3098,7 @@ pub fn create_requests_mod(py: Python<'_>) -> PyResult<&PyModule> {
             LogsUnsubscribe::type_object(py),
             ProgramUnsubscribe::type_object(py),
             SignatureUnsubscribe::type_object(py),
-            SimulateTransaction::type_object(py),
+            SimulateLegacyTransaction::type_object(py),
             SlotUnsubscribe::type_object(py),
             SlotsUpdatesUnsubscribe::type_object(py),
             RootUnsubscribe::type_object(py),
@@ -3170,7 +3174,7 @@ pub fn create_requests_mod(py: Python<'_>) -> PyResult<&PyModule> {
     requests_mod.add_class::<LogsUnsubscribe>()?;
     requests_mod.add_class::<ProgramUnsubscribe>()?;
     requests_mod.add_class::<SignatureUnsubscribe>()?;
-    requests_mod.add_class::<SimulateTransaction>()?;
+    requests_mod.add_class::<SimulateLegacyTransaction>()?;
     requests_mod.add_class::<SlotUnsubscribe>()?;
     requests_mod.add_class::<SlotsUpdatesUnsubscribe>()?;
     requests_mod.add_class::<RootUnsubscribe>()?;
