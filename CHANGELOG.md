@@ -3,6 +3,7 @@
 ## [0.13.0] - 2023-01-11
 
 ### Changed
+
 Rename `SendTransaction` to `SendLegacyTransaction` [(#36)](https://github.com/kevinheavey/solders/pull/36
 
 ### Added
