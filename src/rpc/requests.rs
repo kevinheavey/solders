@@ -1,7 +1,11 @@
 #![allow(deprecated)]
 use crate::commitment_config::{CommitmentConfig, CommitmentLevel};
 use pyo3::{exceptions::PyValueError, prelude::*, types::PyTuple, PyTypeInfo};
-use solders_primitives::{message::Message, pubkey::Pubkey, transaction::{Transaction, VersionedTransaction}};
+use solders_primitives::{
+    message::Message,
+    pubkey::Pubkey,
+    transaction::{Transaction, VersionedTransaction},
+};
 use solders_traits::{
     py_from_bytes_general_via_cbor, pybytes_general_via_cbor, to_py_err, RichcmpEqualityOnly,
 };
@@ -11,9 +15,12 @@ use crate::rpc::tmp_config::{
 };
 use camelpaste::paste;
 use serde::{Deserialize, Serialize};
-use serde_with::{serde_as, skip_serializing_none, DisplayFromStr, FromInto, base64::Base64};
+use serde_with::{base64::Base64, serde_as, skip_serializing_none, DisplayFromStr, FromInto};
 use solana_sdk::{
-    message::Message as MessageOriginal, transaction::{Transaction as TransactionOriginal, VersionedTransaction as VersionedTransactionOriginal},
+    message::Message as MessageOriginal,
+    transaction::{
+        Transaction as TransactionOriginal, VersionedTransaction as VersionedTransactionOriginal,
+    },
 };
 use solders_macros::{common_methods, richcmp_eq_only, rpc_id_getter, EnumIntoPy};
 
@@ -2323,7 +2330,11 @@ pub struct SendVersionedTransaction {
 #[pymethods]
 impl SendVersionedTransaction {
     #[new]
-    fn new(tx: VersionedTransaction, config: Option<RpcSendTransactionConfig>, id: Option<u64>) -> Self {
+    fn new(
+        tx: VersionedTransaction,
+        config: Option<RpcSendTransactionConfig>,
+        id: Option<u64>,
+    ) -> Self {
         let params = SendVersionedTransactionParams(tx, config);
         let base = RequestBase::new(id);
         Self { base, params }
