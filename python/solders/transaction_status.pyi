@@ -1,4 +1,4 @@
-from typing import Sequence, Optional, List, Union, Tuple, Dict
+from typing import Sequence, Optional, List, Union, Dict
 from jsonalias import Json
 from solders.hash import Hash
 from solders.pubkey import Pubkey

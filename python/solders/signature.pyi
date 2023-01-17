@@ -1,4 +1,4 @@
-from typing import ClassVar, Sequence, Union, List
+from typing import ClassVar, List
 from solders.pubkey import Pubkey
 
 class Signature:

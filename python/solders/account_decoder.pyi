@@ -1,4 +1,4 @@
-from typing import Optional, Dict, List
+from typing import Optional, Dict
 from jsonalias import Json
 
 class UiDataSliceConfig:

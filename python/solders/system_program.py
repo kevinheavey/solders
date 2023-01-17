@@ -127,7 +127,7 @@ def create_account_with_seed(params: CreateAccountWithSeedParams) -> Instruction
 def decode_create_account_with_seed(
     instruction: Instruction,
 ) -> CreateAccountWithSeedParams:
-    """Decode a create account with seed instruction and retrieve the instruction params.
+    """Decode create account with seed instruction and retrieve the instruction params.
 
     Args:
         instruction (Instruction): The CreateAccountWithSeed instruction.
@@ -413,7 +413,7 @@ def initialize_nonce_account(params: InitializeNonceAccountParams) -> Instructio
 def decode_initialize_nonce_account(
     instruction: Instruction,
 ) -> InitializeNonceAccountParams:
-    """Decode an initialize nonce account instruction and retrieve the instruction params.
+    """Decode initialize nonce account instruction and retrieve the instruction params.
 
     Args:
         instruction (Instruction): The InitializeNonceAccount instruction.
@@ -524,7 +524,7 @@ def authorize_nonce_account(params: AuthorizeNonceAccountParams) -> Instruction:
 def decode_authorize_nonce_account(
     instruction: Instruction,
 ) -> AuthorizeNonceAccountParams:
-    """Decode an authorize nonce account instruction and retrieve the instruction params.
+    """Decode authorize nonce account instruction and retrieve the instruction params.
 
     Args:
         instruction (Instruction): The AuthorizeNonceAccount instruction.

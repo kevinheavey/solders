@@ -1,4 +1,4 @@
-from typing import ClassVar, Tuple, Sequence, List, Final, Dict, Any
+from typing import Tuple, Sequence, List, Final, Dict, Any
 from solders.pubkey import Pubkey
 from solders.instruction import Instruction
 

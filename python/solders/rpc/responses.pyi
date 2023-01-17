@@ -8,7 +8,6 @@ from solders.signature import Signature
 from solders.pubkey import Pubkey
 from solders.epoch_schedule import EpochSchedule
 from solders.rpc.errors import (
-    RpcCustomError,
     UnsupportedTransactionVersion,
     RpcCustomErrorFieldless,
     BlockCleanedUpMessage,
@@ -29,7 +28,6 @@ from solders.rpc.errors import (
     InvalidParamsMessage,
     InternalErrorMessage,
 )
-from solders.transaction import VersionedTransaction
 from solders.transaction_status import (
     TransactionErrorType,
     TransactionReturnData,
