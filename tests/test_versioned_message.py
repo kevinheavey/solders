@@ -1,10 +1,10 @@
 from pytest import fixture, raises
 from solders.address_lookup_table_account import AddressLookupTableAccount
-from solders.message import MessageHeader, MessageV0, MessageAddressTableLookup
-from solders.pubkey import Pubkey
 from solders.hash import Hash
+from solders.instruction import AccountMeta, CompiledInstruction, Instruction
+from solders.message import MessageAddressTableLookup, MessageHeader, MessageV0
+from solders.pubkey import Pubkey
 from solders.transaction import SanitizeError
-from solders.instruction import CompiledInstruction, Instruction, AccountMeta
 
 
 @fixture

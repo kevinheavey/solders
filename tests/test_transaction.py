@@ -1,19 +1,21 @@
 import pickle
-from typing import Tuple, Optional, List, Union
 from base64 import b64decode, b64encode
+from typing import List, Optional, Tuple, Union
+
 from based58 import b58encode
 from pytest import raises
-from solders.transaction import Transaction, SanitizeError, TransactionError
-from solders.pubkey import Pubkey
-from solders.keypair import Keypair
-from solders.instruction import CompiledInstruction, Instruction, AccountMeta
-from solders.hash import Hash
-from solders.message import Message
 from solders import system_program
+from solders.errors import SignerError
+from solders.hash import Hash
+from solders.instruction import AccountMeta, CompiledInstruction, Instruction
+from solders.keypair import Keypair
+from solders.message import Message
+from solders.presigner import Presigner
+from solders.pubkey import Pubkey
 from solders.signature import Signature
 from solders.sysvar import RECENT_BLOCKHASHES
-from solders.presigner import Presigner
-from solders.errors import SignerError
+from solders.transaction import SanitizeError, Transaction, TransactionError
+
 from .utils import ZERO_BYTES
 
 BLOCKHASH = Hash.from_string("EETubP5AKHgjPAhzPAFcb8BAY1hMH639CWCFTqi3hq1k")
@@ -1103,7 +1105,6 @@ def test_serialize_unsigned_transaction() -> None:
 
 def test_sort_account_metas() -> None:
     """Test AccountMeta sorting."""
-
     # S6EA7XsNyxg4yx4DJRMm7fP21jgZb1fuzBAUGhgVtkP
     signer_one = Keypair.from_seed(
         bytes(
