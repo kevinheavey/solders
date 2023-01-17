@@ -22,6 +22,7 @@ sphinx-rtd-theme = "^1.0.0"
 solana = "0.23.3"
 bumpversion = "^0.6.0"
 "jsonalias" = "0.1.1"
+ruff = "^0.0.224"
 
 [build-system]
 requires = ["maturin>=0.13.2,<0.14"]
