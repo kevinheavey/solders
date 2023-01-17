@@ -1,6 +1,7 @@
-from typing import Tuple, Sequence, List, Final, Dict, Any
-from solders.pubkey import Pubkey
+from typing import Any, Dict, Final, List, Sequence, Tuple
+
 from solders.instruction import Instruction
+from solders.pubkey import Pubkey
 
 ID: Final[Pubkey]
 

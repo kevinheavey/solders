@@ -1,5 +1,5 @@
-from solders.pubkey import Pubkey
 from solders.account_decoder import ParsedAccount
+from solders.pubkey import Pubkey
 
 class Account:
     def __init__(

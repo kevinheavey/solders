@@ -1,37 +1,40 @@
+# noqa: D100
 from typing import cast
+
 from typing_extensions import Final, TypedDict
-from solders.pubkey import Pubkey
-from solders.instruction import Instruction
+
+from solders._system_program import ID as _ID
+from solders._system_program import advance_nonce_account as _advance_nonce_account
+from solders._system_program import allocate as _allocate
+from solders._system_program import allocate_with_seed as _allocate_with_seed
+from solders._system_program import assign as _assign
+from solders._system_program import assign_with_seed as _assign_with_seed
+from solders._system_program import authorize_nonce_account as _authorize_nonce_account
+from solders._system_program import create_account as _create_account
+from solders._system_program import create_account_with_seed as _create_account_with_seed
 from solders._system_program import (
-    create_account as _create_account,
-    decode_create_account as _decode_create_account,
-    create_account_with_seed as _create_account_with_seed,
-    decode_create_account_with_seed as _decode_create_account_with_seed,
-    assign as _assign,
-    decode_assign as _decode_assign,
-    assign_with_seed as _assign_with_seed,
-    decode_assign_with_seed as _decode_assign_with_seed,
-    transfer as _transfer,
-    decode_transfer as _decode_transfer,
-    transfer_with_seed as _transfer_with_seed,
-    decode_transfer_with_seed as _decode_transfer_with_seed,
-    allocate as _allocate,
-    decode_allocate as _decode_allocate,
-    allocate_with_seed as _allocate_with_seed,
-    decode_allocate_with_seed as _decode_allocate_with_seed,
-    transfer_many,
     create_nonce_account,
     create_nonce_account_with_seed,
-    initialize_nonce_account as _initialize_nonce_account,
-    decode_initialize_nonce_account as _decode_initialize_nonce_account,
-    advance_nonce_account as _advance_nonce_account,
-    decode_advance_nonce_account as _decode_advance_nonce_account,
-    withdraw_nonce_account as _withdraw_nonce_account,
-    decode_withdraw_nonce_account as _decode_withdraw_nonce_account,
-    authorize_nonce_account as _authorize_nonce_account,
-    decode_authorize_nonce_account as _decode_authorize_nonce_account,
-    ID as _ID,
+    transfer_many,
 )
+from solders._system_program import decode_advance_nonce_account as _decode_advance_nonce_account
+from solders._system_program import decode_allocate as _decode_allocate
+from solders._system_program import decode_allocate_with_seed as _decode_allocate_with_seed
+from solders._system_program import decode_assign as _decode_assign
+from solders._system_program import decode_assign_with_seed as _decode_assign_with_seed
+from solders._system_program import decode_authorize_nonce_account as _decode_authorize_nonce_account
+from solders._system_program import decode_create_account as _decode_create_account
+from solders._system_program import decode_create_account_with_seed as _decode_create_account_with_seed
+from solders._system_program import decode_initialize_nonce_account as _decode_initialize_nonce_account
+from solders._system_program import decode_transfer as _decode_transfer
+from solders._system_program import decode_transfer_with_seed as _decode_transfer_with_seed
+from solders._system_program import decode_withdraw_nonce_account as _decode_withdraw_nonce_account
+from solders._system_program import initialize_nonce_account as _initialize_nonce_account
+from solders._system_program import transfer as _transfer
+from solders._system_program import transfer_with_seed as _transfer_with_seed
+from solders._system_program import withdraw_nonce_account as _withdraw_nonce_account
+from solders.instruction import Instruction
+from solders.pubkey import Pubkey
 
 ID: Final[Pubkey] = _ID
 """Pubkey that identifies the System program."""
@@ -112,8 +115,7 @@ class CreateAccountWithSeedParams(TypedDict):
 
 
 def create_account_with_seed(params: CreateAccountWithSeedParams) -> Instruction:
-    """Generate an instruction that creates a new account at an address
-    generated with ``from``, a seed, and program_id.
+    """Generate an instruction that creates a new account at an address generated with ``from``, a seed, and program_id.
 
     Args:
         params (CreateAccountWithSeedParams): The CreateAccountWithSeed params.

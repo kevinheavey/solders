@@ -1,4 +1,5 @@
 from typing import ClassVar, List
+
 from solders.pubkey import Pubkey
 
 class Signature:

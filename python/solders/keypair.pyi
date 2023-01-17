@@ -1,6 +1,7 @@
-from typing import List, Sequence, Union, ClassVar
-from solders.pubkey import Pubkey
+from typing import ClassVar, List, Sequence, Union
+
 from solders.presigner import Presigner
+from solders.pubkey import Pubkey
 from solders.signature import Signature
 
 class Keypair:

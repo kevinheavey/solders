@@ -1,4 +1,5 @@
-from typing import Sequence, Union, List
+from typing import List, Sequence, Union
+
 from solders.pubkey import Pubkey
 
 class AccountMeta:

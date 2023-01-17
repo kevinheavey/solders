@@ -1,4 +1,4 @@
-from typing import ClassVar, Sequence, Union, Tuple
+from typing import ClassVar, Sequence, Tuple, Union
 
 class Pubkey:
     LENGTH: ClassVar[int]
