@@ -1,5 +1,5 @@
-from solders.solders import __version__ as _version_untyped
-from solders.solders import (  # type: ignore
+from solders.solders import __version__ as _version_untyped  # type: ignore
+from solders.solders import (
     account_decoder,
     address_lookup_table_account,
     commitment_config,

@@ -11,7 +11,6 @@ python = "^3.7"
 [tool.poetry.dev-dependencies]
 maturin = "0.13.2"
 black = "^22.3"
-wemake-python-styleguide = "^0.16.0"
 mypy = "^0.982"
 pytest = "^6.2.5"
 pytest-benchmark = "^3.4.1"
@@ -58,7 +57,6 @@ reportMissingModuleSource = false
 [tool.ruff]
 line-length = 120
 
-# Enable Pyflakes `E` and `F` codes by default.
 select = ["A", "B", "D", "E", "F", "I", "ARG", "BLE", "C4", "SIM", "PLC", "PLE", "PLR", "PLW", "RUF"]
 ignore = ["D203"]
 
