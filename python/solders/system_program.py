@@ -11,43 +11,25 @@ from solders._system_program import assign as _assign
 from solders._system_program import assign_with_seed as _assign_with_seed
 from solders._system_program import authorize_nonce_account as _authorize_nonce_account
 from solders._system_program import create_account as _create_account
-from solders._system_program import (
-    create_account_with_seed as _create_account_with_seed,
-)
+from solders._system_program import create_account_with_seed as _create_account_with_seed
 from solders._system_program import (
     create_nonce_account,
     create_nonce_account_with_seed,
     transfer_many,
 )
-from solders._system_program import (
-    decode_advance_nonce_account as _decode_advance_nonce_account,
-)
+from solders._system_program import decode_advance_nonce_account as _decode_advance_nonce_account
 from solders._system_program import decode_allocate as _decode_allocate
-from solders._system_program import (
-    decode_allocate_with_seed as _decode_allocate_with_seed,
-)
+from solders._system_program import decode_allocate_with_seed as _decode_allocate_with_seed
 from solders._system_program import decode_assign as _decode_assign
 from solders._system_program import decode_assign_with_seed as _decode_assign_with_seed
-from solders._system_program import (
-    decode_authorize_nonce_account as _decode_authorize_nonce_account,
-)
+from solders._system_program import decode_authorize_nonce_account as _decode_authorize_nonce_account
 from solders._system_program import decode_create_account as _decode_create_account
-from solders._system_program import (
-    decode_create_account_with_seed as _decode_create_account_with_seed,
-)
-from solders._system_program import (
-    decode_initialize_nonce_account as _decode_initialize_nonce_account,
-)
+from solders._system_program import decode_create_account_with_seed as _decode_create_account_with_seed
+from solders._system_program import decode_initialize_nonce_account as _decode_initialize_nonce_account
 from solders._system_program import decode_transfer as _decode_transfer
-from solders._system_program import (
-    decode_transfer_with_seed as _decode_transfer_with_seed,
-)
-from solders._system_program import (
-    decode_withdraw_nonce_account as _decode_withdraw_nonce_account,
-)
-from solders._system_program import (
-    initialize_nonce_account as _initialize_nonce_account,
-)
+from solders._system_program import decode_transfer_with_seed as _decode_transfer_with_seed
+from solders._system_program import decode_withdraw_nonce_account as _decode_withdraw_nonce_account
+from solders._system_program import initialize_nonce_account as _initialize_nonce_account
 from solders._system_program import transfer as _transfer
 from solders._system_program import transfer_with_seed as _transfer_with_seed
 from solders._system_program import withdraw_nonce_account as _withdraw_nonce_account
