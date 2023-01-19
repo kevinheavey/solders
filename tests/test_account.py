@@ -1,7 +1,8 @@
-from pytest import fixture
 import pickle
-from solders.pubkey import Pubkey
+
+from pytest import fixture
 from solders.account import Account
+from solders.pubkey import Pubkey
 
 
 @fixture

@@ -2,7 +2,7 @@
 use crate::commitment_config::{CommitmentConfig, CommitmentLevel};
 use pyo3::{exceptions::PyValueError, prelude::*, types::PyTuple, PyTypeInfo};
 use solders_primitives::{
-    message::{VersionedMessage},
+    message::VersionedMessage,
     pubkey::Pubkey,
     transaction::{Transaction, VersionedTransaction},
 };
@@ -17,7 +17,7 @@ use camelpaste::paste;
 use serde::{Deserialize, Serialize};
 use serde_with::{base64::Base64, serde_as, skip_serializing_none, DisplayFromStr, FromInto};
 use solana_sdk::{
-    message::{VersionedMessage as VersionedMessageOriginal},
+    message::VersionedMessage as VersionedMessageOriginal,
     transaction::{
         Transaction as TransactionOriginal, VersionedTransaction as VersionedTransactionOriginal,
     },
@@ -714,7 +714,6 @@ request_boilerplate!(GetEpochInfo);
 
 zero_param_req_def!(GetEpochSchedule);
 
-
 #[serde_as]
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
@@ -753,7 +752,11 @@ pub struct GetFeeForMessage {
 #[pymethods]
 impl GetFeeForMessage {
     #[new]
-    fn new(message: VersionedMessage, commitment: Option<CommitmentLevel>, id: Option<u64>) -> Self {
+    fn new(
+        message: VersionedMessage,
+        commitment: Option<CommitmentLevel>,
+        id: Option<u64>,
+    ) -> Self {
         let params = GetFeeForMessageParams(message, commitment);
         let base = RequestBase::new(id);
         Self { base, params }
@@ -2633,7 +2636,11 @@ pub struct SimulateVersionedTransaction {
 #[pymethods]
 impl SimulateVersionedTransaction {
     #[new]
-    fn new(tx: VersionedTransaction, config: Option<RpcSimulateTransactionConfig>, id: Option<u64>) -> Self {
+    fn new(
+        tx: VersionedTransaction,
+        config: Option<RpcSimulateTransactionConfig>,
+        id: Option<u64>,
+    ) -> Self {
         let params = SimulateTransactionParams(tx, config);
         let base = RequestBase::new(id);
         Self { base, params }

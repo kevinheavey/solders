@@ -1,7 +1,7 @@
 import pickle
-from pytest import raises, mark
-from based58 import b58encode
 
+from based58 import b58encode
+from pytest import mark, raises
 from solders.hash import Hash, ParseHashError
 
 HASHED = Hash.hash(bytes([1]))
