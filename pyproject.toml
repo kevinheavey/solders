@@ -8,18 +8,18 @@ license = "Apache"
 [tool.poetry.dependencies]
 python = "^3.7"
 
-[tool.poetry.dev-dependencies]
-maturin = "0.13.2"
-black = "^22.3"
-mypy = "^0.991"
-pytest = "^7.2.1"
-pybip39 = "^0.1.0"
-based58 = "^0.1.1"
-Sphinx = "^4.3.2"
-sphinx-rtd-theme = "^1.0.0"
-bumpversion = "^0.6.0"
+[tool.poetry.group.dev.dependencies]
+sphinx = "4.5.0"
+sphinx-rtd-theme = "1.0.0"
+maturin = "0.14.10"
+pybip39 = "0.1.0"
+based58 = "0.1.1"
+bumpversion = "0.6.0"
 "jsonalias" = "0.1.1"
-ruff = "^0.0.224"
+ruff = "0.0.226"
+black = "22.12.0"
+mypy = "0.991"
+pytest = "7.2.1"
 
 [build-system]
 requires = ["maturin>=0.13.2,<0.14"]
@@ -93,4 +93,4 @@ target-version = "py39"
 "python/solders/__init__.py" = ["D104"]
 
 [tool.ruff.pydocstyle]
-convention = "google" 
+convention = "google"
