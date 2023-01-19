@@ -91,6 +91,7 @@ target-version = "py39"
 "tests/**/*.py" = ["D100", "D103", "D104", "E501", "ARG001", "PLR2004"]
 "python/solders/*.pyi" = ["D", "ARG", "A"]
 "python/solders/__init__.py" = ["D104"]
+"python/solders/system_program.py" = ["D100", "I001"]
 
 [tool.ruff.pydocstyle]
 convention = "google"
