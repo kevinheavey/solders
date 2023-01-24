@@ -218,6 +218,9 @@ impl Message {
             .collect()
     }
 
+    #[pyo3(
+        signature = (instructions, payer, blockhash)
+    )]
     #[staticmethod]
     /// Create a new message while setting the blockhash.
     ///
@@ -261,6 +264,9 @@ impl Message {
         .into()
     }
 
+    #[pyo3(
+        signature = (instructions, payer, nonce_account_pubkey, nonce_authority_pubkey)
+    )]
     #[staticmethod]
     /// Create a new message for a `nonced transaction <https://docs.solana.com/implemented-proposals/durable-tx-nonces>`_.
     ///

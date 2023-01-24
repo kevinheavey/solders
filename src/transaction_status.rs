@@ -785,6 +785,9 @@ transaction_status_boilerplate!(UiTransactionStatusMeta);
 #[common_methods]
 #[pymethods]
 impl UiTransactionStatusMeta {
+    #[pyo3(
+        signature = (err, fee, pre_balances, post_balances, inner_instructions=None, log_messages=None, pre_token_balances=None, post_token_balances=None, rewards=None, loaded_addresses=None, return_data=None)
+    )]
     #[new]
     pub fn new(
         err: Option<TransactionErrorType>,

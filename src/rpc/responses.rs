@@ -813,6 +813,9 @@ macro_rules! contextful_resp_boilerplate {
         #[common_methods_rpc_resp]
         #[pymethods]
         impl $name {
+            #[pyo3(
+                signature = (value, context)
+            )]
             #[new]
             pub fn new(value: $inner, context: RpcResponseContext) -> Self {
                 Self { value, context }
@@ -946,6 +949,9 @@ resp_traits!(GetBlockCommitmentResp);
 #[common_methods_rpc_resp]
 #[pymethods]
 impl GetBlockCommitmentResp {
+    #[pyo3(
+        signature = (commitment, total_stake)
+    )]
     #[new]
     pub fn new(commitment: Option<[u64; 32]>, total_stake: u64) -> Self {
         Self {
@@ -2206,6 +2212,9 @@ response_data_boilerplate!(RpcLogsResponse);
 #[common_methods]
 #[pymethods]
 impl RpcLogsResponse {
+    #[pyo3(
+        signature = (signature, err, logs)
+    )]
     #[new]
     pub fn new(signature: Signature, err: Option<TransactionErrorType>, logs: Vec<String>) -> Self {
         RpcLogsResponseOriginal {
@@ -2501,6 +2510,9 @@ response_data_boilerplate!(RpcVote);
 #[common_methods]
 #[pymethods]
 impl RpcVote {
+    #[pyo3(
+        signature = (vote_pubkey, slots, hash, timestamp, signature)
+    )]
     #[new]
     pub fn new(
         vote_pubkey: Pubkey,
