@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.14.2] - 2023-01-24
+
+### Fixed
+
+- Add `solders-primitives` to crates.io release flow.
+
 ## [0.14.1] - 2023-01-24
 
 ### Changed
