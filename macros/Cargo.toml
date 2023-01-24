@@ -1,6 +1,6 @@
 [package]
 name = "solders-macros"
-version = "0.14.1"
+version = "0.15.0"
 edition = "2021"
 include = ["src/*.rs", "/LICENSE"]
 license = "MIT"

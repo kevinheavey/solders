@@ -1,6 +1,6 @@
 [package]
 name = "solders-traits"
-version = "0.14.1"
+version = "0.15.0"
 edition = "2021"
 include = ["/src"]
 description = "A collection of traits and helpers for Solders."
