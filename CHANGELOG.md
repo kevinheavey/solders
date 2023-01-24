@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.14.1] - 2023-01-24
+
+### Changed
+
+- Use crates.io for the `pyo3` and `pythonize` dependencies [(#38)](https://github.com/kevinheavey/solders/pull/38
+
 ## [0.14.0] - 2023-01-11
 
 ### Added
