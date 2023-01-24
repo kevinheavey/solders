@@ -126,6 +126,9 @@ solders_traits::common_methods_default!(UiTokenAmount);
 #[common_methods]
 #[pymethods]
 impl UiTokenAmount {
+    #[pyo3(
+        signature = (ui_amount, decimals, amount, ui_amount_string)
+    )]
     #[new]
     pub fn new(
         ui_amount: Option<f64>,
