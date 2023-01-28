@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.14.3] - 2023-01-28
+
+### Fixed 
+
+Fix `MessageV0` JSON serialization [(#42)](https://github.com/kevinheavey/solders/pull/42
+
 ## [0.14.2] - 2023-01-24
 
 ### Fixed
