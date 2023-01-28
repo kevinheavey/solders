@@ -813,9 +813,7 @@ macro_rules! contextful_resp_boilerplate {
         #[common_methods_rpc_resp]
         #[pymethods]
         impl $name {
-            #[pyo3(
-                signature = (value, context)
-            )]
+            #[pyo3(signature = (value, context))]
             #[new]
             pub fn new(value: $inner, context: RpcResponseContext) -> Self {
                 Self { value, context }
