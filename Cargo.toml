@@ -32,7 +32,7 @@ solders-traits = { workspace = true }
 solders-macros = { workspace = true }
 solders-primitives = { workspace = true }
 solana-program-test = "1.14.11"
-pyo3-asyncio = { git = "https://github.com/kevinheavey/pyo3-asyncio", rev = "d2fdb97", features = ["tokio-runtime"] }
+pyo3-asyncio = { version = "0.18.0", features = ["tokio-runtime"] }
 
 
 [workspace]
