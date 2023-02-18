@@ -505,7 +505,7 @@ class InstructionErrorFieldless:
     ArithmeticOverflow: "InstructionErrorFieldless"
     UnsupportedSysvar: "InstructionErrorFieldless"
     IllegalOwner: "InstructionErrorFieldless"
-    MaxAccountsDataSizeExceeded: "InstructionErrorFieldless"
+    MaxAccountsDataAllocationsExceeded: "InstructionErrorFieldless"
     ActiveVoteAccountClose: "InstructionErrorFieldless"
     def __int__(self) -> int: ...
     def __str__(self) -> str: ...

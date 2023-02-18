@@ -256,7 +256,7 @@ impl std::fmt::Display for Pubkey {
 pybytes_general_via_slice!(Pubkey);
 impl PyFromBytesGeneral for Pubkey {
     fn py_from_bytes_general(raw: &[u8]) -> PyResult<Self> {
-        Ok(PubkeyOriginal::new(raw).into())
+        Ok(PubkeyOriginal::try_from(raw).unwrap().into())
     }
 }
 solders_traits::common_methods_default!(Pubkey);

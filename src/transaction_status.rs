@@ -1012,8 +1012,9 @@ pub enum InstructionErrorFieldless {
     ArithmeticOverflow,
     UnsupportedSysvar,
     IllegalOwner,
-    MaxAccountsDataSizeExceeded,
+    MaxAccountsDataAllocationsExceeded,
     MaxAccountsExceeded,
+    MaxInstructionTraceLengthExceeded
 }
 
 #[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, EnumIntoPy)]
@@ -1109,10 +1110,11 @@ impl From<InstructionErrorType> for InstructionErrorOriginal {
                 InstructionErrorFieldless::ArithmeticOverflow => Self::ArithmeticOverflow,
                 InstructionErrorFieldless::UnsupportedSysvar => Self::UnsupportedSysvar,
                 InstructionErrorFieldless::IllegalOwner => Self::IllegalOwner,
-                InstructionErrorFieldless::MaxAccountsDataSizeExceeded => {
-                    Self::MaxAccountsDataSizeExceeded
+                InstructionErrorFieldless::MaxAccountsDataAllocationsExceeded => {
+                    Self::MaxAccountsDataAllocationsExceeded
                 }
                 InstructionErrorFieldless::MaxAccountsExceeded => Self::MaxAccountsExceeded,
+                InstructionErrorFieldless::MaxInstructionTraceLengthExceeded => Self::MaxInstructionTraceLengthExceeded,
             },
         }
     }
@@ -1271,11 +1273,14 @@ impl From<InstructionErrorOriginal> for InstructionErrorType {
             InstructionErrorOriginal::IllegalOwner => {
                 Self::Fieldless(InstructionErrorFieldless::IllegalOwner)
             }
-            InstructionErrorOriginal::MaxAccountsDataSizeExceeded => {
-                Self::Fieldless(InstructionErrorFieldless::MaxAccountsDataSizeExceeded)
+            InstructionErrorOriginal::MaxAccountsDataAllocationsExceeded => {
+                Self::Fieldless(InstructionErrorFieldless::MaxAccountsDataAllocationsExceeded)
             }
             InstructionErrorOriginal::MaxAccountsExceeded => {
                 Self::Fieldless(InstructionErrorFieldless::MaxAccountsExceeded)
+            },
+            InstructionErrorOriginal::MaxInstructionTraceLengthExceeded => {
+                Self::Fieldless(InstructionErrorFieldless::MaxInstructionTraceLengthExceeded)
             }
         }
     }
@@ -1376,6 +1381,7 @@ pub enum TransactionErrorFieldless {
     InvalidRentPayingAccount,
     WouldExceedMaxVoteCostLimit,
     WouldExceedAccountDataTotalLimit,
+    MaxLoadedAccountsDataSizeExceeded,
 }
 
 #[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, EnumIntoPy)]
@@ -1467,6 +1473,9 @@ impl From<TransactionErrorType> for TransactionErrorOriginal {
                 }
                 TransactionErrorFieldless::WouldExceedAccountDataTotalLimit => {
                     Self::WouldExceedAccountDataTotalLimit
+                }
+                TransactionErrorFieldless::MaxLoadedAccountsDataSizeExceeded => {
+                    Self::MaxLoadedAccountsDataSizeExceeded
                 }
             },
         }
@@ -1577,6 +1586,9 @@ impl From<TransactionErrorOriginal> for TransactionErrorType {
             }
             TransactionErrorOriginal::WouldExceedAccountDataTotalLimit => {
                 Self::Fieldless(TransactionErrorFieldless::WouldExceedAccountDataTotalLimit)
+            }
+            TransactionErrorOriginal::MaxLoadedAccountsDataSizeExceeded => {
+                Self::Fieldless(TransactionErrorFieldless::MaxLoadedAccountsDataSizeExceeded)
             }
         }
     }
