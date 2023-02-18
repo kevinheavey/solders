@@ -1,21 +1,27 @@
-from typing import Sequence, Union, List, Optional, Tuple
-from solders.keypair import Keypair
-from solders.presigner import Presigner
-from solders.message import Message, MessageV0
-from solders.signature import Signature
-from solders.instruction import Instruction, CompiledInstruction
-from solders.pubkey import Pubkey
+from typing import List, Optional, Sequence, Tuple, Union
+
 from solders.hash import Hash
+from solders.instruction import CompiledInstruction, Instruction
+from solders.keypair import Keypair
+from solders.message import Message, MessageV0
+from solders.null_signer import NullSigner
+from solders.presigner import Presigner
+from solders.pubkey import Pubkey
+from solders.signature import Signature
+
+Signer = Union[Keypair, Presigner, NullSigner]
 
 class Transaction:
     def __init__(
         self,
-        from_keypairs: Sequence[Union[Presigner, Keypair]],
+        from_keypairs: Sequence[Signer],
         message: Message,
         recent_blockhash: Hash,
     ) -> None: ...
     @property
     def signatures(self) -> List[Signature]: ...
+    @signatures.setter
+    def signatures(self, signatures: Sequence[Signature]) -> None: ...
     @property
     def message(self) -> Message: ...
     @staticmethod
@@ -29,12 +35,12 @@ class Transaction:
     def new_signed_with_payer(
         instructions: Sequence[Instruction],
         payer: Optional[Pubkey],
-        signing_keypairs: Sequence[Union[Presigner, Keypair]],
+        signing_keypairs: Sequence[Signer],
         recent_blockhash: Hash,
     ) -> "Transaction": ...
     @staticmethod
     def new_with_compiled_instructions(
-        from_keypairs: Sequence[Union[Presigner, Keypair]],
+        from_keypairs: Sequence[Signer],
         keys: Sequence[Pubkey],
         recent_blockhash: Hash,
         program_ids: Sequence[Pubkey],
@@ -50,12 +56,10 @@ class Transaction:
         self, instruction_index: int, accounts_index: int
     ) -> Optional[Pubkey]: ...
     def message_data(self) -> bytes: ...
-    def sign(
-        self, keypairs: Sequence[Union[Presigner, Keypair]], recent_blockhash: Hash
-    ) -> None: ...
+    def sign(self, keypairs: Sequence[Signer], recent_blockhash: Hash) -> None: ...
     def partial_sign(
         self,
-        keypairs: Sequence[Union[Presigner, Keypair]],
+        keypairs: Sequence[Signer],
         recent_blockhash: Hash,
     ) -> None: ...
     def verify(self) -> None: ...
@@ -97,10 +101,12 @@ class VersionedTransaction:
     def __init__(
         self,
         message: Union[Message, MessageV0],
-        keypairs: Sequence[Union[Presigner, Keypair]],
+        keypairs: Sequence[Signer],
     ) -> None: ...
     @property
     def signatures(self) -> List[Signature]: ...
+    @signatures.setter
+    def signatures(self, signatures: Sequence[Signature]) -> None: ...
     @property
     def message(self) -> Message: ...
     @staticmethod
@@ -123,6 +129,9 @@ class VersionedTransaction:
     def to_json(self) -> str: ...
     @staticmethod
     def from_json(raw: str) -> "VersionedTransaction": ...
+    @staticmethod
+    def from_legacy(tx: Transaction) -> "VersionedTransaction": ...
+    def uses_durable_nonce(self) -> bool: ...
 
 class SanitizeError(Exception): ...
 class TransactionError(Exception): ...

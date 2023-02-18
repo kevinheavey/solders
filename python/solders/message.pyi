@@ -1,8 +1,9 @@
-from typing import ClassVar, Sequence, Optional, List
-from solders.instruction import Instruction, CompiledInstruction
-from solders.pubkey import Pubkey
-from solders.hash import Hash
+from typing import ClassVar, List, Optional, Sequence, Union
+
 from solders.address_lookup_table_account import AddressLookupTableAccount
+from solders.hash import Hash
+from solders.instruction import CompiledInstruction, Instruction
+from solders.pubkey import Pubkey
 
 class MessageHeader:
     LENGTH: ClassVar[int]
@@ -157,3 +158,5 @@ class MessageV0:
     def to_json(self) -> str: ...
     @staticmethod
     def from_json(raw: str) -> "MessageV0": ...
+
+VersionedMessage = Union[Message, MessageV0]

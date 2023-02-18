@@ -1,9 +1,9 @@
-from operator import ge, gt, le, lt
 import pickle
-from typing import Callable, Any
-from pytest import raises, mark
+from operator import ge, gt, le, lt
+from typing import Any, Callable
 
 from pybip39 import Mnemonic, Seed
+from pytest import mark, raises
 from solders.keypair import Keypair
 
 
@@ -100,7 +100,7 @@ def test_from_seed() -> None:
 
 def test_from_seed_phrase_and_passphrase() -> None:
     mnemonic = Mnemonic()
-    passphrase = "42"  # noqa: S105
+    passphrase = "42"
     seed = Seed(mnemonic, passphrase)
     expected_keypair = Keypair.from_seed(bytes(seed)[:32])
     keypair = Keypair.from_seed_phrase_and_passphrase(mnemonic.phrase, passphrase)

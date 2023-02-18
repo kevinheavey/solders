@@ -1,5 +1,6 @@
 import pickle
-from pytest import raises, mark
+
+from pytest import mark, raises
 from solders.pubkey import Pubkey
 
 on_curve_data = [
@@ -53,7 +54,7 @@ def test_equality() -> None:
 
 
 def test_create_with_seed() -> None:
-    """Test create with seed"""
+    """Test create with seed."""
     default_public_key = Pubkey.default()
     derived_key = Pubkey.create_with_seed(
         default_public_key, "limber chicken: 4/45", default_public_key

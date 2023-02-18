@@ -709,7 +709,7 @@ dependencies = [
  "autocfg",
  "cfg-if",
  "crossbeam-utils",
- "memoffset",
+ "memoffset 0.6.5",
  "scopeguard",
 ]
 
@@ -1859,6 +1859,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "memoffset"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d61c719bcfbcf5d62b3a09efa6088de8c54bc0bfcd3ea7ae39fcc186108b8de1"
+dependencies = [
+ "autocfg",
+]
+
+[[package]]
+name = "memoffset"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d61c719bcfbcf5d62b3a09efa6088de8c54bc0bfcd3ea7ae39fcc186108b8de1"
+dependencies = [
+ "autocfg",
+]
+
+[[package]]
 name = "merlin"
 version = "3.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2403,14 +2421,15 @@ dependencies = [
 
 [[package]]
 name = "pyo3"
-version = "0.17.3"
-source = "git+https://github.com/PyO3/pyo3?rev=1d20f2a#1d20f2a5317585c13750e4433fe502dd25230775"
+version = "0.18.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ccd4149c8c3975099622b4e1962dac27565cf5663b76452c3e2b66e0b6824277"
 dependencies = [
  "cfg-if",
  "indoc",
  "libc",
- "memoffset",
- "parking_lot 0.12.1",
+ "memoffset 0.8.0",
+ "parking_lot",
  "pyo3-build-config",
  "pyo3-ffi",
  "pyo3-macros",
@@ -2431,8 +2450,9 @@ dependencies = [
 
 [[package]]
 name = "pyo3-build-config"
-version = "0.17.3"
-source = "git+https://github.com/PyO3/pyo3?rev=1d20f2a#1d20f2a5317585c13750e4433fe502dd25230775"
+version = "0.18.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9cd09fe469834db21ee60e0051030339e5d361293d8cb5ec02facf7fdcf52dbf"
 dependencies = [
  "once_cell",
  "target-lexicon",
@@ -2440,8 +2460,9 @@ dependencies = [
 
 [[package]]
 name = "pyo3-ffi"
-version = "0.17.3"
-source = "git+https://github.com/PyO3/pyo3?rev=1d20f2a#1d20f2a5317585c13750e4433fe502dd25230775"
+version = "0.18.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0c427c9a96b9c5b12156dbc11f76b14f49e9aae8905ca783ea87c249044ef137"
 dependencies = [
  "libc",
  "pyo3-build-config",
@@ -2449,8 +2470,9 @@ dependencies = [
 
 [[package]]
 name = "pyo3-macros"
-version = "0.17.3"
-source = "git+https://github.com/PyO3/pyo3?rev=1d20f2a#1d20f2a5317585c13750e4433fe502dd25230775"
+version = "0.18.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "16b822bbba9d60630a44d2109bc410489bb2f439b33e3a14ddeb8a40b378a7c4"
 dependencies = [
  "proc-macro2 1.0.47",
  "pyo3-macros-backend",
@@ -2460,8 +2482,9 @@ dependencies = [
 
 [[package]]
 name = "pyo3-macros-backend"
-version = "0.17.3"
-source = "git+https://github.com/PyO3/pyo3?rev=1d20f2a#1d20f2a5317585c13750e4433fe502dd25230775"
+version = "0.18.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "84ae898104f7c99db06231160770f3e40dad6eb9021daddc0fedfa3e41dff10a"
 dependencies = [
  "proc-macro2 1.0.47",
  "quote 1.0.21",
@@ -2470,8 +2493,9 @@ dependencies = [
 
 [[package]]
 name = "pythonize"
-version = "0.17.0"
-source = "git+https://github.com/kevinheavey/pythonize?rev=001db40#001db40c6e2f4555b9300a874cd0428704bc6d40"
+version = "0.18.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9a0e1bbcd2a3856284bf4f4ef09ccb1157e9467847792754556f153ea3fe6b42"
 dependencies = [
  "pyo3",
  "serde",
@@ -3029,6 +3053,7 @@ version = "1.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "678b5a069e50bf00ecd22d0cd8ddf7c236f68581b03db652061ed5eb13a312ff"
 dependencies = [
+ "base64 0.13.1",
  "serde",
  "serde_with_macros",
 ]
@@ -3593,7 +3618,7 @@ dependencies = [
  "libc",
  "libsecp256k1",
  "log",
- "memoffset",
+ "memoffset 0.6.5",
  "num-derive",
  "num-traits",
  "parking_lot 0.12.1",
@@ -4020,7 +4045,7 @@ dependencies = [
 
 [[package]]
 name = "solders"
-version = "0.10.0"
+version = "0.14.3"
 dependencies = [
  "base64 0.13.1",
  "bincode",
@@ -4046,7 +4071,7 @@ dependencies = [
 
 [[package]]
 name = "solders-macros"
-version = "0.10.0"
+version = "0.14.3"
 dependencies = [
  "proc-macro2 1.0.47",
  "quote 1.0.21",
@@ -4055,7 +4080,7 @@ dependencies = [
 
 [[package]]
 name = "solders-primitives"
-version = "0.10.0"
+version = "0.14.3"
 dependencies = [
  "base64 0.13.1",
  "derive_more",
@@ -4069,7 +4094,7 @@ dependencies = [
 
 [[package]]
 name = "solders-traits"
-version = "0.10.0"
+version = "0.14.3"
 dependencies = [
  "bincode",
  "pyo3",

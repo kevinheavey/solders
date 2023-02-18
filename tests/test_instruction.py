@@ -1,7 +1,8 @@
 import pickle
-from typing import cast, Union
-from pytest import mark, raises, fixture
-from solders.instruction import Instruction, CompiledInstruction, AccountMeta
+from typing import Union, cast
+
+from pytest import fixture, mark, raises
+from solders.instruction import AccountMeta, CompiledInstruction, Instruction
 from solders.pubkey import Pubkey
 
 

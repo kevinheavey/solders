@@ -25,6 +25,7 @@ use crate::{
     message::{Message, VersionedMessage},
     pubkey::Pubkey,
     signature::Signature,
+    signature::{originals_into_solders, solders_into_originals},
     signer::Signer,
     signer::SignerVec,
 };
@@ -74,12 +75,12 @@ impl VersionedTransaction {
     /// List[Signature]: The transaction signatures.
     #[getter]
     pub fn signatures(&self) -> Vec<Signature> {
-        self.0
-            .signatures
-            .clone()
-            .into_iter()
-            .map(Signature::from)
-            .collect()
+        originals_into_solders(self.0.signatures.clone())
+    }
+
+    #[setter]
+    fn set_signatures(&mut self, signatures: Vec<Signature>) {
+        self.0.signatures = solders_into_originals(signatures);
     }
 
     /// Create a fully-signed transaction from a message and its signatures.
@@ -156,6 +157,23 @@ impl VersionedTransaction {
     pub fn new_default() -> Self {
         Self::default()
     }
+
+    /// Convert a legacy transaction to a VersionedTransaction.
+    ///
+    /// Returns:
+    ///     VersionedTransaction: The versioned tx.
+    #[staticmethod]
+    pub fn from_legacy(tx: Transaction) -> Self {
+        Self::from(tx)
+    }
+
+    /// Returns true if transaction begins with a valid advance nonce instruction.
+    ///
+    /// Returns:
+    ///     bool
+    pub fn uses_durable_nonce(&self) -> bool {
+        self.0.uses_durable_nonce()
+    }
 }
 
 #[pyclass(module = "solders.transaction", subclass)]
@@ -227,12 +245,12 @@ impl Transaction {
     /// where the number of signatures is equal to ``num_required_signatures`` of the `Message`'s
     /// :class:`~solders.message.MessageHeader`.
     pub fn signatures(&self) -> Vec<Signature> {
-        self.0
-            .signatures
-            .clone()
-            .into_iter()
-            .map(Signature::from)
-            .collect()
+        originals_into_solders(self.0.signatures.clone())
+    }
+
+    #[setter]
+    fn set_signatures(&mut self, signatures: Vec<Signature>) {
+        self.0.signatures = solders_into_originals(signatures);
     }
 
     #[getter]

@@ -1,7 +1,6 @@
 use derive_more::{From, Into};
 use pyo3::{create_exception, exceptions::PyException, prelude::*, types::PyBytes};
 use serde::{Deserialize, Serialize};
-use serde_with::{serde_as, FromInto};
 use solana_sdk::{
     address_lookup_table_account::AddressLookupTableAccount as AddressLookupTableAccountOriginal,
     instruction::CompiledInstruction as CompiledInstructionOriginal,
@@ -218,6 +217,9 @@ impl Message {
             .collect()
     }
 
+    #[pyo3(
+        signature = (instructions, payer, blockhash)
+    )]
     #[staticmethod]
     /// Create a new message while setting the blockhash.
     ///
@@ -261,6 +263,9 @@ impl Message {
         .into()
     }
 
+    #[pyo3(
+        signature = (instructions, payer, nonce_account_pubkey, nonce_authority_pubkey)
+    )]
     #[staticmethod]
     /// Create a new message for a `nonced transaction <https://docs.solana.com/implemented-proposals/durable-tx-nonces>`_.
     ///
@@ -601,7 +606,6 @@ create_exception!(
     "Raised when an error is encountered in compiling a message."
 );
 
-#[serde_as]
 #[pyclass(module = "solders.message", subclass)]
 #[derive(PartialEq, Eq, Debug, Clone, Default, Serialize, Deserialize, From, Into)]
 /// A Solana transaction message (v0).
@@ -634,7 +638,7 @@ create_exception!(
 ///     >>> blockhash = Hash.default()  # replace with a real blockhash
 ///     >>> message = MessageV0(header, account_keys, blockhash, instructions, lookups)
 ///
-pub struct MessageV0(#[serde_as(as = "FromInto<VersionedMessage>")] pub MessageV0Original);
+pub struct MessageV0(pub MessageV0Original);
 
 impl RichcmpEqualityOnly for MessageV0 {}
 pybytes_general_via_bincode!(MessageV0);

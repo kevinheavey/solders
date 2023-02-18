@@ -1,7 +1,8 @@
-from typing import Union, Sequence
+from typing import Sequence, Union
+
+from solders.keypair import Keypair
 from solders.pubkey import Pubkey
 from solders.signature import Signature
-from solders.keypair import Keypair
 
 class NullSigner:
     def __init__(self, pubkey: Pubkey) -> None: ...

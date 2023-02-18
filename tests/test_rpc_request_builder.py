@@ -1,13 +1,55 @@
 """These tests are mainly about getting mypy to check stuff, as it doesn't check doc examples."""
 
 from typing import List, Union
+
+from solders.account_decoder import UiAccountEncoding, UiDataSliceConfig
+from solders.commitment_config import CommitmentLevel
+from solders.hash import Hash
+from solders.instruction import AccountMeta, Instruction
+from solders.keypair import Keypair
+from solders.message import Message
+from solders.pubkey import Pubkey
+from solders.rpc.config import (
+    RpcAccountInfoConfig,
+    RpcBlockConfig,
+    RpcBlockProductionConfig,
+    RpcBlockProductionConfigRange,
+    RpcBlockSubscribeConfig,
+    RpcBlockSubscribeFilter,
+    RpcBlockSubscribeFilterMentions,
+    RpcContextConfig,
+    RpcEpochConfig,
+    RpcGetVoteAccountsConfig,
+    RpcLargestAccountsFilter,
+    RpcLeaderScheduleConfig,
+    RpcProgramAccountsConfig,
+    RpcRequestAirdropConfig,
+    RpcSendTransactionConfig,
+    RpcSignaturesForAddressConfig,
+    RpcSignatureStatusConfig,
+    RpcSignatureSubscribeConfig,
+    RpcSimulateTransactionAccountsConfig,
+    RpcSimulateTransactionConfig,
+    RpcSupplyConfig,
+    RpcTokenAccountsFilterMint,
+    RpcTokenAccountsFilterProgramId,
+    RpcTransactionConfig,
+    RpcTransactionLogsConfig,
+    RpcTransactionLogsFilter,
+    RpcTransactionLogsFilterMentions,
+)
+from solders.rpc.filter import Memcmp
 from solders.rpc.requests import (
+    AccountSubscribe,
+    AccountUnsubscribe,
+    BlockSubscribe,
+    BlockUnsubscribe,
     GetAccountInfo,
     GetBalance,
     GetBlock,
+    GetBlockCommitment,
     GetBlockHeight,
     GetBlockProduction,
-    GetBlockCommitment,
     GetBlocks,
     GetBlocksWithLimit,
     GetBlockTime,
@@ -49,72 +91,31 @@ from solders.rpc.requests import (
     GetVersion,
     GetVoteAccounts,
     IsBlockhashValid,
-    MinimumLedgerSlot,
-    RequestAirdrop,
-    SendTransaction,
-    ValidatorExit,
-    AccountSubscribe,
-    BlockSubscribe,
     LogsSubscribe,
+    LogsUnsubscribe,
+    MinimumLedgerSlot,
     ProgramSubscribe,
+    ProgramUnsubscribe,
+    RequestAirdrop,
+    RootSubscribe,
+    RootUnsubscribe,
+    SendLegacyTransaction,
     SignatureSubscribe,
+    SignatureUnsubscribe,
+    SimulateLegacyTransaction,
     SlotSubscribe,
     SlotsUpdatesSubscribe,
-    RootSubscribe,
-    VoteSubscribe,
-    AccountUnsubscribe,
-    BlockUnsubscribe,
-    LogsUnsubscribe,
-    ProgramUnsubscribe,
-    SignatureUnsubscribe,
-    SimulateTransaction,
-    SlotUnsubscribe,
     SlotsUpdatesUnsubscribe,
-    RootUnsubscribe,
+    SlotUnsubscribe,
+    ValidatorExit,
+    VoteSubscribe,
     VoteUnsubscribe,
-    batch_to_json,
     batch_from_json,
+    batch_to_json,
 )
-from solders.rpc.config import (
-    RpcSignatureStatusConfig,
-    RpcRequestAirdropConfig,
-    RpcContextConfig,
-    RpcBlockConfig,
-    RpcAccountInfoConfig,
-    RpcBlockProductionConfig,
-    RpcBlockProductionConfigRange,
-    RpcLeaderScheduleConfig,
-    RpcEpochConfig,
-    RpcLargestAccountsFilter,
-    RpcSupplyConfig,
-    RpcTokenAccountsFilterProgramId,
-    RpcProgramAccountsConfig,
-    RpcSignaturesForAddressConfig,
-    RpcTokenAccountsFilterMint,
-    RpcTransactionConfig,
-    RpcGetVoteAccountsConfig,
-    RpcSendTransactionConfig,
-    RpcBlockSubscribeConfig,
-    RpcBlockSubscribeFilter,
-    RpcBlockSubscribeFilterMentions,
-    RpcTransactionLogsConfig,
-    RpcTransactionLogsFilter,
-    RpcTransactionLogsFilterMentions,
-    RpcSignatureSubscribeConfig,
-    RpcSimulateTransactionAccountsConfig,
-    RpcSimulateTransactionConfig,
-)
-from solders.rpc.filter import Memcmp
-from solders.hash import Hash
-from solders.keypair import Keypair
-from solders.transaction import Transaction
-from solders.transaction_status import UiTransactionEncoding, TransactionDetails
 from solders.signature import Signature
-from solders.message import Message
-from solders.instruction import Instruction, AccountMeta
-from solders.commitment_config import CommitmentLevel
-from solders.account_decoder import UiAccountEncoding, UiDataSliceConfig
-from solders.pubkey import Pubkey
+from solders.transaction import Transaction
+from solders.transaction_status import TransactionDetails, UiTransactionEncoding
 
 
 def test_get_account_info() -> None:
@@ -493,9 +494,9 @@ def test_send_transaction() -> None:
     tx = Transaction([payer], message, blockhash)
     commitment = CommitmentLevel.Confirmed
     config = RpcSendTransactionConfig(preflight_commitment=commitment)
-    req = SendTransaction(tx, config)
+    req = SendLegacyTransaction(tx, config)
     as_json = req.to_json()
-    assert SendTransaction.from_json(as_json) == req
+    assert SendLegacyTransaction.from_json(as_json) == req
 
 
 def test_simulate_transaction() -> None:
@@ -516,9 +517,9 @@ def test_simulate_transaction() -> None:
     config = RpcSimulateTransactionConfig(
         commitment=commitment, accounts=accounts_config
     )
-    req = SimulateTransaction(tx, config)
+    req = SimulateLegacyTransaction(tx, config)
     as_json = req.to_json()
-    assert SimulateTransaction.from_json(as_json) == req
+    assert SimulateLegacyTransaction.from_json(as_json) == req
 
 
 def test_account_subscribe() -> None:

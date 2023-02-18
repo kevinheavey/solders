@@ -1,11 +1,12 @@
 import pickle
 from typing import List
-from solders.message import Message, MessageHeader
+
+from solders.hash import Hash
+from solders.instruction import AccountMeta, CompiledInstruction, Instruction
 from solders.keypair import Keypair
+from solders.message import Message, MessageHeader, MessageV0
 from solders.pubkey import Pubkey
 from solders.transaction import Transaction
-from solders.hash import Hash
-from solders.instruction import Instruction, AccountMeta, CompiledInstruction
 
 from .utils import ZERO_BYTES
 
@@ -230,3 +231,13 @@ def test_json_msg_header() -> None:
 def test_json_msg() -> None:
     obj = Message.default()
     assert Message.from_json(obj.to_json()) == obj
+
+
+def test_pickle_msg_v0() -> None:
+    obj = MessageV0.default()
+    assert pickle.loads(pickle.dumps(obj)) == obj
+
+
+def test_json_msg_v0() -> None:
+    obj = MessageV0.default()
+    assert MessageV0.from_json(obj.to_json()) == obj

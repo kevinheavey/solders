@@ -1,7 +1,8 @@
 import pickle
+
+from solders.keypair import Keypair
 from solders.null_signer import NullSigner
 from solders.signature import Signature
-from solders.keypair import Keypair
 
 
 def test_null_signer() -> None:

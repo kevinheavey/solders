@@ -1,6 +1,47 @@
 # Changelog
 
-## [0.11.0] - Unreleased
+## [0.14.3] - 2023-01-28
+
+### Fixed 
+
+Fix `MessageV0` JSON serialization [(#42)](https://github.com/kevinheavey/solders/pull/42
+
+## [0.14.2] - 2023-01-24
+
+### Fixed
+
+- Add `solders-primitives` to crates.io release flow.
+
+## [0.14.1] - 2023-01-24
+
+### Changed
+
+- Use crates.io for the `pyo3` and `pythonize` dependencies [(#38)](https://github.com/kevinheavey/solders/pull/38
+
+## [0.14.0] - 2023-01-11
+
+### Added
+
+- Add `SimulateVersionedTransaction` [(#37)](https://github.com/kevinheavey/solders/pull/37
+- Support `VersionedMessage` in `GetFeeForMessage` [(#37)](https://github.com/kevinheavey/solders/pull/37
+
+## [0.13.0] - 2023-01-11
+
+### Changed
+
+Rename `SendTransaction` to `SendLegacyTransaction` [(#36)](https://github.com/kevinheavey/solders/pull/36
+
+### Added
+
+Add `SendVersionedTransaction` [(#36)](https://github.com/kevinheavey/solders/pull/36
+
+## [0.12.0] - 2023-01-10
+
+### Added
+
+- Add `SendRawTransaction` [(#35)](https://github.com/kevinheavey/solders/pull/35
+
+## [0.11.0] - 2023-01-10
 
 ### Changed
 
@@ -13,6 +54,14 @@
 - Extract solders-primitives into its own crate [(#24)](https://github.com/kevinheavey/solders/pull/24)
 - Add EnumIntoPy derive macro [(#29)](https://github.com/kevinheavey/solders/pull/29)
 - Add `common_methods_core` macro [(#30)](https://github.com/kevinheavey/solders/pull/30)
+- Add `VersionedMessage` type alias [(#34)](https://github.com/kevinheavey/solders/pull/34)
+- Make `signatures` writable for `VersionedTransaction` and `Transaction` [(#34)](https://github.com/kevinheavey/solders/pull/34)
+- Add `from_legacy` to `VersionedTransaction` [(#34)](https://github.com/kevinheavey/solders/pull/34)
+- Add `Signer` type alias [(#34)](https://github.com/kevinheavey/solders/pull/34)
+
+### Fixed
+
+- Fix incorrect field access in `max_transactions_per_entry` [(#34)](https://github.com/kevinheavey/solders/pull/34)
 
 ## [0.10.0] - 2022-10-31
 

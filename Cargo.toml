@@ -1,6 +1,6 @@
 [package]
 name = "solders"
-version = "0.10.0"
+version = "0.14.3"
 edition = "2021"
 include = ["/src", "/LICENSE", "/pyproject.toml"]
 description = "Python binding to the Solana Rust SDK"
@@ -27,7 +27,7 @@ thiserror = "^1.0.31"
 bs58 = "^0.4.0"
 zstd = "0.11.2"
 derive_more = { workspace = true }
-pythonize = { git = "https://github.com/kevinheavey/pythonize", rev = "001db40" }
+pythonize = "0.18.0"
 solders-traits = { workspace = true }
 solders-macros = { workspace = true }
 solders-primitives = { workspace = true }
@@ -39,12 +39,12 @@ pyo3-asyncio = { git = "https://github.com/kevinheavey/pyo3-asyncio", rev = "d2f
 members = [".", "traits", "macros", "primitives"]
 
 [workspace.dependencies]
-pyo3 = { git = "https://github.com/PyO3/pyo3", rev = "1d20f2a", default-features = false }
-solders-macros = { path = "./macros", version = "0.10.0" }
-solders-traits = { path = "./traits", version = "0.10.0" }
-serde_with = "^1.14.0"
-solders-primitives = { path = "./primitives", version = "0.10.0" }
-solana-sdk = "1.14.11"
+pyo3 = { version = "0.18.0", default-features = false }
+solders-macros = { path = "./macros", version = "0.14.3" }
+solders-traits = { path = "./traits", version = "0.14.3" }
+serde_with = { version = "^1.14.0", features = ["base64"] }
+solders-primitives = { path = "./primitives", version = "0.14.3" }
+solana-sdk = "^1.14.1"
 bincode = "1.3.3"
 base64 = "0.13.0"
 serde = "^1.0.136"
