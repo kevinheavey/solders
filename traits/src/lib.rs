@@ -17,6 +17,7 @@ use solana_sdk::{
     signer::{Signer as SignerTrait, SignerError as SignerErrorOriginal},
     transaction::TransactionError as TransactionErrorOriginal,
 };
+use solana_banks_client::BanksClientError as BanksClientErrorOriginal;
 use std::{
     collections::hash_map::DefaultHasher,
     fmt,
@@ -164,6 +165,19 @@ impl From<Box<ErrorKind>> for PyErrWrapper {
 impl From<serde_cbor::Error> for PyErrWrapper {
     fn from(e: serde_cbor::Error) -> Self {
         Self(CborError::new_err(e.to_string()))
+    }
+}
+
+create_exception!(
+    solders,
+    BanksClientError,
+    PyException,
+    "Raised when BanksClient encounters an error."
+);
+
+impl From<BanksClientErrorOriginal> for PyErrWrapper {
+    fn from(e: BanksClientErrorOriginal) -> Self {
+        Self(BanksClientError::new_err(e.to_string()))
     }
 }
 
