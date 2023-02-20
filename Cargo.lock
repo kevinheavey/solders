@@ -4387,11 +4387,13 @@ dependencies = [
  "serde_cbor",
  "serde_json",
  "serde_with 1.14.0",
+ "solana-banks-client",
  "solana-program-test",
  "solana-sdk",
  "solders-macros",
  "solders-primitives",
  "solders-traits",
+ "tarpc",
  "thiserror",
  "zstd",
 ]
@@ -4428,6 +4430,7 @@ dependencies = [
  "serde",
  "serde_cbor",
  "serde_json",
+ "solana-banks-client",
  "solana-sdk",
 ]
 
