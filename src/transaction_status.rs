@@ -1014,7 +1014,7 @@ pub enum InstructionErrorFieldless {
     IllegalOwner,
     MaxAccountsDataAllocationsExceeded,
     MaxAccountsExceeded,
-    MaxInstructionTraceLengthExceeded
+    MaxInstructionTraceLengthExceeded,
 }
 
 #[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, EnumIntoPy)]
@@ -1114,7 +1114,9 @@ impl From<InstructionErrorType> for InstructionErrorOriginal {
                     Self::MaxAccountsDataAllocationsExceeded
                 }
                 InstructionErrorFieldless::MaxAccountsExceeded => Self::MaxAccountsExceeded,
-                InstructionErrorFieldless::MaxInstructionTraceLengthExceeded => Self::MaxInstructionTraceLengthExceeded,
+                InstructionErrorFieldless::MaxInstructionTraceLengthExceeded => {
+                    Self::MaxInstructionTraceLengthExceeded
+                }
             },
         }
     }
@@ -1278,7 +1280,7 @@ impl From<InstructionErrorOriginal> for InstructionErrorType {
             }
             InstructionErrorOriginal::MaxAccountsExceeded => {
                 Self::Fieldless(InstructionErrorFieldless::MaxAccountsExceeded)
-            },
+            }
             InstructionErrorOriginal::MaxInstructionTraceLengthExceeded => {
                 Self::Fieldless(InstructionErrorFieldless::MaxInstructionTraceLengthExceeded)
             }
