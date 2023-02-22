@@ -1518,6 +1518,7 @@ name = "solders-primitives"
 version = "0.14.3"
 dependencies = [
  "base64 0.13.1",
+ "bincode",
  "derive_more",
  "pyo3",
  "serde",

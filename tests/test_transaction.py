@@ -232,7 +232,7 @@ def test_sanitize_txs() -> None:
         original_tx, num_readonly_signed_accounts=2, num_readonly_unsigned_accounts=3
     )
     tx = with_changed_fields(
-        tx_tmp, account_keys=tx_tmp.message.account_keys + [Pubkey.default()]
+        tx_tmp, account_keys=[*tx_tmp.message.account_keys, Pubkey.default()]
     )
     with raises(SanitizeError) as excinfo:
         tx.sanitize()

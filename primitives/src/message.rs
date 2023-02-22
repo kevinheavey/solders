@@ -18,8 +18,9 @@ use solana_sdk::{
 };
 use solders_macros::{common_methods, richcmp_eq_only, EnumIntoPy};
 use solders_traits::{
-    handle_py_err, impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
-    CommonMethodsCore, PyBytesGeneral, PyErrWrapper, RichcmpEqualityOnly,
+    handle_py_err, handle_py_value_err, impl_display, py_from_bytes_general_via_bincode,
+    pybytes_general_via_bincode, CommonMethodsCore, PyBytesGeneral, PyErrWrapper,
+    RichcmpEqualityOnly,
 };
 
 use crate::{
@@ -892,4 +893,31 @@ impl From<VersionedMessage> for MessageV0Original {
             _ => unreachable!(),
         }
     }
+}
+
+/// Serialize a versioned message, with a leading byte indicating whether or not it's a legacy message.
+///
+/// If you want to serialize without the leading byte, use `bytes(msg)`.
+///
+/// Args:
+///     msg (VersionedMessage): The message to serialize.
+///
+/// Returns:
+///     bytes: the serialized message.
+#[pyfunction]
+pub fn to_bytes_versioned(msg: VersionedMessage, py: Python<'_>) -> &PyBytes {
+    PyBytes::new(py, &VersionedMessageOriginal::from(msg).serialize())
+}
+
+/// Deserialize a versioned message, where the first byte indicates whether or not it's a legacy message.
+///
+/// Args:
+///     raw (bytes): The serialized message.
+///
+/// Returns:
+///     VersionedMessage: the deserialized message.
+#[pyfunction]
+pub fn from_bytes_versioned(raw: &[u8]) -> PyResult<VersionedMessage> {
+    let deser = bincode::deserialize::<VersionedMessageOriginal>(raw);
+    handle_py_value_err(deser)
 }

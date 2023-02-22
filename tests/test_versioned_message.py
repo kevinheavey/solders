@@ -282,9 +282,7 @@ def test_sanitize_with_invalid_ix_account(
         message.sanitize(True)
 
 
-def test_try_compile(
-    default_header_with_one_req_signature: MessageHeader, default_message: MessageV0
-) -> None:
+def test_try_compile() -> None:
     keys = [Pubkey.new_unique() for i in range(7)]
     payer = keys[0]
     program_id = keys[6]
