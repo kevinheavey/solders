@@ -423,6 +423,9 @@ impl BanksClient {
     }
 
     /// Returns latest blockhash and last valid block height for given commitment level.
+    ///
+    /// Returns:
+    ///     tuple[Hash, int]: The blockhash and last valid block height.
     pub fn get_latest_blockhash<'p>(
         &mut self,
         py: Python<'p>,
