@@ -894,15 +894,27 @@ impl From<VersionedMessage> for MessageV0Original {
     }
 }
 
-/// Serialize a versioned message, where the first byte indicates whether or not it's a legacy message.
+/// Serialize a versioned message, with a leading byte indicating whether or not it's a legacy message.
 /// 
 /// If you want to serialize without the leading byte, use `bytes(msg)`.
+/// 
+/// Args:
+///     msg (VersionedMessage): The message to serialize.
+/// 
+/// Returns:
+///     bytes: the serialized message.
 #[pyfunction]
 pub fn to_bytes_versioned<'a>(msg: VersionedMessage, py: Python<'a>) -> &'a PyBytes {
     PyBytes::new(py, &VersionedMessageOriginal::from(msg).serialize())
 }
 
 /// Deserialize a versioned message, where the first byte indicates whether or not it's a legacy message.
+/// 
+/// Args:
+///     raw (bytes): The serialized message.
+/// 
+/// Returns:
+///     VersionedMessage: the deserialized message.
 #[pyfunction]
 pub fn from_bytes_versioned(raw: &[u8]) -> PyResult<VersionedMessage> {
     let deser = bincode::deserialize::<VersionedMessageOriginal>(raw);
