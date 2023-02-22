@@ -150,3 +150,5 @@ def test_partial_signing() -> None:
     deserialized.signatures = sigs
     fully_signed = VersionedTransaction(message, [keypair0, keypair1])
     assert deserialized.signatures == fully_signed.signatures
+    assert deserialized == fully_signed
+    assert bytes(deserialized) == bytes(fully_signed)
