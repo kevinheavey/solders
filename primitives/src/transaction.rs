@@ -715,6 +715,15 @@ pub enum Legacy {
     Legacy,
 }
 
+impl RichcmpEqualityOnly for Legacy {}
+
+#[pymethods]
+impl Legacy {
+    fn __richcmp__(&self, other: &Self, op: pyo3::basic::CompareOp) -> pyo3::prelude::PyResult<bool> {
+        solders_traits::RichcmpEqualityOnly::richcmp(self, other, op)
+    }
+}
+
 impl From<Legacy> for LegacyOriginal {
     fn from(x: Legacy) -> Self {
         match x {
