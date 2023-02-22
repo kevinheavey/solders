@@ -1482,7 +1482,7 @@ dependencies = [
 
 [[package]]
 name = "solders"
-version = "0.14.3"
+version = "0.14.4"
 dependencies = [
  "base64 0.13.1",
  "bincode",
@@ -1506,7 +1506,7 @@ dependencies = [
 
 [[package]]
 name = "solders-macros"
-version = "0.14.3"
+version = "0.14.4"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1515,7 +1515,7 @@ dependencies = [
 
 [[package]]
 name = "solders-primitives"
-version = "0.14.3"
+version = "0.14.4"
 dependencies = [
  "base64 0.13.1",
  "bincode",
@@ -1530,7 +1530,7 @@ dependencies = [
 
 [[package]]
 name = "solders-traits"
-version = "0.14.3"
+version = "0.14.4"
 dependencies = [
  "bincode",
  "pyo3",
