@@ -13,7 +13,7 @@ from solders.system_program import (
     transfer,
     withdraw_nonce_account,
 )
-from solders.transaction import Transaction, VersionedTransaction
+from solders.transaction import Transaction, VersionedTransaction, Legacy
 
 
 def test_try_new() -> None:
@@ -152,3 +152,8 @@ def test_partial_signing() -> None:
     assert deserialized.signatures == fully_signed.signatures
     assert deserialized == fully_signed
     assert bytes(deserialized) == bytes(fully_signed)
+
+def test_legacy_version() -> None:
+    assert Legacy.Legacy == Legacy.Legacy
+    assert Legacy.Legacy != 0 # we don't want implicit int conversion because it clashes with versioned transaction versions
+    assert isinstance(Legacy.Legacy, Legacy)
