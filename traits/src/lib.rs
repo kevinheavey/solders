@@ -7,6 +7,8 @@ use pyo3::{
     types::PyBytes,
 };
 use serde::{Deserialize, Serialize};
+#[cfg(feature = "banks-client")]
+use solana_banks_client::BanksClientError as BanksClientErrorOriginal;
 use solana_sdk::{
     commitment_config::ParseCommitmentLevelError as ParseCommitmentLevelErrorOriginal,
     hash::ParseHashError as ParseHashErrorOriginal,
@@ -17,7 +19,6 @@ use solana_sdk::{
     signer::{Signer as SignerTrait, SignerError as SignerErrorOriginal},
     transaction::TransactionError as TransactionErrorOriginal,
 };
-use solana_banks_client::BanksClientError as BanksClientErrorOriginal;
 use std::{
     collections::hash_map::DefaultHasher,
     fmt,
@@ -168,6 +169,7 @@ impl From<serde_cbor::Error> for PyErrWrapper {
     }
 }
 
+#[cfg(feature = "banks-client")]
 create_exception!(
     solders,
     BanksClientError,
@@ -175,6 +177,7 @@ create_exception!(
     "Raised when BanksClient encounters an error."
 );
 
+#[cfg(feature = "banks-client")]
 impl From<BanksClientErrorOriginal> for PyErrWrapper {
     fn from(e: BanksClientErrorOriginal) -> Self {
         Self(BanksClientError::new_err(e.to_string()))
