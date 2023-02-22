@@ -3,8 +3,8 @@ use derive_more::{From, Into};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use solana_sdk::rent::{
-    Rent as RentOriginal, RentDue, DEFAULT_LAMPORTS_PER_BYTE_YEAR,
-    DEFAULT_EXEMPTION_THRESHOLD, DEFAULT_BURN_PERCENT, ACCOUNT_STORAGE_OVERHEAD
+    Rent as RentOriginal, RentDue, ACCOUNT_STORAGE_OVERHEAD, DEFAULT_BURN_PERCENT,
+    DEFAULT_EXEMPTION_THRESHOLD, DEFAULT_LAMPORTS_PER_BYTE_YEAR,
 };
 
 /// Configuration of network rent.
@@ -20,7 +20,12 @@ transaction_status_boilerplate!(Rent);
 impl Rent {
     #[new]
     pub fn new(lamports_per_byte_year: u64, exemption_threshold: f64, burn_percent: u8) -> Self {
-        RentOriginal {lamports_per_byte_year, exemption_threshold, burn_percent}.into()
+        RentOriginal {
+            lamports_per_byte_year,
+            exemption_threshold,
+            burn_percent,
+        }
+        .into()
     }
 
     #[staticmethod]
@@ -51,6 +56,12 @@ impl Rent {
     ///
     /// The first value returned is the amount burned. The second is the amount
     /// to distribute to validators.
+    /// 
+    /// Args:
+    ///     rent_collected (int): The amount of rent collected.
+    /// 
+    /// Returns:
+    ///     tuple[int, int]: The amount burned and the amount to distribute to validators.
     pub fn calculate_burn(&self, rent_collected: u64) -> (u64, u64) {
         self.0.calculate_burn(rent_collected)
     }
@@ -61,6 +72,12 @@ impl Rent {
     /// ``calculate_split_rent_exempt_reserve`` in the stake program. When this
     /// function is updated, eg. when making rent variable, the stake program
     /// will need to be refactored.
+    /// 
+    /// Args:
+    ///     data_len (int): The account data size.
+    /// 
+    /// Returns:
+    ///     int: The minimum balance due.
     pub fn minimum_balance(&self, data_len: usize) -> u64 {
         self.0.minimum_balance(data_len)
     }
@@ -71,14 +88,29 @@ impl Rent {
     }
 
     /// Rent due on account's data length with balance.
+    /// 
+    /// Args:
+    ///     balance (int): The account balance.
+    ///     data_len (int): The account data length.
+    ///     years_elapsed (float): Time elapsed in years.
+    /// 
+    /// Returns:
+    ///     Optional[int]: The rent due.
     pub fn due(&self, balance: u64, data_len: usize, years_elapsed: f64) -> Option<u64> {
         match self.0.due(balance, data_len, years_elapsed) {
             RentDue::Exempt => None,
-            RentDue::Paying(x) => Some(x)
+            RentDue::Paying(x) => Some(x),
         }
     }
 
     /// Rent due for account that is known to be not exempt.
+    /// 
+    /// Args:
+    ///     data_len (int): The account data length.
+    ///     years_elapsed (float): Time elapsed in years.
+    /// 
+    /// Returns:
+    ///     int: The amount due.
     pub fn due_amount(&self, data_len: usize, years_elapsed: f64) -> u64 {
         self.0.due_amount(data_len, years_elapsed)
     }
@@ -86,7 +118,7 @@ impl Rent {
     /// Creates a `Rent` that charges no lamports.
     ///
     /// This is used for testing.
-    /// 
+    ///
     #[staticmethod]
     pub fn free() -> Self {
         RentOriginal::free().into()
@@ -104,7 +136,10 @@ impl Rent {
 pub(crate) fn create_rent_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "rent")?;
     m.add_class::<Rent>()?;
-    m.add("DEFAULT_LAMPORTS_PER_BYTE_YEAR", DEFAULT_LAMPORTS_PER_BYTE_YEAR)?;
+    m.add(
+        "DEFAULT_LAMPORTS_PER_BYTE_YEAR",
+        DEFAULT_LAMPORTS_PER_BYTE_YEAR,
+    )?;
     m.add("DEFAULT_EXEMPTION_THRESHOLD", DEFAULT_EXEMPTION_THRESHOLD)?;
     m.add("DEFAULT_BURN_PERCENT", DEFAULT_BURN_PERCENT)?;
     m.add("ACCOUNT_STORAGE_OVERHEAD", ACCOUNT_STORAGE_OVERHEAD)?;
