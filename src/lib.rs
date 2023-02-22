@@ -23,6 +23,7 @@ pub mod address_lookup_table_account;
 pub mod clock;
 pub mod commitment_config;
 pub mod epoch_schedule;
+#[cfg(feature = "program-test")]
 pub mod program_test;
 pub mod rent;
 pub mod rpc;
@@ -33,6 +34,7 @@ mod tmp_transaction_status;
 pub mod transaction_status;
 use clock::create_clock_mod;
 use epoch_schedule::create_epoch_schedule_mod;
+#[cfg(feature = "program-test")]
 use program_test::create_program_test_mod;
 use rent::create_rent_mod;
 use solders_primitives::{
@@ -77,6 +79,7 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
     let account_mod = create_account_mod(py)?;
     let epoch_schedule_mod = create_epoch_schedule_mod(py)?;
     let address_lookup_table_account_mod = create_address_lookup_table_account_mod(py)?;
+    #[cfg(feature = "program-test")]
     let program_test_mod = create_program_test_mod(py)?;
     let clock_mod = create_clock_mod(py)?;
     let rent_mod = create_rent_mod(py)?;
@@ -100,6 +103,7 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
         account_mod,
         address_lookup_table_account_mod,
         epoch_schedule_mod,
+        #[cfg(feature = "program-test")]
         program_test_mod,
         clock_mod,
         rent_mod,
