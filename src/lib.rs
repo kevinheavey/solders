@@ -21,10 +21,10 @@ use account_decoder::create_account_decoder_mod;
 pub mod account;
 pub mod address_lookup_table_account;
 pub mod clock;
-pub mod rent;
 pub mod commitment_config;
 pub mod epoch_schedule;
 pub mod program_test;
+pub mod rent;
 pub mod rpc;
 pub mod system_program;
 pub mod sysvar;
@@ -32,9 +32,9 @@ mod tmp_account_decoder;
 mod tmp_transaction_status;
 pub mod transaction_status;
 use clock::create_clock_mod;
-use rent::create_rent_mod;
 use epoch_schedule::create_epoch_schedule_mod;
 use program_test::create_program_test_mod;
+use rent::create_rent_mod;
 use solders_primitives::{
     hash::Hash as SolderHash, keypair::Keypair, null_signer::NullSigner, presigner::Presigner,
     pubkey::Pubkey, signature::Signature,

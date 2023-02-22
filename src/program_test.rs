@@ -1,31 +1,40 @@
 use crate::{
     account::Account,
+    clock::Clock,
     commitment_config::CommitmentLevel,
+    rent::Rent,
     transaction_status::{
         transaction_status_boilerplate, TransactionConfirmationStatus, TransactionErrorType,
         TransactionReturnData, TransactionStatus,
     },
-    clock::Clock,
-    rent::Rent
 };
 use derive_more::{From, Into};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
-use solana_banks_client::{TransactionStatus as TransactionStatusBanks, BanksClientError as BanksClientErrorOriginal};
+use solana_banks_client::{
+    BanksClientError as BanksClientErrorOriginal, TransactionStatus as TransactionStatusBanks,
+};
 use solana_banks_interface::{
     BanksTransactionResultWithMetadata, BanksTransactionResultWithSimulation,
     TransactionConfirmationStatus as TransactionConfirmationStatusBanks, TransactionMetadata,
 };
 use solders_macros::{common_methods, richcmp_eq_only};
 use solders_primitives::{
-    hash::Hash as SolderHash, keypair::Keypair, pubkey::Pubkey, signature::Signature,
-    transaction::VersionedTransaction, message::Message,
+    hash::Hash as SolderHash, keypair::Keypair, message::Message, pubkey::Pubkey,
+    signature::Signature, transaction::VersionedTransaction,
 };
-use solders_traits::{to_py_err, BanksClientError, to_py_value_err};
+use solders_traits::{to_py_err, to_py_value_err, BanksClientError};
 use tarpc::context::current;
 use {
-    solana_program_test::{BanksClient as BanksClientOriginal, ProgramTest, ProgramTestContext as ProgramTestContextOriginal},
-    solana_sdk::{commitment_config::CommitmentLevel as CommitmentLevelOriginal, clock::Clock as ClockOriginal, transaction::Transaction, account::AccountSharedData, slot_history::Slot},
+    solana_program_test::{
+        BanksClient as BanksClientOriginal, ProgramTest,
+        ProgramTestContext as ProgramTestContextOriginal,
+    },
+    solana_sdk::{
+        account::AccountSharedData, clock::Clock as ClockOriginal,
+        commitment_config::CommitmentLevel as CommitmentLevelOriginal, slot_history::Slot,
+        transaction::Transaction,
+    },
 };
 
 macro_rules! async_res {
@@ -145,14 +154,15 @@ impl From<BanksTransactionResultWithSimulation> for BanksTransactionResultWithMe
         BanksTransactionResultWithMetadata {
             result: match r.result {
                 None => Ok(()),
-                Some(x) => x
+                Some(x) => x,
             },
             metadata: r.simulation_details.map(|d| TransactionMetadata {
                 log_messages: d.logs,
                 compute_units_consumed: d.units_consumed,
-                return_data: d.return_data
-            })
-        }.into()   
+                return_data: d.return_data,
+            }),
+        }
+        .into()
     }
 }
 
@@ -245,7 +255,10 @@ impl BanksClient {
         transactions: Vec<VersionedTransaction>,
         commitment: Option<CommitmentLevel>,
     ) -> PyResult<&'p PyAny> {
-        let txs_inner: Vec<Transaction> = transactions.iter().map(|t| t.0.clone().into_legacy_transaction().unwrap()).collect();
+        let txs_inner: Vec<Transaction> = transactions
+            .iter()
+            .map(|t| t.0.clone().into_legacy_transaction().unwrap())
+            .collect();
         let commitment_inner = CommitmentLevelOriginal::from(commitment.unwrap_or_default());
         let mut underlying = self.0.clone();
         pyo3_asyncio::tokio::future_into_py(py, async move {
@@ -273,7 +286,9 @@ impl BanksClient {
                 .simulate_transaction_with_commitment(tx_inner, commitment_inner)
                 .await
                 .map_err(to_py_err);
-            let pyobj: PyResult<PyObject> = Python::with_gil(|py| res.map(|x| BanksTransactionResultWithMeta::from(x).into_py(py)));
+            let pyobj: PyResult<PyObject> = Python::with_gil(|py| {
+                res.map(|x| BanksTransactionResultWithMeta::from(x).into_py(py))
+            });
             pyobj
         })
     }
@@ -331,7 +346,11 @@ impl BanksClient {
             let res = async_res!(underlying.get_transaction_statuses(signatures_underlying));
             // let res_converted = res.map(|v| v.iter().map(|o| o.map(TransactionStatus::from)).collect::<Vec<Option<TransactionStatus>>>());
             let pyobj: PyResult<Vec<Option<PyObject>>> = Python::with_gil(|py| {
-                res.map(|v| v.iter().map(|o| o.clone().map(|t| TransactionStatus::from(t).into_py(py))).collect())
+                res.map(|v| {
+                    v.iter()
+                        .map(|o| o.clone().map(|t| TransactionStatus::from(t).into_py(py)))
+                        .collect()
+                })
             });
             pyobj
         })
@@ -366,28 +385,22 @@ impl BanksClient {
         })
     }
 
-    pub fn get_rent<'p>(
-        &mut self,
-        py: Python<'p>,
-    ) -> PyResult<&'p PyAny> {
+    pub fn get_rent<'p>(&mut self, py: Python<'p>) -> PyResult<&'p PyAny> {
         let mut underlying = self.0.clone();
         pyo3_asyncio::tokio::future_into_py(py, async move {
-            let res =
-                async_res!(underlying.get_rent());
-            let pyobj: PyResult<PyObject> = Python::with_gil(|py| res.map(|x| Rent::from(x).into_py(py)));
+            let res = async_res!(underlying.get_rent());
+            let pyobj: PyResult<PyObject> =
+                Python::with_gil(|py| res.map(|x| Rent::from(x).into_py(py)));
             pyobj
         })
     }
 
-    pub fn get_clock<'p>(
-        &mut self,
-        py: Python<'p>,
-    ) -> PyResult<&'p PyAny> {
+    pub fn get_clock<'p>(&mut self, py: Python<'p>) -> PyResult<&'p PyAny> {
         let mut underlying = self.0.clone();
         pyo3_asyncio::tokio::future_into_py(py, async move {
-            let res =
-                async_res!(underlying.get_sysvar::<ClockOriginal>());
-            let pyobj: PyResult<PyObject> = Python::with_gil(|py| res.map(|x| Clock::from(x).into_py(py)));
+            let res = async_res!(underlying.get_sysvar::<ClockOriginal>());
+            let pyobj: PyResult<PyObject> =
+                Python::with_gil(|py| res.map(|x| Clock::from(x).into_py(py)));
             pyobj
         })
     }
@@ -418,16 +431,18 @@ impl BanksClient {
         let mut underlying = self.0.clone();
         let commitment_inner = CommitmentLevelOriginal::from(commitment.unwrap_or_default());
         pyo3_asyncio::tokio::future_into_py(py, async move {
-            let res =
-                async_res!(underlying.get_latest_blockhash_with_commitment(commitment_inner));
+            let res = async_res!(underlying.get_latest_blockhash_with_commitment(commitment_inner));
             let flattened = match res {
                 Ok(v) => match v {
                     Some(x) => Ok(x),
-                    None => Err(to_py_err(BanksClientErrorOriginal::ClientError("valid blockhash not found")))
+                    None => Err(to_py_err(BanksClientErrorOriginal::ClientError(
+                        "valid blockhash not found",
+                    ))),
                 },
-                Err(e) => Err(e)
+                Err(e) => Err(e),
             };
-            let pyobj: PyResult<PyObject> = Python::with_gil(|py| flattened.map(|x| (SolderHash::from(x.0), x.1).into_py(py)));
+            let pyobj: PyResult<PyObject> =
+                Python::with_gil(|py| flattened.map(|x| (SolderHash::from(x.0), x.1).into_py(py)));
             pyobj
         })
     }
@@ -442,9 +457,13 @@ impl BanksClient {
         let commitment_inner = CommitmentLevelOriginal::from(commitment.unwrap_or_default());
         let message_inner = message.0;
         pyo3_asyncio::tokio::future_into_py(py, async move {
-            let res =
-                async_res!(underlying.get_fee_for_message_with_commitment_and_context(current(), commitment_inner, message_inner));
-            let pyobj: PyResult<Option<PyObject>> = Python::with_gil(|py| res.map(|x| x.map(|num| num.into_py(py))));
+            let res = async_res!(underlying.get_fee_for_message_with_commitment_and_context(
+                current(),
+                commitment_inner,
+                message_inner
+            ));
+            let pyobj: PyResult<Option<PyObject>> =
+                Python::with_gil(|py| res.map(|x| x.map(|num| num.into_py(py))));
             pyobj
         })
     }
@@ -527,7 +546,8 @@ pub fn start_with_context<'p>(
     );
     pyo3_asyncio::tokio::future_into_py(py, async move {
         let inner = pt.start_with_context().await;
-        let res: PyResult<PyObject> = Python::with_gil(|py| Ok(ProgramTestContext(inner).into_py(py)));
+        let res: PyResult<PyObject> =
+            Python::with_gil(|py| Ok(ProgramTestContext(inner).into_py(py)));
         res
     })
 }
@@ -559,7 +579,8 @@ impl ProgramTestContext {
         vote_account_address: &Pubkey,
         number_of_credits: u64,
     ) {
-        self.0.increment_vote_account_credits(vote_account_address.as_ref(), number_of_credits);
+        self.0
+            .increment_vote_account_credits(vote_account_address.as_ref(), number_of_credits);
     }
 
     /// Create or overwrite an account, subverting normal runtime checks.
@@ -569,7 +590,8 @@ impl ProgramTestContext {
     /// Beware that it can be used to create states that would not be reachable
     /// by sending transactions!
     pub fn set_account(&mut self, address: &Pubkey, account: Account) {
-        self.0.set_account(address.as_ref(), &AccountSharedData::from(account.0));
+        self.0
+            .set_account(address.as_ref(), &AccountSharedData::from(account.0));
     }
 
     /// Overwrite the clock sysvar.
@@ -582,10 +604,11 @@ impl ProgramTestContext {
         self.0.set_sysvar(&rent.0)
     }
 
-
     /// Force the working bank ahead to a new slot
     pub fn warp_to_slot(&mut self, warp_slot: Slot) -> PyResult<()> {
-        self.0.warp_to_slot(warp_slot).map_err(|e| to_py_value_err(&e))
+        self.0
+            .warp_to_slot(warp_slot)
+            .map_err(|e| to_py_value_err(&e))
     }
 }
 
