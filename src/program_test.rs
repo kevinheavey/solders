@@ -620,5 +620,6 @@ pub(crate) fn create_program_test_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<BanksTransactionResultWithMeta>()?;
     m.add_class::<BanksTransactionMeta>()?;
     m.add_function(wrap_pyfunction!(start, m)?)?;
+    m.add_function(wrap_pyfunction!(start_with_context, m)?)?;
     Ok(m)
 }
