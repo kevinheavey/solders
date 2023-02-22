@@ -13,7 +13,7 @@ from solders.system_program import (
     transfer,
     withdraw_nonce_account,
 )
-from solders.transaction import Transaction, VersionedTransaction, Legacy
+from solders.transaction import Legacy, Transaction, VersionedTransaction
 
 
 def test_try_new() -> None:
