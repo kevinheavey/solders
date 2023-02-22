@@ -719,7 +719,11 @@ impl RichcmpEqualityOnly for Legacy {}
 
 #[pymethods]
 impl Legacy {
-    fn __richcmp__(&self, other: &Self, op: pyo3::basic::CompareOp) -> pyo3::prelude::PyResult<bool> {
+    fn __richcmp__(
+        &self,
+        other: &Self,
+        op: pyo3::basic::CompareOp,
+    ) -> pyo3::prelude::PyResult<bool> {
         // we override the default impl since it implicitly casts to in which causes problems when transaction
         // version is represented as `Legacy | int`.
         solders_traits::RichcmpEqualityOnly::richcmp(self, other, op)

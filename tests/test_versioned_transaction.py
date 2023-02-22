@@ -13,7 +13,12 @@ from solders.system_program import (
     transfer,
     withdraw_nonce_account,
 )
-from solders.transaction import Legacy, Transaction, TransactionError, VersionedTransaction
+from solders.transaction import (
+    Legacy,
+    Transaction,
+    TransactionError,
+    VersionedTransaction,
+)
 
 
 def test_try_new() -> None:
@@ -153,6 +158,7 @@ def test_partial_signing() -> None:
     assert deserialized == fully_signed
     assert bytes(deserialized) == bytes(fully_signed)
 
+
 def test_partial_signing_messageV0() -> None:
     keypair0 = Keypair()
     keypair1 = Keypair()
@@ -165,7 +171,7 @@ def test_partial_signing_messageV0() -> None:
             )
         ],
         [],
-        Hash.default()
+        Hash.default(),
     )
     signers = (keypair0, NullSigner(keypair1.pubkey()))
     partially_signed = VersionedTransaction(message, signers)
@@ -179,17 +185,23 @@ def test_partial_signing_messageV0() -> None:
         if key == keypair1.pubkey()
     )
     sigs = deserialized.signatures
-    sigs[keypair1_sig_index] = keypair1.sign_message(to_bytes_versioned(deserialized_message))
+    sigs[keypair1_sig_index] = keypair1.sign_message(
+        to_bytes_versioned(deserialized_message)
+    )
     deserialized.signatures = sigs
     fully_signed = VersionedTransaction(message, [keypair0, keypair1])
     assert deserialized.signatures == fully_signed.signatures
     assert deserialized == fully_signed
     assert bytes(deserialized) == bytes(fully_signed)
 
+
 def test_legacy_version() -> None:
     assert Legacy.Legacy == Legacy.Legacy
-    assert Legacy.Legacy != 0 # we don't want implicit int conversion because it clashes with versioned transaction versions
+    assert (
+        Legacy.Legacy != 0
+    )  # we don't want implicit int conversion because it clashes with versioned transaction versions
     assert isinstance(Legacy.Legacy, Legacy)
+
 
 def test_message_missing_byte() -> None:
     # https://github.com/kevinheavey/solders/issues/43
@@ -198,13 +210,14 @@ def test_message_missing_byte() -> None:
         "3KWC65p6AvMjvpR2r1qLTC4HVSH4jEFr5TMQxagMLo1o3j4yVYzKsfbB3jKtu3yGEHjx2Cc3L5t8wSo91vpjT63t"
     )
     public_key = private_key.pubkey()
-    program_key = Pubkey.from_string(
-        "HQ2UUt18uJqKaQFJhgV9zaTdQxUZjNrsKFgoEDquBkcx"
-    )
+    program_key = Pubkey.from_string("HQ2UUt18uJqKaQFJhgV9zaTdQxUZjNrsKFgoEDquBkcx")
     instruction = Instruction(program_key, bytes("123", "utf-8"), [])
 
     original_msg = MessageV0.try_compile(
-        public_key, [instruction], [], Hash.from_string("4uQeVj5tqViQh7yWWGStvkEG1Zmhx6uasJtWCJziofM")
+        public_key,
+        [instruction],
+        [],
+        Hash.from_string("4uQeVj5tqViQh7yWWGStvkEG1Zmhx6uasJtWCJziofM"),
     )
 
     signed_tx = VersionedTransaction(original_msg, [private_key])
