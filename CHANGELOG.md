@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.14.4] - 2023-02-22
+
+### Added
+
+Added `solders.message.to_bytes_versioned` and `from_bytes_versioned` to serialize versioned messages including the extra leading byte [(#45](https://github.com/kevinheavey/solders/pull/45)
+
+### Fixed
+
+`transaction.Legacy` no longer implicitly casts to int when checking equality. This was breaking tx version checking when tx version was returned as `Legacy | int` [(#44)](https://github.com/kevinheavey/solders/pull/44
+
 ## [0.14.3] - 2023-01-28
 
 ### Fixed 

@@ -1,6 +1,6 @@
 [package]
 name = "solders"
-version = "0.14.3"
+version = "0.14.4"
 edition = "2021"
 include = ["/src", "/LICENSE", "/pyproject.toml"]
 description = "Python binding to the Solana Rust SDK"
@@ -52,10 +52,10 @@ members = [".", "traits", "macros", "primitives"]
 
 [workspace.dependencies]
 pyo3 = { version = "0.18.0", default-features = false }
-solders-macros = { path = "./macros", version = "0.14.3" }
-solders-traits = { path = "./traits", version = "0.14.3" }
+solders-macros = { path = "./macros", version = "0.14.4" }
+solders-traits = { path = "./traits", version = "0.14.4" }
 serde_with = { version = "^1.14.0", features = ["base64"] }
-solders-primitives = { path = "./primitives", version = "0.14.3" }
+solders-primitives = { path = "./primitives", version = "0.14.4" }
 solana-sdk = "^1.15.2"
 bincode = "1.3.3"
 base64 = "0.13.0"
