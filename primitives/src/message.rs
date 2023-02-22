@@ -18,7 +18,7 @@ use solana_sdk::{
 };
 use solders_macros::{common_methods, richcmp_eq_only, EnumIntoPy};
 use solders_traits::{
-    handle_py_err, impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
+    handle_py_err, handle_py_value_err, impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
     CommonMethodsCore, PyBytesGeneral, PyErrWrapper, RichcmpEqualityOnly,
 };
 
@@ -892,4 +892,15 @@ impl From<VersionedMessage> for MessageV0Original {
             _ => unreachable!(),
         }
     }
+}
+
+#[pyfunction]
+pub fn to_bytes_versioned(msg: VersionedMessage) -> Vec<u8> {
+    VersionedMessageOriginal::from(msg).serialize()
+}
+
+#[pyfunction]
+pub fn from_bytes_versioned(raw: &[u8]) -> PyResult<VersionedMessage> {
+    let deser = bincode::deserialize::<VersionedMessageOriginal>(raw);
+    handle_py_value_err(deser)
 }
