@@ -895,8 +895,8 @@ impl From<VersionedMessage> for MessageV0Original {
 }
 
 #[pyfunction]
-pub fn to_bytes_versioned(msg: VersionedMessage) -> Vec<u8> {
-    VersionedMessageOriginal::from(msg).serialize()
+pub fn to_bytes_versioned<'a>(msg: VersionedMessage, py: Python<'a>) -> &'a PyBytes {
+    PyBytes::new(py, &VersionedMessageOriginal::from(msg).serialize())
 }
 
 #[pyfunction]
