@@ -20,6 +20,8 @@ pub mod account_decoder;
 use account_decoder::create_account_decoder_mod;
 pub mod account;
 pub mod address_lookup_table_account;
+pub mod clock;
+pub mod rent;
 pub mod commitment_config;
 pub mod epoch_schedule;
 pub mod program_test;
@@ -29,6 +31,8 @@ pub mod sysvar;
 mod tmp_account_decoder;
 mod tmp_transaction_status;
 pub mod transaction_status;
+use clock::create_clock_mod;
+use rent::create_rent_mod;
 use epoch_schedule::create_epoch_schedule_mod;
 use program_test::create_program_test_mod;
 use solders_primitives::{
@@ -74,6 +78,8 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
     let epoch_schedule_mod = create_epoch_schedule_mod(py)?;
     let address_lookup_table_account_mod = create_address_lookup_table_account_mod(py)?;
     let program_test_mod = create_program_test_mod(py)?;
+    let clock_mod = create_clock_mod(py)?;
+    let rent_mod = create_rent_mod(py)?;
     let submodules = [
         errors_mod,
         hash_mod,
@@ -95,6 +101,8 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
         address_lookup_table_account_mod,
         epoch_schedule_mod,
         program_test_mod,
+        clock_mod,
+        rent_mod,
     ];
     let modules: HashMap<String, &PyModule> = submodules
         .iter()
