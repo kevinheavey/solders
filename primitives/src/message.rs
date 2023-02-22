@@ -904,7 +904,7 @@ impl From<VersionedMessage> for MessageV0Original {
 /// Returns:
 ///     bytes: the serialized message.
 #[pyfunction]
-pub fn to_bytes_versioned<'a>(msg: VersionedMessage, py: Python<'a>) -> &'a PyBytes {
+pub fn to_bytes_versioned(msg: VersionedMessage, py: Python<'_>) -> &PyBytes {
     PyBytes::new(py, &VersionedMessageOriginal::from(msg).serialize())
 }
 
