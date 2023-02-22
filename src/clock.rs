@@ -49,16 +49,22 @@ impl Clock {
         self.0.slot
     }
 
-    /// int: The current Epoch.
+    /// The timestamp of the first `Slot` in this `Epoch`.
     #[getter]
     pub fn epoch_start_timestamp(&self) -> UnixTimestamp {
         self.0.epoch_start_timestamp
     }
 
-    /// int: The future Epoch for which the leader schedule has most recently been calculated.
+    /// int: The current epoch.
     #[getter]
     pub fn epoch(&self) -> Epoch {
         self.0.epoch
+    }
+
+    /// int: The future Epoch for which the leader schedule has most recently been calculated.
+    #[getter]
+    pub fn leader_schedule_epoch(&self) -> Epoch {
+        self.0.leader_schedule_epoch
     }
 
     /// int: The approximate real world time of the current slot.
