@@ -4388,6 +4388,7 @@ dependencies = [
  "serde_json",
  "serde_with 1.14.0",
  "solana-banks-client",
+ "solana-banks-interface",
  "solana-program-test",
  "solana-sdk",
  "solders-macros",
