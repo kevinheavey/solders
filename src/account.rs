@@ -28,7 +28,7 @@ use crate::{
 ///
 #[pyclass(module = "solders.account", subclass)]
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Default, From, Into)]
-pub struct Account(AccountOriginal);
+pub struct Account(pub AccountOriginal);
 
 #[richcmp_eq_only]
 #[common_methods]

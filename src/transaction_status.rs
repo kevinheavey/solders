@@ -3,8 +3,7 @@ use derive_more::{From, Into};
 extern crate base64;
 use pythonize::{depythonize, pythonize};
 use solders_primitives::{message::MessageHeader, pubkey::Pubkey, signature::Signature};
-use solders_traits::{handle_py_value_err, RichcmpEqualityOnly};
-use std::fmt::Display;
+use solders_traits::handle_py_value_err;
 use std::str::FromStr;
 
 use crate::{
@@ -50,8 +49,8 @@ use solders_primitives::transaction::{TransactionVersion, VersionedTransaction};
 
 macro_rules! transaction_status_boilerplate {
     ($name:ident) => {
-        impl RichcmpEqualityOnly for $name {}
-        impl Display for $name {
+        impl solders_traits::RichcmpEqualityOnly for $name {}
+        impl std::fmt::Display for $name {
             fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
                 write!(f, "{:?}", self)
             }
@@ -1664,7 +1663,7 @@ pub type Rewards = Vec<Reward>;
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.transaction_status", subclass)]
-pub struct TransactionStatus(TransactionStatusOriginal);
+pub struct TransactionStatus(pub TransactionStatusOriginal);
 
 transaction_status_boilerplate!(TransactionStatus);
 
