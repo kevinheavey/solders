@@ -56,10 +56,10 @@ impl Rent {
     ///
     /// The first value returned is the amount burned. The second is the amount
     /// to distribute to validators.
-    /// 
+    ///
     /// Args:
     ///     rent_collected (int): The amount of rent collected.
-    /// 
+    ///
     /// Returns:
     ///     tuple[int, int]: The amount burned and the amount to distribute to validators.
     pub fn calculate_burn(&self, rent_collected: u64) -> (u64, u64) {
@@ -72,10 +72,10 @@ impl Rent {
     /// ``calculate_split_rent_exempt_reserve`` in the stake program. When this
     /// function is updated, eg. when making rent variable, the stake program
     /// will need to be refactored.
-    /// 
+    ///
     /// Args:
     ///     data_len (int): The account data size.
-    /// 
+    ///
     /// Returns:
     ///     int: The minimum balance due.
     pub fn minimum_balance(&self, data_len: usize) -> u64 {
@@ -88,12 +88,12 @@ impl Rent {
     }
 
     /// Rent due on account's data length with balance.
-    /// 
+    ///
     /// Args:
     ///     balance (int): The account balance.
     ///     data_len (int): The account data length.
     ///     years_elapsed (float): Time elapsed in years.
-    /// 
+    ///
     /// Returns:
     ///     Optional[int]: The rent due.
     pub fn due(&self, balance: u64, data_len: usize, years_elapsed: f64) -> Option<u64> {
@@ -104,11 +104,11 @@ impl Rent {
     }
 
     /// Rent due for account that is known to be not exempt.
-    /// 
+    ///
     /// Args:
     ///     data_len (int): The account data length.
     ///     years_elapsed (float): Time elapsed in years.
-    /// 
+    ///
     /// Returns:
     ///     int: The amount due.
     pub fn due_amount(&self, data_len: usize, years_elapsed: f64) -> u64 {
