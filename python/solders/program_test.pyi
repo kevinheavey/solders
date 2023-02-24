@@ -94,7 +94,9 @@ class BanksTransactionMeta:
     def __richcmp__(self, other: "BanksTransactionMeta", op: int) -> bool: ...
 
 class BanksTransactionResultWithMeta:
+    @property
     def meta(self) -> Optional[BanksTransactionMeta]: ...
+    @property
     def result(self) -> Optional[TransactionErrorType]: ...
     def __init__(
         self,
