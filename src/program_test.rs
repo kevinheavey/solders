@@ -520,34 +520,6 @@ pub fn start<'p>(
         accounts,
     );
     pyo3_asyncio::tokio::future_into_py(py, async move {
-        let inner = pt.start().await;
-        let tup = (
-            BanksClient::from(inner.0),
-            Keypair::from(inner.1),
-            SolderHash::from(inner.2),
-        );
-        let res: PyResult<PyObject> = Python::with_gil(|py| Ok(tup.into_py(py)));
-        res
-    })
-}
-
-#[pyfunction]
-pub fn start_with_context<'p>(
-    py: Python<'p>,
-    programs: Option<Vec<(&str, Pubkey)>>,
-    compute_max_units: Option<u64>,
-    transaction_account_lock_limit: Option<usize>,
-    use_bpf_jit: Option<bool>,
-    accounts: Option<Vec<(Pubkey, Account)>>,
-) -> PyResult<&'p PyAny> {
-    let pt = new_program_test(
-        programs,
-        compute_max_units,
-        transaction_account_lock_limit,
-        use_bpf_jit,
-        accounts,
-    );
-    pyo3_asyncio::tokio::future_into_py(py, async move {
         let inner = pt.start_with_context().await;
         let res: PyResult<PyObject> =
             Python::with_gil(|py| Ok(ProgramTestContext(inner).into_py(py)));
@@ -623,6 +595,5 @@ pub(crate) fn create_program_test_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<BanksTransactionResultWithMeta>()?;
     m.add_class::<BanksTransactionMeta>()?;
     m.add_function(wrap_pyfunction!(start, m)?)?;
-    m.add_function(wrap_pyfunction!(start_with_context, m)?)?;
     Ok(m)
 }

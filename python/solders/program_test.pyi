@@ -136,11 +136,4 @@ async def start(
     transaction_account_lock_limit: Optional[int] = None,
     use_bpf_jit: Optional[bool] = None,
     accounts: Optional[Sequence[Tuple[Pubkey, Account]]] = None,
-) -> Tuple[BanksClient, Keypair, Hash]: ...
-async def start_with_context(
-    programs: Optional[Sequence[Tuple[str, Pubkey]]] = None,
-    compute_max_units: Optional[int] = None,
-    transaction_account_lock_limit: Optional[int] = None,
-    use_bpf_jit: Optional[bool] = None,
-    accounts: Optional[Sequence[Tuple[Pubkey, Account]]] = None,
 ) -> ProgramTestContext: ...

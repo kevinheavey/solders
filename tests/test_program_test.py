@@ -16,9 +16,12 @@ async def test_logging() -> None:
         bytes([5, 10, 11, 12, 13, 14]),
         [AccountMeta(Pubkey.new_unique(), is_signer=False, is_writable=True)],
     )
-    client, payer, blockhash = await start(
+    context = await start(
         programs=[("spl_example_logging", program_id)]
     )
+    payer = context.payer
+    blockhash = context.last_blockhash
+    client = context.banks_client
     msg = Message.new_with_blockhash([ix], payer.pubkey(), blockhash)
     tx = VersionedTransaction(msg, [payer])
     meta = (await client.process_transaction_with_metadata(tx)).meta
@@ -36,7 +39,7 @@ async def test_helloworld() -> None:
         bytes([0]),
         [AccountMeta(greeted_pubkey, is_signer=False, is_writable=True)],
     )
-    client, payer, blockhash = await start(
+    context = await start(
         programs=[("helloworld", program_id)],
         accounts=[
             (
@@ -45,6 +48,9 @@ async def test_helloworld() -> None:
             )
         ],
     )
+    client = context.banks_client
+    payer = context.payer
+    blockhash = context.last_blockhash
     greeted_account_before = await client.get_account(greeted_pubkey)
     assert greeted_account_before is not None
     assert greeted_account_before.data == bytes([0, 0, 0, 0])
