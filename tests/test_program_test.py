@@ -21,7 +21,9 @@ async def test_logging() -> None:
     )
     msg = Message.new_with_blockhash([ix], payer.pubkey(), blockhash)
     tx = VersionedTransaction(msg, [payer])
-    await client.process_transaction(tx)
+    meta = (await client.process_transaction_with_metadata(tx)).meta
+    assert meta is not None
+    assert meta.log_messages[1] == 'Program log: static string'
 
 
 @mark.asyncio
