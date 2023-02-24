@@ -9,6 +9,7 @@ from solders.transaction import VersionedTransaction
 
 @mark.asyncio
 async def test_logging() -> None:
+    # https://github.com/solana-labs/solana-program-library/blob/bd216c8103cd8eb9f5f32e742973e7afb52f3b81/examples/rust/logging/tests/functional.rs
     program_id = Pubkey.from_string("Logging111111111111111111111111111111111111")
     ix = Instruction(
         program_id,
@@ -25,6 +26,7 @@ async def test_logging() -> None:
 
 @mark.asyncio
 async def test_helloworld() -> None:
+    # https://github.com/solana-labs/example-helloworld/blob/36eb41d1290732786e13bd097668d8676254a139/src/program-rust/tests/lib.rs
     program_id = Pubkey.new_unique()
     greeted_pubkey = Pubkey.new_unique()
     ix = Instruction(
