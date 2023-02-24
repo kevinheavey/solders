@@ -20,49 +20,49 @@ class BanksClient:
     def get_account(
         self, address: Pubkey, commitment: Optional[CommitmentLevel] = None
     ) -> Account: ...
-    def get_balance(
+    async def get_balance(
         self,
         address: Pubkey,
         commitment: Optional[CommitmentLevel] = None,
     ) -> int: ...
-    def get_block_height(self, commitment: Optional[CommitmentLevel] = None) -> int: ...
-    def get_clock(self) -> Clock: ...
-    def get_fee_for_message(
+    async def get_block_height(self, commitment: Optional[CommitmentLevel] = None) -> int: ...
+    async def get_clock(self) -> Clock: ...
+    async def get_fee_for_message(
         self,
         message: Message,
         commitment: Optional[CommitmentLevel] = None,
     ) -> Optional[int]: ...
-    def get_latest_blockhash(
+    async def get_latest_blockhash(
         self, commitment: Optional[CommitmentLevel] = None
     ) -> Tuple[Hash, int]: ...
-    def get_rent(self) -> Rent: ...
-    def get_slot(self, commitment: Optional[CommitmentLevel] = None) -> int: ...
-    def get_transaction_status(
+    async def get_rent(self) -> Rent: ...
+    async def get_slot(self, commitment: Optional[CommitmentLevel] = None) -> int: ...
+    async def get_transaction_status(
         self, signature: Signature
     ) -> Optional[TransactionStatus]: ...
-    def get_transaction_statuses(
+    async def get_transaction_statuses(
         self, signatures: Sequence[Signature]
     ) -> List[Optional[Signature]]: ...
-    def process_transaction(
+    async def process_transaction(
         self,
         transaction: VersionedTransaction,
         commitment: Optional[CommitmentLevel] = None,
     ) -> None: ...
-    def process_transaction_with_metadata(
+    async def process_transaction_with_metadata(
         self, Transaction: VersionedTransaction
     ) -> BanksTransactionResultWithMeta: ...
-    def process_transaction_with_preflight(
+    async def process_transaction_with_preflight(
         self,
         transaction: VersionedTransaction,
         commitment: Optional[CommitmentLevel] = None,
     ) -> BanksTransactionResultWithMeta: ...
-    def process_transactions(
+    async def process_transactions(
         self,
         transactions: List[VersionedTransaction],
         commitment: Optional[CommitmentLevel] = None,
     ) -> None: ...
-    def send_transaction(self, transaction: VersionedTransaction) -> None: ...
-    def simulate_transaction(
+    async def send_transaction(self, transaction: VersionedTransaction) -> None: ...
+    async def simulate_transaction(
         self,
         transaction: VersionedTransaction,
         commitment: Optional[CommitmentLevel] = None,
@@ -128,14 +128,14 @@ class ProgramTestContext:
     def set_rent(self, rent: Rent) -> None: ...
     def warp_to_slot(self, warp_slot: int) -> None: ...
 
-def start(
+async def start(
     programs: Optional[Sequence[Tuple[str, Pubkey]]] = None,
     compute_max_units: Optional[int] = None,
     transaction_account_lock_limit: Optional[int] = None,
     use_bpf_jit: Optional[bool] = None,
     accounts: Optional[Sequence[Tuple[Pubkey, Account]]] = None,
 ) -> Tuple[BanksClient, Keypair, Hash]: ...
-def start_with_context(
+async def start_with_context(
     programs: Optional[Sequence[Tuple[str, Pubkey]]] = None,
     compute_max_units: Optional[int] = None,
     transaction_account_lock_limit: Optional[int] = None,
