@@ -103,7 +103,9 @@ async def test_sysvar() -> None:
     context.set_clock(new_clock)
     clock_after = await client.get_clock()
     assert clock_after == new_clock
-
+    # see that setting the clock sysvar doesn't change the result of get_slot
+    slot = await client.get_slot()
+    assert slot == 1
 
 @mark.asyncio()
 async def test_warp() -> None:
