@@ -1,4 +1,4 @@
-from typing import Optional, Tuple
+from typing import List, Optional, Tuple
 
 from pytest import mark, raises
 from solders.account import Account
@@ -9,6 +9,7 @@ from solders.program_test import BanksClientError, ProgramTestContext, start
 from solders.pubkey import Pubkey
 from solders.rent import Rent
 from solders.transaction import VersionedTransaction
+from solders.system_program import transfer
 
 
 @mark.asyncio
@@ -117,3 +118,47 @@ async def test_warp() -> None:
     context.warp_to_slot(new_slot)
     slot1 = await client.get_slot()
     assert slot1 == new_slot
+
+
+@mark.asyncio
+async def test_many_instructions() -> None:
+    # https://github.com/solana-labs/example-helloworld/blob/36eb41d1290732786e13bd097668d8676254a139/src/program-rust/tests/lib.rs
+    context, program_id, greeted_pubkey = await helloworld_program()
+    ix = Instruction(
+        program_id,
+        bytes([0]),
+        [AccountMeta(greeted_pubkey, is_signer=False, is_writable=True)],
+    )
+    client = context.banks_client
+    payer = context.payer
+    blockhash = context.last_blockhash
+    greeted_account_before = await client.get_account(greeted_pubkey)
+    assert greeted_account_before is not None
+    assert greeted_account_before.data == bytes([0, 0, 0, 0])
+    num_ixs = 64
+    msg = Message.new_with_blockhash([ix for _ in range(num_ixs)], payer.pubkey(), blockhash)
+    tx = VersionedTransaction(msg, [payer])
+    await client.process_transaction(tx)
+    greeted_account_after = await client.get_account(greeted_pubkey)
+    assert greeted_account_after is not None
+    assert greeted_account_after.data == (num_ixs).to_bytes(4, "little")
+
+@mark.asyncio
+async def test_transfer() -> None:
+    # https://github.com/solana-labs/example-helloworld/blob/36eb41d1290732786e13bd097668d8676254a139/src/program-rust/tests/lib.rs
+    context = await start()
+    receiver = Pubkey.new_unique()
+    num_txs = 2
+    client = context.banks_client
+    payer = context.payer
+    blockhash = context.last_blockhash
+    num_ixs = 1
+    transfer_lamports_base = 1_000_000
+    for i in range(num_txs):
+        ixs = [transfer({"from_pubkey": context.payer.pubkey(), "to_pubkey": receiver, "lamports": transfer_lamports_base + i}) for _ in range(num_ixs)]
+        msg = Message.new_with_blockhash(ixs, payer.pubkey(), blockhash)
+        tx = VersionedTransaction(msg, [payer])
+        await client.process_transaction(tx)
+    total_ix_count = num_ixs * num_txs
+    balance_after = await client.get_balance(receiver)
+    assert balance_after == total_ix_count * transfer_lamports_base + num_ixs * ((num_txs - 1) * num_txs) / 2
