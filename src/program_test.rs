@@ -248,29 +248,6 @@ impl BanksClient {
         })
     }
 
-    /// Send transactions and return until the transactions have been finalized or rejected.
-    pub fn process_transactions<'p>(
-        &'p mut self,
-        py: Python<'p>,
-        transactions: Vec<VersionedTransaction>,
-        commitment: Option<CommitmentLevel>,
-    ) -> PyResult<&'p PyAny> {
-        let txs_inner: Vec<Transaction> = transactions
-            .iter()
-            .map(|t| t.0.clone().into_legacy_transaction().unwrap())
-            .collect();
-        let commitment_inner = CommitmentLevelOriginal::from(commitment.unwrap_or_default());
-        let mut underlying = self.0.clone();
-        pyo3_asyncio::tokio::future_into_py(py, async move {
-            let res = underlying
-                .process_transactions_with_commitment(txs_inner, commitment_inner)
-                .await
-                .map_err(to_py_err);
-            let pyobj: PyResult<PyObject> = Python::with_gil(|py| res.map(|x| x.into_py(py)));
-            pyobj
-        })
-    }
-
     /// Simulate a transaction at the given commitment level
     pub fn simulate_transaction<'p>(
         &'p mut self,
