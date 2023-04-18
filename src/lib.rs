@@ -20,11 +20,11 @@ pub mod account_decoder;
 use account_decoder::create_account_decoder_mod;
 pub mod account;
 pub mod address_lookup_table_account;
+#[cfg(feature = "bankrun")]
+pub mod bankrun;
 pub mod clock;
 pub mod commitment_config;
 pub mod epoch_schedule;
-#[cfg(feature = "bankrun")]
-pub mod bankrun;
 pub mod rent;
 pub mod rpc;
 pub mod system_program;
