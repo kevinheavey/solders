@@ -56,11 +56,6 @@ class BanksClient:
         transaction: VersionedTransaction,
         commitment: Optional[CommitmentLevel] = None,
     ) -> BanksTransactionResultWithMeta: ...
-    async def process_transactions(
-        self,
-        transactions: List[VersionedTransaction],
-        commitment: Optional[CommitmentLevel] = None,
-    ) -> None: ...
     async def send_transaction(self, transaction: VersionedTransaction) -> None: ...
     async def simulate_transaction(
         self,
