@@ -2,6 +2,7 @@ from solders.solders import __version__ as _version_untyped  # type: ignore
 from solders.solders import (
     account_decoder,
     address_lookup_table_account,
+    bankrun,
     commitment_config,
     errors,
     hash,
@@ -10,7 +11,6 @@ from solders.solders import (
     message,
     null_signer,
     presigner,
-    bankrun,
     pubkey,
     rpc,
     signature,
