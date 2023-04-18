@@ -102,7 +102,7 @@ solders_traits::common_methods_default!(AccountMeta);
 impl PyHash for AccountMeta {}
 impl_display!(AccountMeta);
 
-#[allow(clippy::derive_hash_xor_eq)]
+#[allow(clippy::derived_hash_with_manual_eq)]
 impl std::hash::Hash for AccountMeta {
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.0.pubkey.hash(state);

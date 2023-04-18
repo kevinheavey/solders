@@ -274,7 +274,7 @@ macro_rules! impl_display {
 #[macro_export]
 macro_rules! impl_signer_hash {
     ($ident:ident) => {
-        #[allow(clippy::derive_hash_xor_eq)]
+        #[allow(clippy::derived_hash_with_manual_eq)]
         impl std::hash::Hash for $ident {
             fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
                 $crate::SignerTraitWrapper::pubkey(self).hash(state);
