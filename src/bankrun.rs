@@ -33,7 +33,6 @@ use {
     solana_sdk::{
         account::AccountSharedData, clock::Clock as ClockOriginal,
         commitment_config::CommitmentLevel as CommitmentLevelOriginal, slot_history::Slot,
-        transaction::Transaction,
     },
 };
 
@@ -73,7 +72,7 @@ impl From<TransactionStatusBanks> for TransactionStatus {
     }
 }
 
-#[pyclass(module = "solders.program_test", subclass)]
+#[pyclass(module = "solders.bankrun", subclass)]
 #[derive(From, Into, Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct BanksTransactionMeta(pub TransactionMetadata);
 
@@ -114,7 +113,7 @@ impl BanksTransactionMeta {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
-#[pyclass(module = "solders.program_test", subclass)]
+#[pyclass(module = "solders.bankrun", subclass)]
 pub struct BanksTransactionResultWithMeta(BanksTransactionResultWithMetadata);
 
 transaction_status_boilerplate!(BanksTransactionResultWithMeta);
@@ -166,7 +165,7 @@ impl From<BanksTransactionResultWithSimulation> for BanksTransactionResultWithMe
     }
 }
 
-#[pyclass(module = "solders.program_test", subclass)]
+#[pyclass(module = "solders.bankrun", subclass)]
 #[derive(From, Into)]
 pub struct BanksClient(BanksClientOriginal);
 
@@ -449,7 +448,7 @@ impl BanksClient {
     }
 }
 
-fn new_program_test(
+fn new_bankrun(
     programs: Option<Vec<(&str, Pubkey)>>,
     compute_max_units: Option<u64>,
     transaction_account_lock_limit: Option<usize>,
@@ -489,7 +488,7 @@ pub fn start<'p>(
     use_bpf_jit: Option<bool>,
     accounts: Option<Vec<(Pubkey, Account)>>,
 ) -> PyResult<&'p PyAny> {
-    let pt = new_program_test(
+    let pt = new_bankrun(
         programs,
         compute_max_units,
         transaction_account_lock_limit,
@@ -504,7 +503,7 @@ pub fn start<'p>(
     })
 }
 
-#[pyclass(module = "solders.program_test", subclass)]
+#[pyclass(module = "solders.bankrun", subclass)]
 #[derive(From, Into)]
 pub struct ProgramTestContext(pub ProgramTestContextOriginal);
 
@@ -564,8 +563,8 @@ impl ProgramTestContext {
     }
 }
 
-pub(crate) fn create_program_test_mod(py: Python<'_>) -> PyResult<&PyModule> {
-    let m = PyModule::new(py, "program_test")?;
+pub(crate) fn create_bankrun_mod(py: Python<'_>) -> PyResult<&PyModule> {
+    let m = PyModule::new(py, "bankrun")?;
     m.add("BanksClientError", py.get_type::<BanksClientError>())?;
     m.add_class::<BanksClient>()?;
     m.add_class::<ProgramTestContext>()?;
