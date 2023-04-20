@@ -1,3 +1,5 @@
+import contextlib as __ctxlib
+
 from solders.solders import __version__ as _version_untyped  # type: ignore
 from solders.solders import (
     account_decoder,
@@ -16,13 +18,16 @@ from solders.solders import (
     transaction,
     transaction_status,
 )
-import contextlib as __ctxlib
+
+from . import system_program, sysvar
+
 __has_bankrun = False
 with __ctxlib.suppress(ImportError):
     from solders.solders import bankrun
     __has_bankrun = True
 
-from . import system_program, sysvar
+
+
 __all_core = [
     "account_decoder",
     "address_lookup_table_account",
