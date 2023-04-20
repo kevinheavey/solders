@@ -11,6 +11,7 @@ env:
   python_version: "3.7"
   CARGO_INCREMENTAL: 0
   RUSTFLAGS: "-D warnings"
+  maturin_version: "0.14.10"
 
 jobs:
   macos_x86_64:
@@ -32,6 +33,7 @@ jobs:
         with:
           target: x86_64
           args: --release --out dist
+          maturin-version: ${{ env.maturin_version }}
       - name: Install built wheel
         run: |
           pip install pytest based58 pybip39 typing-extensions jsonalias
@@ -55,6 +57,7 @@ jobs:
         uses: messense/maturin-action@v1
         with:
           args: --release --universal2 --out dist
+          maturin-version: ${{ env.maturin_version }}
       - name: Install built wheel
         run: |
           pip install pytest based58 pybip39 typing-extensions jsonalias
@@ -88,6 +91,7 @@ jobs:
         with:
           target: ${{ matrix.target }}
           args: --release --out dist
+          maturin-version: ${{ env.maturin_version }}
       - name: Install built wheel
         run: |
           python -m pip install pytest based58 pybip39 typing-extensions jsonalias
@@ -123,6 +127,7 @@ jobs:
           target: ${{ matrix.target }}
           manylinux: auto
           args: --release --out dist
+          maturin-version: ${{ env.maturin_version }}
       - name: Install built wheel
         if: matrix.target == 'x86_64'
         run: |
@@ -161,6 +166,7 @@ jobs:
           target: ${{ matrix.target }}
           manylinux: musllinux_1_2
           args: --release --out dist
+          maturin-version: ${{ env.maturin_version }}
       - name: Install built wheel
         if: matrix.target == 'x86_64-unknown-linux-musl'
         uses: addnab/docker-run-action@v3
@@ -201,6 +207,7 @@ jobs:
           target: ${{ matrix.target }}
           manylinux: auto
           args: --release --out dist
+          maturin-version: ${{ env.maturin_version }}
       - name: Upload wheels
         uses: actions/upload-artifact@v2
         with:
@@ -219,6 +226,7 @@ jobs:
         with:
           command: sdist
           args: --out dist
+          maturin-version: ${{ env.maturin_version }}
       - name: Upload sdist
         uses: actions/upload-artifact@v2
         with:
