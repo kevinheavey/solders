@@ -20,15 +20,21 @@ pub mod account_decoder;
 use account_decoder::create_account_decoder_mod;
 pub mod account;
 pub mod address_lookup_table_account;
+#[cfg(feature = "bankrun")]
+pub mod bankrun;
+pub mod clock;
 pub mod commitment_config;
 pub mod epoch_schedule;
+pub mod rent;
 pub mod rpc;
 pub mod system_program;
 pub mod sysvar;
 mod tmp_account_decoder;
 mod tmp_transaction_status;
 pub mod transaction_status;
+use clock::create_clock_mod;
 use epoch_schedule::create_epoch_schedule_mod;
+use rent::create_rent_mod;
 use solders_primitives::{
     hash::Hash as SolderHash, keypair::Keypair, null_signer::NullSigner, presigner::Presigner,
     pubkey::Pubkey, signature::Signature,
@@ -71,6 +77,10 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
     let account_mod = create_account_mod(py)?;
     let epoch_schedule_mod = create_epoch_schedule_mod(py)?;
     let address_lookup_table_account_mod = create_address_lookup_table_account_mod(py)?;
+    #[cfg(feature = "bankrun")]
+    let bankrun_mod = bankrun::create_bankrun_mod(py)?;
+    let clock_mod = create_clock_mod(py)?;
+    let rent_mod = create_rent_mod(py)?;
     let submodules = [
         errors_mod,
         hash_mod,
@@ -91,6 +101,10 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
         account_mod,
         address_lookup_table_account_mod,
         epoch_schedule_mod,
+        #[cfg(feature = "bankrun")]
+        bankrun_mod,
+        clock_mod,
+        rent_mod,
     ];
     let modules: HashMap<String, &PyModule> = submodules
         .iter()

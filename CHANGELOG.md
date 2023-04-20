@@ -4,7 +4,7 @@
 
 ### Added
 
-Added `solders.message.to_bytes_versioned` and `from_bytes_versioned` to serialize versioned messages including the extra leading byte [(#45](https://github.com/kevinheavey/solders/pull/45
+Added `solders.message.to_bytes_versioned` and `from_bytes_versioned` to serialize versioned messages including the extra leading byte [(#45](https://github.com/kevinheavey/solders/pull/45)
 
 ### Fixed
 

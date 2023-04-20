@@ -3,8 +3,7 @@ use derive_more::{From, Into};
 extern crate base64;
 use pythonize::{depythonize, pythonize};
 use solders_primitives::{message::MessageHeader, pubkey::Pubkey, signature::Signature};
-use solders_traits::{handle_py_value_err, RichcmpEqualityOnly};
-use std::fmt::Display;
+use solders_traits::handle_py_value_err;
 use std::str::FromStr;
 
 use crate::{
@@ -50,8 +49,8 @@ use solders_primitives::transaction::{TransactionVersion, VersionedTransaction};
 
 macro_rules! transaction_status_boilerplate {
     ($name:ident) => {
-        impl RichcmpEqualityOnly for $name {}
-        impl Display for $name {
+        impl solders_traits::RichcmpEqualityOnly for $name {}
+        impl std::fmt::Display for $name {
             fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
                 write!(f, "{:?}", self)
             }
@@ -1012,8 +1011,9 @@ pub enum InstructionErrorFieldless {
     ArithmeticOverflow,
     UnsupportedSysvar,
     IllegalOwner,
-    MaxAccountsDataSizeExceeded,
+    MaxAccountsDataAllocationsExceeded,
     MaxAccountsExceeded,
+    MaxInstructionTraceLengthExceeded,
 }
 
 #[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, EnumIntoPy)]
@@ -1109,10 +1109,13 @@ impl From<InstructionErrorType> for InstructionErrorOriginal {
                 InstructionErrorFieldless::ArithmeticOverflow => Self::ArithmeticOverflow,
                 InstructionErrorFieldless::UnsupportedSysvar => Self::UnsupportedSysvar,
                 InstructionErrorFieldless::IllegalOwner => Self::IllegalOwner,
-                InstructionErrorFieldless::MaxAccountsDataSizeExceeded => {
-                    Self::MaxAccountsDataSizeExceeded
+                InstructionErrorFieldless::MaxAccountsDataAllocationsExceeded => {
+                    Self::MaxAccountsDataAllocationsExceeded
                 }
                 InstructionErrorFieldless::MaxAccountsExceeded => Self::MaxAccountsExceeded,
+                InstructionErrorFieldless::MaxInstructionTraceLengthExceeded => {
+                    Self::MaxInstructionTraceLengthExceeded
+                }
             },
         }
     }
@@ -1271,11 +1274,14 @@ impl From<InstructionErrorOriginal> for InstructionErrorType {
             InstructionErrorOriginal::IllegalOwner => {
                 Self::Fieldless(InstructionErrorFieldless::IllegalOwner)
             }
-            InstructionErrorOriginal::MaxAccountsDataSizeExceeded => {
-                Self::Fieldless(InstructionErrorFieldless::MaxAccountsDataSizeExceeded)
+            InstructionErrorOriginal::MaxAccountsDataAllocationsExceeded => {
+                Self::Fieldless(InstructionErrorFieldless::MaxAccountsDataAllocationsExceeded)
             }
             InstructionErrorOriginal::MaxAccountsExceeded => {
                 Self::Fieldless(InstructionErrorFieldless::MaxAccountsExceeded)
+            }
+            InstructionErrorOriginal::MaxInstructionTraceLengthExceeded => {
+                Self::Fieldless(InstructionErrorFieldless::MaxInstructionTraceLengthExceeded)
             }
         }
     }
@@ -1376,6 +1382,7 @@ pub enum TransactionErrorFieldless {
     InvalidRentPayingAccount,
     WouldExceedMaxVoteCostLimit,
     WouldExceedAccountDataTotalLimit,
+    MaxLoadedAccountsDataSizeExceeded,
 }
 
 #[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, EnumIntoPy)]
@@ -1467,6 +1474,9 @@ impl From<TransactionErrorType> for TransactionErrorOriginal {
                 }
                 TransactionErrorFieldless::WouldExceedAccountDataTotalLimit => {
                     Self::WouldExceedAccountDataTotalLimit
+                }
+                TransactionErrorFieldless::MaxLoadedAccountsDataSizeExceeded => {
+                    Self::MaxLoadedAccountsDataSizeExceeded
                 }
             },
         }
@@ -1578,6 +1588,9 @@ impl From<TransactionErrorOriginal> for TransactionErrorType {
             TransactionErrorOriginal::WouldExceedAccountDataTotalLimit => {
                 Self::Fieldless(TransactionErrorFieldless::WouldExceedAccountDataTotalLimit)
             }
+            TransactionErrorOriginal::MaxLoadedAccountsDataSizeExceeded => {
+                Self::Fieldless(TransactionErrorFieldless::MaxLoadedAccountsDataSizeExceeded)
+            }
         }
     }
 }
@@ -1650,7 +1663,7 @@ pub type Rewards = Vec<Reward>;
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.transaction_status", subclass)]
-pub struct TransactionStatus(TransactionStatusOriginal);
+pub struct TransactionStatus(pub TransactionStatusOriginal);
 
 transaction_status_boilerplate!(TransactionStatus);
 

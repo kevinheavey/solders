@@ -29,7 +29,7 @@ mod null_signer_serde {
         D: Deserializer<'de>,
     {
         let b = Vec::deserialize(deserializer)?;
-        let pubkey = PubkeyOriginal::new(&b);
+        let pubkey = PubkeyOriginal::try_from(b.as_slice()).unwrap();
         Ok(NullSignerOriginal::new(&pubkey))
     }
 }

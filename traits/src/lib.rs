@@ -7,6 +7,8 @@ use pyo3::{
     types::PyBytes,
 };
 use serde::{Deserialize, Serialize};
+#[cfg(feature = "banks-client")]
+use solana_banks_client::BanksClientError as BanksClientErrorOriginal;
 use solana_sdk::{
     commitment_config::ParseCommitmentLevelError as ParseCommitmentLevelErrorOriginal,
     hash::ParseHashError as ParseHashErrorOriginal,
@@ -167,6 +169,21 @@ impl From<serde_cbor::Error> for PyErrWrapper {
     }
 }
 
+#[cfg(feature = "banks-client")]
+create_exception!(
+    solders,
+    BanksClientError,
+    PyException,
+    "Raised when BanksClient encounters an error."
+);
+
+#[cfg(feature = "banks-client")]
+impl From<BanksClientErrorOriginal> for PyErrWrapper {
+    fn from(e: BanksClientErrorOriginal) -> Self {
+        Self(BanksClientError::new_err(e.to_string()))
+    }
+}
+
 fn richcmp_type_error(op: &str) -> PyErr {
     let msg = format!("{op} not supported.");
     PyTypeError::new_err(msg)
@@ -257,7 +274,7 @@ macro_rules! impl_display {
 #[macro_export]
 macro_rules! impl_signer_hash {
     ($ident:ident) => {
-        #[allow(clippy::derive_hash_xor_eq)]
+        #[allow(clippy::derived_hash_with_manual_eq)]
         impl std::hash::Hash for $ident {
             fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
                 $crate::SignerTraitWrapper::pubkey(self).hash(state);

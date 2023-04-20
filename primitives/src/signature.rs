@@ -34,7 +34,7 @@ use solders_traits::{
 /// Args:
 ///     signature_bytes (bytes): The raw signature bytes.
 ///
-pub struct Signature(SignatureOriginal);
+pub struct Signature(pub SignatureOriginal);
 
 #[pyhash]
 #[richcmp_full]

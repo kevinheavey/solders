@@ -40,7 +40,7 @@ use crate::{
 ///     keypairs (Sequence[Keypair | Presigner]): The keypairs that are to sign the transaction.
 #[derive(Debug, PartialEq, Default, Eq, Clone, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.transaction", subclass)]
-pub struct VersionedTransaction(VersionedTransactionOriginal);
+pub struct VersionedTransaction(pub VersionedTransactionOriginal);
 
 impl From<Transaction> for VersionedTransaction {
     fn from(t: Transaction) -> Self {
