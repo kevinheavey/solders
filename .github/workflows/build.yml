@@ -71,15 +71,12 @@ jobs:
 
   windows:
     runs-on: windows-latest
-    strategy:
-      matrix:
-        target: [x64]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
           python-version: ${{ env.python_version }}
-          architecture: ${{ matrix.target }}
+          architecture: x64
       - name: Install Rust toolchain
         uses: actions-rs/toolchain@v1
         with:
@@ -89,8 +86,8 @@ jobs:
       - name: Build wheels
         uses: messense/maturin-action@v1
         with:
-          target: ${{ matrix.target }}
-          args: --release --out dist
+          target: x64
+          args: --release --no-default-features --out dist
           maturin-version: ${{ env.maturin_version }}
       - name: Install built wheel
         run: |
@@ -140,14 +137,8 @@ jobs:
           name: wheels
           path: dist
 
-  musllinux:
+  musllinux-x86_64:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        target:
-          - x86_64-unknown-linux-musl
-          - i686-unknown-linux-musl
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -163,12 +154,11 @@ jobs:
       - name: Build wheels
         uses: messense/maturin-action@v1
         with:
-          target: ${{ matrix.target }}
+          target: x86_64-unknown-linux-musl
           manylinux: musllinux_1_2
           args: --release --out dist
           maturin-version: ${{ env.maturin_version }}
       - name: Install built wheel
-        if: matrix.target == 'x86_64-unknown-linux-musl'
         uses: addnab/docker-run-action@v3
         with:
           image: alpine:latest
@@ -184,12 +174,41 @@ jobs:
           name: wheels
           path: dist
 
-  linux-cross:
+  musllinux-i686:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ env.python_version }}
+          architecture: x64
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          profile: minimal
+          default: true
+      - name: Build wheels
+        uses: messense/maturin-action@v1
+        with:
+          target: i686-unknown-linux-musl
+          manylinux: musllinux_1_2
+          args: --release --no-default-features --out dist
+          maturin-version: ${{ env.maturin_version }}
+      - name: Upload wheels
+        uses: actions/upload-artifact@v2
+        with:
+          name: wheels
+          path: dist
+
+  linux-cross-bankrun:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        target: [aarch64, armv7, s390x, ppc64]
+        target: [aarch64, armv7]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -207,6 +226,36 @@ jobs:
           target: ${{ matrix.target }}
           manylinux: auto
           args: --release --out dist
+          maturin-version: ${{ env.maturin_version }}
+      - name: Upload wheels
+        uses: actions/upload-artifact@v2
+        with:
+          name: wheels
+          path: dist
+
+  linux-cross-no-bankrun:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [s390x, ppc64]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ env.python_version }}
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          profile: minimal
+          default: true
+      - name: Build Wheels
+        uses: messense/maturin-action@v1
+        with:
+          target: ${{ matrix.target }}
+          manylinux: auto
+          args: --release --no-default-features --out dist
           maturin-version: ${{ env.maturin_version }}
       - name: Upload wheels
         uses: actions/upload-artifact@v2
