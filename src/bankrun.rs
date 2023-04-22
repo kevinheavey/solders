@@ -72,6 +72,7 @@ impl From<TransactionStatusBanks> for TransactionStatus {
     }
 }
 
+/// Transaction metadata.
 #[pyclass(module = "solders.bankrun", subclass)]
 #[derive(From, Into, Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct BanksTransactionMeta(pub TransactionMetadata);
@@ -96,22 +97,29 @@ impl BanksTransactionMeta {
         .into()
     }
 
+    /// List[str]: The log messages written during transaction execution.
     #[getter]
     pub fn log_messages(&self) -> Vec<String> {
         self.0.log_messages.clone()
     }
 
+    /// Optional[TransactionReturnData]: The transaction return data, if present.
     #[getter]
     pub fn return_data(&self) -> Option<TransactionReturnData> {
         self.0.return_data.clone().map(Into::into)
     }
 
+    /// int: The number of compute units consumed by the transaction.
     #[getter]
     pub fn compute_units_consumed(&self) -> u64 {
         self.0.compute_units_consumed
     }
 }
 
+/// A transaction result. 
+/// 
+/// Contains transaction metadata, and the transaction error, if there is one.
+/// 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.bankrun", subclass)]
 pub struct BanksTransactionResultWithMeta(BanksTransactionResultWithMetadata);
@@ -134,6 +142,7 @@ impl BanksTransactionResultWithMeta {
         .into()
     }
 
+    /// Optional[TransactionErrorType]: The transaction error info, if the transaction failed.
     #[getter]
     pub fn result(&self) -> Option<TransactionErrorType> {
         match self.0.result.clone() {
@@ -142,6 +151,7 @@ impl BanksTransactionResultWithMeta {
         }
     }
 
+    /// Optional[BanksTransactionMeta]: The transaction metadata.
     #[getter]
     pub fn meta(&self) -> Option<BanksTransactionMeta> {
         self.0.metadata.clone().map(Into::into)
@@ -165,6 +175,9 @@ impl From<BanksTransactionResultWithSimulation> for BanksTransactionResultWithMe
     }
 }
 
+/// A client for the ledger state, from the perspective of an arbitrary validator.
+/// 
+/// Use the ``start`` function to initialize a BanksClient.
 #[pyclass(module = "solders.bankrun", subclass)]
 #[derive(From, Into)]
 pub struct BanksClient(BanksClientOriginal);
@@ -172,6 +185,10 @@ pub struct BanksClient(BanksClientOriginal);
 #[pymethods]
 impl BanksClient {
     /// Send a transaction and return immediately.
+    /// 
+    /// Args:
+    ///     transaction (VersionedTransaction): The transaction to send.
+    /// 
     pub fn send_transaction<'p>(
         &'p mut self,
         py: Python<'p>,
@@ -180,14 +197,16 @@ impl BanksClient {
         let tx_inner = transaction.0;
         let mut underlying = self.0.clone();
         pyo3_asyncio::tokio::future_into_py(py, async move {
-            // let res = underlying.send_transaction(tx_inner).await.map_err(to_py_err);
-            // let pyobj: PyResult<PyObject> = Python::with_gil(|py| res.map(|x| x.into_py(py)));
-            // pyobj
             res_to_py_obj!(underlying.send_transaction(tx_inner))
         })
     }
 
-    /// Send a transaction and return until the transaction has been finalized or rejected.
+    /// Send a transaction and wait until the transaction has been finalized or rejected.
+    /// 
+    /// Args:
+    ///     transaction (VersionedTransaction): The transaction to send.
+    ///     commitment (Optional[CommitmentLevel]): The commitment to use.
+    /// 
     pub fn process_transaction<'p>(
         &'p mut self,
         py: Python<'p>,
@@ -209,6 +228,11 @@ impl BanksClient {
 
     /// Send a transaction and return any preflight (sanitization or simulation) errors, or return
     /// after the transaction has been rejected or reached the given level of commitment.
+    /// 
+    /// Args:
+    ///     transaction (VersionedTransaction): The transaction to send.
+    ///     commitment (Optional[CommitmentLevel]): The commitment to use.
+    /// 
     pub fn process_transaction_with_preflight<'p>(
         &'p mut self,
         py: Python<'p>,
@@ -228,6 +252,14 @@ impl BanksClient {
         })
     }
 
+    /// Process a transaction and return the result with metadata.
+    /// 
+    /// Args:
+    ///     transaction (VersionedTransaction): The transaction to send.
+    /// 
+    /// Returns:
+    ///     BanksTransactionResultWithMeta: The transaction result and metadata.
+    /// 
     pub fn process_transaction_with_metadata<'p>(
         &'p mut self,
         py: Python<'p>,
@@ -247,7 +279,15 @@ impl BanksClient {
         })
     }
 
-    /// Simulate a transaction at the given commitment level
+    /// Simulate a transaction at the given commitment level.
+    /// 
+    /// Args:
+    ///     transaction (VersionedTransaction): The transaction to simulate.
+    ///     commitment (Optional[CommitmentLevel]): The commitment level to use.
+    /// 
+    /// Returns:
+    ///     BanksTransactionResultWithMeta: The transaction simulation result.
+    /// 
     pub fn simulate_transaction<'p>(
         &'p mut self,
         py: Python<'p>,
@@ -271,6 +311,14 @@ impl BanksClient {
 
     /// Return the account at the given address at the slot corresponding to the given
     /// commitment level. If the account is not found, None is returned.
+    /// 
+    /// Args:
+    ///     address (Pubkey): The account address to look up.
+    ///     commitment (Optional[CommitmentLevel]): The commitment level to use.
+    /// 
+    /// Returns:
+    ///     Optional[Account]: The account object, if the account exists
+    /// .
     pub fn get_account<'p>(
         &mut self,
         py: Python<'p>,
@@ -290,10 +338,19 @@ impl BanksClient {
     }
 
     /// Return the status of a transaction with a signature matching the transaction's first
-    /// signature. Return None if the transaction is not found, which may be because the
+    /// signature.
+    /// 
+    /// Return None if the transaction is not found, which may be because the
     /// blockhash was expired or the fee-paying account had insufficient funds to pay the
     /// transaction fee. Note that servers rarely store the full transaction history. This
     /// method may return None if the transaction status has been discarded.
+    /// 
+    /// Args:
+    ///     signature (Signature): The transaction signature (the first signature of the transaction).
+    /// 
+    /// Returns:
+    ///     Optional[TransactionStatus]: The transaction status, if found.
+    /// 
     pub fn get_transaction_status<'p>(
         &mut self,
         py: Python<'p>,
@@ -310,7 +367,14 @@ impl BanksClient {
         })
     }
 
-    /// Same as get_transaction_status, but for multiple transactions.
+    /// Same as ``get_transaction_status``, but for multiple transactions.
+    /// 
+    /// Args:
+    ///     signatures (Sequence[Signature]): The transaction signatures.
+    /// 
+    /// Returns:
+    ///     List[Optional[TransactionStatus]]: The transaction statuses, if found.
+    /// 
     pub fn get_transaction_statuses<'p>(
         &mut self,
         py: Python<'p>,
@@ -320,7 +384,6 @@ impl BanksClient {
         let signatures_underlying = signatures.iter().map(|x| x.0).collect();
         pyo3_asyncio::tokio::future_into_py(py, async move {
             let res = async_res!(underlying.get_transaction_statuses(signatures_underlying));
-            // let res_converted = res.map(|v| v.iter().map(|o| o.map(TransactionStatus::from)).collect::<Vec<Option<TransactionStatus>>>());
             let pyobj: PyResult<Vec<Option<PyObject>>> = Python::with_gil(|py| {
                 res.map(|v| {
                     v.iter()
@@ -332,6 +395,14 @@ impl BanksClient {
         })
     }
 
+    /// Get the slot that has reached the given commitment level (or the default commitment).
+    /// 
+    /// Args:
+    ///     commitment (Optional[CommitmentLevel]): The commitment level to use.
+    /// 
+    /// Returns:
+    ///     int: The current slot.
+    /// 
     pub fn get_slot<'p>(
         &mut self,
         py: Python<'p>,
@@ -346,6 +417,14 @@ impl BanksClient {
         })
     }
 
+    /// Get the current block height.
+    /// 
+    /// Args:
+    ///     commitment (Optional[CommitmentLevel]): The commitment level to use.
+    /// 
+    /// Returns:
+    ///     int: The current block height.
+    /// 
     pub fn get_block_height<'p>(
         &mut self,
         py: Python<'p>,
@@ -361,6 +440,11 @@ impl BanksClient {
         })
     }
 
+    /// Get the cluster rent.
+    /// 
+    /// Returns:
+    ///     Rent: The rent object.
+    ///  
     pub fn get_rent<'p>(&mut self, py: Python<'p>) -> PyResult<&'p PyAny> {
         let mut underlying = self.0.clone();
         pyo3_asyncio::tokio::future_into_py(py, async move {
@@ -371,6 +455,11 @@ impl BanksClient {
         })
     }
 
+    /// Get the cluster clock.
+    /// 
+    /// Returns:
+    ///     Clock: the clock object.
+    /// 
     pub fn get_clock<'p>(&mut self, py: Python<'p>) -> PyResult<&'p PyAny> {
         let mut underlying = self.0.clone();
         pyo3_asyncio::tokio::future_into_py(py, async move {
@@ -381,6 +470,15 @@ impl BanksClient {
         })
     }
 
+    /// Return the balance in lamports of an account at the given address at the slot
+    /// corresponding to the given commitment level.
+    /// 
+    /// Args:
+    ///     commitment (Optional[CommitmentLevel]): The commitment level to use.
+    /// 
+    /// Returns:
+    ///     int: The account balance in lamports.
+    /// 
     pub fn get_balance<'p>(
         &mut self,
         py: Python<'p>,
@@ -426,6 +524,7 @@ impl BanksClient {
         })
     }
 
+    /// Get the fee in lamports for a given message.
     pub fn get_fee_for_message<'p>(
         &mut self,
         py: Python<'p>,
