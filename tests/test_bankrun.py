@@ -30,7 +30,7 @@ async def test_logging() -> None:
     meta = (await client.process_transaction_with_metadata(tx)).meta
     assert meta is not None
     assert meta.log_messages[1] == "Program log: static string"
-
+    assert meta.compute_units_consumed < 10_000 # not being precise here in case it changes
 
 async def helloworld_program(
     compute_max_units: Optional[int] = None,
@@ -183,7 +183,7 @@ async def test_transfer() -> None:
         ]
         msg = Message.new_with_blockhash(ixs, payer.pubkey(), blockhash)
         tx = VersionedTransaction(msg, [payer])
-        await client.process_transaction(tx)
+        await client.process_transaction_with_preflight(tx)
     total_ix_count = num_ixs * num_txs
     balance_after = await client.get_balance(receiver)
     assert (
