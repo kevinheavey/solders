@@ -6,6 +6,7 @@ use self::{
 };
 use pyo3::prelude::*;
 
+mod common;
 pub mod config;
 pub mod errors;
 pub mod filter;

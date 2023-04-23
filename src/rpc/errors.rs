@@ -6,7 +6,7 @@ use solders_macros::{common_methods, richcmp_eq_only, EnumIntoPy};
 use solders_traits::transaction_status_boilerplate;
 use solders_transaction_status::TransactionErrorType;
 
-use super::responses::RpcSimulateTransactionResult;
+use super::common::RpcSimulateTransactionResult;
 
 macro_rules! error_message {
     ($name:ident) => {
