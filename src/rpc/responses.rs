@@ -3,7 +3,6 @@ use std::collections::HashMap;
 use std::fmt::Display;
 use std::str::FromStr;
 
-use crate::account_decoder::UiTokenAmount;
 use crate::epoch_schedule::EpochSchedule;
 use crate::rpc::tmp_response::{
     RpcAccountBalance as RpcAccountBalanceOriginal,
@@ -37,7 +36,6 @@ use crate::transaction_status::{
 use crate::{
     self as solders,
     account::{Account, AccountJSON},
-    tmp_account_decoder::{UiAccount, UiAccountData, UiTokenAmount as UiTokenAmountOriginal},
     tmp_transaction_status::{
         TransactionConfirmationStatus as TransactionConfirmationStatusOriginal,
         TransactionStatus as TransactionStatusOriginal, UiTransactionReturnData,
@@ -62,6 +60,10 @@ use solana_sdk::{
     epoch_info::EpochInfo as EpochInfoOriginal,
     transaction::TransactionError as TransactionErrorOriginal,
     transaction_context::TransactionReturnData as TransactionReturnDataOriginal,
+};
+use solders_account_decoder::{
+    tmp_account_decoder::{UiAccount, UiAccountData, UiTokenAmount as UiTokenAmountOriginal},
+    UiTokenAmount,
 };
 use solders_macros::{
     common_methods, common_methods_rpc_resp, enum_original_mapping, richcmp_eq_only, EnumIntoPy,

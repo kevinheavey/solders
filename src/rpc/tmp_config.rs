@@ -2,16 +2,15 @@
 use serde::{Deserialize, Serialize};
 
 use {
-    crate::account_decoder::UiAccountEncoding,
     crate::rpc::tmp_filter::RpcFilterType,
-    // TODO: use solana_account_decoder once its dependencies are light
-    crate::tmp_account_decoder::UiDataSliceConfig,
     // TODO: use solana_transaction_status once its dependencies are light
     crate::transaction_status::{TransactionDetails, UiTransactionEncoding},
     solana_sdk::{
         clock::{Epoch, Slot},
         commitment_config::{CommitmentConfig, CommitmentLevel},
     },
+    // TODO: use solana_account_decoder once its dependencies are light
+    solders_account_decoder::{tmp_account_decoder::UiDataSliceConfig, UiAccountEncoding},
 };
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

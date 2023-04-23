@@ -1,4 +1,3 @@
-use crate::tmp_account_decoder::UiTokenAmount;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use solana_sdk::{
@@ -11,6 +10,7 @@ use solana_sdk::{
     },
     transaction_context::TransactionReturnData,
 };
+use solders_account_decoder::tmp_account_decoder::UiTokenAmount;
 
 #[derive(Serialize, Deserialize, Clone, Copy, Debug, Eq, Hash, PartialEq)]
 #[serde(rename_all = "camelCase")]

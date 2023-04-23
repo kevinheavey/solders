@@ -24,8 +24,8 @@ from . import system_program, sysvar
 __has_bankrun = False
 with __ctxlib.suppress(ImportError):
     from solders.solders import bankrun
-    __has_bankrun = True
 
+    __has_bankrun = True
 
 
 __all_core = [

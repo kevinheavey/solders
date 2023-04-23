@@ -24,13 +24,13 @@ base64 = { workspace = true }
 camelpaste = "0.1.0"
 serde_cbor = { workspace = true }
 thiserror = "^1.0.31"
-bs58 = "^0.4.0"
-zstd = "0.11.2"
+bs58 = { workspace = true }
 derive_more = { workspace = true }
-pythonize = "0.18.0"
+pythonize = { workspace = true }
 solders-traits = { workspace = true }
 solders-macros = { workspace = true }
 solders-primitives = { workspace = true }
+solders-account-decoder = { workspace = true }
 solana-program-test = { workspace = true, optional = true }
 solana-banks-client = { workspace = true, optional = true }
 solana-banks-interface = { version = "1.15.2", optional = true}
@@ -49,12 +49,13 @@ bankrun = [
 
 
 [workspace]
-members = [".", "traits", "macros", "primitives"]
+members = [".", "traits", "macros", "primitives", "account-decoder"]
 
 [workspace.dependencies]
 pyo3 = { version = "0.18.0", default-features = false }
 solders-macros = { path = "./macros", version = "0.14.4" }
 solders-traits = { path = "./traits", version = "0.14.4" }
+solders-account-decoder = { path = "./account-decoder", version = "0.14.4" }
 serde_with = { version = "^1.14.0", features = ["base64"] }
 solders-primitives = { path = "./primitives", version = "0.14.4" }
 solana-sdk = "^1.15.2"
@@ -66,3 +67,5 @@ serde_cbor = "^0.11.2"
 derive_more = "0.99.17"
 solana-program-test = "1.15.2"
 solana-banks-client = "1.15.2"
+pythonize = "0.18.0"
+bs58 = "0.4.0"

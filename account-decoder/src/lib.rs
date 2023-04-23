@@ -14,6 +14,7 @@ use pythonize::{depythonize, pythonize};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use solders_macros::{common_methods, richcmp_eq_only};
+pub mod tmp_account_decoder;
 
 /// Configuration object for limiting returned account data.
 ///

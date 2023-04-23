@@ -4391,11 +4391,28 @@ dependencies = [
  "solana-banks-interface",
  "solana-program-test",
  "solana-sdk",
+ "solders-account-decoder",
  "solders-macros",
  "solders-primitives",
  "solders-traits",
  "tarpc",
  "thiserror",
+]
+
+[[package]]
+name = "solders-account-decoder"
+version = "0.14.4"
+dependencies = [
+ "base64 0.13.1",
+ "bs58",
+ "derive_more",
+ "pyo3",
+ "pythonize",
+ "serde",
+ "serde_json",
+ "solana-sdk",
+ "solders-macros",
+ "solders-traits",
  "zstd",
 ]
 

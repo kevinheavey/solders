@@ -4,6 +4,7 @@ use crate::rpc::tmp_config as rpc_config;
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use solana_sdk::commitment_config::CommitmentLevel as CommitmentLevelOriginal;
+use solders_account_decoder::{UiAccountEncoding, UiDataSliceConfig};
 use solders_macros::{common_methods, richcmp_eq_only, EnumIntoPy};
 use solders_primitives::{hash::Hash as SolderHash, pubkey::Pubkey, signature::Signature};
 use solders_traits::{
@@ -11,7 +12,6 @@ use solders_traits::{
 };
 
 use crate::{
-    account_decoder::{UiAccountEncoding, UiDataSliceConfig},
     commitment_config::CommitmentLevel,
     transaction_status::{TransactionDetails, UiTransactionEncoding},
 };

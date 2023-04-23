@@ -12,9 +12,9 @@ use solders_traits::{
     RichcmpEqualityOnly,
 };
 
-use crate::{
-    account_decoder::ParsedAccount,
+use solders_account_decoder::{
     tmp_account_decoder::{UiAccount, UiAccountData, UiAccountEncoding},
+    ParsedAccount,
 };
 
 /// An Account with data that is stored on chain.

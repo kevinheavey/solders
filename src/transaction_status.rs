@@ -2,12 +2,12 @@
 use derive_more::{From, Into};
 extern crate base64;
 use pythonize::{depythonize, pythonize};
+use solders_account_decoder::UiTokenAmount;
 use solders_primitives::{message::MessageHeader, pubkey::Pubkey, signature::Signature};
 use solders_traits::handle_py_value_err;
 use std::str::FromStr;
 
 use crate::{
-    account_decoder::UiTokenAmount,
     commitment_config::CommitmentConfig,
     tmp_transaction_status::{
         EncodedConfirmedTransactionWithStatusMeta as EncodedConfirmedTransactionWithStatusMetaOriginal,

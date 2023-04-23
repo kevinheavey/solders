@@ -15,9 +15,8 @@ use transaction_status::create_transaction_status_mod;
 pub mod message;
 use message::create_message_mod;
 pub mod transaction;
+use solders_account_decoder::create_account_decoder_mod;
 use transaction::create_transaction_mod;
-pub mod account_decoder;
-use account_decoder::create_account_decoder_mod;
 pub mod account;
 pub mod address_lookup_table_account;
 #[cfg(feature = "bankrun")]
@@ -29,7 +28,6 @@ pub mod rent;
 pub mod rpc;
 pub mod system_program;
 pub mod sysvar;
-mod tmp_account_decoder;
 mod tmp_transaction_status;
 pub mod transaction_status;
 use clock::create_clock_mod;
