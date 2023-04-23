@@ -1,7 +1,7 @@
 #![allow(deprecated)]
-use crate::commitment_config::{CommitmentConfig, CommitmentLevel};
 use pyo3::{exceptions::PyValueError, prelude::*, types::PyTuple, PyTypeInfo};
 use solders_primitives::{
+    commitment_config::{CommitmentConfig, CommitmentLevel},
     message::VersionedMessage,
     pubkey::Pubkey,
     transaction::{Transaction, VersionedTransaction},

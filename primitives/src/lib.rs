@@ -5,6 +5,7 @@ use solana_sdk::{
 };
 
 pub mod address_lookup_table_account;
+pub mod commitment_config;
 pub mod hash;
 pub mod instruction;
 pub mod keypair;

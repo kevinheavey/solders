@@ -3,7 +3,6 @@
 //! If you're viewing them on docs.rs, the formatting won't make much sense.
 use account::create_account_mod;
 use address_lookup_table_account::create_address_lookup_table_account_mod;
-use commitment_config::{CommitmentConfig, CommitmentLevel};
 use pyo3::prelude::*;
 use rpc::create_rpc_mod;
 use solders_primitives::instruction::{AccountMeta, CompiledInstruction, Instruction};
@@ -22,7 +21,6 @@ pub mod address_lookup_table_account;
 #[cfg(feature = "bankrun")]
 pub mod bankrun;
 pub mod clock;
-pub mod commitment_config;
 pub mod epoch_schedule;
 pub mod rent;
 pub mod rpc;
@@ -34,8 +32,13 @@ use clock::create_clock_mod;
 use epoch_schedule::create_epoch_schedule_mod;
 use rent::create_rent_mod;
 use solders_primitives::{
-    hash::Hash as SolderHash, keypair::Keypair, null_signer::NullSigner, presigner::Presigner,
-    pubkey::Pubkey, signature::Signature,
+    commitment_config::{CommitmentConfig, CommitmentLevel},
+    hash::Hash as SolderHash,
+    keypair::Keypair,
+    null_signer::NullSigner,
+    presigner::Presigner,
+    pubkey::Pubkey,
+    signature::Signature,
 };
 
 #[pymodule]

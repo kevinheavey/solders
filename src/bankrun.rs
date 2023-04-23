@@ -1,7 +1,6 @@
 use crate::{
     account::Account,
     clock::Clock,
-    commitment_config::CommitmentLevel,
     rent::Rent,
     transaction_status::{
         transaction_status_boilerplate, TransactionConfirmationStatus, TransactionErrorType,
@@ -20,8 +19,8 @@ use solana_banks_interface::{
 };
 use solders_macros::{common_methods, richcmp_eq_only};
 use solders_primitives::{
-    hash::Hash as SolderHash, keypair::Keypair, message::Message, pubkey::Pubkey,
-    signature::Signature, transaction::VersionedTransaction,
+    commitment_config::CommitmentLevel, hash::Hash as SolderHash, keypair::Keypair,
+    message::Message, pubkey::Pubkey, signature::Signature, transaction::VersionedTransaction,
 };
 use solders_traits::{to_py_err, to_py_value_err, BanksClientError};
 use tarpc::context::current;
