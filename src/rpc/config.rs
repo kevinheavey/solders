@@ -14,7 +14,7 @@ use solders_traits::{
     impl_display, py_from_bytes_general_via_cbor, pybytes_general_via_cbor, RichcmpEqualityOnly,
 };
 
-use crate::transaction_status::{TransactionDetails, UiTransactionEncoding};
+use solders_transaction_status::{TransactionDetails, UiTransactionEncoding};
 
 use super::filter::RpcFilterType;
 

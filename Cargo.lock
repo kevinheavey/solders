@@ -4395,6 +4395,7 @@ dependencies = [
  "solders-macros",
  "solders-primitives",
  "solders-traits",
+ "solders-transaction-status",
  "tarpc",
  "thiserror",
 ]
@@ -4451,6 +4452,25 @@ dependencies = [
  "serde_json",
  "solana-banks-client",
  "solana-sdk",
+]
+
+[[package]]
+name = "solders-transaction-status"
+version = "0.14.4"
+dependencies = [
+ "base64 0.13.1",
+ "bincode",
+ "bs58",
+ "derive_more",
+ "pyo3",
+ "pythonize",
+ "serde",
+ "serde_json",
+ "solana-sdk",
+ "solders-account-decoder",
+ "solders-macros",
+ "solders-primitives",
+ "solders-traits",
 ]
 
 [[package]]

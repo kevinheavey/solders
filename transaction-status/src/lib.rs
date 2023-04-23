@@ -5,13 +5,13 @@ use pythonize::{depythonize, pythonize};
 use solders_account_decoder::UiTokenAmount;
 use solders_primitives::{
     commitment_config::CommitmentConfig, message::MessageHeader, pubkey::Pubkey,
-    signature::Signature,
+    signature::Signature, hash::Hash as SolderHash
 };
 use solders_traits::handle_py_value_err;
 use std::str::FromStr;
+pub mod tmp_transaction_status;
 
-use crate::{
-    tmp_transaction_status::{
+use tmp_transaction_status::{
         EncodedConfirmedTransactionWithStatusMeta as EncodedConfirmedTransactionWithStatusMetaOriginal,
         EncodedTransaction as EncodedTransactionOriginal,
         EncodedTransactionWithStatusMeta as EncodedTransactionWithStatusMetaOriginal,
@@ -30,9 +30,7 @@ use crate::{
         UiPartiallyDecodedInstruction as UiPartiallyDecodedInstructionOriginal,
         UiRawMessage as UiRawMessageOriginal, UiTransaction as UiTransactionOriginal,
         UiTransactionStatusMeta as UiTransactionStatusMetaOriginal,
-        UiTransactionTokenBalance as UiTransactionTokenBalanceOriginal,
-    },
-    SolderHash,
+        UiTransactionTokenBalance as UiTransactionTokenBalanceOriginal, UiTransactionReturnData,
 };
 use pyo3::{
     prelude::*,
@@ -49,6 +47,7 @@ use solana_sdk::{
 use solders_macros::{common_methods, enum_original_mapping, richcmp_eq_only, EnumIntoPy};
 use solders_primitives::transaction::{TransactionVersion, VersionedTransaction};
 
+#[macro_export]
 macro_rules! transaction_status_boilerplate {
     ($name:ident) => {
         impl solders_traits::RichcmpEqualityOnly for $name {}
@@ -62,8 +61,6 @@ macro_rules! transaction_status_boilerplate {
         solders_traits::common_methods_default!($name);
     };
 }
-
-pub(crate) use transaction_status_boilerplate;
 
 /// Encoding options for transaction data.
 #[pyclass(module = "solders.transaction_status")]
@@ -773,6 +770,21 @@ impl TransactionReturnData {
     #[getter]
     pub fn data<'a>(&self, py: Python<'a>) -> &'a PyBytes {
         PyBytes::new(py, &self.0.data)
+    }
+}
+
+impl From<TransactionReturnData> for UiTransactionReturnData {
+    fn from(t: TransactionReturnData) -> Self {
+        TransactionReturnDataOriginal::from(t).into()
+    }
+}
+
+impl From<UiTransactionReturnData> for TransactionReturnData {
+    fn from(r: UiTransactionReturnData) -> Self {
+        Self::new(
+            r.program_id.parse().unwrap(),
+            base64::decode(r.data.0).unwrap(),
+        )
     }
 }
 

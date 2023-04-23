@@ -29,18 +29,16 @@ use crate::rpc::tmp_response::{
     JSON_RPC_SERVER_ERROR_TRANSACTION_SIGNATURE_VERIFICATION_FAILURE,
     JSON_RPC_SERVER_ERROR_UNSUPPORTED_TRANSACTION_VERSION,
 };
-use crate::transaction_status::{
+use solders_transaction_status::{
     EncodedConfirmedTransactionWithStatusMeta, TransactionConfirmationStatus, TransactionErrorType,
-    TransactionReturnData, TransactionStatus,
+    TransactionReturnData, TransactionStatus, UiConfirmedBlock, tmp_transaction_status::{
+        TransactionConfirmationStatus as TransactionConfirmationStatusOriginal,
+        TransactionStatus as TransactionStatusOriginal, UiTransactionReturnData,
+    }
 };
 use crate::{
     self as solders,
     account::{Account, AccountJSON},
-    tmp_transaction_status::{
-        TransactionConfirmationStatus as TransactionConfirmationStatusOriginal,
-        TransactionStatus as TransactionStatusOriginal, UiTransactionReturnData,
-    },
-    transaction_status::UiConfirmedBlock,
     SolderHash,
 };
 use camelpaste::paste;
@@ -59,7 +57,6 @@ use solana_sdk::{
     clock::{Epoch, Slot, UnixTimestamp},
     epoch_info::EpochInfo as EpochInfoOriginal,
     transaction::TransactionError as TransactionErrorOriginal,
-    transaction_context::TransactionReturnData as TransactionReturnDataOriginal,
 };
 use solders_account_decoder::{
     tmp_account_decoder::{UiAccount, UiAccountData, UiTokenAmount as UiTokenAmountOriginal},
@@ -1228,21 +1225,6 @@ contextful_resp_eq!(GetFeeForMessageResp, Option<u64>);
 contextless_resp_eq!(GetFirstAvailableBlockResp, u64);
 contextless_resp_eq!(GetGenesisHashResp, SolderHash, "DisplayFromStr");
 contextless_resp_eq!(GetHealthResp, String, clone);
-
-impl From<TransactionReturnData> for UiTransactionReturnData {
-    fn from(t: TransactionReturnData) -> Self {
-        TransactionReturnDataOriginal::from(t).into()
-    }
-}
-
-impl From<UiTransactionReturnData> for TransactionReturnData {
-    fn from(r: UiTransactionReturnData) -> Self {
-        Self::new(
-            r.program_id.parse().unwrap(),
-            base64::decode(r.data.0).unwrap(),
-        )
-    }
-}
 
 // the one in solana_client doesn't derive Eq
 // TODO: latest does

@@ -1,4 +1,4 @@
-use crate::transaction_status::{transaction_status_boilerplate, TransactionErrorType};
+use solders_transaction_status::{transaction_status_boilerplate, TransactionErrorType};
 use derive_more::{From, Into};
 use pyo3::{prelude::*, types::PyTuple, PyTypeInfo};
 use serde::{Deserialize, Serialize};

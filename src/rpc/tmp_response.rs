@@ -1,5 +1,5 @@
 use {
-    crate::tmp_transaction_status::{
+    solders_transaction_status::tmp_transaction_status::{
         TransactionConfirmationStatus, UiConfirmedBlock, UiTransactionReturnData,
     },
     serde::{Deserialize, Serialize},

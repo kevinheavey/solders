@@ -2,10 +2,10 @@ use crate::{
     account::Account,
     clock::Clock,
     rent::Rent,
-    transaction_status::{
-        transaction_status_boilerplate, TransactionConfirmationStatus, TransactionErrorType,
-        TransactionReturnData, TransactionStatus,
-    },
+};
+use solders_transaction_status::{
+    transaction_status_boilerplate, TransactionConfirmationStatus, TransactionErrorType,
+    TransactionReturnData, TransactionStatus,
 };
 use derive_more::{From, Into};
 use pyo3::prelude::*;
@@ -49,26 +49,22 @@ macro_rules! res_to_py_obj {
     }};
 }
 
-impl From<TransactionConfirmationStatusBanks> for TransactionConfirmationStatus {
-    fn from(s: TransactionConfirmationStatusBanks) -> Self {
-        match s {
-            TransactionConfirmationStatusBanks::Processed => Self::Processed,
-            TransactionConfirmationStatusBanks::Confirmed => Self::Confirmed,
-            TransactionConfirmationStatusBanks::Finalized => Self::Finalized,
-        }
+fn confirmation_status_from_banks(s: TransactionConfirmationStatusBanks) -> TransactionConfirmationStatus {
+    match s {
+        TransactionConfirmationStatusBanks::Processed => TransactionConfirmationStatus::Processed,
+        TransactionConfirmationStatusBanks::Confirmed => TransactionConfirmationStatus::Confirmed,
+        TransactionConfirmationStatusBanks::Finalized => TransactionConfirmationStatus::Finalized,
     }
 }
 
-impl From<TransactionStatusBanks> for TransactionStatus {
-    fn from(t: TransactionStatusBanks) -> Self {
-        Self::new(
-            t.slot,
-            t.confirmations,
-            None,
-            t.err.map(Into::into),
-            t.confirmation_status.map(Into::into),
-        )
-    }
+fn transaction_status_from_banks(t: TransactionStatusBanks) -> TransactionStatus {
+    TransactionStatus::new(
+        t.slot,
+        t.confirmations,
+        None,
+        t.err.map(Into::into),
+        t.confirmation_status.map(confirmation_status_from_banks),
+    )
 }
 
 /// Transaction metadata.
@@ -361,7 +357,7 @@ impl BanksClient {
         pyo3_asyncio::tokio::future_into_py(py, async move {
             let res = async_res!(underlying.get_transaction_status(signature_underlying));
             let pyobj: PyResult<Option<PyObject>> = Python::with_gil(|py| {
-                res.map(|x| x.map(|s| TransactionStatus::from(s).into_py(py)))
+                res.map(|x| x.map(|s| transaction_status_from_banks(s).into_py(py)))
             });
             pyobj
         })
@@ -387,7 +383,7 @@ impl BanksClient {
             let pyobj: PyResult<Vec<Option<PyObject>>> = Python::with_gil(|py| {
                 res.map(|v| {
                     v.iter()
-                        .map(|o| o.clone().map(|t| TransactionStatus::from(t).into_py(py)))
+                        .map(|o| o.clone().map(|t| transaction_status_from_banks(t).into_py(py)))
                         .collect()
                 })
             });

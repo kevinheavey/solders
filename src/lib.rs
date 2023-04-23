@@ -10,7 +10,7 @@ use solders_traits::{BincodeError, CborError, ParseHashError, SerdeJSONError, Si
 use std::collections::HashMap;
 use system_program::create_system_program_mod;
 use sysvar::create_sysvar_mod;
-use transaction_status::create_transaction_status_mod;
+use solders_transaction_status::create_transaction_status_mod;
 pub mod message;
 use message::create_message_mod;
 pub mod transaction;
@@ -26,8 +26,6 @@ pub mod rent;
 pub mod rpc;
 pub mod system_program;
 pub mod sysvar;
-mod tmp_transaction_status;
-pub mod transaction_status;
 use clock::create_clock_mod;
 use epoch_schedule::create_epoch_schedule_mod;
 use rent::create_rent_mod;

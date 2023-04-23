@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use {
     crate::rpc::tmp_filter::RpcFilterType,
     // TODO: use solana_transaction_status once its dependencies are light
-    crate::transaction_status::{TransactionDetails, UiTransactionEncoding},
+    solders_transaction_status::{TransactionDetails, UiTransactionEncoding},
     solana_sdk::{
         clock::{Epoch, Slot},
         commitment_config::{CommitmentConfig, CommitmentLevel},
