@@ -177,7 +177,8 @@ impl From<BanksTransactionResultWithSimulation> for BanksTransactionResultWithMe
 
 /// A client for the ledger state, from the perspective of an arbitrary validator.
 /// 
-/// Use the ``start`` function to initialize a BanksClient.
+/// The client is used to send transactions and query account data, among other things.
+/// Use ``bankrun.start()`` to initialize a BanksClient.
 #[pyclass(module = "solders.bankrun", subclass)]
 #[derive(From, Into)]
 pub struct BanksClient(BanksClientOriginal);
@@ -318,7 +319,7 @@ impl BanksClient {
     /// 
     /// Returns:
     ///     Optional[Account]: The account object, if the account exists
-    /// .
+    ///
     pub fn get_account<'p>(
         &mut self,
         py: Python<'p>,
@@ -497,9 +498,13 @@ impl BanksClient {
     }
 
     /// Returns latest blockhash and last valid block height for given commitment level.
+    /// 
+    /// Args:
+    ///     commitment (Optional[CommitmentLevel]): The commitment level to use.
     ///
     /// Returns:
     ///     tuple[Hash, int]: The blockhash and last valid block height.
+    /// 
     pub fn get_latest_blockhash<'p>(
         &mut self,
         py: Python<'p>,
@@ -525,6 +530,14 @@ impl BanksClient {
     }
 
     /// Get the fee in lamports for a given message.
+    /// 
+    /// Args:
+    ///     message (Message): The message to check.
+    ///     commitment (Optional[CommitmentLevel]): The commitment level to use.
+    /// 
+    /// Returns:
+    ///     Optional[int]: The fee for the given message.
+    /// 
     pub fn get_fee_for_message<'p>(
         &mut self,
         py: Python<'p>,
@@ -578,6 +591,24 @@ fn new_bankrun(
     pt
 }
 
+/// Start a bankrun!
+/// 
+/// This will spin up a BanksServer and a BanksClient,
+/// deploy programs and add accounts as instructed.
+/// 
+/// Args:
+///     programs (Optional[Sequence[Tuple[str, Pubkey]]]): A sequence of (program_name, program_id) tuples 
+///         indicating which programs to deploy to the test environment. See the main bankrun docs for more explanation
+///         on how to add programs.
+///     compute_max_units (Optional[int]): Override the default compute unit limit for a transaction.
+///     transaction_account_lock_limit (Optional[int]): Override the default transaction account lock limit.
+///     use_bpf_jit (Optional[bool]): Execute the program with JIT if true, interpreted if false.
+///     accounts (Optional[Sequence[Tuple[Pubkey, Account]]]): A sequence of (address, account_object) tuples, indicating
+///         what data to write to the given addresses.
+/// 
+/// Returns:
+///     ProgramTestContext: a container for stuff you'll need to send transactions and interact with the test environment.
+///     
 #[pyfunction]
 pub fn start<'p>(
     py: Python<'p>,
@@ -602,28 +633,40 @@ pub fn start<'p>(
     })
 }
 
+/// The result of calling `bankrun.start()`.
+/// 
+/// Contains a BanksClient, a recent blockhash and a funded payer keypair.
 #[pyclass(module = "solders.bankrun", subclass)]
 #[derive(From, Into)]
 pub struct ProgramTestContext(pub ProgramTestContextOriginal);
 
 #[pymethods]
 impl ProgramTestContext {
+
+    /// BanksClient: The client for this test.
     #[getter]
     pub fn banks_client(&self) -> BanksClient {
         self.0.banks_client.clone().into()
     }
 
+    /// Hash: The last blockhash registered when the client was initialized.
     #[getter]
     pub fn last_blockhash(&self) -> SolderHash {
         self.0.last_blockhash.into()
     }
 
+    /// Keypair: A funded keypair for sending transactions.
     #[getter]
     pub fn payer(&self) -> Keypair {
         Keypair::from_bytes(self.0.payer.to_bytes()).unwrap()
     }
 
-    /// Manually increment vote credits for the current epoch in the specified vote account to simulate validator voting activity
+    /// Manually increment vote credits for the current epoch in the specified vote account to simulate validator voting activity.
+    /// 
+    /// Args:
+    ///     vote_account_address (Pubkey): The vote account addess in which to increment credits.
+    ///     number_of_credits (int): How many credits to increment by.
+    /// 
     pub fn increment_vote_account_credits(
         &mut self,
         vote_account_address: &Pubkey,
@@ -639,22 +682,39 @@ impl ProgramTestContext {
     /// that would be difficult to replicate by sending individual transactions.
     /// Beware that it can be used to create states that would not be reachable
     /// by sending transactions!
+    /// 
+    /// Args:
+    ///     address (Pubkey): The address to write to.
+    ///     account (Account): The account object to write.
+    /// 
     pub fn set_account(&mut self, address: &Pubkey, account: Account) {
         self.0
             .set_account(address.as_ref(), &AccountSharedData::from(account.0));
     }
 
     /// Overwrite the clock sysvar.
+    /// 
+    /// Args:
+    ///     clock (Clock): The new clock object.
+    /// 
     pub fn set_clock(&mut self, clock: &Clock) {
         self.0.set_sysvar(&clock.0)
     }
 
     /// Overwrite the rent sysvar.
+    /// 
+    /// Args:
+    ///     rent (Rent): The new rent object.
+    /// 
     pub fn set_rent(&mut self, rent: &Rent) {
         self.0.set_sysvar(&rent.0)
     }
 
     /// Force the working bank ahead to a new slot
+    /// 
+    /// Args:
+    ///     warp_slot (int): The slot to warp to.
+    /// 
     pub fn warp_to_slot(&mut self, warp_slot: Slot) -> PyResult<()> {
         self.0
             .warp_to_slot(warp_slot)
