@@ -116,10 +116,10 @@ impl BanksTransactionMeta {
     }
 }
 
-/// A transaction result. 
-/// 
+/// A transaction result.
+///
 /// Contains transaction metadata, and the transaction error, if there is one.
-/// 
+///
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.bankrun", subclass)]
 pub struct BanksTransactionResultWithMeta(BanksTransactionResultWithMetadata);
@@ -176,7 +176,7 @@ impl From<BanksTransactionResultWithSimulation> for BanksTransactionResultWithMe
 }
 
 /// A client for the ledger state, from the perspective of an arbitrary validator.
-/// 
+///
 /// The client is used to send transactions and query account data, among other things.
 /// Use ``bankrun.start()`` to initialize a BanksClient.
 #[pyclass(module = "solders.bankrun", subclass)]
@@ -186,10 +186,10 @@ pub struct BanksClient(BanksClientOriginal);
 #[pymethods]
 impl BanksClient {
     /// Send a transaction and return immediately.
-    /// 
+    ///
     /// Args:
     ///     transaction (VersionedTransaction): The transaction to send.
-    /// 
+    ///
     pub fn send_transaction<'p>(
         &'p mut self,
         py: Python<'p>,
@@ -203,11 +203,11 @@ impl BanksClient {
     }
 
     /// Send a transaction and wait until the transaction has been finalized or rejected.
-    /// 
+    ///
     /// Args:
     ///     transaction (VersionedTransaction): The transaction to send.
     ///     commitment (Optional[CommitmentLevel]): The commitment to use.
-    /// 
+    ///
     pub fn process_transaction<'p>(
         &'p mut self,
         py: Python<'p>,
@@ -229,11 +229,11 @@ impl BanksClient {
 
     /// Send a transaction and return any preflight (sanitization or simulation) errors, or return
     /// after the transaction has been rejected or reached the given level of commitment.
-    /// 
+    ///
     /// Args:
     ///     transaction (VersionedTransaction): The transaction to send.
     ///     commitment (Optional[CommitmentLevel]): The commitment to use.
-    /// 
+    ///
     pub fn process_transaction_with_preflight<'p>(
         &'p mut self,
         py: Python<'p>,
@@ -254,13 +254,13 @@ impl BanksClient {
     }
 
     /// Process a transaction and return the result with metadata.
-    /// 
+    ///
     /// Args:
     ///     transaction (VersionedTransaction): The transaction to send.
-    /// 
+    ///
     /// Returns:
     ///     BanksTransactionResultWithMeta: The transaction result and metadata.
-    /// 
+    ///
     pub fn process_transaction_with_metadata<'p>(
         &'p mut self,
         py: Python<'p>,
@@ -281,14 +281,14 @@ impl BanksClient {
     }
 
     /// Simulate a transaction at the given commitment level.
-    /// 
+    ///
     /// Args:
     ///     transaction (VersionedTransaction): The transaction to simulate.
     ///     commitment (Optional[CommitmentLevel]): The commitment level to use.
-    /// 
+    ///
     /// Returns:
     ///     BanksTransactionResultWithMeta: The transaction simulation result.
-    /// 
+    ///
     pub fn simulate_transaction<'p>(
         &'p mut self,
         py: Python<'p>,
@@ -312,11 +312,11 @@ impl BanksClient {
 
     /// Return the account at the given address at the slot corresponding to the given
     /// commitment level. If the account is not found, None is returned.
-    /// 
+    ///
     /// Args:
     ///     address (Pubkey): The account address to look up.
     ///     commitment (Optional[CommitmentLevel]): The commitment level to use.
-    /// 
+    ///
     /// Returns:
     ///     Optional[Account]: The account object, if the account exists
     ///
@@ -340,18 +340,18 @@ impl BanksClient {
 
     /// Return the status of a transaction with a signature matching the transaction's first
     /// signature.
-    /// 
+    ///
     /// Return None if the transaction is not found, which may be because the
     /// blockhash was expired or the fee-paying account had insufficient funds to pay the
     /// transaction fee. Note that servers rarely store the full transaction history. This
     /// method may return None if the transaction status has been discarded.
-    /// 
+    ///
     /// Args:
     ///     signature (Signature): The transaction signature (the first signature of the transaction).
-    /// 
+    ///
     /// Returns:
     ///     Optional[TransactionStatus]: The transaction status, if found.
-    /// 
+    ///
     pub fn get_transaction_status<'p>(
         &mut self,
         py: Python<'p>,
@@ -369,13 +369,13 @@ impl BanksClient {
     }
 
     /// Same as ``get_transaction_status``, but for multiple transactions.
-    /// 
+    ///
     /// Args:
     ///     signatures (Sequence[Signature]): The transaction signatures.
-    /// 
+    ///
     /// Returns:
     ///     List[Optional[TransactionStatus]]: The transaction statuses, if found.
-    /// 
+    ///
     pub fn get_transaction_statuses<'p>(
         &mut self,
         py: Python<'p>,
@@ -397,13 +397,13 @@ impl BanksClient {
     }
 
     /// Get the slot that has reached the given commitment level (or the default commitment).
-    /// 
+    ///
     /// Args:
     ///     commitment (Optional[CommitmentLevel]): The commitment level to use.
-    /// 
+    ///
     /// Returns:
     ///     int: The current slot.
-    /// 
+    ///
     pub fn get_slot<'p>(
         &mut self,
         py: Python<'p>,
@@ -419,13 +419,13 @@ impl BanksClient {
     }
 
     /// Get the current block height.
-    /// 
+    ///
     /// Args:
     ///     commitment (Optional[CommitmentLevel]): The commitment level to use.
-    /// 
+    ///
     /// Returns:
     ///     int: The current block height.
-    /// 
+    ///
     pub fn get_block_height<'p>(
         &mut self,
         py: Python<'p>,
@@ -442,7 +442,7 @@ impl BanksClient {
     }
 
     /// Get the cluster rent.
-    /// 
+    ///
     /// Returns:
     ///     Rent: The rent object.
     ///  
@@ -457,10 +457,10 @@ impl BanksClient {
     }
 
     /// Get the cluster clock.
-    /// 
+    ///
     /// Returns:
     ///     Clock: the clock object.
-    /// 
+    ///
     pub fn get_clock<'p>(&mut self, py: Python<'p>) -> PyResult<&'p PyAny> {
         let mut underlying = self.0.clone();
         pyo3_asyncio::tokio::future_into_py(py, async move {
@@ -473,13 +473,13 @@ impl BanksClient {
 
     /// Return the balance in lamports of an account at the given address at the slot
     /// corresponding to the given commitment level.
-    /// 
+    ///
     /// Args:
     ///     commitment (Optional[CommitmentLevel]): The commitment level to use.
-    /// 
+    ///
     /// Returns:
     ///     int: The account balance in lamports.
-    /// 
+    ///
     pub fn get_balance<'p>(
         &mut self,
         py: Python<'p>,
@@ -498,13 +498,13 @@ impl BanksClient {
     }
 
     /// Returns latest blockhash and last valid block height for given commitment level.
-    /// 
+    ///
     /// Args:
     ///     commitment (Optional[CommitmentLevel]): The commitment level to use.
     ///
     /// Returns:
     ///     tuple[Hash, int]: The blockhash and last valid block height.
-    /// 
+    ///
     pub fn get_latest_blockhash<'p>(
         &mut self,
         py: Python<'p>,
@@ -530,14 +530,14 @@ impl BanksClient {
     }
 
     /// Get the fee in lamports for a given message.
-    /// 
+    ///
     /// Args:
     ///     message (Message): The message to check.
     ///     commitment (Optional[CommitmentLevel]): The commitment level to use.
-    /// 
+    ///
     /// Returns:
     ///     Optional[int]: The fee for the given message.
-    /// 
+    ///
     pub fn get_fee_for_message<'p>(
         &mut self,
         py: Python<'p>,
@@ -592,12 +592,12 @@ fn new_bankrun(
 }
 
 /// Start a bankrun!
-/// 
+///
 /// This will spin up a BanksServer and a BanksClient,
 /// deploy programs and add accounts as instructed.
-/// 
+///
 /// Args:
-///     programs (Optional[Sequence[Tuple[str, Pubkey]]]): A sequence of (program_name, program_id) tuples 
+///     programs (Optional[Sequence[Tuple[str, Pubkey]]]): A sequence of (program_name, program_id) tuples
 ///         indicating which programs to deploy to the test environment. See the main bankrun docs for more explanation
 ///         on how to add programs.
 ///     accounts (Optional[Sequence[Tuple[Pubkey, Account]]]): A sequence of (address, account_object) tuples, indicating
@@ -606,7 +606,7 @@ fn new_bankrun(
 ///     transaction_account_lock_limit (Optional[int]): Override the default transaction account lock limit.
 ///     use_bpf_jit (Optional[bool]): Execute the program with JIT if true, interpreted if false.
 
-/// 
+///
 /// Returns:
 ///     ProgramTestContext: a container for stuff you'll need to send transactions and interact with the test environment.
 ///     
@@ -635,7 +635,7 @@ pub fn start<'p>(
 }
 
 /// The result of calling `bankrun.start()`.
-/// 
+///
 /// Contains a BanksClient, a recent blockhash and a funded payer keypair.
 #[pyclass(module = "solders.bankrun", subclass)]
 #[derive(From, Into)]
@@ -643,7 +643,6 @@ pub struct ProgramTestContext(pub ProgramTestContextOriginal);
 
 #[pymethods]
 impl ProgramTestContext {
-
     /// BanksClient: The client for this test.
     #[getter]
     pub fn banks_client(&self) -> BanksClient {
@@ -663,11 +662,11 @@ impl ProgramTestContext {
     }
 
     /// Manually increment vote credits for the current epoch in the specified vote account to simulate validator voting activity.
-    /// 
+    ///
     /// Args:
     ///     vote_account_address (Pubkey): The vote account addess in which to increment credits.
     ///     number_of_credits (int): How many credits to increment by.
-    /// 
+    ///
     pub fn increment_vote_account_credits(
         &mut self,
         vote_account_address: &Pubkey,
@@ -683,39 +682,39 @@ impl ProgramTestContext {
     /// that would be difficult to replicate by sending individual transactions.
     /// Beware that it can be used to create states that would not be reachable
     /// by sending transactions!
-    /// 
+    ///
     /// Args:
     ///     address (Pubkey): The address to write to.
     ///     account (Account): The account object to write.
-    /// 
+    ///
     pub fn set_account(&mut self, address: &Pubkey, account: Account) {
         self.0
             .set_account(address.as_ref(), &AccountSharedData::from(account.0));
     }
 
     /// Overwrite the clock sysvar.
-    /// 
+    ///
     /// Args:
     ///     clock (Clock): The new clock object.
-    /// 
+    ///
     pub fn set_clock(&mut self, clock: &Clock) {
         self.0.set_sysvar(&clock.0)
     }
 
     /// Overwrite the rent sysvar.
-    /// 
+    ///
     /// Args:
     ///     rent (Rent): The new rent object.
-    /// 
+    ///
     pub fn set_rent(&mut self, rent: &Rent) {
         self.0.set_sysvar(&rent.0)
     }
 
     /// Force the working bank ahead to a new slot
-    /// 
+    ///
     /// Args:
     ///     warp_slot (int): The slot to warp to.
-    /// 
+    ///
     pub fn warp_to_slot(&mut self, warp_slot: Slot) -> PyResult<()> {
         self.0
             .warp_to_slot(warp_slot)
