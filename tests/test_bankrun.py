@@ -33,7 +33,10 @@ async def test_logging() -> None:
     assert sim_res.meta == meta
     assert meta is not None
     assert meta.log_messages[1] == "Program log: static string"
-    assert meta.compute_units_consumed < 10_000 # not being precise here in case it changes
+    assert (
+        meta.compute_units_consumed < 10_000
+    )  # not being precise here in case it changes
+
 
 async def helloworld_program(
     compute_max_units: Optional[int] = None,
