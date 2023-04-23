@@ -27,7 +27,10 @@ async def test_logging() -> None:
     client = context.banks_client
     msg = Message.new_with_blockhash([ix], payer.pubkey(), blockhash)
     tx = VersionedTransaction(msg, [payer])
+    # let's sim it first
+    sim_res = await client.simulate_transaction(tx)
     meta = (await client.process_transaction_with_metadata(tx)).meta
+    assert sim_res.meta == meta
     assert meta is not None
     assert meta.log_messages[1] == "Program log: static string"
     assert meta.compute_units_consumed < 10_000 # not being precise here in case it changes
