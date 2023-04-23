@@ -4,34 +4,13 @@ extern crate base64;
 use pythonize::{depythonize, pythonize};
 use solders_account_decoder::UiTokenAmount;
 use solders_primitives::{
-    commitment_config::CommitmentConfig, message::MessageHeader, pubkey::Pubkey,
-    signature::Signature, hash::Hash as SolderHash
+    commitment_config::CommitmentConfig, hash::Hash as SolderHash, message::MessageHeader,
+    pubkey::Pubkey, signature::Signature,
 };
-use solders_traits::handle_py_value_err;
+use solders_traits::{handle_py_value_err, transaction_status_boilerplate};
 use std::str::FromStr;
 pub mod tmp_transaction_status;
 
-use tmp_transaction_status::{
-        EncodedConfirmedTransactionWithStatusMeta as EncodedConfirmedTransactionWithStatusMetaOriginal,
-        EncodedTransaction as EncodedTransactionOriginal,
-        EncodedTransactionWithStatusMeta as EncodedTransactionWithStatusMetaOriginal,
-        ParsedAccount as ParsedAccountOriginal, ParsedInstruction as ParsedInstructionOriginal,
-        Reward as RewardOriginal, RewardType as RewardTypeOriginal,
-        TransactionBinaryEncoding as TransactionBinaryEncodingOriginal,
-        TransactionConfirmationStatus as TransactionConfirmationStatusOriginal,
-        TransactionStatus as TransactionStatusOriginal,
-        UiAddressTableLookup as UiAddressTableLookupOriginal,
-        UiCompiledInstruction as UiCompiledInstructionOriginal,
-        UiConfirmedBlock as UiConfirmedBlockOriginal,
-        UiInnerInstructions as UiInnerInstructionsOriginal, UiInstruction as UiInstructionOriginal,
-        UiLoadedAddresses as UiLoadedAddressesOriginal, UiMessage as UiMessageOriginal,
-        UiParsedInstruction as UiParsedInstructionOriginal,
-        UiParsedMessage as UiParsedMessageOriginal,
-        UiPartiallyDecodedInstruction as UiPartiallyDecodedInstructionOriginal,
-        UiRawMessage as UiRawMessageOriginal, UiTransaction as UiTransactionOriginal,
-        UiTransactionStatusMeta as UiTransactionStatusMetaOriginal,
-        UiTransactionTokenBalance as UiTransactionTokenBalanceOriginal, UiTransactionReturnData,
-};
 use pyo3::{
     prelude::*,
     types::{PyBytes, PyTuple},
@@ -46,21 +25,26 @@ use solana_sdk::{
 };
 use solders_macros::{common_methods, enum_original_mapping, richcmp_eq_only, EnumIntoPy};
 use solders_primitives::transaction::{TransactionVersion, VersionedTransaction};
-
-#[macro_export]
-macro_rules! transaction_status_boilerplate {
-    ($name:ident) => {
-        impl solders_traits::RichcmpEqualityOnly for $name {}
-        impl std::fmt::Display for $name {
-            fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-                write!(f, "{:?}", self)
-            }
-        }
-        solders_traits::pybytes_general_via_bincode!($name);
-        solders_traits::py_from_bytes_general_via_bincode!($name);
-        solders_traits::common_methods_default!($name);
-    };
-}
+use tmp_transaction_status::{
+    EncodedConfirmedTransactionWithStatusMeta as EncodedConfirmedTransactionWithStatusMetaOriginal,
+    EncodedTransaction as EncodedTransactionOriginal,
+    EncodedTransactionWithStatusMeta as EncodedTransactionWithStatusMetaOriginal,
+    ParsedAccount as ParsedAccountOriginal, ParsedInstruction as ParsedInstructionOriginal,
+    Reward as RewardOriginal, RewardType as RewardTypeOriginal,
+    TransactionBinaryEncoding as TransactionBinaryEncodingOriginal,
+    TransactionConfirmationStatus as TransactionConfirmationStatusOriginal,
+    TransactionStatus as TransactionStatusOriginal,
+    UiAddressTableLookup as UiAddressTableLookupOriginal,
+    UiCompiledInstruction as UiCompiledInstructionOriginal,
+    UiConfirmedBlock as UiConfirmedBlockOriginal,
+    UiInnerInstructions as UiInnerInstructionsOriginal, UiInstruction as UiInstructionOriginal,
+    UiLoadedAddresses as UiLoadedAddressesOriginal, UiMessage as UiMessageOriginal,
+    UiParsedInstruction as UiParsedInstructionOriginal, UiParsedMessage as UiParsedMessageOriginal,
+    UiPartiallyDecodedInstruction as UiPartiallyDecodedInstructionOriginal,
+    UiRawMessage as UiRawMessageOriginal, UiTransaction as UiTransactionOriginal,
+    UiTransactionReturnData, UiTransactionStatusMeta as UiTransactionStatusMetaOriginal,
+    UiTransactionTokenBalance as UiTransactionTokenBalanceOriginal,
+};
 
 /// Encoding options for transaction data.
 #[pyclass(module = "solders.transaction_status")]

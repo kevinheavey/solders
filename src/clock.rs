@@ -1,4 +1,3 @@
-use solders_transaction_status::transaction_status_boilerplate;
 use derive_more::{From, Into};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -11,6 +10,7 @@ use solana_sdk::clock::{
     MAX_TRANSACTION_FORWARDING_DELAY, MAX_TRANSACTION_FORWARDING_DELAY_GPU, MS_PER_TICK,
     NUM_CONSECUTIVE_LEADER_SLOTS, SECONDS_PER_DAY, TICKS_PER_DAY,
 };
+use solders_traits::transaction_status_boilerplate;
 
 /// A representation of network time.
 ///

@@ -1,4 +1,3 @@
-use solders_transaction_status::transaction_status_boilerplate;
 use derive_more::{From, Into};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -6,6 +5,7 @@ use solana_sdk::rent::{
     Rent as RentOriginal, RentDue, ACCOUNT_STORAGE_OVERHEAD, DEFAULT_BURN_PERCENT,
     DEFAULT_EXEMPTION_THRESHOLD, DEFAULT_LAMPORTS_PER_BYTE_YEAR,
 };
+use solders_traits::transaction_status_boilerplate;
 
 /// Configuration of network rent.
 #[pyclass(module = "solders.account", subclass)]

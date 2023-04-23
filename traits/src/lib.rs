@@ -480,3 +480,18 @@ macro_rules! common_methods_default {
         impl $crate::CommonMethods<'_> for $ty {}
     };
 }
+
+#[macro_export]
+macro_rules! transaction_status_boilerplate {
+    ($name:ident) => {
+        impl $crate::RichcmpEqualityOnly for $name {}
+        impl std::fmt::Display for $name {
+            fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+                write!(f, "{:?}", self)
+            }
+        }
+        $crate::pybytes_general_via_bincode!($name);
+        $crate::py_from_bytes_general_via_bincode!($name);
+        $crate::common_methods_default!($name);
+    };
+}

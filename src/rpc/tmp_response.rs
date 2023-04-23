@@ -1,7 +1,4 @@
 use {
-    solders_transaction_status::tmp_transaction_status::{
-        TransactionConfirmationStatus, UiConfirmedBlock, UiTransactionReturnData,
-    },
     serde::{Deserialize, Serialize},
     solana_sdk::{
         clock::{Epoch, Slot, UnixTimestamp},
@@ -11,6 +8,9 @@ use {
         transaction::{Result, TransactionError},
     },
     solders_account_decoder::tmp_account_decoder::UiAccount,
+    solders_transaction_status::tmp_transaction_status::{
+        TransactionConfirmationStatus, UiConfirmedBlock, UiTransactionReturnData,
+    },
     std::{collections::HashMap, fmt, net::SocketAddr},
     thiserror::Error,
 };

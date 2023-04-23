@@ -1,12 +1,4 @@
-use crate::{
-    account::Account,
-    clock::Clock,
-    rent::Rent,
-};
-use solders_transaction_status::{
-    transaction_status_boilerplate, TransactionConfirmationStatus, TransactionErrorType,
-    TransactionReturnData, TransactionStatus,
-};
+use crate::{account::Account, clock::Clock, rent::Rent};
 use derive_more::{From, Into};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -22,7 +14,12 @@ use solders_primitives::{
     commitment_config::CommitmentLevel, hash::Hash as SolderHash, keypair::Keypair,
     message::Message, pubkey::Pubkey, signature::Signature, transaction::VersionedTransaction,
 };
-use solders_traits::{to_py_err, to_py_value_err, BanksClientError};
+use solders_traits::{
+    to_py_err, to_py_value_err, transaction_status_boilerplate, BanksClientError,
+};
+use solders_transaction_status::{
+    TransactionConfirmationStatus, TransactionErrorType, TransactionReturnData, TransactionStatus,
+};
 use tarpc::context::current;
 use {
     solana_program_test::{
@@ -49,7 +46,9 @@ macro_rules! res_to_py_obj {
     }};
 }
 
-fn confirmation_status_from_banks(s: TransactionConfirmationStatusBanks) -> TransactionConfirmationStatus {
+fn confirmation_status_from_banks(
+    s: TransactionConfirmationStatusBanks,
+) -> TransactionConfirmationStatus {
     match s {
         TransactionConfirmationStatusBanks::Processed => TransactionConfirmationStatus::Processed,
         TransactionConfirmationStatusBanks::Confirmed => TransactionConfirmationStatus::Confirmed,
@@ -383,7 +382,10 @@ impl BanksClient {
             let pyobj: PyResult<Vec<Option<PyObject>>> = Python::with_gil(|py| {
                 res.map(|v| {
                     v.iter()
-                        .map(|o| o.clone().map(|t| transaction_status_from_banks(t).into_py(py)))
+                        .map(|o| {
+                            o.clone()
+                                .map(|t| transaction_status_from_banks(t).into_py(py))
+                        })
                         .collect()
                 })
             });
