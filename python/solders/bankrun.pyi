@@ -129,8 +129,8 @@ class ProgramTestContext:
 
 async def start(
     programs: Optional[Sequence[Tuple[str, Pubkey]]] = None,
+    accounts: Optional[Sequence[Tuple[Pubkey, Account]]] = None,
     compute_max_units: Optional[int] = None,
     transaction_account_lock_limit: Optional[int] = None,
     use_bpf_jit: Optional[bool] = None,
-    accounts: Optional[Sequence[Tuple[Pubkey, Account]]] = None,
 ) -> ProgramTestContext: ...

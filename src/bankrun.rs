@@ -600,11 +600,12 @@ fn new_bankrun(
 ///     programs (Optional[Sequence[Tuple[str, Pubkey]]]): A sequence of (program_name, program_id) tuples 
 ///         indicating which programs to deploy to the test environment. See the main bankrun docs for more explanation
 ///         on how to add programs.
+///     accounts (Optional[Sequence[Tuple[Pubkey, Account]]]): A sequence of (address, account_object) tuples, indicating
+///         what data to write to the given addresses.
 ///     compute_max_units (Optional[int]): Override the default compute unit limit for a transaction.
 ///     transaction_account_lock_limit (Optional[int]): Override the default transaction account lock limit.
 ///     use_bpf_jit (Optional[bool]): Execute the program with JIT if true, interpreted if false.
-///     accounts (Optional[Sequence[Tuple[Pubkey, Account]]]): A sequence of (address, account_object) tuples, indicating
-///         what data to write to the given addresses.
+
 /// 
 /// Returns:
 ///     ProgramTestContext: a container for stuff you'll need to send transactions and interact with the test environment.
@@ -613,10 +614,10 @@ fn new_bankrun(
 pub fn start<'p>(
     py: Python<'p>,
     programs: Option<Vec<(&str, Pubkey)>>,
+    accounts: Option<Vec<(Pubkey, Account)>>,
     compute_max_units: Option<u64>,
     transaction_account_lock_limit: Option<usize>,
     use_bpf_jit: Option<bool>,
-    accounts: Option<Vec<(Pubkey, Account)>>,
 ) -> PyResult<&'p PyAny> {
     let pt = new_bankrun(
         programs,
