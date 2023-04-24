@@ -25,7 +25,7 @@ use solana_sdk::{
     transaction_context::TransactionReturnData as TransactionReturnDataOriginal,
 };
 use solders_macros::{common_methods, enum_original_mapping, richcmp_eq_only, EnumIntoPy};
-use solders_primitives::transaction::{TransactionVersion, VersionedTransaction};
+use solders_transaction::{TransactionVersion, VersionedTransaction};
 use tmp_transaction_status::{
     EncodedConfirmedTransactionWithStatusMeta as EncodedConfirmedTransactionWithStatusMetaOriginal,
     EncodedTransaction as EncodedTransactionOriginal,

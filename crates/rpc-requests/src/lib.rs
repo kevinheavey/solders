@@ -1,6 +1,6 @@
 #![allow(deprecated)]
 use pyo3::{exceptions::PyValueError, prelude::*, types::PyTuple, PyTypeInfo};
-use solders_primitives::transaction::{Transaction, VersionedTransaction};
+use solders_transaction::{Transaction, VersionedTransaction};
 use solders_message::VersionedMessage;
 use solders_hash::Hash as SolderHash;
 use solders_commitment_config::{CommitmentConfig, CommitmentLevel};

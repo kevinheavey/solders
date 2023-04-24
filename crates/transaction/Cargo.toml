@@ -1,0 +1,22 @@
+[package]
+name = "solders-transaction"
+version = "0.14.4"
+edition = "2021"
+include = ["/src"]
+description = "Core types for the Solders project."
+license = "MIT"
+repository = "https://github.com/kevinheavey/solders"
+
+[dependencies]
+pyo3 = { workspace = true, features = ["macros"] }
+solders-traits = { workspace = true }
+solders-macros = { workspace = true }
+solana-sdk = { workspace = true }
+serde = { workspace = true }
+derive_more = { workspace = true }
+solders-message = { workspace = true }
+solders-pubkey = { workspace = true }
+solders-keypair = { workspace = true }
+solders-signature = { workspace = true }
+solders-hash = { workspace = true }
+solders-instruction = { workspace = true }

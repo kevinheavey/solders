@@ -20,7 +20,7 @@ solders-transaction-status = { workspace = true }
 solders-commitment-config = { workspace = true }
 solders-rpc-config = { workspace = true }
 solders-message = { workspace = true }
-solders-primitives = { workspace = true }
+solders-transaction = { workspace = true }
 solders-pubkey = { workspace = true }
 solders-signature = { workspace = true }
 solana-sdk = { workspace = true }

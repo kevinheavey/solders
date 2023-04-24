@@ -4398,6 +4398,7 @@ dependencies = [
  "solders-rpc-responses",
  "solders-signature",
  "solders-traits",
+ "solders-transaction",
  "solders-transaction-status",
 ]
 
@@ -4468,6 +4469,7 @@ dependencies = [
  "solders-pubkey",
  "solders-signature",
  "solders-traits",
+ "solders-transaction",
  "solders-transaction-status",
  "tarpc",
 ]
@@ -4659,11 +4661,11 @@ dependencies = [
  "solders-hash",
  "solders-macros",
  "solders-message",
- "solders-primitives",
  "solders-pubkey",
  "solders-rpc-config",
  "solders-signature",
  "solders-traits",
+ "solders-transaction",
  "solders-transaction-status",
 ]
 
@@ -4720,6 +4722,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "solders-transaction"
+version = "0.14.4"
+dependencies = [
+ "derive_more",
+ "pyo3",
+ "serde",
+ "solana-sdk",
+ "solders-hash",
+ "solders-instruction",
+ "solders-keypair",
+ "solders-macros",
+ "solders-message",
+ "solders-pubkey",
+ "solders-signature",
+ "solders-traits",
+]
+
+[[package]]
 name = "solders-transaction-status"
 version = "0.14.4"
 dependencies = [
@@ -4737,10 +4757,10 @@ dependencies = [
  "solders-hash",
  "solders-macros",
  "solders-message",
- "solders-primitives",
  "solders-pubkey",
  "solders-signature",
  "solders-traits",
+ "solders-transaction",
 ]
 
 [[package]]

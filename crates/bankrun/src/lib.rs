@@ -13,8 +13,8 @@ use solders_macros::{common_methods, richcmp_eq_only};
 use solders_primitives::{
     clock::Clock,
     rent::Rent,
-    transaction::VersionedTransaction,
 };
+use solders_transaction::VersionedTransaction;
 use solders_keypair::Keypair;
 use solders_message::Message;
 use solders_hash::Hash as SolderHash;

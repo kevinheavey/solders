@@ -6,8 +6,8 @@ use pyo3::{
 
 use solders_traits::{SanitizeError, TransactionError};
 
-use solders_primitives::{
-    transaction::{Legacy, Transaction, VersionedTransaction},
+use solders_transaction::{
+    Legacy, Transaction, VersionedTransaction,
 };
 use solders_keypair::{Keypair, null_signer::NullSigner, presigner::Presigner};
 pub(crate) fn create_transaction_mod(py: Python<'_>) -> PyResult<&PyModule> {
