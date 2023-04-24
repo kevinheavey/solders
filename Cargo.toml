@@ -36,6 +36,7 @@ solders-address-lookup-table-account = { workspace = true }
 solders-signature = { workspace = true }
 solders-transaction-status = { workspace = true }
 solders-hash = { workspace = true }
+solders-keypair = { workspace = true }
 solders-bankrun = { workspace = true, optional = true }
 
 [features]
@@ -69,6 +70,7 @@ solders-instruction = { path = "./crates/instruction", version = "0.14.4" }
 solders-address-lookup-table-account = { path = "./crates/address-lookup-table-account", version = "0.14.4" }
 solders-message = { path = "./crates/message", version = "0.14.4" }
 solders-signature = { path = "./crates/signature", version = "0.14.4" }
+solders-keypair = { path = "./crates/keypair", version = "0.14.4" }
 solders-account = { path = "./crates/account", version = "0.14.4" }
 solders-hash = { path = "./crates/hash", version = "0.14.4" }
 serde_with = { version = "^1.14.0", features = ["base64"] }
