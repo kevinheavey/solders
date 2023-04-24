@@ -13,7 +13,7 @@ use solana_program::{
 use solders_macros::{common_methods, pyhash, richcmp_eq_only};
 use solders_pubkey::Pubkey;
 
-use solders_traits::{
+use solders_traits_core::{
     impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
     CommonMethodsCore, PyHash, RichcmpEqualityOnly,
 };
@@ -97,7 +97,7 @@ pybytes_general_via_bincode!(AccountMeta);
 impl RichcmpEqualityOnly for AccountMeta {}
 py_from_bytes_general_via_bincode!(AccountMeta);
 
-solders_traits::common_methods_default!(AccountMeta);
+solders_traits_core::common_methods_default!(AccountMeta);
 
 impl PyHash for AccountMeta {}
 impl_display!(AccountMeta);
@@ -246,7 +246,7 @@ pybytes_general_via_bincode!(Instruction);
 impl RichcmpEqualityOnly for Instruction {}
 py_from_bytes_general_via_bincode!(Instruction);
 
-solders_traits::common_methods_default!(Instruction);
+solders_traits_core::common_methods_default!(Instruction);
 
 impl_display!(Instruction);
 
@@ -336,7 +336,7 @@ pybytes_general_via_bincode!(CompiledInstruction);
 impl RichcmpEqualityOnly for CompiledInstruction {}
 py_from_bytes_general_via_bincode!(CompiledInstruction);
 
-solders_traits::common_methods_default!(CompiledInstruction);
+solders_traits_core::common_methods_default!(CompiledInstruction);
 
 impl_display!(CompiledInstruction);
 

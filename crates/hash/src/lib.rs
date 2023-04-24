@@ -8,10 +8,11 @@ use solana_program::hash::{
 };
 use solders_macros::{common_methods, pyhash, richcmp_full};
 
-use solders_traits::{
-    handle_py_err, impl_display, pybytes_general_via_slice, CommonMethodsCore, PyFromBytesGeneral,
+use solders_traits_core::{
+    impl_display, pybytes_general_via_slice, CommonMethodsCore, PyFromBytesGeneral,
     PyHash, RichcmpFull,
 };
+use solders_traits::handle_py_err;
 
 #[pyclass(module = "solders.hash", subclass)]
 /// A SHA-256 hash, most commonly used for blockhashes.
@@ -137,7 +138,7 @@ impl PyFromBytesGeneral for Hash {
 }
 
 pybytes_general_via_slice!(Hash);
-solders_traits::common_methods_default!(Hash);
+solders_traits_core::common_methods_default!(Hash);
 
 impl RichcmpFull for Hash {}
 

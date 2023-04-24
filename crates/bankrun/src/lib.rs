@@ -17,8 +17,11 @@ use solders_message::Message;
 use solders_primitives::{clock::Clock, rent::Rent};
 use solders_pubkey::Pubkey;
 use solders_signature::Signature;
+use solders_traits_core::{
+    to_py_value_err, transaction_status_boilerplate,
+};
 use solders_traits::{
-    to_py_err, to_py_value_err, transaction_status_boilerplate, BanksClientError,
+    to_py_err, BanksClientError
 };
 use solders_transaction::VersionedTransaction;
 use solders_transaction_error::TransactionErrorType;

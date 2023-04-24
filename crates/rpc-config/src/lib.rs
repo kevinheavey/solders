@@ -10,7 +10,7 @@ use solders_hash::Hash as SolderHash;
 use solders_macros::{common_methods, richcmp_eq_only, EnumIntoPy};
 use solders_pubkey::Pubkey;
 use solders_signature::Signature;
-use solders_traits::{
+use solders_traits_core::{
     impl_display, py_from_bytes_general_via_cbor, pybytes_general_via_cbor, RichcmpEqualityOnly,
 };
 use tmp_config as rpc_config;
@@ -25,7 +25,7 @@ macro_rules! rpc_config_impls {
         py_from_bytes_general_via_cbor!($ident);
         impl_display!($ident);
         impl RichcmpEqualityOnly for $ident {}
-        solders_traits::common_methods_default!($ident);
+        solders_traits_core::common_methods_default!($ident);
         impl From<rpc_config::$ident> for $ident {
             fn from(c: rpc_config::$ident) -> Self {
                 Self(c)

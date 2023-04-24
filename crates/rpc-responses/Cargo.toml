@@ -15,6 +15,7 @@ derive_more = { workspace = true }
 solders-macros = { workspace = true }
 solders-hash = { workspace = true }
 solders-primitives = { workspace = true }
+solders-traits-core = { workspace = true }
 solders-traits = { workspace = true }
 solders-account = { workspace = true }
 solders-account-decoder = { workspace = true }

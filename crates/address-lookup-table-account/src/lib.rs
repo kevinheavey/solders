@@ -6,7 +6,7 @@ use solana_program::{
     pubkey::Pubkey as PubkeyOriginal,
 };
 use solders_macros::{common_methods, richcmp_eq_only};
-use solders_traits::{
+use solders_traits_core::{
     impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
     RichcmpEqualityOnly,
 };
@@ -31,7 +31,7 @@ impl_display!(AddressLookupTableAccount);
 pybytes_general_via_bincode!(AddressLookupTableAccount);
 py_from_bytes_general_via_bincode!(AddressLookupTableAccount);
 
-solders_traits::common_methods_default!(AddressLookupTableAccount);
+solders_traits_core::common_methods_default!(AddressLookupTableAccount);
 impl RichcmpEqualityOnly for AddressLookupTableAccount {}
 
 #[richcmp_eq_only]

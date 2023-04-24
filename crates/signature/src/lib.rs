@@ -7,7 +7,7 @@ use solana_sdk::signature::{ParseSignatureError, Signature as SignatureOriginal,
 use solders_macros::{common_methods, pyhash, richcmp_full};
 use solders_pubkey::Pubkey;
 
-use solders_traits::{
+use solders_traits_core::{
     handle_py_value_err, impl_display, pybytes_general_via_slice, CommonMethodsCore,
     PyFromBytesGeneral, PyHash, RichcmpFull,
 };
@@ -152,7 +152,7 @@ impl PyFromBytesGeneral for Signature {
         Ok(SignatureOriginal::new(raw).into())
     }
 }
-solders_traits::common_methods_default!(Signature);
+solders_traits_core::common_methods_default!(Signature);
 impl RichcmpFull for Signature {}
 pybytes_general_via_slice!(Signature);
 impl_display!(Signature);

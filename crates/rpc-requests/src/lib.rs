@@ -5,9 +5,10 @@ use solders_hash::Hash as SolderHash;
 use solders_message::VersionedMessage;
 use solders_pubkey::Pubkey;
 use solders_signature::Signature;
-use solders_traits::{
-    py_from_bytes_general_via_cbor, pybytes_general_via_cbor, to_py_err, RichcmpEqualityOnly,
+use solders_traits_core::{
+    py_from_bytes_general_via_cbor, pybytes_general_via_cbor, RichcmpEqualityOnly,
 };
+use solders_traits::to_py_err;
 use solders_transaction::{Transaction, VersionedTransaction};
 extern crate base64;
 use camelpaste::paste;
@@ -46,8 +47,8 @@ macro_rules! rpc_impl_display {
 macro_rules! request_boilerplate {
     ($name:ident) => {
         rpc_impl_display!($name);
-        impl solders_traits::CommonMethodsCore for $name {}
-        impl solders_traits::CommonMethods<'_> for $name {
+        impl solders_traits_core::CommonMethodsCore for $name {}
+        impl solders_traits_core::CommonMethods<'_> for $name {
             fn py_to_json(&self) -> String {
                 let wrapped = Body::from(self.clone());
                 serde_json::to_string(&wrapped).unwrap()

@@ -9,7 +9,7 @@ repository = "https://github.com/kevinheavey/solders"
 [dependencies]
 serde = { workspace = true }
 solana-sdk = { workspace = true }
-solders-traits = { workspace = true }
+solders-traits-core = { workspace = true }
 solders-macros = { workspace = true }
 derive_more = { workspace = true }
 pyo3 = { workspace = true }

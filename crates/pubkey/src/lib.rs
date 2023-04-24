@@ -5,10 +5,11 @@ use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use solana_program::pubkey::{ParsePubkeyError, Pubkey as PubkeyOriginal, PUBKEY_BYTES};
 use solders_macros::{common_methods, pyhash, richcmp_full};
-use solders_traits::{
-    handle_py_err, handle_py_value_err, pybytes_general_via_slice, CommonMethodsCore,
+use solders_traits_core::{
+    handle_py_value_err, pybytes_general_via_slice, CommonMethodsCore,
     PyFromBytesGeneral, PyHash, RichcmpFull,
 };
+use solders_traits::handle_py_err;
 
 /// A public key.
 ///
@@ -259,7 +260,7 @@ impl PyFromBytesGeneral for Pubkey {
         Ok(PubkeyOriginal::try_from(raw).unwrap().into())
     }
 }
-solders_traits::common_methods_default!(Pubkey);
+solders_traits_core::common_methods_default!(Pubkey);
 
 impl AsRef<[u8]> for Pubkey {
     fn as_ref(&self) -> &[u8] {

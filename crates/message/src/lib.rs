@@ -17,11 +17,12 @@ use solana_program::{
     pubkey::Pubkey as PubkeyOriginal,
 };
 use solders_macros::{common_methods, richcmp_eq_only, EnumIntoPy};
-use solders_traits::{
-    handle_py_err, handle_py_value_err, impl_display, py_from_bytes_general_via_bincode,
-    pybytes_general_via_bincode, CommonMethodsCore, PyBytesGeneral, PyErrWrapper,
-    RichcmpEqualityOnly,
+use solders_traits_core::{
+    impl_display, py_from_bytes_general_via_bincode,
+    pybytes_general_via_bincode, CommonMethodsCore, PyBytesGeneral,
+    RichcmpEqualityOnly, handle_py_value_err
 };
+use solders_traits::{handle_py_err, PyErrWrapper};
 
 use solders_address_lookup_table_account::AddressLookupTableAccount;
 use solders_hash::Hash as SolderHash;
@@ -133,7 +134,7 @@ impl RichcmpEqualityOnly for MessageHeader {}
 pybytes_general_via_bincode!(MessageHeader);
 impl_display!(MessageHeader);
 py_from_bytes_general_via_bincode!(MessageHeader);
-solders_traits::common_methods_default!(MessageHeader);
+solders_traits_core::common_methods_default!(MessageHeader);
 
 #[pyclass(module = "solders.message", subclass)]
 #[derive(PartialEq, Eq, Debug, Clone, Default, Serialize, Deserialize, From, Into)]
@@ -538,7 +539,7 @@ impl PyBytesGeneral for Message {
 }
 impl_display!(Message);
 py_from_bytes_general_via_bincode!(Message);
-solders_traits::common_methods_default!(Message);
+solders_traits_core::common_methods_default!(Message);
 
 impl From<&Message> for MessageOriginal {
     fn from(message: &Message) -> Self {
@@ -562,7 +563,7 @@ impl RichcmpEqualityOnly for MessageAddressTableLookup {}
 pybytes_general_via_bincode!(MessageAddressTableLookup);
 impl_display!(MessageAddressTableLookup);
 py_from_bytes_general_via_bincode!(MessageAddressTableLookup);
-solders_traits::common_methods_default!(MessageAddressTableLookup);
+solders_traits_core::common_methods_default!(MessageAddressTableLookup);
 
 #[richcmp_eq_only]
 #[common_methods]
@@ -642,7 +643,7 @@ impl RichcmpEqualityOnly for MessageV0 {}
 pybytes_general_via_bincode!(MessageV0);
 impl_display!(MessageV0);
 py_from_bytes_general_via_bincode!(MessageV0);
-solders_traits::common_methods_default!(MessageV0);
+solders_traits_core::common_methods_default!(MessageV0);
 
 #[richcmp_eq_only]
 #[common_methods]

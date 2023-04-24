@@ -1,5 +1,5 @@
 [package]
-name = "solders-traits"
+name = "solders-traits-core"
 version = "0.14.4"
 edition = "2021"
 include = ["/src"]
@@ -9,12 +9,7 @@ repository = "https://github.com/kevinheavey/solders"
 
 [dependencies]
 pyo3 = { workspace = true }
-solana-sdk = { workspace = true }
 bincode = { workspace = true }
+serde = { workspace = true }
 serde_json = { workspace = true }
 serde_cbor = { workspace = true }
-solders-traits-core = { workspace = true }
-solana-banks-client = { workspace = true, optional = true }
-
-[features]
-banks-client = ["dep:solana-banks-client"]

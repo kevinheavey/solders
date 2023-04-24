@@ -11,7 +11,7 @@ pyo3 = { workspace = true }
 serde = { workspace = true }
 derive_more = { workspace = true }
 solders-macros = { workspace = true }
-solders-traits = { workspace = true }
+solders-traits-core = { workspace = true }
 solders-transaction-error = { workspace = true }
 solders-rpc-common = { workspace = true }
 solana-sdk = { workspace = true }

@@ -33,7 +33,8 @@ use solders_macros::{
 use solders_primitives::epoch_schedule::EpochSchedule;
 use solders_pubkey::Pubkey;
 use solders_signature::Signature;
-use solders_traits::{to_py_err, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly};
+use solders_traits::to_py_err;
+use solders_traits_core::{PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly};
 use solders_transaction_error::TransactionErrorType;
 use solders_transaction_status::{
     tmp_transaction_status::{

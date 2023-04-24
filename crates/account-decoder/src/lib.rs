@@ -1,4 +1,4 @@
-use solders_traits::{
+use solders_traits_core::{
     handle_py_value_err, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
     RichcmpEqualityOnly,
 };
@@ -76,7 +76,7 @@ impl Display for ParsedAccount {
 }
 pybytes_general_via_bincode!(ParsedAccount);
 py_from_bytes_general_via_bincode!(ParsedAccount);
-solders_traits::common_methods_default!(ParsedAccount);
+solders_traits_core::common_methods_default!(ParsedAccount);
 
 #[richcmp_eq_only]
 #[common_methods]
@@ -121,7 +121,7 @@ impl Display for UiTokenAmount {
 }
 pybytes_general_via_bincode!(UiTokenAmount);
 py_from_bytes_general_via_bincode!(UiTokenAmount);
-solders_traits::common_methods_default!(UiTokenAmount);
+solders_traits_core::common_methods_default!(UiTokenAmount);
 
 #[richcmp_eq_only]
 #[common_methods]

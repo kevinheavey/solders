@@ -57,6 +57,7 @@ members = [
 pyo3 = { version = "0.18.0", default-features = false }
 solders-macros = { path = "./crates/macros", version = "0.14.4" }
 solders-traits = { path = "./crates/traits", version = "0.14.4" }
+solders-traits-core = { path = "./crates/traits-core", version = "0.14.4" }
 solders-account-decoder = { path = "./crates/account-decoder", version = "0.14.4" }
 solders-bankrun = { path = "./crates/bankrun", version = "0.14.4" }
 solders-commitment-config = { path = "./crates/commitment-config", version = "0.14.4" }

@@ -16,6 +16,7 @@ solders-primitives = { workspace = true }
 solders-commitment-config = { workspace = true }
 solders-pubkey = { workspace = true }
 solders-traits = { workspace = true, features = ["banks-client"]}
+solders-traits-core = { workspace = true }
 solders-account = { workspace = true }
 solders-keypair = { workspace = true }
 solders-transaction = { workspace = true }

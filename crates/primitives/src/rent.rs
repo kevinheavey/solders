@@ -5,7 +5,7 @@ use solana_program::rent::{
     Rent as RentOriginal, RentDue, ACCOUNT_STORAGE_OVERHEAD, DEFAULT_BURN_PERCENT,
     DEFAULT_EXEMPTION_THRESHOLD, DEFAULT_LAMPORTS_PER_BYTE_YEAR,
 };
-use solders_traits::transaction_status_boilerplate;
+use solders_traits_core::transaction_status_boilerplate;
 
 /// Configuration of network rent.
 #[pyclass(module = "solders.account", subclass)]

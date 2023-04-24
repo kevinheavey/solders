@@ -6,7 +6,7 @@ use solana_sdk::{
     transaction::TransactionError as TransactionErrorOriginal,
 };
 use solders_macros::{common_methods, richcmp_eq_only, EnumIntoPy};
-use solders_traits::transaction_status_boilerplate;
+use solders_traits_core::transaction_status_boilerplate;
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.transaction_status", subclass)]

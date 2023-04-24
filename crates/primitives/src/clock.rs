@@ -10,7 +10,7 @@ use solana_program::clock::{
     MAX_TRANSACTION_FORWARDING_DELAY, MAX_TRANSACTION_FORWARDING_DELAY_GPU, MS_PER_TICK,
     NUM_CONSECUTIVE_LEADER_SLOTS, SECONDS_PER_DAY, TICKS_PER_DAY,
 };
-use solders_traits::transaction_status_boilerplate;
+use solders_traits_core::transaction_status_boilerplate;
 
 /// A representation of network time.
 ///

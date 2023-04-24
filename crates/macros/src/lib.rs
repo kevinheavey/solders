@@ -33,7 +33,7 @@ use syn::{parse_macro_input, ImplItem, ItemEnum, ItemImpl};
 pub fn pyhash(_: TokenStream, item: TokenStream) -> TokenStream {
     let mut ast = parse_macro_input!(item as ItemImpl);
     let to_add = quote! {pub fn __hash__(&self) -> u64 {
-        solders_traits::PyHash::pyhash(self)
+        solders_traits_core::PyHash::pyhash(self)
     }};
     ast.items.push(ImplItem::Verbatim(to_add));
     TokenStream::from(ast.to_token_stream())
@@ -65,7 +65,7 @@ pub fn pyhash(_: TokenStream, item: TokenStream) -> TokenStream {
 pub fn richcmp_full(_: TokenStream, item: TokenStream) -> TokenStream {
     let mut ast = parse_macro_input!(item as ItemImpl);
     let to_add = quote! {pub fn __richcmp__(&self, other: &Self, op: pyo3::basic::CompareOp) -> bool {
-        solders_traits::RichcmpFull::richcmp(self, other, op)
+        solders_traits_core::RichcmpFull::richcmp(self, other, op)
     }};
     ast.items.push(ImplItem::Verbatim(to_add));
     TokenStream::from(ast.to_token_stream())
@@ -76,7 +76,7 @@ pub fn richcmp_full(_: TokenStream, item: TokenStream) -> TokenStream {
 pub fn richcmp_eq_only(_: TokenStream, item: TokenStream) -> TokenStream {
     let mut ast = parse_macro_input!(item as ItemImpl);
     let to_add = quote! {pub fn __richcmp__(&self, other: &Self, op: pyo3::basic::CompareOp) -> pyo3::prelude::PyResult<bool> {
-        solders_traits::RichcmpEqualityOnly::richcmp(self, other, op)
+        solders_traits_core::RichcmpEqualityOnly::richcmp(self, other, op)
     }};
     ast.items.push(ImplItem::Verbatim(to_add));
     TokenStream::from(ast.to_token_stream())
@@ -97,18 +97,18 @@ fn add_core_methods(ast: &mut ItemImpl) {
     let mut methods = vec![
         ImplItem::Verbatim(
             quote! {pub fn __bytes__<'a>(&self, py: pyo3::prelude::Python<'a>) -> &'a pyo3::types::PyBytes  {
-                solders_traits::CommonMethodsCore::pybytes(self, py)
+                solders_traits_core::CommonMethodsCore::pybytes(self, py)
             }},
         ),
         ImplItem::Verbatim(quote! { pub fn __str__(&self) -> String {
-            solders_traits::CommonMethodsCore::pystr(self)
+            solders_traits_core::CommonMethodsCore::pystr(self)
         } }),
         ImplItem::Verbatim(quote! { pub fn __repr__(&self) -> String {
-            solders_traits::CommonMethodsCore::pyrepr(self)
+            solders_traits_core::CommonMethodsCore::pyrepr(self)
         } }),
         ImplItem::Verbatim(
             quote! { pub fn __reduce__(&self) -> pyo3::prelude::PyResult<(pyo3::prelude::PyObject, pyo3::prelude::PyObject)> {
-                solders_traits::CommonMethodsCore::pyreduce(self)
+                solders_traits_core::CommonMethodsCore::pyreduce(self)
             } },
         ),
     ];
@@ -126,7 +126,7 @@ fn add_core_methods(ast: &mut ItemImpl) {
             ///
             #[staticmethod]
             pub fn from_bytes(data: &[u8]) -> PyResult<Self> {
-                <Self as solders_traits::CommonMethodsCore>::py_from_bytes(data)
+                <Self as solders_traits_core::CommonMethodsCore>::py_from_bytes(data)
             }
         });
         methods.push(from_bytes);
@@ -155,12 +155,12 @@ pub fn common_methods(_: TokenStream, item: TokenStream) -> TokenStream {
         ImplItem::Verbatim(quote! {
         /// Convert to a JSON string.
         pub fn to_json(&self) -> String {
-            solders_traits::CommonMethods::py_to_json(self)
+            solders_traits_core::CommonMethods::py_to_json(self)
         } }),
         ImplItem::Verbatim(quote! {
         /// Build from a JSON string.
         #[staticmethod] pub fn from_json(raw: &str) -> PyResult<Self> {
-            <Self as solders_traits::CommonMethods>::py_from_json(raw)
+            <Self as solders_traits_core::CommonMethods>::py_from_json(raw)
         } }),
     ];
     ast.items.extend_from_slice(&methods);
@@ -221,7 +221,7 @@ pub fn common_methods_rpc_resp(_: TokenStream, item: TokenStream) -> TokenStream
         }),
         ImplItem::Verbatim(
             quote! {pub fn __richcmp__(&self, other: &Self, op: pyo3::basic::CompareOp) -> pyo3::prelude::PyResult<bool> {
-                solders_traits::RichcmpEqualityOnly::richcmp(self, other, op)
+                solders_traits_core::RichcmpEqualityOnly::richcmp(self, other, op)
             }},
         ),
     ];

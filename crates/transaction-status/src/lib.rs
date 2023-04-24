@@ -8,7 +8,7 @@ use solders_hash::Hash as SolderHash;
 use solders_message::MessageHeader;
 use solders_pubkey::Pubkey;
 use solders_signature::Signature;
-use solders_traits::{handle_py_value_err, transaction_status_boilerplate};
+use solders_traits_core::{handle_py_value_err, transaction_status_boilerplate};
 use solders_transaction_error::{
     InstructionErrorBorshIO, InstructionErrorCustom, InstructionErrorFieldless,
     TransactionErrorDuplicateInstruction, TransactionErrorFieldless,

@@ -4416,7 +4416,7 @@ dependencies = [
  "solders-account-decoder",
  "solders-macros",
  "solders-pubkey",
- "solders-traits",
+ "solders-traits-core",
 ]
 
 [[package]]
@@ -4432,7 +4432,7 @@ dependencies = [
  "serde_json",
  "solana-sdk",
  "solders-macros",
- "solders-traits",
+ "solders-traits-core",
  "zstd",
 ]
 
@@ -4446,7 +4446,7 @@ dependencies = [
  "solana-program",
  "solders-macros",
  "solders-pubkey",
- "solders-traits",
+ "solders-traits-core",
 ]
 
 [[package]]
@@ -4471,6 +4471,7 @@ dependencies = [
  "solders-pubkey",
  "solders-signature",
  "solders-traits",
+ "solders-traits-core",
  "solders-transaction",
  "solders-transaction-error",
  "solders-transaction-status",
@@ -4498,6 +4499,7 @@ dependencies = [
  "solana-program",
  "solders-macros",
  "solders-traits",
+ "solders-traits-core",
 ]
 
 [[package]]
@@ -4510,7 +4512,7 @@ dependencies = [
  "solana-program",
  "solders-macros",
  "solders-pubkey",
- "solders-traits",
+ "solders-traits-core",
 ]
 
 [[package]]
@@ -4525,6 +4527,7 @@ dependencies = [
  "solders-pubkey",
  "solders-signature",
  "solders-traits",
+ "solders-traits-core",
 ]
 
 [[package]]
@@ -4551,6 +4554,7 @@ dependencies = [
  "solders-macros",
  "solders-pubkey",
  "solders-traits",
+ "solders-traits-core",
 ]
 
 [[package]]
@@ -4563,7 +4567,7 @@ dependencies = [
  "serde",
  "solana-program",
  "solders-macros",
- "solders-traits",
+ "solders-traits-core",
 ]
 
 [[package]]
@@ -4576,6 +4580,7 @@ dependencies = [
  "solana-program",
  "solders-macros",
  "solders-traits",
+ "solders-traits-core",
 ]
 
 [[package]]
@@ -4589,7 +4594,7 @@ dependencies = [
  "solders-account",
  "solders-account-decoder",
  "solders-macros",
- "solders-traits",
+ "solders-traits-core",
  "solders-transaction-error",
  "solders-transaction-status",
 ]
@@ -4608,7 +4613,7 @@ dependencies = [
  "solders-pubkey",
  "solders-rpc-filter",
  "solders-signature",
- "solders-traits",
+ "solders-traits-core",
  "solders-transaction-status-enums",
 ]
 
@@ -4622,7 +4627,7 @@ dependencies = [
  "solana-sdk",
  "solders-macros",
  "solders-rpc-common",
- "solders-traits",
+ "solders-traits-core",
  "solders-transaction-error",
 ]
 
@@ -4636,7 +4641,7 @@ dependencies = [
  "pyo3",
  "serde",
  "solders-macros",
- "solders-traits",
+ "solders-traits-core",
  "thiserror",
 ]
 
@@ -4662,6 +4667,7 @@ dependencies = [
  "solders-rpc-version",
  "solders-signature",
  "solders-traits",
+ "solders-traits-core",
  "solders-transaction",
  "solders-transaction-status",
 ]
@@ -4688,6 +4694,7 @@ dependencies = [
  "solders-rpc-version",
  "solders-signature",
  "solders-traits",
+ "solders-traits-core",
  "solders-transaction-error",
  "solders-transaction-status",
  "thiserror",
@@ -4710,7 +4717,7 @@ dependencies = [
  "solana-sdk",
  "solders-macros",
  "solders-pubkey",
- "solders-traits",
+ "solders-traits-core",
 ]
 
 [[package]]
@@ -4719,11 +4726,22 @@ version = "0.14.4"
 dependencies = [
  "bincode",
  "pyo3",
- "serde",
  "serde_cbor",
  "serde_json",
  "solana-banks-client",
  "solana-sdk",
+ "solders-traits-core",
+]
+
+[[package]]
+name = "solders-traits-core"
+version = "0.14.4"
+dependencies = [
+ "bincode",
+ "pyo3",
+ "serde",
+ "serde_cbor",
+ "serde_json",
 ]
 
 [[package]]
@@ -4742,6 +4760,7 @@ dependencies = [
  "solders-pubkey",
  "solders-signature",
  "solders-traits",
+ "solders-traits-core",
 ]
 
 [[package]]
@@ -4753,7 +4772,7 @@ dependencies = [
  "serde",
  "solana-sdk",
  "solders-macros",
- "solders-traits",
+ "solders-traits-core",
 ]
 
 [[package]]
@@ -4776,7 +4795,7 @@ dependencies = [
  "solders-message",
  "solders-pubkey",
  "solders-signature",
- "solders-traits",
+ "solders-traits-core",
  "solders-transaction",
  "solders-transaction-error",
  "solders-transaction-status-enums",
