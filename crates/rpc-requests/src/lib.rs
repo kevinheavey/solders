@@ -1,11 +1,11 @@
 #![allow(deprecated)]
 use pyo3::{exceptions::PyValueError, prelude::*, types::PyTuple, PyTypeInfo};
 use solders_primitives::{
-    commitment_config::{CommitmentConfig, CommitmentLevel},
     hash::Hash as SolderHash,
     message::VersionedMessage,
     transaction::{Transaction, VersionedTransaction},
 };
+use solders_commitment_config::{CommitmentConfig, CommitmentLevel};
 use solders_signature::Signature;
 use solders_traits::{
     py_from_bytes_general_via_cbor, pybytes_general_via_cbor, to_py_err, RichcmpEqualityOnly,

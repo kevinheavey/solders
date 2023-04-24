@@ -4383,6 +4383,7 @@ dependencies = [
  "solders-account",
  "solders-account-decoder",
  "solders-bankrun",
+ "solders-commitment-config",
  "solders-instruction",
  "solders-primitives",
  "solders-pubkey",
@@ -4441,6 +4442,7 @@ dependencies = [
  "solana-program-test",
  "solana-sdk",
  "solders-account",
+ "solders-commitment-config",
  "solders-macros",
  "solders-primitives",
  "solders-pubkey",
@@ -4448,6 +4450,17 @@ dependencies = [
  "solders-traits",
  "solders-transaction-status",
  "tarpc",
+]
+
+[[package]]
+name = "solders-commitment-config"
+version = "0.14.4"
+dependencies = [
+ "derive_more",
+ "pyo3",
+ "serde",
+ "solana-sdk",
+ "solders-traits",
 ]
 
 [[package]]
@@ -4525,6 +4538,7 @@ dependencies = [
  "serde",
  "solana-sdk",
  "solders-account-decoder",
+ "solders-commitment-config",
  "solders-macros",
  "solders-primitives",
  "solders-pubkey",
@@ -4575,6 +4589,7 @@ dependencies = [
  "serde_json",
  "serde_with 1.14.0",
  "solana-sdk",
+ "solders-commitment-config",
  "solders-macros",
  "solders-primitives",
  "solders-pubkey",
@@ -4649,6 +4664,7 @@ dependencies = [
  "serde_json",
  "solana-sdk",
  "solders-account-decoder",
+ "solders-commitment-config",
  "solders-macros",
  "solders-primitives",
  "solders-pubkey",

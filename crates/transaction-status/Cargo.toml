@@ -21,4 +21,5 @@ bs58 = { workspace = true }
 solders-traits = { workspace = true }
 solders-account-decoder = { workspace = true }
 solders-primitives ={ workspace = true }
+solders-commitment-config ={ workspace = true }
 bincode ={ workspace = true }

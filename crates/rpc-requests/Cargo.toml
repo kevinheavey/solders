@@ -16,6 +16,7 @@ derive_more = { workspace = true }
 solders-macros = { workspace = true }
 solders-traits = { workspace = true }
 solders-transaction-status = { workspace = true }
+solders-commitment-config = { workspace = true }
 solders-rpc-config = { workspace = true }
 solders-primitives = { workspace = true }
 solders-pubkey = { workspace = true }

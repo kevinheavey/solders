@@ -22,7 +22,6 @@ pub mod system_program;
 pub mod sysvar;
 use solders_primitives::{
     clock::create_clock_mod,
-    commitment_config::{CommitmentConfig, CommitmentLevel},
     epoch_schedule::create_epoch_schedule_mod,
     hash::Hash as SolderHash,
     keypair::Keypair,
@@ -30,6 +29,7 @@ use solders_primitives::{
     presigner::Presigner,
     rent::create_rent_mod,
 };
+use solders_commitment_config::{CommitmentConfig, CommitmentLevel};
 use solders_pubkey::Pubkey;
 use solders_signature::Signature;
 

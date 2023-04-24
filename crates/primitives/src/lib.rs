@@ -1,6 +1,5 @@
 pub mod address_lookup_table_account;
 pub mod clock;
-pub mod commitment_config;
 pub mod epoch_schedule;
 pub mod hash;
 pub mod keypair;
