@@ -10,7 +10,7 @@ use {
     solders_account_decoder::{tmp_account_decoder::UiDataSliceConfig, UiAccountEncoding},
     solders_rpc_filter::tmp_filter::RpcFilterType,
     // TODO: use solana_transaction_status once its dependencies are light
-    solders_transaction_status::{TransactionDetails, UiTransactionEncoding},
+    solders_transaction_status_enums::{TransactionDetails, UiTransactionEncoding},
 };
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

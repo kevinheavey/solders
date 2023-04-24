@@ -15,7 +15,7 @@ use solders_traits::{
 };
 use tmp_config as rpc_config;
 
-use solders_transaction_status::{TransactionDetails, UiTransactionEncoding};
+use solders_transaction_status_enums::{TransactionDetails, UiTransactionEncoding};
 
 use solders_rpc_filter::RpcFilterType;
 

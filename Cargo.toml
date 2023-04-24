@@ -35,6 +35,7 @@ solders-message = { workspace = true }
 solders-address-lookup-table-account = { workspace = true }
 solders-signature = { workspace = true }
 solders-transaction-status = { workspace = true }
+solders-transaction-status-enums = { workspace = true }
 solders-hash = { workspace = true }
 solders-keypair = { workspace = true }
 solders-transaction = { workspace = true }
@@ -60,6 +61,7 @@ solders-account-decoder = { path = "./crates/account-decoder", version = "0.14.4
 solders-bankrun = { path = "./crates/bankrun", version = "0.14.4" }
 solders-commitment-config = { path = "./crates/commitment-config", version = "0.14.4" }
 solders-transaction-status = { path = "./crates/transaction-status", version = "0.14.4" }
+solders-transaction-status-enums = { path = "./crates/transaction-status-enums", version = "0.14.4" }
 solders-rpc-filter = { path = "./crates/rpc-filter", version = "0.14.4" }
 solders-rpc-config = { path = "./crates/rpc-config", version = "0.14.4" }
 solders-rpc-common = { path = "./crates/rpc-common", version = "0.14.4" }

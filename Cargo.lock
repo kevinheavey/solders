@@ -4401,6 +4401,7 @@ dependencies = [
  "solders-transaction",
  "solders-transaction-error",
  "solders-transaction-status",
+ "solders-transaction-status-enums",
 ]
 
 [[package]]
@@ -4608,7 +4609,7 @@ dependencies = [
  "solders-rpc-filter",
  "solders-signature",
  "solders-traits",
- "solders-transaction-status",
+ "solders-transaction-status-enums",
 ]
 
 [[package]]
@@ -4778,6 +4779,15 @@ dependencies = [
  "solders-traits",
  "solders-transaction",
  "solders-transaction-error",
+ "solders-transaction-status-enums",
+]
+
+[[package]]
+name = "solders-transaction-status-enums"
+version = "0.14.4"
+dependencies = [
+ "pyo3",
+ "serde",
 ]
 
 [[package]]
