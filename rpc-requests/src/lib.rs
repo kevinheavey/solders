@@ -4,6 +4,8 @@ use solders_primitives::{
     commitment_config::{CommitmentConfig, CommitmentLevel},
     message::VersionedMessage,
     pubkey::Pubkey,
+    signature::Signature,
+    hash::Hash as SolderHash,
     transaction::{Transaction, VersionedTransaction},
 };
 use solders_traits::{
@@ -20,8 +22,6 @@ use solana_sdk::{
     },
 };
 use solders_macros::{common_methods, richcmp_eq_only, rpc_id_getter, EnumIntoPy};
-
-use crate::{Signature, SolderHash};
 
 use solders_rpc_config::{
     tmp_config::{RpcBlockSubscribeFilter, RpcTokenAccountsFilter, RpcTransactionLogsFilter},

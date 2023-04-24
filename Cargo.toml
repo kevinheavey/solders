@@ -21,7 +21,7 @@ serde_json = { workspace = true }
 dict_derive = "0.4.0"
 serde_with = { workspace = true }
 base64 = { workspace = true }
-camelpaste = "0.1.0"
+camelpaste = { workspace = true }
 serde_cbor = { workspace = true }
 thiserror = { workspace = true }
 bs58 = { workspace = true }
@@ -36,6 +36,7 @@ solders-rpc-filter = { workspace = true }
 solders-rpc-config = { workspace = true }
 solders-rpc-common = { workspace = true }
 solders-rpc-errors = { workspace = true }
+solders-rpc-requests = { workspace = true }
 solders-transaction-status = { workspace = true }
 solana-program-test = { workspace = true, optional = true }
 solana-banks-client = { workspace = true, optional = true }
@@ -66,6 +67,7 @@ members = [
     "rpc-config",
     "rpc-common",
     "rpc-errors",
+    "rpc-requests",
     "account",
 ]
 
@@ -79,6 +81,7 @@ solders-rpc-filter = { path = "./rpc-filter", version = "0.14.4" }
 solders-rpc-config = { path = "./rpc-config", version = "0.14.4" }
 solders-rpc-common = { path = "./rpc-common", version = "0.14.4" }
 solders-rpc-errors = { path = "./rpc-errors", version = "0.14.4" }
+solders-rpc-requests = { path = "./rpc-requests", version = "0.14.4" }
 solders-primitives = { path = "./primitives", version = "0.14.4" }
 solders-account = { path = "./account", version = "0.14.4" }
 serde_with = { version = "^1.14.0", features = ["base64"] }
@@ -94,3 +97,4 @@ solana-banks-client = "1.15.2"
 pythonize = "0.18.0"
 bs58 = "0.4.0"
 thiserror = "^1.0.31"
+camelpaste = "0.1.0"
