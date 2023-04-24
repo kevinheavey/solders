@@ -345,3 +345,10 @@ impl AsRef<CompiledInstructionOriginal> for CompiledInstruction {
         &self.0
     }
 }
+
+pub fn convert_instructions(instructions: Vec<Instruction>) -> Vec<InstructionOriginal> {
+    instructions
+        .into_iter()
+        .map(solana_sdk::instruction::Instruction::from)
+        .collect()
+}

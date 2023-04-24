@@ -279,3 +279,7 @@ impl FromStr for Pubkey {
         PubkeyOriginal::from_str(s).map(Pubkey::from)
     }
 }
+
+pub fn convert_optional_pubkey(pubkey: Option<&Pubkey>) -> Option<&PubkeyOriginal> {
+    pubkey.map(|p| p.as_ref())
+}

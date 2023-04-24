@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use crate::Pubkey;
+use solders_pubkey::Pubkey;
 use derive_more::{From, Into};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};

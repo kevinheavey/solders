@@ -25,11 +25,10 @@ use solders_traits::{
 
 use crate::{
     address_lookup_table_account::AddressLookupTableAccount,
-    convert_instructions, convert_optional_pubkey,
     hash::Hash as SolderHash,
-    instruction::{CompiledInstruction, Instruction},
 };
-use solders_pubkey::Pubkey;
+use solders_pubkey::{Pubkey, convert_optional_pubkey};
+use solders_instruction::{convert_instructions, CompiledInstruction, Instruction};
 
 #[pyclass(module = "solders.message", subclass)]
 #[derive(PartialEq, Eq, Debug, Default, Serialize, Deserialize, Clone, From, Into)]

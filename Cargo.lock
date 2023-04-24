@@ -4383,6 +4383,7 @@ dependencies = [
  "solders-account",
  "solders-account-decoder",
  "solders-bankrun",
+ "solders-instruction",
  "solders-primitives",
  "solders-pubkey",
  "solders-rpc-config",
@@ -4448,6 +4449,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "solders-instruction"
+version = "0.14.4"
+dependencies = [
+ "derive_more",
+ "pyo3",
+ "serde",
+ "solana-sdk",
+ "solders-macros",
+ "solders-pubkey",
+ "solders-traits",
+]
+
+[[package]]
 name = "solders-macros"
 version = "0.14.4"
 dependencies = [
@@ -4467,6 +4481,7 @@ dependencies = [
  "serde",
  "serde_with 1.14.0",
  "solana-sdk",
+ "solders-instruction",
  "solders-macros",
  "solders-pubkey",
  "solders-traits",
