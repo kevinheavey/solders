@@ -8,8 +8,9 @@ use solders_transaction_status::{
     tmp_transaction_status::UiTransactionReturnData, TransactionErrorType, TransactionReturnData,
 };
 
-use crate::account::Account;
+use solders_account::Account;
 
+#[macro_export]
 macro_rules! response_data_boilerplate {
     ($name:ident) => {
         impl solders_traits::RichcmpEqualityOnly for $name {}
@@ -23,7 +24,6 @@ macro_rules! response_data_boilerplate {
         solders_traits::common_methods_default!($name);
     };
 }
-pub(crate) use response_data_boilerplate;
 
 // the one in solana_client doesn't derive Eq
 // TODO: latest does

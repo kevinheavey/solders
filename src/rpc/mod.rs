@@ -7,7 +7,6 @@ use pyo3::prelude::*;
 use solders_rpc_config::create_config_mod;
 use solders_rpc_filter::create_filter_mod;
 
-mod common;
 pub mod errors;
 pub mod requests;
 pub mod responses;

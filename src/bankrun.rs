@@ -1,4 +1,5 @@
-use crate::{account::Account, clock::Clock, rent::Rent};
+use crate::{clock::Clock, rent::Rent};
+use solders_account::Account;
 use derive_more::{From, Into};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};

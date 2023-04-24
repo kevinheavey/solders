@@ -31,9 +31,8 @@ use crate::rpc::tmp_response::{
 };
 use crate::{
     self as solders,
-    account::{Account, AccountJSON},
-    SolderHash,
 };
+use solders_account::{Account, AccountJSON};
 use camelpaste::paste;
 use derive_more::{From, Into};
 use pyo3::exceptions::PyValueError;
@@ -58,7 +57,7 @@ use solders_account_decoder::{
 use solders_macros::{
     common_methods, common_methods_rpc_resp, enum_original_mapping, richcmp_eq_only, EnumIntoPy,
 };
-use solders_primitives::{pubkey::Pubkey, signature::Signature};
+use solders_primitives::{pubkey::Pubkey, signature::Signature, hash::Hash as SolderHash};
 use solders_traits::{to_py_err, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly};
 use solders_transaction_status::{
     tmp_transaction_status::{
@@ -69,7 +68,7 @@ use solders_transaction_status::{
     TransactionStatus, UiConfirmedBlock,
 };
 
-use super::common::{response_data_boilerplate, RpcSimulateTransactionResult};
+use solders_rpc_common::{response_data_boilerplate, RpcSimulateTransactionResult};
 use super::errors::{
     BlockCleanedUpMessage, BlockNotAvailableMessage, BlockStatusNotAvailableYetMessage,
     InternalErrorMessage, InvalidParamsMessage, InvalidRequestMessage,
