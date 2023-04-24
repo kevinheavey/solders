@@ -2,10 +2,10 @@
 use pyo3::{exceptions::PyValueError, prelude::*, types::PyTuple, PyTypeInfo};
 use solders_primitives::{
     commitment_config::{CommitmentConfig, CommitmentLevel},
+    hash::Hash as SolderHash,
     message::VersionedMessage,
     pubkey::Pubkey,
     signature::Signature,
-    hash::Hash as SolderHash,
     transaction::{Transaction, VersionedTransaction},
 };
 use solders_traits::{

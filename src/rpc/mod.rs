@@ -3,8 +3,8 @@ use std::collections::HashMap;
 use self::responses::create_responses_mod;
 use pyo3::prelude::*;
 use solders_rpc_config::create_config_mod;
-use solders_rpc_filter::create_filter_mod;
 use solders_rpc_errors::create_errors_mod;
+use solders_rpc_filter::create_filter_mod;
 use solders_rpc_requests::create_requests_mod;
 
 pub mod responses;
