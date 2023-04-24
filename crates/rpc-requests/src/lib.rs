@@ -4,13 +4,13 @@ use solders_primitives::{
     commitment_config::{CommitmentConfig, CommitmentLevel},
     hash::Hash as SolderHash,
     message::VersionedMessage,
-    pubkey::Pubkey,
     signature::Signature,
     transaction::{Transaction, VersionedTransaction},
 };
 use solders_traits::{
     py_from_bytes_general_via_cbor, pybytes_general_via_cbor, to_py_err, RichcmpEqualityOnly,
 };
+use solders_pubkey::Pubkey;
 extern crate base64;
 use camelpaste::paste;
 use serde::{Deserialize, Serialize};

@@ -28,10 +28,10 @@ use solders_primitives::{
     keypair::Keypair,
     null_signer::NullSigner,
     presigner::Presigner,
-    pubkey::Pubkey,
     rent::create_rent_mod,
     signature::Signature,
 };
+use solders_pubkey::Pubkey;
 
 #[pymodule]
 fn solders(py: Python, m: &PyModule) -> PyResult<()> {

@@ -30,8 +30,9 @@ use solders_macros::{
     common_methods, common_methods_rpc_resp, enum_original_mapping, richcmp_eq_only, EnumIntoPy,
 };
 use solders_primitives::{
-    epoch_schedule::EpochSchedule, hash::Hash as SolderHash, pubkey::Pubkey, signature::Signature,
+    epoch_schedule::EpochSchedule, hash::Hash as SolderHash, signature::Signature,
 };
+use solders_pubkey::Pubkey;
 use solders_traits::{to_py_err, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly};
 use solders_transaction_status::{
     tmp_transaction_status::{

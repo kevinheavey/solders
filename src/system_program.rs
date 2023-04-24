@@ -21,7 +21,8 @@ use solana_sdk::{
 };
 use solders_traits::handle_py_err;
 
-use crate::{Instruction, Pubkey};
+use crate::Instruction;
+use solders_pubkey::Pubkey;
 
 fn convert_instructions_from_original(ixs: Vec<InstructionOriginal>) -> Vec<Instruction> {
     ixs.into_iter().map(Instruction::from).collect()
