@@ -19,13 +19,9 @@ use transaction::create_transaction_mod;
 pub mod address_lookup_table_account;
 #[cfg(feature = "bankrun")]
 pub mod bankrun;
-pub mod clock;
-pub mod rent;
 pub mod rpc;
 pub mod system_program;
 pub mod sysvar;
-use clock::create_clock_mod;
-use rent::create_rent_mod;
 use solders_primitives::{
     commitment_config::{CommitmentConfig, CommitmentLevel},
     epoch_schedule::create_epoch_schedule_mod,
@@ -35,6 +31,8 @@ use solders_primitives::{
     presigner::Presigner,
     pubkey::Pubkey,
     signature::Signature,
+    clock::create_clock_mod,
+    rent::create_rent_mod,
 };
 
 #[pymodule]

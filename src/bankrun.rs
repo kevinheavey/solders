@@ -1,4 +1,3 @@
-use crate::{clock::Clock, rent::Rent};
 use derive_more::{From, Into};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -14,6 +13,7 @@ use solders_macros::{common_methods, richcmp_eq_only};
 use solders_primitives::{
     commitment_config::CommitmentLevel, hash::Hash as SolderHash, keypair::Keypair,
     message::Message, pubkey::Pubkey, signature::Signature, transaction::VersionedTransaction,
+    clock::Clock, rent::Rent,
 };
 use solders_traits::{
     to_py_err, to_py_value_err, transaction_status_boilerplate, BanksClientError,
