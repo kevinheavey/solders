@@ -20,16 +20,15 @@ pub mod address_lookup_table_account;
 #[cfg(feature = "bankrun")]
 pub mod bankrun;
 pub mod clock;
-pub mod epoch_schedule;
 pub mod rent;
 pub mod rpc;
 pub mod system_program;
 pub mod sysvar;
 use clock::create_clock_mod;
-use epoch_schedule::create_epoch_schedule_mod;
 use rent::create_rent_mod;
 use solders_primitives::{
     commitment_config::{CommitmentConfig, CommitmentLevel},
+    epoch_schedule::create_epoch_schedule_mod,
     hash::Hash as SolderHash,
     keypair::Keypair,
     null_signer::NullSigner,

@@ -4400,6 +4400,7 @@ dependencies = [
  "solders-rpc-errors",
  "solders-rpc-filter",
  "solders-rpc-requests",
+ "solders-rpc-responses",
  "solders-traits",
  "solders-transaction-status",
  "tarpc",
@@ -4538,6 +4539,29 @@ dependencies = [
  "solders-rpc-config",
  "solders-traits",
  "solders-transaction-status",
+]
+
+[[package]]
+name = "solders-rpc-responses"
+version = "0.14.4"
+dependencies = [
+ "camelpaste",
+ "derive_more",
+ "pyo3",
+ "serde",
+ "serde_json",
+ "serde_with 1.14.0",
+ "solana-sdk",
+ "solders-account",
+ "solders-account-decoder",
+ "solders-macros",
+ "solders-primitives",
+ "solders-rpc-common",
+ "solders-rpc-errors",
+ "solders-rpc-requests",
+ "solders-traits",
+ "solders-transaction-status",
+ "thiserror",
 ]
 
 [[package]]

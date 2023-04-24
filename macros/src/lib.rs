@@ -174,24 +174,24 @@ pub fn common_methods_rpc_resp(_: TokenStream, item: TokenStream) -> TokenStream
     let methods = vec![
         ImplItem::Verbatim(
             quote! {pub fn __bytes__<'a>(&self, py: pyo3::prelude::Python<'a>) -> &'a pyo3::types::PyBytes  {
-                solders::rpc::responses::CommonMethodsRpcResp::pybytes(self, py)
+                CommonMethodsRpcResp::pybytes(self, py)
             }},
         ),
         ImplItem::Verbatim(quote! { pub fn __str__(&self) -> String {
-            solders::rpc::responses::CommonMethodsRpcResp::pystr(self)
+            CommonMethodsRpcResp::pystr(self)
         } }),
         ImplItem::Verbatim(quote! { pub fn __repr__(&self) -> String {
-            solders::rpc::responses::CommonMethodsRpcResp::pyrepr(self)
+            CommonMethodsRpcResp::pyrepr(self)
         } }),
         ImplItem::Verbatim(
             quote! { pub fn __reduce__(&self) -> pyo3::prelude::PyResult<(pyo3::prelude::PyObject, pyo3::prelude::PyObject)> {
-                solders::rpc::responses::CommonMethodsRpcResp::pyreduce(self)
+                CommonMethodsRpcResp::pyreduce(self)
             } },
         ),
         ImplItem::Verbatim(quote! {
         /// Convert to a JSON string.
         pub fn to_json(&self) -> String {
-            solders::rpc::responses::CommonMethodsRpcResp::py_to_json(self)
+            CommonMethodsRpcResp::py_to_json(self)
         } }),
         ImplItem::Verbatim(quote! {
         /// Build from a JSON string.
@@ -203,8 +203,8 @@ pub fn common_methods_rpc_resp(_: TokenStream, item: TokenStream) -> TokenStream
         ///     Either the deserialized object or ``RPCError``.
         ///
         #[staticmethod]
-        pub fn from_json(raw: &str) -> PyResult<crate::rpc::responses::Resp<Self>> {
-            <Self as solders::rpc::responses::CommonMethodsRpcResp>::py_from_json(raw)
+        pub fn from_json(raw: &str) -> PyResult<Resp<Self>> {
+            <Self as CommonMethodsRpcResp>::py_from_json(raw)
         } }),
         ImplItem::Verbatim(quote! {
             /// Deserialize from bytes.
@@ -216,7 +216,7 @@ pub fn common_methods_rpc_resp(_: TokenStream, item: TokenStream) -> TokenStream
             ///
             #[staticmethod]
             pub fn from_bytes(data: &[u8]) -> PyResult<Self> {
-                <Self as solders::rpc::responses::CommonMethodsRpcResp>::py_from_bytes(data)
+                <Self as CommonMethodsRpcResp>::py_from_bytes(data)
             }
         }),
         ImplItem::Verbatim(

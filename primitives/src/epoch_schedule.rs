@@ -117,7 +117,7 @@ py_from_bytes_general_via_bincode!(EpochSchedule);
 solders_traits::common_methods_default!(EpochSchedule);
 impl RichcmpEqualityOnly for EpochSchedule {}
 
-pub(crate) fn create_epoch_schedule_mod(py: Python<'_>) -> PyResult<&PyModule> {
+pub fn create_epoch_schedule_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "epoch_schedule")?;
     m.add_class::<EpochSchedule>()?;
     Ok(m)

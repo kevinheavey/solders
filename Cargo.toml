@@ -37,6 +37,7 @@ solders-rpc-config = { workspace = true }
 solders-rpc-common = { workspace = true }
 solders-rpc-errors = { workspace = true }
 solders-rpc-requests = { workspace = true }
+solders-rpc-responses = { workspace = true }
 solders-transaction-status = { workspace = true }
 solana-program-test = { workspace = true, optional = true }
 solana-banks-client = { workspace = true, optional = true }
@@ -68,6 +69,7 @@ members = [
     "rpc-common",
     "rpc-errors",
     "rpc-requests",
+    "rpc-responses",
     "account",
 ]
 
@@ -82,6 +84,7 @@ solders-rpc-config = { path = "./rpc-config", version = "0.14.4" }
 solders-rpc-common = { path = "./rpc-common", version = "0.14.4" }
 solders-rpc-errors = { path = "./rpc-errors", version = "0.14.4" }
 solders-rpc-requests = { path = "./rpc-requests", version = "0.14.4" }
+solders-rpc-responses = { path = "./rpc-responses", version = "0.14.4" }
 solders-primitives = { path = "./primitives", version = "0.14.4" }
 solders-account = { path = "./account", version = "0.14.4" }
 serde_with = { version = "^1.14.0", features = ["base64"] }

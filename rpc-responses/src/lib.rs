@@ -3,33 +3,7 @@ use std::collections::HashMap;
 use std::fmt::Display;
 use std::str::FromStr;
 
-use crate::epoch_schedule::EpochSchedule;
-use crate::rpc::tmp_response::{
-    RpcAccountBalance as RpcAccountBalanceOriginal,
-    RpcBlockProduction as RpcBlockProductionOriginal,
-    RpcBlockProductionRange as RpcBlockProductionRangeOriginal,
-    RpcBlockUpdate as RpcBlockUpdateOriginal, RpcBlockUpdateError as RpcBlockUpdateErrorOriginal,
-    RpcContactInfo as RpcContactInfoOriginal, RpcInflationGovernor as RpcInflationGovernorOriginal,
-    RpcInflationRate as RpcInflationRateOriginal, RpcInflationReward as RpcInflationRewardOriginal,
-    RpcLogsResponse as RpcLogsResponseOriginal, RpcPerfSample as RpcPerfSampleOriginal,
-    RpcSnapshotSlotInfo as RpcSnapshotSlotInfoOriginal,
-    RpcStakeActivation as RpcStakeActivationOriginal, RpcSupply as RpcSupplyOriginal,
-    RpcVote as RpcVoteOriginal, SlotInfo as SlotInfoOriginal,
-    SlotTransactionStats as SlotTransactionStatsOriginal, SlotUpdate as SlotUpdateOriginal,
-    StakeActivationState as StakeActivationStateOriginal, JSON_RPC_SCAN_ERROR,
-    JSON_RPC_SERVER_ERROR_BLOCK_CLEANED_UP, JSON_RPC_SERVER_ERROR_BLOCK_NOT_AVAILABLE,
-    JSON_RPC_SERVER_ERROR_BLOCK_STATUS_NOT_AVAILABLE_YET,
-    JSON_RPC_SERVER_ERROR_KEY_EXCLUDED_FROM_SECONDARY_INDEX,
-    JSON_RPC_SERVER_ERROR_LONG_TERM_STORAGE_SLOT_SKIPPED,
-    JSON_RPC_SERVER_ERROR_MIN_CONTEXT_SLOT_NOT_REACHED, JSON_RPC_SERVER_ERROR_NODE_UNHEALTHY,
-    JSON_RPC_SERVER_ERROR_NO_SNAPSHOT, JSON_RPC_SERVER_ERROR_SEND_TRANSACTION_PREFLIGHT_FAILURE,
-    JSON_RPC_SERVER_ERROR_SLOT_SKIPPED, JSON_RPC_SERVER_ERROR_TRANSACTION_HISTORY_NOT_AVAILABLE,
-    JSON_RPC_SERVER_ERROR_TRANSACTION_PRECOMPILE_VERIFICATION_FAILURE,
-    JSON_RPC_SERVER_ERROR_TRANSACTION_SIGNATURE_LEN_MISMATCH,
-    JSON_RPC_SERVER_ERROR_TRANSACTION_SIGNATURE_VERIFICATION_FAILURE,
-    JSON_RPC_SERVER_ERROR_UNSUPPORTED_TRANSACTION_VERSION,
-};
-use crate::{self as solders};
+mod tmp_response;
 use camelpaste::paste;
 use derive_more::{From, Into};
 use pyo3::exceptions::PyValueError;
@@ -55,7 +29,9 @@ use solders_account_decoder::{
 use solders_macros::{
     common_methods, common_methods_rpc_resp, enum_original_mapping, richcmp_eq_only, EnumIntoPy,
 };
-use solders_primitives::{hash::Hash as SolderHash, pubkey::Pubkey, signature::Signature};
+use solders_primitives::{
+    epoch_schedule::EpochSchedule, hash::Hash as SolderHash, pubkey::Pubkey, signature::Signature,
+};
 use solders_traits::{to_py_err, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly};
 use solders_transaction_status::{
     tmp_transaction_status::{
@@ -64,6 +40,31 @@ use solders_transaction_status::{
     },
     EncodedConfirmedTransactionWithStatusMeta, TransactionConfirmationStatus, TransactionErrorType,
     TransactionStatus, UiConfirmedBlock,
+};
+use tmp_response::{
+    RpcAccountBalance as RpcAccountBalanceOriginal,
+    RpcBlockProduction as RpcBlockProductionOriginal,
+    RpcBlockProductionRange as RpcBlockProductionRangeOriginal,
+    RpcBlockUpdate as RpcBlockUpdateOriginal, RpcBlockUpdateError as RpcBlockUpdateErrorOriginal,
+    RpcContactInfo as RpcContactInfoOriginal, RpcInflationGovernor as RpcInflationGovernorOriginal,
+    RpcInflationRate as RpcInflationRateOriginal, RpcInflationReward as RpcInflationRewardOriginal,
+    RpcLogsResponse as RpcLogsResponseOriginal, RpcPerfSample as RpcPerfSampleOriginal,
+    RpcSnapshotSlotInfo as RpcSnapshotSlotInfoOriginal,
+    RpcStakeActivation as RpcStakeActivationOriginal, RpcSupply as RpcSupplyOriginal,
+    RpcVote as RpcVoteOriginal, SlotInfo as SlotInfoOriginal,
+    SlotTransactionStats as SlotTransactionStatsOriginal, SlotUpdate as SlotUpdateOriginal,
+    StakeActivationState as StakeActivationStateOriginal, JSON_RPC_SCAN_ERROR,
+    JSON_RPC_SERVER_ERROR_BLOCK_CLEANED_UP, JSON_RPC_SERVER_ERROR_BLOCK_NOT_AVAILABLE,
+    JSON_RPC_SERVER_ERROR_BLOCK_STATUS_NOT_AVAILABLE_YET,
+    JSON_RPC_SERVER_ERROR_KEY_EXCLUDED_FROM_SECONDARY_INDEX,
+    JSON_RPC_SERVER_ERROR_LONG_TERM_STORAGE_SLOT_SKIPPED,
+    JSON_RPC_SERVER_ERROR_MIN_CONTEXT_SLOT_NOT_REACHED, JSON_RPC_SERVER_ERROR_NODE_UNHEALTHY,
+    JSON_RPC_SERVER_ERROR_NO_SNAPSHOT, JSON_RPC_SERVER_ERROR_SEND_TRANSACTION_PREFLIGHT_FAILURE,
+    JSON_RPC_SERVER_ERROR_SLOT_SKIPPED, JSON_RPC_SERVER_ERROR_TRANSACTION_HISTORY_NOT_AVAILABLE,
+    JSON_RPC_SERVER_ERROR_TRANSACTION_PRECOMPILE_VERIFICATION_FAILURE,
+    JSON_RPC_SERVER_ERROR_TRANSACTION_SIGNATURE_LEN_MISMATCH,
+    JSON_RPC_SERVER_ERROR_TRANSACTION_SIGNATURE_VERIFICATION_FAILURE,
+    JSON_RPC_SERVER_ERROR_UNSUPPORTED_TRANSACTION_VERSION,
 };
 
 use solders_rpc_common::{response_data_boilerplate, RpcSimulateTransactionResult};
@@ -2852,7 +2853,7 @@ pub fn parse_websocket_message(msg: &str) -> PyResult<WebsocketMessages> {
     serde_json::from_str(msg).map_err(to_py_err)
 }
 
-pub(crate) fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
+pub fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "responses")?;
     let typing = py.import("typing")?;
     let union = typing.getattr("Union")?;
