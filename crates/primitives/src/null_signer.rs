@@ -1,4 +1,4 @@
-use crate::signature::Signature;
+use solders_signature::Signature;
 use solders_pubkey::Pubkey;
 use derive_more::{From, Into};
 use pyo3::{prelude::*, types::PyBytes};

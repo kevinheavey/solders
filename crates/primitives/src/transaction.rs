@@ -22,11 +22,10 @@ use solders_traits::{
 use crate::{
     hash::Hash as SolderHash,
     message::{Message, VersionedMessage},
-    signature::Signature,
-    signature::{originals_into_solders, solders_into_originals},
     signer::Signer,
     signer::SignerVec,
 };
+use solders_signature::{Signature, originals_into_solders, solders_into_originals};
 use solders_instruction::{convert_instructions, CompiledInstruction, Instruction};
 
 /// An atomic transaction

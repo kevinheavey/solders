@@ -176,10 +176,10 @@ impl FromStr for Signature {
     }
 }
 
-pub(crate) fn originals_into_solders(sigs: Vec<SignatureOriginal>) -> Vec<Signature> {
+pub fn originals_into_solders(sigs: Vec<SignatureOriginal>) -> Vec<Signature> {
     sigs.into_iter().map(Signature::from).collect()
 }
 
-pub(crate) fn solders_into_originals(sigs: Vec<Signature>) -> Vec<SignatureOriginal> {
+pub fn solders_into_originals(sigs: Vec<Signature>) -> Vec<SignatureOriginal> {
     sigs.into_iter().map(SignatureOriginal::from).collect()
 }

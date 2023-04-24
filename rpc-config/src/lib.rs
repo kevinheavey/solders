@@ -7,10 +7,9 @@ use solana_sdk::commitment_config::CommitmentLevel as CommitmentLevelOriginal;
 use solders_account_decoder::{UiAccountEncoding, UiDataSliceConfig};
 use solders_macros::{common_methods, richcmp_eq_only, EnumIntoPy};
 use solders_primitives::{
-    commitment_config::CommitmentLevel, hash::Hash as SolderHash,
+    commitment_config::CommitmentLevel, hash::Hash as SolderHash, pubkey::Pubkey,
 };
 use solders_signature::Signature;
-use solders_pubkey::Pubkey;
 use solders_traits::{
     impl_display, py_from_bytes_general_via_cbor, pybytes_general_via_cbor, RichcmpEqualityOnly,
 };

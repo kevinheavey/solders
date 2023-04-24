@@ -4391,6 +4391,7 @@ dependencies = [
  "solders-rpc-filter",
  "solders-rpc-requests",
  "solders-rpc-responses",
+ "solders-signature",
  "solders-traits",
  "solders-transaction-status",
 ]
@@ -4443,6 +4444,7 @@ dependencies = [
  "solders-macros",
  "solders-primitives",
  "solders-pubkey",
+ "solders-signature",
  "solders-traits",
  "solders-transaction-status",
  "tarpc",
@@ -4484,6 +4486,7 @@ dependencies = [
  "solders-instruction",
  "solders-macros",
  "solders-pubkey",
+ "solders-signature",
  "solders-traits",
 ]
 
@@ -4526,6 +4529,7 @@ dependencies = [
  "solders-primitives",
  "solders-pubkey",
  "solders-rpc-filter",
+ "solders-signature",
  "solders-traits",
  "solders-transaction-status",
 ]
@@ -4575,6 +4579,7 @@ dependencies = [
  "solders-primitives",
  "solders-pubkey",
  "solders-rpc-config",
+ "solders-signature",
  "solders-traits",
  "solders-transaction-status",
 ]
@@ -4598,9 +4603,23 @@ dependencies = [
  "solders-rpc-common",
  "solders-rpc-errors",
  "solders-rpc-requests",
+ "solders-signature",
  "solders-traits",
  "solders-transaction-status",
  "thiserror",
+]
+
+[[package]]
+name = "solders-signature"
+version = "0.14.4"
+dependencies = [
+ "derive_more",
+ "pyo3",
+ "serde",
+ "solana-sdk",
+ "solders-macros",
+ "solders-pubkey",
+ "solders-traits",
 ]
 
 [[package]]
@@ -4633,6 +4652,7 @@ dependencies = [
  "solders-macros",
  "solders-primitives",
  "solders-pubkey",
+ "solders-signature",
  "solders-traits",
 ]
 

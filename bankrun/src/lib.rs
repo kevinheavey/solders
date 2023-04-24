@@ -11,12 +11,11 @@ use solana_banks_interface::{
 use solders_account::Account;
 use solders_macros::{common_methods, richcmp_eq_only};
 use solders_primitives::{
-    clock::Clock, commitment_config::CommitmentLevel, hash::Hash as SolderHash, keypair::Keypair,
-    message::Message, rent::Rent,
-    transaction::VersionedTransaction,
+    commitment_config::CommitmentLevel, hash::Hash as SolderHash, keypair::Keypair,
+    message::Message, pubkey::Pubkey, transaction::VersionedTransaction,
+    clock::Clock, rent::Rent,
 };
 use solders_signature::Signature;
-use solders_pubkey::Pubkey;
 use solders_traits::{
     to_py_err, to_py_value_err, transaction_status_boilerplate, BanksClientError,
 };

@@ -8,6 +8,5 @@ pub mod message;
 pub mod null_signer;
 pub mod presigner;
 pub mod rent;
-pub mod signature;
 pub mod signer;
 pub mod transaction;

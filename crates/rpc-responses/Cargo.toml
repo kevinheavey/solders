@@ -22,6 +22,7 @@ solders-rpc-common = { workspace = true }
 solders-rpc-errors = { workspace = true }
 solders-rpc-requests = { workspace = true }
 solders-pubkey = { workspace = true }
+solders-signature = { workspace = true }
 solana-sdk = { workspace = true }
 thiserror = { workspace = true }
 camelpaste = { workspace = true }

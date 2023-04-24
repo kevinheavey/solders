@@ -1,4 +1,4 @@
-use crate::signature::Signature;
+use solders_signature::Signature;
 use solders_pubkey::Pubkey;
 use pyo3::prelude::*;
 use solana_sdk::signer::{presigner::Presigner as PresignerOriginal, Signer as SignerTrait};

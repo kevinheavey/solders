@@ -29,9 +29,9 @@ use solders_primitives::{
     null_signer::NullSigner,
     presigner::Presigner,
     rent::create_rent_mod,
-    signature::Signature,
 };
 use solders_pubkey::Pubkey;
+use solders_signature::Signature;
 
 #[pymodule]
 fn solders(py: Python, m: &PyModule) -> PyResult<()> {
