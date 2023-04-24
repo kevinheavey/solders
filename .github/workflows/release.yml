@@ -30,43 +30,43 @@ jobs:
           profile: minimal
           toolchain: nightly
           override: true
-      - run: cd macros && cargo publish
+      - run: cd crates/macros && cargo publish
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-      - run: cd traits && cargo publish
+      - run: cd crates/traits && cargo publish
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-      - run: cd primitives && cargo publish
+      - run: cd crates/primitives && cargo publish
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-      - run: cd account-decoder && cargo publish
+      - run: cd crates/account-decoder && cargo publish
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-      - run: cd transaction-status && cargo publish
+      - run: cd crates/transaction-status && cargo publish
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-      - run: cd account && cargo publish
+      - run: cd crates/account && cargo publish
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-      - run: cd rpc-filter && cargo publish
+      - run: cd crates/rpc-filter && cargo publish
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-      - run: cd rpc-config && cargo publish
+      - run: cd crates/rpc-config && cargo publish
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-      - run: cd rpc-common && cargo publish
+      - run: cd crates/rpc-common && cargo publish
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-      - run: cd rpc-errors && cargo publish
+      - run: cd crates/rpc-errors && cargo publish
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-      - run: cd rpc-requests && cargo publish
+      - run: cd crates/rpc-requests && cargo publish
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-      - run: cd rpc-responses && cargo publish
+      - run: cd crates/rpc-responses && cargo publish
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-      - run: cd bankrun && cargo publish
+      - run: cd crates/bankrun && cargo publish
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
       - run: cargo publish
