@@ -1,6 +1,5 @@
 use std::hash::Hasher;
 
-use solders_pubkey::Pubkey;
 use derive_more::{From, Into};
 use pyo3::{prelude::*, types::PyBytes};
 use serde::{Deserialize, Serialize};
@@ -12,6 +11,7 @@ use solana_sdk::{
     pubkey::Pubkey as PubkeyOriginal,
 };
 use solders_macros::{common_methods, pyhash, richcmp_eq_only};
+use solders_pubkey::Pubkey;
 
 use solders_traits::{
     impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,

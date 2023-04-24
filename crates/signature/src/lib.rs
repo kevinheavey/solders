@@ -1,11 +1,11 @@
 use std::str::FromStr;
 
-use solders_pubkey::Pubkey;
 use derive_more::{From, Into};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use solana_sdk::signature::{ParseSignatureError, Signature as SignatureOriginal, SIGNATURE_BYTES};
 use solders_macros::{common_methods, pyhash, richcmp_full};
+use solders_pubkey::Pubkey;
 
 use solders_traits::{
     handle_py_value_err, impl_display, pybytes_general_via_slice, CommonMethodsCore,

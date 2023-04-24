@@ -1,5 +1,3 @@
-use solders_signature::Signature;
-use solders_pubkey::Pubkey;
 use derive_more::{From, Into};
 use pyo3::{prelude::*, types::PyBytes};
 use serde::{Deserialize, Serialize};
@@ -10,6 +8,8 @@ use solana_sdk::signer::{
     Signer as SignerTrait,
 };
 use solders_macros::{common_methods, pyhash, richcmp_signer};
+use solders_pubkey::Pubkey;
+use solders_signature::Signature;
 
 use solders_traits::{
     handle_py_value_err, impl_display, impl_signer_hash, CommonMethods, CommonMethodsCore,

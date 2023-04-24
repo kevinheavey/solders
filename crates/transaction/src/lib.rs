@@ -12,21 +12,18 @@ use solana_sdk::{
         VersionedTransaction as VersionedTransactionOriginal,
     },
 };
-use solders_pubkey::{Pubkey, convert_optional_pubkey};
 use solders_macros::{common_methods, richcmp_eq_only, EnumIntoPy};
+use solders_pubkey::{convert_optional_pubkey, Pubkey};
 use solders_traits::{
     handle_py_err, impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
     CommonMethodsCore, RichcmpEqualityOnly,
 };
 
-use solders_keypair::signer::{
-    Signer,
-    SignerVec,
-};
-use solders_message::{Message, VersionedMessage};
 use solders_hash::Hash as SolderHash;
-use solders_signature::{Signature, originals_into_solders, solders_into_originals};
 use solders_instruction::{convert_instructions, CompiledInstruction, Instruction};
+use solders_keypair::signer::{Signer, SignerVec};
+use solders_message::{Message, VersionedMessage};
+use solders_signature::{originals_into_solders, solders_into_originals, Signature};
 
 /// An atomic transaction
 ///

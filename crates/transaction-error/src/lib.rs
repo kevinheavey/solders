@@ -1,12 +1,12 @@
+use derive_more::{From, Into};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use solana_sdk::{
     instruction::InstructionError as InstructionErrorOriginal,
     transaction::TransactionError as TransactionErrorOriginal,
 };
-use derive_more::{From, Into};
-use solders_traits::{transaction_status_boilerplate};
 use solders_macros::{common_methods, richcmp_eq_only, EnumIntoPy};
+use solders_traits::transaction_status_boilerplate;
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.transaction_status", subclass)]
