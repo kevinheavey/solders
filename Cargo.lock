@@ -4554,20 +4554,12 @@ dependencies = [
 name = "solders-primitives"
 version = "0.14.4"
 dependencies = [
- "base64 0.13.1",
  "bincode",
  "derive_more",
  "pyo3",
  "serde",
- "serde_with 1.14.0",
  "solana-sdk",
- "solders-hash",
- "solders-instruction",
- "solders-keypair",
  "solders-macros",
- "solders-message",
- "solders-pubkey",
- "solders-signature",
  "solders-traits",
 ]
 
