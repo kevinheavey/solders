@@ -16,7 +16,7 @@ use solders_traits::{
 
 use solders_transaction_status::{TransactionDetails, UiTransactionEncoding};
 
-use super::filter::RpcFilterType;
+use solders_rpc_filter::RpcFilterType;
 
 macro_rules! rpc_config_impls {
     ($ident:ident) => {

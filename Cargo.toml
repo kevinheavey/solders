@@ -23,7 +23,7 @@ serde_with = { workspace = true }
 base64 = { workspace = true }
 camelpaste = "0.1.0"
 serde_cbor = { workspace = true }
-thiserror = "^1.0.31"
+thiserror = { workspace = true }
 bs58 = { workspace = true }
 derive_more = { workspace = true }
 pythonize = { workspace = true }
@@ -31,6 +31,7 @@ solders-traits = { workspace = true }
 solders-macros = { workspace = true }
 solders-primitives = { workspace = true }
 solders-account-decoder = { workspace = true }
+solders-rpc-filter = { workspace = true }
 solders-transaction-status = { workspace = true }
 solana-program-test = { workspace = true, optional = true }
 solana-banks-client = { workspace = true, optional = true }
@@ -50,7 +51,15 @@ bankrun = [
 
 
 [workspace]
-members = [".", "traits", "macros", "primitives", "account-decoder", "transaction-status"]
+members = [
+    ".",
+    "traits",
+    "macros",
+    "primitives",
+    "account-decoder",
+    "transaction-status",
+    "rpc-filter"
+]
 
 [workspace.dependencies]
 pyo3 = { version = "0.18.0", default-features = false }
@@ -58,6 +67,7 @@ solders-macros = { path = "./macros", version = "0.14.4" }
 solders-traits = { path = "./traits", version = "0.14.4" }
 solders-account-decoder = { path = "./account-decoder", version = "0.14.4" }
 solders-transaction-status = { path = "./transaction-status", version = "0.14.4" }
+solders-rpc-filter = { path = "./rpc-filter", version = "0.14.4" }
 serde_with = { version = "^1.14.0", features = ["base64"] }
 solders-primitives = { path = "./primitives", version = "0.14.4" }
 solana-sdk = "^1.15.2"
@@ -71,3 +81,4 @@ solana-program-test = "1.15.2"
 solana-banks-client = "1.15.2"
 pythonize = "0.18.0"
 bs58 = "0.4.0"
+thiserror = "^1.0.31"

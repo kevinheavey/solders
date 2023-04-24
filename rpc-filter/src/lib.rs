@@ -1,9 +1,10 @@
-use crate::rpc::tmp_filter::{
+pub mod tmp_filter;
+use pyo3::prelude::*;
+use serde::{Deserialize, Serialize};
+use tmp_filter::{
     Memcmp as MemcmpOriginal, MemcmpEncodedBytes as MemcmpEncodedBytesOriginal,
     MemcmpEncoding as MemcmpEncodingOriginal, RpcFilterType as RpcFilterTypeOriginal,
 };
-use pyo3::prelude::*;
-use serde::{Deserialize, Serialize};
 
 use derive_more::{From, Into};
 use solders_macros::{common_methods, enum_original_mapping, richcmp_eq_only, EnumIntoPy};
@@ -123,7 +124,7 @@ impl From<RpcFilterTypeOriginal> for RpcFilterType {
     }
 }
 
-pub(crate) fn create_filter_mod(py: Python<'_>) -> PyResult<&PyModule> {
+pub fn create_filter_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "filter")?;
     m.add_class::<MemcmpEncoding>()?;
     m.add_class::<Memcmp>()?;

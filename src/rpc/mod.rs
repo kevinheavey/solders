@@ -1,19 +1,18 @@
 use std::collections::HashMap;
 
 use self::{
-    config::create_config_mod, errors::create_errors_mod, filter::create_filter_mod,
-    requests::create_requests_mod, responses::create_responses_mod,
+    config::create_config_mod, errors::create_errors_mod, requests::create_requests_mod,
+    responses::create_responses_mod,
 };
 use pyo3::prelude::*;
+use solders_rpc_filter::create_filter_mod;
 
 mod common;
 pub mod config;
 pub mod errors;
-pub mod filter;
 pub mod requests;
 pub mod responses;
 mod tmp_config;
-mod tmp_filter;
 mod tmp_response;
 
 pub fn create_rpc_mod(py: Python<'_>) -> PyResult<&PyModule> {
