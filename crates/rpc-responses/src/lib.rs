@@ -77,12 +77,12 @@ use solders_rpc_responses_common::{
     AccountNotification, AccountNotificationJsonParsed, AccountNotificationJsonParsedResult,
     AccountNotificationResult, BlockStoreError, EpochInfo, ProgramNotification,
     ProgramNotificationJsonParsed, ProgramNotificationJsonParsedResult, ProgramNotificationResult,
-    ProgramNotificationType, RootNotification, RpcBlockhash,
-    RpcConfirmedTransactionStatusWithSignature, RpcIdentity, RpcKeyedAccount,
+    ProgramNotificationType, RootNotification, RpcBlockhash, RpcIdentity, RpcKeyedAccount,
     RpcKeyedAccountJsonParsed, RpcKeyedAccountMaybeJSON, RpcLeaderSchedule, RpcResponseContext,
     RpcSignatureResponse, RpcTokenAccountBalance, RpcVersionInfo, RpcVoteAccountInfo,
     RpcVoteAccountStatus, SignatureNotification, SignatureNotificationResult, SubscriptionResult,
 };
+use solders_rpc_responses_tx_status::RpcConfirmedTransactionStatusWithSignature;
 
 pub trait CommonMethodsRpcResp<'a>:
     std::fmt::Display
