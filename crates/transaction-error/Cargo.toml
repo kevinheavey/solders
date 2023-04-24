@@ -1,0 +1,15 @@
+[package]
+name = "solders-transaction-error"
+version = "0.14.4"
+edition = "2021"
+include = ["/src"]
+license = "MIT"
+repository = "https://github.com/kevinheavey/solders"
+
+[dependencies]
+serde = { workspace = true }
+solana-sdk = { workspace = true }
+solders-traits = { workspace = true }
+solders-macros = { workspace = true }
+derive_more = { workspace = true }
+pyo3 = { workspace = true }

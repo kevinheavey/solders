@@ -38,6 +38,7 @@ solders-transaction-status = { workspace = true }
 solders-hash = { workspace = true }
 solders-keypair = { workspace = true }
 solders-transaction = { workspace = true }
+solders-transaction-error = { workspace = true }
 solders-bankrun = { workspace = true, optional = true }
 
 [features]
@@ -74,6 +75,7 @@ solders-message = { path = "./crates/message", version = "0.14.4" }
 solders-signature = { path = "./crates/signature", version = "0.14.4" }
 solders-keypair = { path = "./crates/keypair", version = "0.14.4" }
 solders-transaction = { path = "./crates/transaction", version = "0.14.4" }
+solders-transaction-error = { path = "./crates/transaction-error", version = "0.14.4" }
 solders-account = { path = "./crates/account", version = "0.14.4" }
 solders-hash = { path = "./crates/hash", version = "0.14.4" }
 serde_with = { version = "^1.14.0", features = ["base64"] }

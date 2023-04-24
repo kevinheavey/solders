@@ -25,8 +25,9 @@ use solders_traits::{
     to_py_err, to_py_value_err, transaction_status_boilerplate, BanksClientError,
 };
 use solders_transaction_status::{
-    TransactionConfirmationStatus, TransactionErrorType, TransactionReturnData, TransactionStatus,
+    TransactionConfirmationStatus, TransactionReturnData, TransactionStatus,
 };
+use solders_transaction_error::TransactionErrorType;
 use tarpc::context::current;
 use {
     solana_program_test::{

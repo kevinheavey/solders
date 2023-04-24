@@ -5,8 +5,9 @@ use serde_with::{serde_as, FromInto, TryFromInto};
 use solders_account_decoder::tmp_account_decoder::UiAccount;
 use solders_macros::{common_methods, richcmp_eq_only};
 use solders_transaction_status::{
-    tmp_transaction_status::UiTransactionReturnData, TransactionErrorType, TransactionReturnData,
+    tmp_transaction_status::UiTransactionReturnData, TransactionReturnData,
 };
+use solders_transaction_error::TransactionErrorType;
 
 use solders_account::Account;
 

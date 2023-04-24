@@ -15,4 +15,5 @@ solders-traits = { workspace = true }
 solders-account-decoder = { workspace = true }
 solders-account = { workspace = true }
 solders-transaction-status = { workspace = true }
+solders-transaction-error = { workspace = true }
 serde_with = { workspace = true }

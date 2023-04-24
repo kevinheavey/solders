@@ -39,9 +39,10 @@ use solders_transaction_status::{
         TransactionConfirmationStatus as TransactionConfirmationStatusOriginal,
         TransactionStatus as TransactionStatusOriginal,
     },
-    EncodedConfirmedTransactionWithStatusMeta, TransactionConfirmationStatus, TransactionErrorType,
+    EncodedConfirmedTransactionWithStatusMeta, TransactionConfirmationStatus,
     TransactionStatus, UiConfirmedBlock,
 };
+use solders_transaction_error::TransactionErrorType;
 use tmp_response::{
     RpcAccountBalance as RpcAccountBalanceOriginal,
     RpcBlockProduction as RpcBlockProductionOriginal,

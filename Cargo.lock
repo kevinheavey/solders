@@ -4399,6 +4399,7 @@ dependencies = [
  "solders-signature",
  "solders-traits",
  "solders-transaction",
+ "solders-transaction-error",
  "solders-transaction-status",
 ]
 
@@ -4470,6 +4471,7 @@ dependencies = [
  "solders-signature",
  "solders-traits",
  "solders-transaction",
+ "solders-transaction-error",
  "solders-transaction-status",
  "tarpc",
 ]
@@ -4587,6 +4589,7 @@ dependencies = [
  "solders-account-decoder",
  "solders-macros",
  "solders-traits",
+ "solders-transaction-error",
  "solders-transaction-status",
 ]
 
@@ -4619,7 +4622,7 @@ dependencies = [
  "solders-macros",
  "solders-rpc-common",
  "solders-traits",
- "solders-transaction-status",
+ "solders-transaction-error",
 ]
 
 [[package]]
@@ -4684,6 +4687,7 @@ dependencies = [
  "solders-rpc-version",
  "solders-signature",
  "solders-traits",
+ "solders-transaction-error",
  "solders-transaction-status",
  "thiserror",
 ]
@@ -4740,6 +4744,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "solders-transaction-error"
+version = "0.14.4"
+dependencies = [
+ "derive_more",
+ "pyo3",
+ "serde",
+ "solana-sdk",
+ "solders-macros",
+ "solders-traits",
+]
+
+[[package]]
 name = "solders-transaction-status"
 version = "0.14.4"
 dependencies = [
@@ -4761,6 +4777,7 @@ dependencies = [
  "solders-signature",
  "solders-traits",
  "solders-transaction",
+ "solders-transaction-error",
 ]
 
 [[package]]
