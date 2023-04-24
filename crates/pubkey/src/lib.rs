@@ -5,11 +5,11 @@ use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use solana_program::pubkey::{ParsePubkeyError, Pubkey as PubkeyOriginal, PUBKEY_BYTES};
 use solders_macros::{common_methods, pyhash, richcmp_full};
-use solders_traits_core::{
-    handle_py_value_err, pybytes_general_via_slice, CommonMethodsCore,
-    PyFromBytesGeneral, PyHash, RichcmpFull,
-};
 use solders_traits::handle_py_err;
+use solders_traits_core::{
+    handle_py_value_err, pybytes_general_via_slice, CommonMethodsCore, PyFromBytesGeneral, PyHash,
+    RichcmpFull,
+};
 
 /// A public key.
 ///

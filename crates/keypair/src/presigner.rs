@@ -4,10 +4,10 @@ use solders_macros::{pyhash, richcmp_signer};
 use solders_pubkey::Pubkey;
 use solders_signature::Signature;
 
-use solders_traits_core::{
-    impl_display, PyHash
+use solders_traits::{
+    handle_py_err, impl_signer_hash, RichcmpSigner, SignerTraitWrapper, ToSignerOriginal,
 };
-use solders_traits::{ToSignerOriginal, SignerTraitWrapper, RichcmpSigner, handle_py_err, impl_signer_hash};
+use solders_traits_core::{impl_display, PyHash};
 
 #[derive(Clone, Debug, Default, PartialEq)]
 #[pyclass(module = "solders.presigner", subclass)]

@@ -6,11 +6,10 @@ use solders_macros::{common_methods, pyhash, richcmp_signer};
 use solders_pubkey::Pubkey;
 use solders_signature::Signature;
 
+use solders_traits::{impl_signer_hash, RichcmpSigner, SignerTraitWrapper, ToSignerOriginal};
 use solders_traits_core::{
-    impl_display, CommonMethodsCore,
-    PyBytesGeneral, PyFromBytesGeneral, PyHash
+    impl_display, CommonMethodsCore, PyBytesGeneral, PyFromBytesGeneral, PyHash,
 };
-use solders_traits::{ToSignerOriginal, SignerTraitWrapper, RichcmpSigner, impl_signer_hash};
 
 mod null_signer_serde {
     use serde::{self, Deserialize, Deserializer, Serializer};

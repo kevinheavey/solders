@@ -2,9 +2,9 @@ use derive_more::{From, Into};
 use pyo3::{prelude::*, types::PyTuple, PyTypeInfo};
 use serde::{Deserialize, Serialize};
 use solders_macros::{common_methods, richcmp_eq_only, EnumIntoPy};
+use solders_rpc_common::RpcSimulateTransactionResult;
 use solders_traits_core::transaction_status_boilerplate;
 use solders_transaction_error::TransactionErrorType;
-use solders_rpc_common::RpcSimulateTransactionResult;
 type Slot = u64;
 
 macro_rules! error_message {

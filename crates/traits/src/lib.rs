@@ -195,7 +195,6 @@ pub trait SignerTraitWrapper: ToSignerOriginal {
     }
 }
 
-
 pub trait RichcmpSigner: SignerTraitWrapper {
     fn richcmp(&self, other: impl SignerTraitWrapper, op: CompareOp) -> PyResult<bool> {
         let eq_val = self.pubkey() == other.pubkey();

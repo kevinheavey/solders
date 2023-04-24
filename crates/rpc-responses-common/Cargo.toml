@@ -1,5 +1,5 @@
 [package]
-name = "solders-rpc-responses"
+name = "solders-rpc-responses-common"
 version = "0.14.4"
 edition = "2021"
 include = ["/src"]
@@ -10,23 +10,17 @@ repository = "https://github.com/kevinheavey/solders"
 pyo3 = { workspace = true }
 serde = { workspace = true }
 serde_with = { workspace = true }
-serde_json = { workspace = true }
 derive_more = { workspace = true }
 solders-macros = { workspace = true }
 solders-hash = { workspace = true }
-solders-primitives = { workspace = true }
 solders-traits-core = { workspace = true }
-solders-traits = { workspace = true }
 solders-account = { workspace = true }
 solders-account-decoder = { workspace = true }
 solders-transaction-error = { workspace = true }
 solders-transaction-status = { workspace = true }
-solders-rpc-responses-common = { workspace = true }
 solders-rpc-common = { workspace = true }
-solders-rpc-errors = { workspace = true }
 solders-rpc-version = { workspace = true }
 solders-pubkey = { workspace = true }
 solders-signature = { workspace = true }
 solana-sdk = { workspace = true }
-thiserror = { workspace = true }
 camelpaste = { workspace = true }

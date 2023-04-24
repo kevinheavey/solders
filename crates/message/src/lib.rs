@@ -17,12 +17,11 @@ use solana_program::{
     pubkey::Pubkey as PubkeyOriginal,
 };
 use solders_macros::{common_methods, richcmp_eq_only, EnumIntoPy};
-use solders_traits_core::{
-    impl_display, py_from_bytes_general_via_bincode,
-    pybytes_general_via_bincode, CommonMethodsCore, PyBytesGeneral,
-    RichcmpEqualityOnly, handle_py_value_err
-};
 use solders_traits::{handle_py_err, PyErrWrapper};
+use solders_traits_core::{
+    handle_py_value_err, impl_display, py_from_bytes_general_via_bincode,
+    pybytes_general_via_bincode, CommonMethodsCore, PyBytesGeneral, RichcmpEqualityOnly,
+};
 
 use solders_address_lookup_table_account::AddressLookupTableAccount;
 use solders_hash::Hash as SolderHash;

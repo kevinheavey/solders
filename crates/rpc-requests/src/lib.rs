@@ -5,10 +5,10 @@ use solders_hash::Hash as SolderHash;
 use solders_message::VersionedMessage;
 use solders_pubkey::Pubkey;
 use solders_signature::Signature;
+use solders_traits::to_py_err;
 use solders_traits_core::{
     py_from_bytes_general_via_cbor, pybytes_general_via_cbor, RichcmpEqualityOnly,
 };
-use solders_traits::to_py_err;
 use solders_transaction::{Transaction, VersionedTransaction};
 extern crate base64;
 use camelpaste::paste;

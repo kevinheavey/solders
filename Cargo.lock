@@ -4688,6 +4688,7 @@ dependencies = [
  "solders-pubkey",
  "solders-rpc-common",
  "solders-rpc-errors",
+ "solders-rpc-responses-common",
  "solders-rpc-version",
  "solders-signature",
  "solders-traits",
@@ -4695,6 +4696,29 @@ dependencies = [
  "solders-transaction-error",
  "solders-transaction-status",
  "thiserror",
+]
+
+[[package]]
+name = "solders-rpc-responses-common"
+version = "0.14.4"
+dependencies = [
+ "camelpaste",
+ "derive_more",
+ "pyo3",
+ "serde",
+ "serde_with 1.14.0",
+ "solana-sdk",
+ "solders-account",
+ "solders-account-decoder",
+ "solders-hash",
+ "solders-macros",
+ "solders-pubkey",
+ "solders-rpc-common",
+ "solders-rpc-version",
+ "solders-signature",
+ "solders-traits-core",
+ "solders-transaction-error",
+ "solders-transaction-status",
 ]
 
 [[package]]

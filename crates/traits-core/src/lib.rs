@@ -11,7 +11,6 @@ use std::{
     hash::{Hash, Hasher},
 };
 
-
 fn richcmp_type_error(op: &str) -> PyErr {
     let msg = format!("{op} not supported.");
     PyTypeError::new_err(msg)
