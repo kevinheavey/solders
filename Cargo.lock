@@ -4399,9 +4399,7 @@ dependencies = [
  "solders-signature",
  "solders-traits",
  "solders-transaction",
- "solders-transaction-error",
  "solders-transaction-status",
- "solders-transaction-status-enums",
 ]
 
 [[package]]
@@ -4669,7 +4667,6 @@ dependencies = [
  "solders-traits",
  "solders-traits-core",
  "solders-transaction",
- "solders-transaction-status",
 ]
 
 [[package]]

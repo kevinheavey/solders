@@ -35,11 +35,9 @@ solders-message = { workspace = true }
 solders-address-lookup-table-account = { workspace = true }
 solders-signature = { workspace = true }
 solders-transaction-status = { workspace = true }
-solders-transaction-status-enums = { workspace = true }
 solders-hash = { workspace = true }
 solders-keypair = { workspace = true }
 solders-transaction = { workspace = true }
-solders-transaction-error = { workspace = true }
 solders-bankrun = { workspace = true, optional = true }
 
 [features]
