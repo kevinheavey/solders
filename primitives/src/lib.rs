@@ -17,6 +17,8 @@ pub mod pubkey;
 pub mod signature;
 pub mod signer;
 pub mod transaction;
+pub mod clock;
+pub mod rent;
 
 pub fn convert_optional_pubkey(pubkey: Option<&Pubkey>) -> Option<&PubkeyOriginal> {
     pubkey.map(|p| p.as_ref())

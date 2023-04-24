@@ -74,7 +74,7 @@ impl Clock {
     }
 }
 
-pub(crate) fn create_clock_mod(py: Python<'_>) -> PyResult<&PyModule> {
+pub fn create_clock_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "clock")?;
     m.add_class::<Clock>()?;
     m.add("DEFAULT_DEV_SLOTS_PER_EPOCH", DEFAULT_DEV_SLOTS_PER_EPOCH)?;

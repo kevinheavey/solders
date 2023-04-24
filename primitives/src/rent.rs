@@ -133,7 +133,7 @@ impl Rent {
     }
 }
 
-pub(crate) fn create_rent_mod(py: Python<'_>) -> PyResult<&PyModule> {
+pub fn create_rent_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "rent")?;
     m.add_class::<Rent>()?;
     m.add(
