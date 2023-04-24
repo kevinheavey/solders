@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use solana_sdk::commitment_config::CommitmentLevel as CommitmentLevelOriginal;
 use solders_account_decoder::{UiAccountEncoding, UiDataSliceConfig};
 use solders_macros::{common_methods, richcmp_eq_only, EnumIntoPy};
-use solders_primitives::{hash::Hash as SolderHash};
+use solders_hash::Hash as SolderHash;
 use solders_commitment_config::CommitmentLevel;
 use solders_signature::Signature;
 use solders_pubkey::Pubkey;

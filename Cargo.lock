@@ -4384,6 +4384,7 @@ dependencies = [
  "solders-account-decoder",
  "solders-bankrun",
  "solders-commitment-config",
+ "solders-hash",
  "solders-instruction",
  "solders-primitives",
  "solders-pubkey",
@@ -4443,6 +4444,7 @@ dependencies = [
  "solana-sdk",
  "solders-account",
  "solders-commitment-config",
+ "solders-hash",
  "solders-macros",
  "solders-primitives",
  "solders-pubkey",
@@ -4460,6 +4462,18 @@ dependencies = [
  "pyo3",
  "serde",
  "solana-sdk",
+ "solders-traits",
+]
+
+[[package]]
+name = "solders-hash"
+version = "0.14.4"
+dependencies = [
+ "derive_more",
+ "pyo3",
+ "serde",
+ "solana-sdk",
+ "solders-macros",
  "solders-traits",
 ]
 
@@ -4496,6 +4510,7 @@ dependencies = [
  "serde",
  "serde_with 1.14.0",
  "solana-sdk",
+ "solders-hash",
  "solders-instruction",
  "solders-macros",
  "solders-pubkey",
@@ -4539,8 +4554,8 @@ dependencies = [
  "solana-sdk",
  "solders-account-decoder",
  "solders-commitment-config",
+ "solders-hash",
  "solders-macros",
- "solders-primitives",
  "solders-pubkey",
  "solders-rpc-filter",
  "solders-signature",
@@ -4590,6 +4605,7 @@ dependencies = [
  "serde_with 1.14.0",
  "solana-sdk",
  "solders-commitment-config",
+ "solders-hash",
  "solders-macros",
  "solders-primitives",
  "solders-pubkey",
@@ -4612,6 +4628,7 @@ dependencies = [
  "solana-sdk",
  "solders-account",
  "solders-account-decoder",
+ "solders-hash",
  "solders-macros",
  "solders-primitives",
  "solders-pubkey",
@@ -4665,6 +4682,7 @@ dependencies = [
  "solana-sdk",
  "solders-account-decoder",
  "solders-commitment-config",
+ "solders-hash",
  "solders-macros",
  "solders-primitives",
  "solders-pubkey",

@@ -4,8 +4,9 @@ extern crate base64;
 use pythonize::{depythonize, pythonize};
 use solders_account_decoder::UiTokenAmount;
 use solders_primitives::{
-    hash::Hash as SolderHash, message::MessageHeader,
+    message::MessageHeader,
 };
+use solders_hash::Hash as SolderHash;
 use solders_commitment_config::CommitmentConfig;
 use solders_signature::Signature;
 use solders_pubkey::Pubkey;

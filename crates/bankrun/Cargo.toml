@@ -11,6 +11,7 @@ pyo3 = { workspace = true }
 serde = { workspace = true }
 derive_more = { workspace = true }
 solders-macros = { workspace = true }
+solders-hash = { workspace = true }
 solders-primitives = { workspace = true }
 solders-commitment-config = { workspace = true }
 solders-pubkey = { workspace = true }

@@ -23,12 +23,12 @@ pub mod sysvar;
 use solders_primitives::{
     clock::create_clock_mod,
     epoch_schedule::create_epoch_schedule_mod,
-    hash::Hash as SolderHash,
     keypair::Keypair,
     null_signer::NullSigner,
     presigner::Presigner,
     rent::create_rent_mod,
 };
+use solders_hash::Hash as SolderHash;
 use solders_commitment_config::{CommitmentConfig, CommitmentLevel};
 use solders_pubkey::Pubkey;
 use solders_signature::Signature;

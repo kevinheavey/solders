@@ -13,6 +13,7 @@ serde = { workspace = true }
 serde_with = { workspace = true }
 serde_json = { workspace = true }
 derive_more = { workspace = true }
+solders-hash = { workspace = true }
 solders-macros = { workspace = true }
 solders-traits = { workspace = true }
 solders-transaction-status = { workspace = true }

@@ -13,9 +13,9 @@ solders-macros = { workspace = true }
 solders-traits = { workspace = true }
 solders-account-decoder = { workspace = true }
 solders-pubkey = { workspace = true }
+solders-hash = { workspace = true }
 solders-signature = { workspace = true }
 solders-transaction-status = { workspace = true }
 solders-rpc-filter = { workspace = true }
-solders-primitives = { workspace = true }
 solders-commitment-config = { workspace = true }
 solana-sdk = { workspace = true }

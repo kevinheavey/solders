@@ -29,9 +29,8 @@ use solders_account_decoder::{
 use solders_macros::{
     common_methods, common_methods_rpc_resp, enum_original_mapping, richcmp_eq_only, EnumIntoPy,
 };
-use solders_primitives::{
-    epoch_schedule::EpochSchedule, hash::Hash as SolderHash
-};
+use solders_primitives::epoch_schedule::EpochSchedule;
+use solders_hash::Hash as SolderHash;
 use solders_signature::Signature;
 use solders_pubkey::Pubkey;
 use solders_traits::{to_py_err, PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly};
