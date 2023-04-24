@@ -1,13 +1,13 @@
 use std::collections::HashMap;
 
 use self::{
-    errors::create_errors_mod, requests::create_requests_mod, responses::create_responses_mod,
+    requests::create_requests_mod, responses::create_responses_mod,
 };
 use pyo3::prelude::*;
 use solders_rpc_config::create_config_mod;
 use solders_rpc_filter::create_filter_mod;
+use solders_rpc_errors::create_errors_mod;
 
-pub mod errors;
 pub mod requests;
 pub mod responses;
 mod tmp_response;

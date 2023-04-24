@@ -355,7 +355,7 @@ error_message!(MethodNotFoundMessage);
 error_message!(InvalidParamsMessage);
 error_message!(InternalErrorMessage);
 
-pub(crate) fn create_errors_mod(py: Python<'_>) -> PyResult<&PyModule> {
+pub fn create_errors_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "errors")?;
     m.add_class::<RpcCustomErrorFieldless>()?;
     m.add_class::<BlockCleanedUp>()?;

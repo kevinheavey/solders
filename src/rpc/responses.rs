@@ -69,7 +69,7 @@ use solders_transaction_status::{
 };
 
 use solders_rpc_common::{response_data_boilerplate, RpcSimulateTransactionResult};
-use super::errors::{
+use solders_rpc_errors::{
     BlockCleanedUpMessage, BlockNotAvailableMessage, BlockStatusNotAvailableYetMessage,
     InternalErrorMessage, InvalidParamsMessage, InvalidRequestMessage,
     KeyExcludedFromSecondaryIndexMessage, LongTermStorageSlotSkippedMessage, MethodNotFoundMessage,
