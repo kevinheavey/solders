@@ -4655,6 +4655,7 @@ dependencies = [
  "solders-message",
  "solders-pubkey",
  "solders-rpc-config",
+ "solders-rpc-version",
  "solders-signature",
  "solders-traits",
  "solders-transaction",
@@ -4680,11 +4681,18 @@ dependencies = [
  "solders-pubkey",
  "solders-rpc-common",
  "solders-rpc-errors",
- "solders-rpc-requests",
+ "solders-rpc-version",
  "solders-signature",
  "solders-traits",
  "solders-transaction-status",
  "thiserror",
+]
+
+[[package]]
+name = "solders-rpc-version"
+version = "0.14.4"
+dependencies = [
+ "serde",
 ]
 
 [[package]]

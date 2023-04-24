@@ -19,6 +19,7 @@ solders-traits = { workspace = true }
 solders-transaction-status = { workspace = true }
 solders-commitment-config = { workspace = true }
 solders-rpc-config = { workspace = true }
+solders-rpc-version = { workspace = true }
 solders-message = { workspace = true }
 solders-transaction = { workspace = true }
 solders-pubkey = { workspace = true }

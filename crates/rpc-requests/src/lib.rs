@@ -20,6 +20,7 @@ use solana_sdk::{
     },
 };
 use solders_macros::{common_methods, richcmp_eq_only, rpc_id_getter, EnumIntoPy};
+use solders_rpc_version::V2;
 
 use solders_rpc_config::{
     tmp_config::{RpcBlockSubscribeFilter, RpcTokenAccountsFilter, RpcTransactionLogsFilter},
@@ -167,13 +168,6 @@ unsubscribe_def!(SlotUnsubscribe);
 unsubscribe_def!(SlotsUpdatesUnsubscribe);
 unsubscribe_def!(RootUnsubscribe);
 unsubscribe_def!(VoteUnsubscribe);
-
-#[derive(Deserialize, Serialize, PartialEq, Eq, Clone, Debug, Default)]
-pub enum V2 {
-    #[default]
-    #[serde(rename = "2.0")]
-    TwoPointOh,
-}
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 struct RequestBase {

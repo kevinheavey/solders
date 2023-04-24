@@ -115,7 +115,7 @@ pub trait CommonMethodsRpcResp<'a>:
 
     fn py_to_json(&self) -> String {
         let to_serialize = Resp::Result {
-            jsonrpc: solders_rpc_requests::V2::default(),
+            jsonrpc: solders_rpc_version::V2::default(),
             result: self.clone(),
             id: 0,
         };
@@ -543,14 +543,14 @@ response_data_boilerplate!(RpcResponseContext);
 pub enum Resp<T: IntoPy<PyObject>> {
     Result {
         #[serde(skip_deserializing)]
-        jsonrpc: solders_rpc_requests::V2,
+        jsonrpc: solders_rpc_version::V2,
         result: T,
         #[serde(skip_deserializing)]
         id: u64,
     },
     Error {
         #[serde(skip_deserializing)]
-        jsonrpc: solders_rpc_requests::V2,
+        jsonrpc: solders_rpc_version::V2,
         error: RPCError,
         #[serde(skip_deserializing)]
         id: u64,
@@ -571,47 +571,47 @@ impl<T: PyClass + IntoPy<PyObject>> IntoPy<PyObject> for Resp<T> {
 pub enum Notification {
     AccountNotification {
         #[serde(skip_deserializing)]
-        jsonrpc: solders_rpc_requests::V2,
+        jsonrpc: solders_rpc_version::V2,
         params: AccountNotification,
     },
     BlockNotification {
         #[serde(skip_deserializing)]
-        jsonrpc: solders_rpc_requests::V2,
+        jsonrpc: solders_rpc_version::V2,
         params: BlockNotification,
     },
     LogsNotification {
         #[serde(skip_deserializing)]
-        jsonrpc: solders_rpc_requests::V2,
+        jsonrpc: solders_rpc_version::V2,
         params: LogsNotification,
     },
     ProgramNotification {
         #[serde(skip_deserializing)]
-        jsonrpc: solders_rpc_requests::V2,
+        jsonrpc: solders_rpc_version::V2,
         params: ProgramNotificationType,
     },
     SignatureNotification {
         #[serde(skip_deserializing)]
-        jsonrpc: solders_rpc_requests::V2,
+        jsonrpc: solders_rpc_version::V2,
         params: SignatureNotification,
     },
     SlotNotification {
         #[serde(skip_deserializing)]
-        jsonrpc: solders_rpc_requests::V2,
+        jsonrpc: solders_rpc_version::V2,
         params: SlotNotification,
     },
     SlotsUpdatesNotification {
         #[serde(skip_deserializing)]
-        jsonrpc: solders_rpc_requests::V2,
+        jsonrpc: solders_rpc_version::V2,
         params: SlotUpdateNotification,
     },
     RootNotification {
         #[serde(skip_deserializing)]
-        jsonrpc: solders_rpc_requests::V2,
+        jsonrpc: solders_rpc_version::V2,
         params: RootNotification,
     },
     VoteNotification {
         #[serde(skip_deserializing)]
-        jsonrpc: solders_rpc_requests::V2,
+        jsonrpc: solders_rpc_version::V2,
         params: VoteNotification,
     },
 }
@@ -2546,7 +2546,7 @@ impl RpcBlockUpdate {
 #[pyclass(module = "solders.rpc.responses", subclass)]
 pub struct SubscriptionResult {
     #[serde(skip_deserializing)]
-    jsonrpc: solders_rpc_requests::V2,
+    jsonrpc: solders_rpc_version::V2,
     #[pyo3(get)]
     id: u64,
     #[pyo3(get)]
@@ -2564,7 +2564,7 @@ impl SubscriptionResult {
         Self {
             id,
             result,
-            jsonrpc: solders_rpc_requests::V2::default(),
+            jsonrpc: solders_rpc_version::V2::default(),
         }
     }
 }
@@ -2573,7 +2573,7 @@ impl SubscriptionResult {
 #[pyclass(module = "solders.rpc.responses", subclass)]
 pub struct SubscriptionError {
     #[serde(skip_deserializing)]
-    jsonrpc: solders_rpc_requests::V2,
+    jsonrpc: solders_rpc_version::V2,
     #[pyo3(get)]
     error: RPCError,
     #[pyo3(get)]
@@ -2591,7 +2591,7 @@ impl SubscriptionError {
         Self {
             id,
             error,
-            jsonrpc: solders_rpc_requests::V2::default(),
+            jsonrpc: solders_rpc_version::V2::default(),
         }
     }
 }

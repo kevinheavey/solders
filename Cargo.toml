@@ -65,6 +65,7 @@ solders-rpc-common = { path = "./crates/rpc-common", version = "0.14.4" }
 solders-rpc-errors = { path = "./crates/rpc-errors", version = "0.14.4" }
 solders-rpc-requests = { path = "./crates/rpc-requests", version = "0.14.4" }
 solders-rpc-responses = { path = "./crates/rpc-responses", version = "0.14.4" }
+solders-rpc-version = { path = "./crates/rpc-version", version = "0.14.4" }
 solders-primitives = { path = "./crates/primitives", version = "0.14.4" }
 solders-pubkey = { path = "./crates/pubkey", version = "0.14.4" }
 solders-instruction = { path = "./crates/instruction", version = "0.14.4" }

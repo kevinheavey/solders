@@ -21,7 +21,7 @@ solders-account-decoder = { workspace = true }
 solders-transaction-status = { workspace = true }
 solders-rpc-common = { workspace = true }
 solders-rpc-errors = { workspace = true }
-solders-rpc-requests = { workspace = true }
+solders-rpc-version = { workspace = true }
 solders-pubkey = { workspace = true }
 solders-signature = { workspace = true }
 solana-sdk = { workspace = true }
