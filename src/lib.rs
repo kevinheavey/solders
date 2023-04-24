@@ -17,12 +17,11 @@ pub mod transaction;
 use solders_account_decoder::create_account_decoder_mod;
 use transaction::create_transaction_mod;
 pub mod address_lookup_table_account;
-#[cfg(feature = "bankrun")]
-pub mod bankrun;
 pub mod rpc;
 pub mod system_program;
 pub mod sysvar;
 use solders_primitives::{
+    clock::create_clock_mod,
     commitment_config::{CommitmentConfig, CommitmentLevel},
     epoch_schedule::create_epoch_schedule_mod,
     hash::Hash as SolderHash,
@@ -30,9 +29,8 @@ use solders_primitives::{
     null_signer::NullSigner,
     presigner::Presigner,
     pubkey::Pubkey,
-    signature::Signature,
-    clock::create_clock_mod,
     rent::create_rent_mod,
+    signature::Signature,
 };
 
 #[pymodule]
@@ -73,7 +71,7 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
     let epoch_schedule_mod = create_epoch_schedule_mod(py)?;
     let address_lookup_table_account_mod = create_address_lookup_table_account_mod(py)?;
     #[cfg(feature = "bankrun")]
-    let bankrun_mod = bankrun::create_bankrun_mod(py)?;
+    let bankrun_mod = solders_bankrun::create_bankrun_mod(py)?;
     let clock_mod = create_clock_mod(py)?;
     let rent_mod = create_rent_mod(py)?;
     let submodules = [

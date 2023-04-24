@@ -11,9 +11,9 @@ use solana_banks_interface::{
 use solders_account::Account;
 use solders_macros::{common_methods, richcmp_eq_only};
 use solders_primitives::{
-    commitment_config::CommitmentLevel, hash::Hash as SolderHash, keypair::Keypair,
-    message::Message, pubkey::Pubkey, signature::Signature, transaction::VersionedTransaction,
-    clock::Clock, rent::Rent,
+    clock::Clock, commitment_config::CommitmentLevel, hash::Hash as SolderHash, keypair::Keypair,
+    message::Message, pubkey::Pubkey, rent::Rent, signature::Signature,
+    transaction::VersionedTransaction,
 };
 use solders_traits::{
     to_py_err, to_py_value_err, transaction_status_boilerplate, BanksClientError,
@@ -720,7 +720,7 @@ impl ProgramTestContext {
     }
 }
 
-pub(crate) fn create_bankrun_mod(py: Python<'_>) -> PyResult<&PyModule> {
+pub fn create_bankrun_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "bankrun")?;
     m.add("BanksClientError", py.get_type::<BanksClientError>())?;
     m.add_class::<BanksClient>()?;

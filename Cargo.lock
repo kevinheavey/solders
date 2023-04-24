@@ -4374,21 +4374,15 @@ dependencies = [
 name = "solders"
 version = "0.14.4"
 dependencies = [
- "base64 0.13.1",
  "bincode",
  "derive_more",
  "dict_derive",
  "pyo3",
- "pyo3-asyncio",
  "serde",
- "serde_with 1.14.0",
- "solana-banks-client",
- "solana-banks-interface",
- "solana-program-test",
  "solana-sdk",
  "solders-account",
  "solders-account-decoder",
- "solders-macros",
+ "solders-bankrun",
  "solders-primitives",
  "solders-rpc-config",
  "solders-rpc-errors",
@@ -4397,7 +4391,6 @@ dependencies = [
  "solders-rpc-responses",
  "solders-traits",
  "solders-transaction-status",
- "tarpc",
 ]
 
 [[package]]
@@ -4430,6 +4423,26 @@ dependencies = [
  "solders-macros",
  "solders-traits",
  "zstd",
+]
+
+[[package]]
+name = "solders-bankrun"
+version = "0.14.4"
+dependencies = [
+ "derive_more",
+ "pyo3",
+ "pyo3-asyncio",
+ "serde",
+ "solana-banks-client",
+ "solana-banks-interface",
+ "solana-program-test",
+ "solana-sdk",
+ "solders-account",
+ "solders-macros",
+ "solders-primitives",
+ "solders-traits",
+ "solders-transaction-status",
+ "tarpc",
 ]
 
 [[package]]
