@@ -1,7 +1,7 @@
 use derive_more::{From, Into};
 use pyo3::{create_exception, exceptions::PyException, prelude::*, types::PyBytes};
 use serde::{Deserialize, Serialize};
-use solana_sdk::{
+use solana_program::{
     address_lookup_table_account::AddressLookupTableAccount as AddressLookupTableAccountOriginal,
     instruction::CompiledInstruction as CompiledInstructionOriginal,
     instruction::Instruction as InstructionOriginal,

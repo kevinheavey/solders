@@ -3,7 +3,7 @@ use std::hash::Hasher;
 use derive_more::{From, Into};
 use pyo3::{prelude::*, types::PyBytes};
 use serde::{Deserialize, Serialize};
-use solana_sdk::{
+use solana_program::{
     instruction::{
         AccountMeta as AccountMetaOriginal, CompiledInstruction as CompiledInstructionOriginal,
         Instruction as InstructionOriginal,
@@ -349,6 +349,6 @@ impl AsRef<CompiledInstructionOriginal> for CompiledInstruction {
 pub fn convert_instructions(instructions: Vec<Instruction>) -> Vec<InstructionOriginal> {
     instructions
         .into_iter()
-        .map(solana_sdk::instruction::Instruction::from)
+        .map(InstructionOriginal::from)
         .collect()
 }

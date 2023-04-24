@@ -3,7 +3,7 @@ use std::str::FromStr;
 use derive_more::{From, Into};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
-use solana_sdk::hash::{
+use solana_program::hash::{
     hash, Hash as HashOriginal, ParseHashError as ParseHashErrorOriginal, HASH_BYTES,
 };
 use solders_macros::{common_methods, pyhash, richcmp_full};

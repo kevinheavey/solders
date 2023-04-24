@@ -1,7 +1,7 @@
 use derive_more::{From, Into};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
-use solana_sdk::{
+use solana_program::{
     address_lookup_table_account::AddressLookupTableAccount as AddressLookupTableAccountOriginal,
     pubkey::Pubkey as PubkeyOriginal,
 };

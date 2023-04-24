@@ -1,7 +1,7 @@
 use derive_more::{From, Into};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
-use solana_sdk::clock::{
+use solana_program::clock::{
     Clock as ClockOriginal, Epoch, Slot, UnixTimestamp, DEFAULT_DEV_SLOTS_PER_EPOCH,
     DEFAULT_HASHES_PER_SECOND, DEFAULT_HASHES_PER_TICK, DEFAULT_MS_PER_SLOT,
     DEFAULT_SLOTS_PER_EPOCH, DEFAULT_S_PER_SLOT, DEFAULT_TICKS_PER_SECOND, DEFAULT_TICKS_PER_SLOT,

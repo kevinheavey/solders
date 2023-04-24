@@ -1,7 +1,7 @@
 use derive_more::{From, Into};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
-use solana_sdk::{
+use solana_program::{
     clock::{Epoch, Slot},
     epoch_schedule::EpochSchedule as EpochScheduleOriginal,
 };

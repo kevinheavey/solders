@@ -11,7 +11,7 @@ repository = "https://github.com/kevinheavey/solders"
 pyo3 = { workspace = true, features = ["macros"] }
 solders-traits = { workspace = true }
 solders-macros = { workspace = true }
-solana-sdk = { workspace = true }
+solana-program = { workspace = true }
 serde = { workspace = true }
 derive_more = { workspace = true }
 solders-address-lookup-table-account = { workspace = true }

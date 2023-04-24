@@ -1,12 +1,11 @@
 use derive_more::{From, Into};
 use pyo3::{prelude::*, types::PyTuple, PyTypeInfo};
 use serde::{Deserialize, Serialize};
-use solana_sdk::slot_history::Slot;
 use solders_macros::{common_methods, richcmp_eq_only, EnumIntoPy};
 use solders_traits::transaction_status_boilerplate;
 use solders_transaction_error::TransactionErrorType;
-
 use solders_rpc_common::RpcSimulateTransactionResult;
+type Slot = u64;
 
 macro_rules! error_message {
     ($name:ident) => {
