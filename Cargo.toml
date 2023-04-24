@@ -39,36 +39,24 @@ bankrun = ["dep:solders-bankrun"]
 [workspace]
 members = [
     ".",
-    "traits",
-    "macros",
-    "primitives",
-    "account-decoder",
-    "transaction-status",
-    "rpc-filter",
-    "rpc-config",
-    "rpc-common",
-    "rpc-errors",
-    "rpc-requests",
-    "rpc-responses",
-    "account",
-    "bankrun"
+    "crates/*"
 ]
 
 [workspace.dependencies]
 pyo3 = { version = "0.18.0", default-features = false }
-solders-macros = { path = "./macros", version = "0.14.4" }
-solders-traits = { path = "./traits", version = "0.14.4" }
-solders-account-decoder = { path = "./account-decoder", version = "0.14.4" }
-solders-bankrun = { path = "./bankrun", version = "0.14.4" }
-solders-transaction-status = { path = "./transaction-status", version = "0.14.4" }
-solders-rpc-filter = { path = "./rpc-filter", version = "0.14.4" }
-solders-rpc-config = { path = "./rpc-config", version = "0.14.4" }
-solders-rpc-common = { path = "./rpc-common", version = "0.14.4" }
-solders-rpc-errors = { path = "./rpc-errors", version = "0.14.4" }
-solders-rpc-requests = { path = "./rpc-requests", version = "0.14.4" }
-solders-rpc-responses = { path = "./rpc-responses", version = "0.14.4" }
-solders-primitives = { path = "./primitives", version = "0.14.4" }
-solders-account = { path = "./account", version = "0.14.4" }
+solders-macros = { path = "./crates/macros", version = "0.14.4" }
+solders-traits = { path = "./crates/traits", version = "0.14.4" }
+solders-account-decoder = { path = "./crates/account-decoder", version = "0.14.4" }
+solders-bankrun = { path = "./crates/bankrun", version = "0.14.4" }
+solders-transaction-status = { path = "./crates/transaction-status", version = "0.14.4" }
+solders-rpc-filter = { path = "./crates/rpc-filter", version = "0.14.4" }
+solders-rpc-config = { path = "./crates/rpc-config", version = "0.14.4" }
+solders-rpc-common = { path = "./crates/rpc-common", version = "0.14.4" }
+solders-rpc-errors = { path = "./crates/rpc-errors", version = "0.14.4" }
+solders-rpc-requests = { path = "./crates/rpc-requests", version = "0.14.4" }
+solders-rpc-responses = { path = "./crates/rpc-responses", version = "0.14.4" }
+solders-primitives = { path = "./crates/primitives", version = "0.14.4" }
+solders-account = { path = "./crates/account", version = "0.14.4" }
 serde_with = { version = "^1.14.0", features = ["base64"] }
 solana-sdk = "^1.15.2"
 bincode = "1.3.3"
