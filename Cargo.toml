@@ -17,16 +17,10 @@ pyo3 = { workspace = true, features = ["macros", "extension-module", "abi3-py37"
 solana-sdk = { workspace = true }
 bincode = { workspace = true }
 serde = { workspace = true }
-serde_json = { workspace = true }
 dict_derive = "0.4.0"
 serde_with = { workspace = true }
 base64 = { workspace = true }
-camelpaste = { workspace = true }
-serde_cbor = { workspace = true }
-thiserror = { workspace = true }
-bs58 = { workspace = true }
 derive_more = { workspace = true }
-pythonize = { workspace = true }
 solders-traits = { workspace = true }
 solders-macros = { workspace = true }
 solders-primitives = { workspace = true }
@@ -34,7 +28,6 @@ solders-account = { workspace = true }
 solders-account-decoder = { workspace = true }
 solders-rpc-filter = { workspace = true }
 solders-rpc-config = { workspace = true }
-solders-rpc-common = { workspace = true }
 solders-rpc-errors = { workspace = true }
 solders-rpc-requests = { workspace = true }
 solders-rpc-responses = { workspace = true }

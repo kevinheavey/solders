@@ -7,7 +7,7 @@ use solders_rpc_filter::create_filter_mod;
 use solders_rpc_requests::create_requests_mod;
 use solders_rpc_responses::create_responses_mod;
 
-pub fn create_rpc_mod(py: Python<'_>) -> PyResult<&PyModule> {
+pub(crate) fn create_rpc_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let rpc_mod = PyModule::new(py, "rpc")?;
     let config_mod = create_config_mod(py)?;
     let requests_mod = create_requests_mod(py)?;

@@ -4376,16 +4376,11 @@ version = "0.14.4"
 dependencies = [
  "base64 0.13.1",
  "bincode",
- "bs58",
- "camelpaste",
  "derive_more",
  "dict_derive",
  "pyo3",
  "pyo3-asyncio",
- "pythonize",
  "serde",
- "serde_cbor",
- "serde_json",
  "serde_with 1.14.0",
  "solana-banks-client",
  "solana-banks-interface",
@@ -4395,7 +4390,6 @@ dependencies = [
  "solders-account-decoder",
  "solders-macros",
  "solders-primitives",
- "solders-rpc-common",
  "solders-rpc-config",
  "solders-rpc-errors",
  "solders-rpc-filter",
@@ -4404,7 +4398,6 @@ dependencies = [
  "solders-traits",
  "solders-transaction-status",
  "tarpc",
- "thiserror",
 ]
 
 [[package]]
