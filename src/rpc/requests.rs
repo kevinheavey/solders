@@ -10,9 +10,6 @@ use solders_traits::{
     py_from_bytes_general_via_cbor, pybytes_general_via_cbor, to_py_err, RichcmpEqualityOnly,
 };
 extern crate base64;
-use crate::rpc::tmp_config::{
-    RpcBlockSubscribeFilter, RpcTokenAccountsFilter, RpcTransactionLogsFilter,
-};
 use camelpaste::paste;
 use serde::{Deserialize, Serialize};
 use serde_with::{base64::Base64, serde_as, skip_serializing_none, DisplayFromStr, FromInto};
@@ -26,7 +23,8 @@ use solders_macros::{common_methods, richcmp_eq_only, rpc_id_getter, EnumIntoPy}
 
 use crate::{Signature, SolderHash};
 
-use super::config::{
+use solders_rpc_config::{
+    tmp_config::{RpcBlockSubscribeFilter, RpcTokenAccountsFilter, RpcTransactionLogsFilter},
     RpcAccountInfoConfig, RpcBlockConfig, RpcBlockProductionConfig, RpcBlockSubscribeConfig,
     RpcBlockSubscribeFilterWrapper, RpcContextConfig, RpcEpochConfig, RpcGetVoteAccountsConfig,
     RpcLargestAccountsFilter, RpcLeaderScheduleConfig, RpcProgramAccountsConfig,

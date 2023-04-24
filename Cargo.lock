@@ -4394,6 +4394,7 @@ dependencies = [
  "solders-account-decoder",
  "solders-macros",
  "solders-primitives",
+ "solders-rpc-config",
  "solders-rpc-filter",
  "solders-traits",
  "solders-transaction-status",
@@ -4440,6 +4441,21 @@ dependencies = [
  "solana-sdk",
  "solders-macros",
  "solders-traits",
+]
+
+[[package]]
+name = "solders-rpc-config"
+version = "0.14.4"
+dependencies = [
+ "pyo3",
+ "serde",
+ "solana-sdk",
+ "solders-account-decoder",
+ "solders-macros",
+ "solders-primitives",
+ "solders-rpc-filter",
+ "solders-traits",
+ "solders-transaction-status",
 ]
 
 [[package]]

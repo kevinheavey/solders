@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use crate::rpc::tmp_config as rpc_config;
+pub mod tmp_config;
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use solana_sdk::commitment_config::CommitmentLevel as CommitmentLevelOriginal;
@@ -13,6 +13,7 @@ use solders_primitives::{
 use solders_traits::{
     impl_display, py_from_bytes_general_via_cbor, pybytes_general_via_cbor, RichcmpEqualityOnly,
 };
+use tmp_config as rpc_config;
 
 use solders_transaction_status::{TransactionDetails, UiTransactionEncoding};
 
