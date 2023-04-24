@@ -1,5 +1,5 @@
 use pyo3::{prelude::*, types::PyTuple, PyTypeInfo};
-use solders_primitives::message::{
+use solders_message::{
     from_bytes_versioned, to_bytes_versioned, Message, MessageAddressTableLookup, MessageHeader,
     MessageV0,
 };

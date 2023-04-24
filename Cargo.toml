@@ -31,6 +31,8 @@ solders-rpc-requests = { workspace = true }
 solders-rpc-responses = { workspace = true }
 solders-pubkey = { workspace = true }
 solders-instruction = { workspace = true }
+solders-message = { workspace = true }
+solders-address-lookup-table-account = { workspace = true }
 solders-signature = { workspace = true }
 solders-transaction-status = { workspace = true }
 solders-hash = { workspace = true }
@@ -64,6 +66,8 @@ solders-rpc-responses = { path = "./crates/rpc-responses", version = "0.14.4" }
 solders-primitives = { path = "./crates/primitives", version = "0.14.4" }
 solders-pubkey = { path = "./crates/pubkey", version = "0.14.4" }
 solders-instruction = { path = "./crates/instruction", version = "0.14.4" }
+solders-address-lookup-table-account = { path = "./crates/address-lookup-table-account", version = "0.14.4" }
+solders-message = { path = "./crates/message", version = "0.14.4" }
 solders-signature = { path = "./crates/signature", version = "0.14.4" }
 solders-account = { path = "./crates/account", version = "0.14.4" }
 solders-hash = { path = "./crates/hash", version = "0.14.4" }

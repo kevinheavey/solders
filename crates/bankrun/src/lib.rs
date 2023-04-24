@@ -12,9 +12,10 @@ use solders_account::Account;
 use solders_macros::{common_methods, richcmp_eq_only};
 use solders_primitives::{
     clock::Clock, keypair::Keypair,
-    message::Message, rent::Rent,
+    rent::Rent,
     transaction::VersionedTransaction,
 };
+use solders_message::Message;
 use solders_hash::Hash as SolderHash;
 use solders_commitment_config::CommitmentLevel;
 use solders_signature::Signature;

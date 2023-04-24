@@ -4382,10 +4382,12 @@ dependencies = [
  "solana-sdk",
  "solders-account",
  "solders-account-decoder",
+ "solders-address-lookup-table-account",
  "solders-bankrun",
  "solders-commitment-config",
  "solders-hash",
  "solders-instruction",
+ "solders-message",
  "solders-primitives",
  "solders-pubkey",
  "solders-rpc-config",
@@ -4431,6 +4433,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "solders-address-lookup-table-account"
+version = "0.14.4"
+dependencies = [
+ "derive_more",
+ "pyo3",
+ "serde",
+ "solana-sdk",
+ "solders-macros",
+ "solders-pubkey",
+ "solders-traits",
+]
+
+[[package]]
 name = "solders-bankrun"
 version = "0.14.4"
 dependencies = [
@@ -4446,6 +4461,7 @@ dependencies = [
  "solders-commitment-config",
  "solders-hash",
  "solders-macros",
+ "solders-message",
  "solders-primitives",
  "solders-pubkey",
  "solders-signature",
@@ -4500,6 +4516,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "solders-message"
+version = "0.14.4"
+dependencies = [
+ "bincode",
+ "derive_more",
+ "pyo3",
+ "serde",
+ "solana-sdk",
+ "solders-address-lookup-table-account",
+ "solders-hash",
+ "solders-instruction",
+ "solders-macros",
+ "solders-pubkey",
+ "solders-traits",
+]
+
+[[package]]
 name = "solders-primitives"
 version = "0.14.4"
 dependencies = [
@@ -4513,6 +4546,7 @@ dependencies = [
  "solders-hash",
  "solders-instruction",
  "solders-macros",
+ "solders-message",
  "solders-pubkey",
  "solders-signature",
  "solders-traits",
@@ -4607,6 +4641,7 @@ dependencies = [
  "solders-commitment-config",
  "solders-hash",
  "solders-macros",
+ "solders-message",
  "solders-primitives",
  "solders-pubkey",
  "solders-rpc-config",
@@ -4684,6 +4719,7 @@ dependencies = [
  "solders-commitment-config",
  "solders-hash",
  "solders-macros",
+ "solders-message",
  "solders-primitives",
  "solders-pubkey",
  "solders-signature",

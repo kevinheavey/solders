@@ -3,9 +3,7 @@ use derive_more::{From, Into};
 extern crate base64;
 use pythonize::{depythonize, pythonize};
 use solders_account_decoder::UiTokenAmount;
-use solders_primitives::{
-    message::MessageHeader,
-};
+use solders_message::MessageHeader;
 use solders_hash::Hash as SolderHash;
 use solders_commitment_config::CommitmentConfig;
 use solders_signature::Signature;

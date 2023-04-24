@@ -23,9 +23,7 @@ use solders_traits::{
     RichcmpEqualityOnly,
 };
 
-use crate::{
-    address_lookup_table_account::AddressLookupTableAccount,
-};
+use solders_address_lookup_table_account::AddressLookupTableAccount;
 use solders_hash::Hash as SolderHash;
 use solders_pubkey::{Pubkey, convert_optional_pubkey};
 use solders_instruction::{convert_instructions, CompiledInstruction, Instruction};

@@ -20,10 +20,10 @@ use solders_traits::{
 };
 
 use crate::{
-    message::{Message, VersionedMessage},
     signer::Signer,
     signer::SignerVec,
 };
+use solders_message::{Message, VersionedMessage};
 use solders_hash::Hash as SolderHash;
 use solders_signature::{Signature, originals_into_solders, solders_into_originals};
 use solders_instruction::{convert_instructions, CompiledInstruction, Instruction};
