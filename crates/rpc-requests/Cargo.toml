@@ -18,6 +18,7 @@ solders-traits = { workspace = true }
 solders-transaction-status = { workspace = true }
 solders-rpc-config = { workspace = true }
 solders-primitives = { workspace = true }
+solders-pubkey = { workspace = true }
 solana-sdk = { workspace = true }
 base64 = { workspace = true }
 camelpaste = { workspace = true }

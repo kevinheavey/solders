@@ -12,6 +12,7 @@ use solana_sdk::{
         VersionedTransaction as VersionedTransactionOriginal,
     },
 };
+use solders_pubkey::Pubkey;
 use solders_macros::{common_methods, richcmp_eq_only, EnumIntoPy};
 use solders_traits::{
     handle_py_err, impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
@@ -23,7 +24,6 @@ use crate::{
     hash::Hash as SolderHash,
     instruction::{CompiledInstruction, Instruction},
     message::{Message, VersionedMessage},
-    pubkey::Pubkey,
     signature::Signature,
     signature::{originals_into_solders, solders_into_originals},
     signer::Signer,

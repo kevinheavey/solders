@@ -28,8 +28,8 @@ use crate::{
     convert_instructions, convert_optional_pubkey,
     hash::Hash as SolderHash,
     instruction::{CompiledInstruction, Instruction},
-    pubkey::Pubkey,
 };
+use solders_pubkey::Pubkey;
 
 #[pyclass(module = "solders.message", subclass)]
 #[derive(PartialEq, Eq, Debug, Default, Serialize, Deserialize, Clone, From, Into)]

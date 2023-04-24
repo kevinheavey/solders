@@ -12,9 +12,10 @@ use solders_account::Account;
 use solders_macros::{common_methods, richcmp_eq_only};
 use solders_primitives::{
     clock::Clock, commitment_config::CommitmentLevel, hash::Hash as SolderHash, keypair::Keypair,
-    message::Message, pubkey::Pubkey, rent::Rent, signature::Signature,
+    message::Message, rent::Rent, signature::Signature,
     transaction::VersionedTransaction,
 };
+use solders_pubkey::Pubkey;
 use solders_traits::{
     to_py_err, to_py_value_err, transaction_status_boilerplate, BanksClientError,
 };

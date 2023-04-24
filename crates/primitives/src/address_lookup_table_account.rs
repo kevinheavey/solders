@@ -11,7 +11,7 @@ use solders_traits::{
     RichcmpEqualityOnly,
 };
 
-use crate::pubkey::Pubkey;
+use solders_pubkey::Pubkey;
 
 #[derive(Serialize, Deserialize)]
 #[serde(remote = "AddressLookupTableAccountOriginal")]

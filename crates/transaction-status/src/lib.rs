@@ -5,8 +5,9 @@ use pythonize::{depythonize, pythonize};
 use solders_account_decoder::UiTokenAmount;
 use solders_primitives::{
     commitment_config::CommitmentConfig, hash::Hash as SolderHash, message::MessageHeader,
-    pubkey::Pubkey, signature::Signature,
+    signature::Signature,
 };
+use solders_pubkey::Pubkey;
 use solders_traits::{handle_py_value_err, transaction_status_boilerplate};
 use std::str::FromStr;
 pub mod tmp_transaction_status;

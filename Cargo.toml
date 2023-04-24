@@ -28,6 +28,7 @@ solders-rpc-config = { workspace = true }
 solders-rpc-errors = { workspace = true }
 solders-rpc-requests = { workspace = true }
 solders-rpc-responses = { workspace = true }
+solders-pubkey = { workspace = true }
 solders-transaction-status = { workspace = true }
 solders-bankrun = { workspace = true, optional = true }
 
@@ -56,6 +57,7 @@ solders-rpc-errors = { path = "./crates/rpc-errors", version = "0.14.4" }
 solders-rpc-requests = { path = "./crates/rpc-requests", version = "0.14.4" }
 solders-rpc-responses = { path = "./crates/rpc-responses", version = "0.14.4" }
 solders-primitives = { path = "./crates/primitives", version = "0.14.4" }
+solders-pubkey = { path = "./crates/pubkey", version = "0.14.4" }
 solders-account = { path = "./crates/account", version = "0.14.4" }
 serde_with = { version = "^1.14.0", features = ["base64"] }
 solana-sdk = "^1.15.2"

@@ -12,6 +12,7 @@ serde = { workspace = true }
 derive_more = { workspace = true }
 solders-macros = { workspace = true }
 solders-primitives = { workspace = true }
+solders-pubkey = { workspace = true }
 solders-traits = { workspace = true, features = ["banks-client"]}
 solders-account = { workspace = true }
 solders-transaction-status = { workspace = true }

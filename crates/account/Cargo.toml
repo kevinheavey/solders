@@ -12,7 +12,7 @@ serde = { workspace = true }
 derive_more = { workspace = true }
 solana-sdk = { workspace = true }
 solders-macros = { workspace = true }
+solders-pubkey = { workspace = true }
 solders-traits = { workspace = true }
-solders-primitives = { workspace = true }
 solders-account-decoder = { workspace = true }
 base64 = { workspace = true }
