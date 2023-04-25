@@ -4604,6 +4604,7 @@ dependencies = [
  "solders-account",
  "solders-account-decoder",
  "solders-macros",
+ "solders-rpc-response-data-boilerplate",
  "solders-traits-core",
  "solders-transaction-error",
  "solders-transaction-status",
