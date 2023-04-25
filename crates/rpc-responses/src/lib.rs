@@ -59,17 +59,18 @@ use tmp_response::{
     JSON_RPC_SERVER_ERROR_UNSUPPORTED_TRANSACTION_VERSION,
 };
 
-use solders_rpc_response_data_boilerplate::response_data_boilerplate;
 use solders_rpc_common::RpcSimulateTransactionResult;
-use solders_rpc_errors::{
+use solders_rpc_errors_no_tx_status::{
     BlockCleanedUpMessage, BlockNotAvailableMessage, BlockStatusNotAvailableYetMessage,
     InternalErrorMessage, InvalidParamsMessage, InvalidRequestMessage,
     KeyExcludedFromSecondaryIndexMessage, LongTermStorageSlotSkippedMessage, MethodNotFoundMessage,
     MinContextSlotNotReachedMessage, NodeUnhealthyMessage, ParseErrorMessage,
-    RpcCustomErrorFieldless, ScanErrorMessage, SendTransactionPreflightFailureMessage,
-    SlotSkippedMessage, TransactionPrecompileVerificationFailureMessage,
-    UnsupportedTransactionVersion, UnsupportedTransactionVersionMessage,
+    RpcCustomErrorFieldless, ScanErrorMessage, SlotSkippedMessage,
+    TransactionPrecompileVerificationFailureMessage, UnsupportedTransactionVersion,
+    UnsupportedTransactionVersionMessage,
 };
+use solders_rpc_errors_tx_status::SendTransactionPreflightFailureMessage;
+use solders_rpc_response_data_boilerplate::response_data_boilerplate;
 use solders_rpc_responses_common::{
     contextful_struct_def_eq, contextful_struct_def_no_eq, notification, notification_boilerplate,
     notification_boilerplate_contextless, notification_contextless, notification_no_eq,

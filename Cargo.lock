@@ -4619,12 +4619,40 @@ dependencies = [
 name = "solders-rpc-errors"
 version = "0.14.4"
 dependencies = [
+ "pyo3",
+ "serde",
+ "solders-macros",
+ "solders-rpc-errors-no-tx-status",
+ "solders-rpc-errors-tx-status",
+]
+
+[[package]]
+name = "solders-rpc-errors-common"
+version = "0.14.4"
+
+[[package]]
+name = "solders-rpc-errors-no-tx-status"
+version = "0.14.4"
+dependencies = [
  "derive_more",
  "pyo3",
  "serde",
- "solana-sdk",
+ "solders-macros",
+ "solders-rpc-errors-common",
+ "solders-traits-core",
+ "solders-transaction-error",
+]
+
+[[package]]
+name = "solders-rpc-errors-tx-status"
+version = "0.14.4"
+dependencies = [
+ "derive_more",
+ "pyo3",
+ "serde",
  "solders-macros",
  "solders-rpc-common",
+ "solders-rpc-errors-common",
  "solders-traits-core",
  "solders-transaction-error",
 ]
@@ -4694,7 +4722,8 @@ dependencies = [
  "solders-primitives",
  "solders-pubkey",
  "solders-rpc-common",
- "solders-rpc-errors",
+ "solders-rpc-errors-no-tx-status",
+ "solders-rpc-errors-tx-status",
  "solders-rpc-response-data-boilerplate",
  "solders-rpc-responses-common",
  "solders-rpc-responses-tx-status",
