@@ -12,6 +12,7 @@ serde = { workspace = true }
 solders-macros = { workspace = true }
 solders-traits-core = { workspace = true }
 solders-account-decoder = { workspace = true }
+solana-account-decoder = { workspace = true }
 solders-pubkey = { workspace = true }
 solders-hash = { workspace = true }
 solders-signature = { workspace = true }

@@ -16,6 +16,7 @@ solders-hash = { workspace = true }
 solders-traits-core = { workspace = true }
 solders-account = { workspace = true }
 solders-account-decoder = { workspace = true }
+solana-account-decoder = { workspace = true }
 solders-transaction-error = { workspace = true }
 solders-rpc-response-data-boilerplate = { workspace = true }
 solders-rpc-version = { workspace = true }

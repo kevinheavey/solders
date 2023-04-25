@@ -18,7 +18,8 @@ use serde_json::Value;
 use serde_with::{serde_as, DisplayFromStr, FromInto, OneOrMany, TryFromInto};
 use solana_sdk::clock::{Epoch, Slot, UnixTimestamp};
 use solders_account::{Account, AccountJSON};
-use solders_account_decoder::{tmp_account_decoder::UiAccount, UiTokenAmount};
+use solana_account_decoder::{UiAccount};
+use solders_account_decoder::UiTokenAmount;
 use solders_hash::Hash as SolderHash;
 use solders_macros::{
     common_methods, common_methods_rpc_resp, enum_original_mapping, richcmp_eq_only, EnumIntoPy,

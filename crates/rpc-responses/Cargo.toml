@@ -31,5 +31,6 @@ solders-rpc-version = { workspace = true }
 solders-pubkey = { workspace = true }
 solders-signature = { workspace = true }
 solana-sdk = { workspace = true }
+solana-account-decoder = { workspace = true }
 thiserror = { workspace = true }
 camelpaste = { workspace = true }

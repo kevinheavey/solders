@@ -12,7 +12,7 @@ serde = { workspace = true }
 derive_more = { workspace = true }
 solders-macros = { workspace = true }
 solders-traits-core = { workspace = true }
-solders-account-decoder = { workspace = true }
+solana-account-decoder = { workspace = true }
 solders-account = { workspace = true }
 solders-rpc-response-data-boilerplate = { workspace = true }
 solders-transaction-status = { workspace = true }

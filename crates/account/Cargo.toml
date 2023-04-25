@@ -14,5 +14,6 @@ solana-sdk = { workspace = true }
 solders-macros = { workspace = true }
 solders-pubkey = { workspace = true }
 solders-traits-core = { workspace = true }
+solana-account-decoder = { workspace = true }
 solders-account-decoder = { workspace = true }
 base64 = { workspace = true }

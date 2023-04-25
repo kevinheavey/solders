@@ -12,10 +12,8 @@ use solders_traits_core::{
     RichcmpEqualityOnly,
 };
 
-use solders_account_decoder::{
-    tmp_account_decoder::{UiAccount, UiAccountData, UiAccountEncoding},
-    ParsedAccount,
-};
+use solana_account_decoder::{UiAccount, UiAccountData, UiAccountEncoding};
+use solders_account_decoder::ParsedAccount;
 
 /// An Account with data that is stored on chain.
 ///
@@ -121,6 +119,7 @@ impl From<Account> for UiAccount {
             owner: underlying.owner.to_string(),
             executable: underlying.executable,
             rent_epoch: underlying.rent_epoch,
+            space: None,
         }
     }
 }
@@ -211,12 +210,14 @@ impl TryFrom<UiAccount> for AccountJSON {
 
 impl From<AccountJSON> for UiAccount {
     fn from(acc: AccountJSON) -> Self {
+        let space = acc.data.0.space;
         Self {
             lamports: acc.lamports,
             data: UiAccountData::Json(acc.data.into()),
             owner: acc.owner.to_string(),
             executable: acc.executable,
             rent_epoch: acc.rent_epoch,
+            space: Some(space)
         }
     }
 }

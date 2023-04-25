@@ -12,10 +12,8 @@ use solana_sdk::{
     epoch_info::EpochInfo as EpochInfoOriginal,
 };
 use solders_account::{Account, AccountJSON};
-use solders_account_decoder::{
-    tmp_account_decoder::{UiAccount, UiAccountData, UiTokenAmount as UiTokenAmountOriginal},
-    UiTokenAmount,
-};
+use solders_account_decoder::UiTokenAmount;
+use solana_account_decoder::{UiAccount, UiAccountData, parse_token::UiTokenAmount as UiTokenAmountOriginal};
 use solders_hash::Hash as SolderHash;
 use solders_macros::{common_methods, richcmp_eq_only, EnumIntoPy};
 use solders_pubkey::Pubkey;

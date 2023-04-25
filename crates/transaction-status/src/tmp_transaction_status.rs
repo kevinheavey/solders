@@ -10,7 +10,7 @@ use solana_sdk::{
     },
     transaction_context::TransactionReturnData,
 };
-use solders_account_decoder::tmp_account_decoder::UiTokenAmount;
+use solana_account_decoder::parse_token::UiTokenAmount;
 
 #[derive(Serialize, Deserialize, Clone, Copy, Debug, Eq, Hash, PartialEq)]
 #[serde(rename_all = "camelCase")]

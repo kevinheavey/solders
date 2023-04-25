@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, FromInto, TryFromInto};
 
 use solders_account::Account;
-use solders_account_decoder::tmp_account_decoder::UiAccount;
+use solana_account_decoder::UiAccount;
 use solders_macros::{common_methods, richcmp_eq_only};
 use solders_rpc_response_data_boilerplate::response_data_boilerplate;
 use solders_transaction_error::TransactionErrorType;

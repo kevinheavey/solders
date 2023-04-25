@@ -176,7 +176,7 @@ impl RpcSimulateTransactionAccountsConfig {
     #[new]
     pub fn new(addresses: Vec<Pubkey>, encoding: Option<UiAccountEncoding>) -> Self {
         Self(rpc_config::RpcSimulateTransactionAccountsConfig {
-            encoding,
+            encoding: encoding.map(Into::into),
             addresses: addresses.iter().map(|a| a.to_string()).collect(),
         })
     }
@@ -203,7 +203,7 @@ impl RpcSimulateTransactionAccountsConfig {
 
     #[getter]
     pub fn encoding(&self) -> Option<UiAccountEncoding> {
-        self.0.encoding
+        self.0.encoding.map(Into::into)
     }
 }
 
@@ -737,7 +737,7 @@ impl RpcAccountInfoConfig {
         min_context_slot: Option<u64>,
     ) -> Self {
         Self(rpc_config::RpcAccountInfoConfig {
-            encoding,
+            encoding: encoding.map(Into::into),
             data_slice: data_slice.map(|d| d.into()),
             commitment: commitment.map(|c| c.into()),
             min_context_slot,
@@ -756,7 +756,7 @@ impl RpcAccountInfoConfig {
 
     #[getter]
     pub fn encoding(&self) -> Option<UiAccountEncoding> {
-        self.0.encoding
+        self.0.encoding.map(Into::into)
     }
 
     #[getter]
