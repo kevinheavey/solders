@@ -4376,7 +4376,6 @@ version = "0.14.4"
 dependencies = [
  "bincode",
  "derive_more",
- "dict_derive",
  "pyo3",
  "serde",
  "solana-sdk",
@@ -4397,6 +4396,7 @@ dependencies = [
  "solders-rpc-requests",
  "solders-rpc-responses",
  "solders-signature",
+ "solders-system-program",
  "solders-traits",
  "solders-transaction",
  "solders-transaction-status",
@@ -4832,6 +4832,24 @@ dependencies = [
  "solana-sdk",
  "solders-macros",
  "solders-pubkey",
+ "solders-traits-core",
+]
+
+[[package]]
+name = "solders-system-program"
+version = "0.14.4"
+dependencies = [
+ "bincode",
+ "derive_more",
+ "dict_derive",
+ "pyo3",
+ "serde",
+ "solana-program",
+ "solana-sdk",
+ "solders-instruction",
+ "solders-macros",
+ "solders-pubkey",
+ "solders-traits",
  "solders-traits-core",
 ]
 

@@ -17,7 +17,6 @@ pyo3 = { workspace = true, features = ["macros", "extension-module", "abi3-py37"
 solana-sdk = { workspace = true }
 bincode = { workspace = true }
 serde = { workspace = true }
-dict_derive = "0.4.0"
 derive_more = { workspace = true }
 solders-traits = { workspace = true }
 solders-primitives = { workspace = true }
@@ -30,6 +29,7 @@ solders-rpc-errors = { workspace = true }
 solders-rpc-requests = { workspace = true }
 solders-rpc-responses = { workspace = true }
 solders-pubkey = { workspace = true }
+solders-system-program = { workspace = true }
 solders-instruction = { workspace = true }
 solders-message = { workspace = true }
 solders-address-lookup-table-account = { workspace = true }
@@ -79,6 +79,7 @@ solders-rpc-response-data-boilerplate = { path = "./crates/rpc-response-data-boi
 solders-rpc-version = { path = "./crates/rpc-version", version = "0.14.4" }
 solders-primitives = { path = "./crates/primitives", version = "0.14.4" }
 solders-pubkey = { path = "./crates/pubkey", version = "0.14.4" }
+solders-system-program = { path = "./crates/system-program", version = "0.14.4" }
 solders-instruction = { path = "./crates/instruction", version = "0.14.4" }
 solders-address-lookup-table-account = { path = "./crates/address-lookup-table-account", version = "0.14.4" }
 solders-message = { path = "./crates/message", version = "0.14.4" }
