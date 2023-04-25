@@ -1,0 +1,25 @@
+[package]
+name = "solders-rpc-responses-common"
+version = "0.14.4"
+edition = "2021"
+include = ["/src"]
+license = "MIT"
+repository = "https://github.com/kevinheavey/solders"
+
+[dependencies]
+pyo3 = { workspace = true }
+serde = { workspace = true }
+serde_with = { workspace = true }
+derive_more = { workspace = true }
+solders-macros = { workspace = true }
+solders-hash = { workspace = true }
+solders-traits-core = { workspace = true }
+solders-account = { workspace = true }
+solders-account-decoder = { workspace = true }
+solders-transaction-error = { workspace = true }
+solders-rpc-response-data-boilerplate = { workspace = true }
+solders-rpc-version = { workspace = true }
+solders-pubkey = { workspace = true }
+solders-signature = { workspace = true }
+solana-sdk = { workspace = true }
+camelpaste = { workspace = true }

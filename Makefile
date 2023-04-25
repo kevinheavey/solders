@@ -2,7 +2,7 @@ test:
 	pytest && make doctest
 
 lint:
-	cargo clippy && cargo clippy -F bankrun && ruff python tests && mypy .
+	cargo clippy --no-default-features && cargo clippy && ruff python tests && mypy .
 
 fmt:
 	cargo fmt && black .

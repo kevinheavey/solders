@@ -17,47 +17,81 @@ pyo3 = { workspace = true, features = ["macros", "extension-module", "abi3-py37"
 solana-sdk = { workspace = true }
 bincode = { workspace = true }
 serde = { workspace = true }
-serde_json = { workspace = true }
-dict_derive = "0.4.0"
-serde_with = { workspace = true }
-base64 = { workspace = true }
-camelpaste = "0.1.0"
-serde_cbor = { workspace = true }
-thiserror = "^1.0.31"
-bs58 = "^0.4.0"
-zstd = "0.11.2"
 derive_more = { workspace = true }
-pythonize = "0.18.0"
 solders-traits = { workspace = true }
-solders-macros = { workspace = true }
 solders-primitives = { workspace = true }
-solana-program-test = { workspace = true, optional = true }
-solana-banks-client = { workspace = true, optional = true }
-solana-banks-interface = { version = "1.15.2", optional = true}
-tarpc = { version = "0.29.0", optional = true }
-pyo3-asyncio = { version = "0.18.0", features = ["tokio-runtime"] }
+solders-account = { workspace = true }
+solders-account-decoder = { workspace = true }
+solders-commitment-config = { workspace = true }
+solders-rpc-filter = { workspace = true }
+solders-rpc-config = { workspace = true }
+solders-rpc-errors = { workspace = true }
+solders-rpc-requests = { workspace = true }
+solders-rpc-responses = { workspace = true }
+solders-pubkey = { workspace = true }
+solders-system-program = { workspace = true }
+solders-instruction = { workspace = true }
+solders-message = { workspace = true }
+solders-address-lookup-table-account = { workspace = true }
+solders-signature = { workspace = true }
+solders-transaction-status = { workspace = true }
+solders-hash = { workspace = true }
+solders-keypair = { workspace = true }
+solders-transaction = { workspace = true }
+solders-bankrun = { workspace = true, optional = true }
 
 [features]
 default = ["bankrun"]
-bankrun = [
-    "dep:solana-program-test",
-    "dep:solana-banks-client",
-    "dep:solana-banks-interface",
-    "dep:tarpc",
-    "solders-traits/banks-client"
-]
+bankrun = ["dep:solders-bankrun"]
 
 
 [workspace]
-members = [".", "traits", "macros", "primitives"]
+members = [
+    ".",
+    "crates/*"
+]
 
 [workspace.dependencies]
 pyo3 = { version = "0.18.0", default-features = false }
-solders-macros = { path = "./macros", version = "0.14.4" }
-solders-traits = { path = "./traits", version = "0.14.4" }
+solders-macros = { path = "./crates/macros", version = "0.14.4" }
+solders-traits = { path = "./crates/traits", version = "0.14.4" }
+solders-traits-core = { path = "./crates/traits-core", version = "0.14.4" }
+solders-account-decoder = { path = "./crates/account-decoder", version = "0.14.4" }
+solders-bankrun = { path = "./crates/bankrun", version = "0.14.4" }
+solders-commitment-config = { path = "./crates/commitment-config", version = "0.14.4" }
+solders-transaction-status = { path = "./crates/transaction-status", version = "0.14.4" }
+solders-transaction-status-enums = { path = "./crates/transaction-status-enums", version = "0.14.4" }
+solders-base64-string = { path = "./crates/base64-string", version = "0.14.4" }
+solders-rpc-filter = { path = "./crates/rpc-filter", version = "0.14.4" }
+solders-rpc-config = { path = "./crates/rpc-config", version = "0.14.4" }
+solders-rpc-common = { path = "./crates/rpc-common", version = "0.14.4" }
+solders-rpc-errors = { path = "./crates/rpc-errors", version = "0.14.4" }
+solders-rpc-errors-common = { path = "./crates/rpc-errors-common", version = "0.14.4" }
+solders-rpc-errors-tx-status = { path = "./crates/rpc-errors-tx-status", version = "0.14.4" }
+solders-rpc-errors-no-tx-status = { path = "./crates/rpc-errors-no-tx-status", version = "0.14.4" }
+solders-rpc-request-params = { path = "./crates/rpc-request-params", version = "0.14.4" }
+solders-rpc-request-params-no-config = { path = "./crates/rpc-request-params-no-config", version = "0.14.4" }
+solders-rpc-requests = { path = "./crates/rpc-requests", version = "0.14.4" }
+solders-rpc-responses = { path = "./crates/rpc-responses", version = "0.14.4" }
+solders-rpc-responses-common = { path = "./crates/rpc-responses-common", version = "0.14.4" }
+solders-rpc-responses-tx-status = { path = "./crates/rpc-responses-tx-status", version = "0.14.4" }
+solders-rpc-response-data-boilerplate = { path = "./crates/rpc-response-data-boilerplate", version = "0.14.4" }
+solders-rpc-version = { path = "./crates/rpc-version", version = "0.14.4" }
+solders-primitives = { path = "./crates/primitives", version = "0.14.4" }
+solders-pubkey = { path = "./crates/pubkey", version = "0.14.4" }
+solders-system-program = { path = "./crates/system-program", version = "0.14.4" }
+solders-instruction = { path = "./crates/instruction", version = "0.14.4" }
+solders-address-lookup-table-account = { path = "./crates/address-lookup-table-account", version = "0.14.4" }
+solders-message = { path = "./crates/message", version = "0.14.4" }
+solders-signature = { path = "./crates/signature", version = "0.14.4" }
+solders-keypair = { path = "./crates/keypair", version = "0.14.4" }
+solders-transaction = { path = "./crates/transaction", version = "0.14.4" }
+solders-transaction-error = { path = "./crates/transaction-error", version = "0.14.4" }
+solders-account = { path = "./crates/account", version = "0.14.4" }
+solders-hash = { path = "./crates/hash", version = "0.14.4" }
 serde_with = { version = "^1.14.0", features = ["base64"] }
-solders-primitives = { path = "./primitives", version = "0.14.4" }
-solana-sdk = "^1.15.2"
+solana-sdk = "1.15.2"
+solana-program = "1.15.2"
 bincode = "1.3.3"
 base64 = "0.13.0"
 serde = "^1.0.136"
@@ -66,3 +100,7 @@ serde_cbor = "^0.11.2"
 derive_more = "0.99.17"
 solana-program-test = "1.15.2"
 solana-banks-client = "1.15.2"
+pythonize = "0.18.0"
+bs58 = "0.4.0"
+thiserror = "^1.0.31"
+camelpaste = "0.1.0"

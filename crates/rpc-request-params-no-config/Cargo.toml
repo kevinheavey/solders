@@ -1,0 +1,17 @@
+[package]
+name = "solders-rpc-request-params-no-config"
+version = "0.14.4"
+edition = "2021"
+include = ["/src"]
+license = "MIT"
+repository = "https://github.com/kevinheavey/solders"
+
+[dependencies]
+bincode = { workspace = true }
+serde = { workspace = true }
+serde_with = { workspace = true }
+solders-commitment-config = { workspace = true }
+solders-rpc-version = { workspace = true }
+solders-message = { workspace = true }
+solders-pubkey = { workspace = true }
+solders-base64-string = { workspace = true }

@@ -1,44 +1,32 @@
 //! These docstrings are written for Python users.
 //!
 //! If you're viewing them on docs.rs, the formatting won't make much sense.
-use account::create_account_mod;
 use address_lookup_table_account::create_address_lookup_table_account_mod;
-use commitment_config::{CommitmentConfig, CommitmentLevel};
 use pyo3::prelude::*;
 use rpc::create_rpc_mod;
-use solders_primitives::instruction::{AccountMeta, CompiledInstruction, Instruction};
+use solders_account::create_account_mod;
+use solders_instruction::{AccountMeta, CompiledInstruction, Instruction};
 use solders_traits::{BincodeError, CborError, ParseHashError, SerdeJSONError, SignerError};
+use solders_transaction_status::create_transaction_status_mod;
 use std::collections::HashMap;
-use system_program::create_system_program_mod;
+use solders_system_program::create_system_program_mod;
 use sysvar::create_sysvar_mod;
-use transaction_status::create_transaction_status_mod;
 pub mod message;
 use message::create_message_mod;
 pub mod transaction;
+use solders_account_decoder::create_account_decoder_mod;
 use transaction::create_transaction_mod;
-pub mod account_decoder;
-use account_decoder::create_account_decoder_mod;
-pub mod account;
 pub mod address_lookup_table_account;
-#[cfg(feature = "bankrun")]
-pub mod bankrun;
-pub mod clock;
-pub mod commitment_config;
-pub mod epoch_schedule;
-pub mod rent;
 pub mod rpc;
-pub mod system_program;
 pub mod sysvar;
-mod tmp_account_decoder;
-mod tmp_transaction_status;
-pub mod transaction_status;
-use clock::create_clock_mod;
-use epoch_schedule::create_epoch_schedule_mod;
-use rent::create_rent_mod;
+use solders_commitment_config::{CommitmentConfig, CommitmentLevel};
+use solders_hash::Hash as SolderHash;
+use solders_keypair::{null_signer::NullSigner, presigner::Presigner, Keypair};
 use solders_primitives::{
-    hash::Hash as SolderHash, keypair::Keypair, null_signer::NullSigner, presigner::Presigner,
-    pubkey::Pubkey, signature::Signature,
+    clock::create_clock_mod, epoch_schedule::create_epoch_schedule_mod, rent::create_rent_mod,
 };
+use solders_pubkey::Pubkey;
+use solders_signature::Signature;
 
 #[pymodule]
 fn solders(py: Python, m: &PyModule) -> PyResult<()> {
@@ -78,7 +66,7 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
     let epoch_schedule_mod = create_epoch_schedule_mod(py)?;
     let address_lookup_table_account_mod = create_address_lookup_table_account_mod(py)?;
     #[cfg(feature = "bankrun")]
-    let bankrun_mod = bankrun::create_bankrun_mod(py)?;
+    let bankrun_mod = solders_bankrun::create_bankrun_mod(py)?;
     let clock_mod = create_clock_mod(py)?;
     let rent_mod = create_rent_mod(py)?;
     let submodules = [

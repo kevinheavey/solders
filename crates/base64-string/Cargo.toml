@@ -1,0 +1,15 @@
+[package]
+name = "solders-base64-string"
+version = "0.14.4"
+edition = "2021"
+include = ["/src"]
+license = "MIT"
+repository = "https://github.com/kevinheavey/solders"
+
+[dependencies]
+serde = { workspace = true }
+solders-message = { workspace = true }
+solders-transaction = { workspace = true }
+solana-sdk = { workspace = true }
+base64 = { workspace = true }
+bincode = { workspace = true }

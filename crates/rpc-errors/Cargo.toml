@@ -1,0 +1,14 @@
+[package]
+name = "solders-rpc-errors"
+version = "0.14.4"
+edition = "2021"
+include = ["/src"]
+license = "MIT"
+repository = "https://github.com/kevinheavey/solders"
+
+[dependencies]
+pyo3 = { workspace = true }
+serde = { workspace = true }
+solders-macros = { workspace = true }
+solders-rpc-errors-tx-status = { workspace = true }
+solders-rpc-errors-no-tx-status = { workspace = true }
