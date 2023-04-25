@@ -61,6 +61,7 @@ solders-bankrun = { path = "./crates/bankrun", version = "0.14.4" }
 solders-commitment-config = { path = "./crates/commitment-config", version = "0.14.4" }
 solders-transaction-status = { path = "./crates/transaction-status", version = "0.14.4" }
 solders-transaction-status-enums = { path = "./crates/transaction-status-enums", version = "0.14.4" }
+solders-base64-string = { path = "./crates/base64-string", version = "0.14.4" }
 solders-rpc-filter = { path = "./crates/rpc-filter", version = "0.14.4" }
 solders-rpc-config = { path = "./crates/rpc-config", version = "0.14.4" }
 solders-rpc-common = { path = "./crates/rpc-common", version = "0.14.4" }
@@ -68,6 +69,8 @@ solders-rpc-errors = { path = "./crates/rpc-errors", version = "0.14.4" }
 solders-rpc-errors-common = { path = "./crates/rpc-errors-common", version = "0.14.4" }
 solders-rpc-errors-tx-status = { path = "./crates/rpc-errors-tx-status", version = "0.14.4" }
 solders-rpc-errors-no-tx-status = { path = "./crates/rpc-errors-no-tx-status", version = "0.14.4" }
+solders-rpc-request-params = { path = "./crates/rpc-request-params", version = "0.14.4" }
+solders-rpc-request-params-no-config = { path = "./crates/rpc-request-params-no-config", version = "0.14.4" }
 solders-rpc-requests = { path = "./crates/rpc-requests", version = "0.14.4" }
 solders-rpc-responses = { path = "./crates/rpc-responses", version = "0.14.4" }
 solders-rpc-responses-common = { path = "./crates/rpc-responses-common", version = "0.14.4" }

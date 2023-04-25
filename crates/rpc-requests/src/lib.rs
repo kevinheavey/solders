@@ -1,30 +1,22 @@
 #![allow(deprecated)]
+use camelpaste::paste;
 use pyo3::{exceptions::PyValueError, prelude::*, types::PyTuple, PyTypeInfo};
+use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
 use solders_commitment_config::{CommitmentConfig, CommitmentLevel};
 use solders_hash::Hash as SolderHash;
+use solders_macros::{common_methods, richcmp_eq_only, rpc_id_getter, EnumIntoPy};
 use solders_message::VersionedMessage;
 use solders_pubkey::Pubkey;
+use solders_rpc_version::V2;
 use solders_signature::Signature;
 use solders_traits::to_py_err;
 use solders_traits_core::{
     py_from_bytes_general_via_cbor, pybytes_general_via_cbor, RichcmpEqualityOnly,
 };
 use solders_transaction::{Transaction, VersionedTransaction};
-extern crate base64;
-use camelpaste::paste;
-use serde::{Deserialize, Serialize};
-use serde_with::{base64::Base64, serde_as, skip_serializing_none, DisplayFromStr, FromInto};
-use solana_sdk::{
-    message::VersionedMessage as VersionedMessageOriginal,
-    transaction::{
-        Transaction as TransactionOriginal, VersionedTransaction as VersionedTransactionOriginal,
-    },
-};
-use solders_macros::{common_methods, richcmp_eq_only, rpc_id_getter, EnumIntoPy};
-use solders_rpc_version::V2;
 
 use solders_rpc_config::{
-    tmp_config::{RpcBlockSubscribeFilter, RpcTokenAccountsFilter, RpcTransactionLogsFilter},
     RpcAccountInfoConfig, RpcBlockConfig, RpcBlockProductionConfig, RpcBlockSubscribeConfig,
     RpcBlockSubscribeFilterWrapper, RpcContextConfig, RpcEpochConfig, RpcGetVoteAccountsConfig,
     RpcLargestAccountsFilter, RpcLeaderScheduleConfig, RpcProgramAccountsConfig,
@@ -32,6 +24,18 @@ use solders_rpc_config::{
     RpcSignatureSubscribeConfig, RpcSignaturesForAddressConfig, RpcSimulateTransactionConfig,
     RpcSupplyConfig, RpcTokenAccountsFilterWrapper, RpcTransactionConfig, RpcTransactionLogsConfig,
     TransactionLogsFilterWrapper,
+};
+use solders_rpc_request_params::{
+    BlockSubscribeParams, GetAccountInfoParams, GetBalanceParams, GetBlockParams,
+    GetInflationRewardParams, GetLargestAccountsParams, GetLeaderScheduleParams,
+    GetMultipleAccountsParams, GetProgramAccountsParams, GetSignatureStatusesParams,
+    GetSignaturesForAddressParams, GetStakeActivationParams, GetTokenAccountsByDelegateParams,
+    GetTransactionParams, IsBlockhashValidParams, LogsSubscribeParams, RequestAirdropParams,
+    SendTransactionParams, SignatureSubscribeParams, SimulateTransactionParams,
+};
+use solders_rpc_request_params_no_config::{
+    GetBlocksParams, GetFeeForMessageParams, GetMinimumBalanceForRentExemptionParams,
+    PubkeyAndCommitmentParams, UnsubscribeParams,
 };
 
 macro_rules! rpc_impl_display {
@@ -75,9 +79,6 @@ macro_rules! request_boilerplate {
         }
     };
 }
-
-#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Default)]
-pub struct UnsubscribeParams((u64,));
 
 macro_rules! unsubscribe_def {
     ($name:ident) => {
@@ -185,14 +186,6 @@ impl RequestBase {
     }
 }
 
-#[serde_as]
-#[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
-pub struct GetAccountInfoParams(
-    #[serde_as(as = "DisplayFromStr")] Pubkey,
-    #[serde(default)] Option<RpcAccountInfoConfig>,
-);
-
 /// A ``getAccountInfo`` request.
 ///
 /// Args:
@@ -243,15 +236,6 @@ impl GetAccountInfo {
 }
 
 request_boilerplate!(GetAccountInfo);
-
-#[serde_as]
-#[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
-pub struct GetBalanceParams(
-    #[serde_as(as = "DisplayFromStr")] Pubkey,
-    #[serde(default)] Option<RpcContextConfig>,
-);
-
 /// A ``getBalance`` request.
 ///
 /// Args:
@@ -301,10 +285,6 @@ impl GetBalance {
 }
 
 request_boilerplate!(GetBalance);
-
-#[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
-pub struct GetBlockParams(u64, #[serde(default)] Option<RpcBlockConfig>);
 
 /// A ``getBlock`` request.
 ///
@@ -485,16 +465,6 @@ impl GetBlockCommitment {
 }
 
 request_boilerplate!(GetBlockCommitment);
-
-#[serde_as]
-#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
-pub struct GetBlocksParams(
-    u64,
-    #[serde(default)] Option<u64>,
-    #[serde_as(as = "Option<FromInto<CommitmentConfig>>")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    Option<CommitmentLevel>,
-);
 
 /// A ``getBlocks`` request.
 ///
@@ -705,16 +675,6 @@ request_boilerplate!(GetEpochInfo);
 
 zero_param_req_def!(GetEpochSchedule);
 
-#[serde_as]
-#[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
-pub struct GetFeeForMessageParams(
-    #[serde_as(as = "FromInto<Base64String>")] VersionedMessage,
-    #[serde_as(as = "Option<FromInto<CommitmentConfig>>")]
-    #[serde(default)]
-    Option<CommitmentLevel>,
-);
-
 /// A ``getFeeForMessage`` request.
 ///
 /// Args:
@@ -819,14 +779,6 @@ impl GetInflationGovernor {
 request_boilerplate!(GetInflationGovernor);
 zero_param_req_def!(GetInflationRate);
 
-#[serde_as]
-#[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
-pub struct GetInflationRewardParams(
-    #[serde_as(as = "Vec<DisplayFromStr>")] Vec<Pubkey>,
-    #[serde(default)] Option<RpcEpochConfig>,
-);
-
 /// A ``getInflationReward`` request.
 ///
 /// Args:
@@ -877,15 +829,6 @@ impl GetInflationReward {
 }
 
 request_boilerplate!(GetInflationReward);
-
-#[serde_as]
-#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
-pub struct GetLargestAccountsParams(
-    #[serde_as(as = "Option<FromInto<CommitmentConfig>>")]
-    #[serde(default)]
-    Option<CommitmentLevel>,
-    #[serde(default, skip_serializing_if = "Option::is_none")] Option<RpcLargestAccountsFilter>,
-);
 
 /// A ``getLargestAccounts`` request.
 ///
@@ -993,12 +936,6 @@ impl GetLatestBlockhash {
 
 request_boilerplate!(GetLatestBlockhash);
 
-#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
-pub struct GetLeaderScheduleParams(
-    #[serde(default)] Option<u64>,
-    #[serde(default, skip_serializing_if = "Option::is_none")] Option<RpcLeaderScheduleConfig>,
-);
-
 /// A ``GetLeaderSchedule`` request.
 ///
 /// Args:
@@ -1057,16 +994,6 @@ request_boilerplate!(GetLeaderSchedule);
 zero_param_req_def!(GetMaxRetransmitSlot);
 zero_param_req_def!(GetMaxShredInsertSlot);
 
-#[serde_as]
-#[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
-pub struct GetMinimumBalanceForRentExemptionParams(
-    usize,
-    #[serde_as(as = "Option<FromInto<CommitmentConfig>>")]
-    #[serde(default)]
-    Option<CommitmentLevel>,
-);
-
 /// A ``getMinimumBalanceForRentExemption`` request.
 ///
 /// Args:
@@ -1113,14 +1040,6 @@ impl GetMinimumBalanceForRentExemption {
 }
 
 request_boilerplate!(GetMinimumBalanceForRentExemption);
-
-#[serde_as]
-#[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
-pub struct GetMultipleAccountsParams(
-    #[serde_as(as = "Vec<DisplayFromStr>")] Vec<Pubkey>,
-    #[serde(default)] Option<RpcAccountInfoConfig>,
-);
 
 /// A ``getMultipleAccounts`` request.
 ///
@@ -1176,15 +1095,6 @@ impl GetMultipleAccounts {
 }
 
 request_boilerplate!(GetMultipleAccounts);
-
-#[serde_as]
-#[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
-pub struct GetProgramAccountsParams(
-    #[serde_as(as = "DisplayFromStr")] Pubkey,
-    #[serde(default)] Option<RpcProgramAccountsConfig>,
-);
-
 /// A ``getProgramAccounts`` request.
 ///
 /// Args:
@@ -1280,14 +1190,6 @@ impl GetRecentPerformanceSamples {
 
 request_boilerplate!(GetRecentPerformanceSamples);
 
-#[serde_as]
-#[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
-pub struct GetSignaturesForAddressParams(
-    #[serde_as(as = "DisplayFromStr")] Pubkey,
-    #[serde(default)] Option<RpcSignaturesForAddressConfig>,
-);
-
 /// A ``getSignaturesForAddress`` request.
 ///
 /// Args:
@@ -1340,14 +1242,6 @@ impl GetSignaturesForAddress {
 }
 
 request_boilerplate!(GetSignaturesForAddress);
-
-#[serde_as]
-#[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
-pub struct GetSignatureStatusesParams(
-    #[serde_as(as = "Vec<DisplayFromStr>")] Vec<Signature>,
-    #[serde(default)] Option<RpcSignatureStatusConfig>,
-);
 
 /// A ``getSignatureStatuses`` request.
 ///
@@ -1538,14 +1432,6 @@ impl GetSlotLeaders {
 
 request_boilerplate!(GetSlotLeaders);
 
-#[serde_as]
-#[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
-pub struct GetStakeActivationParams(
-    #[serde_as(as = "DisplayFromStr")] Pubkey,
-    #[serde(default)] Option<RpcEpochConfig>,
-);
-
 /// A ``getStakeActivation`` request.
 ///
 /// Args:
@@ -1640,16 +1526,6 @@ impl GetSupply {
 
 request_boilerplate!(GetSupply);
 
-#[serde_as]
-#[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
-pub struct PubkeyAndCommitmentParams(
-    #[serde_as(as = "DisplayFromStr")] Pubkey,
-    #[serde_as(as = "Option<FromInto<CommitmentConfig>>")]
-    #[serde(default)]
-    Option<CommitmentLevel>,
-);
-
 /// A ``getTokenAccountBalance`` request.
 ///
 /// Args:
@@ -1698,16 +1574,6 @@ impl GetTokenAccountBalance {
 }
 
 request_boilerplate!(GetTokenAccountBalance);
-
-#[serde_as]
-#[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
-pub struct GetTokenAccountsByDelegateParams(
-    #[serde_as(as = "DisplayFromStr")] Pubkey,
-    #[serde_as(as = "FromInto<RpcTokenAccountsFilter>")] RpcTokenAccountsFilterWrapper,
-    #[serde(default)] Option<RpcAccountInfoConfig>,
-);
-
 /// A ``getTokenAccountsByDelegate`` request.
 ///
 /// Args:
@@ -1944,14 +1810,6 @@ impl GetTokenSupply {
 
 request_boilerplate!(GetTokenSupply);
 
-#[serde_as]
-#[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
-pub struct GetTransactionParams(
-    #[serde_as(as = "DisplayFromStr")] Signature,
-    #[serde(default)] Option<RpcTransactionConfig>,
-);
-
 /// A ``getTransaction`` request.
 ///
 /// Args:
@@ -2091,14 +1949,6 @@ impl GetVoteAccounts {
 
 request_boilerplate!(GetVoteAccounts);
 
-#[serde_as]
-#[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
-pub struct IsBlockhashValidParams(
-    #[serde_as(as = "DisplayFromStr")] SolderHash,
-    #[serde(default)] Option<RpcContextConfig>,
-);
-
 /// An ``isBlockhashValid`` request.
 ///
 /// Args:
@@ -2147,15 +1997,6 @@ impl IsBlockhashValid {
 
 request_boilerplate!(IsBlockhashValid);
 zero_param_req_def!(MinimumLedgerSlot);
-
-#[serde_as]
-#[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Default)]
-pub struct RequestAirdropParams(
-    #[serde_as(as = "DisplayFromStr")] Pubkey,
-    u64,
-    #[serde(default)] Option<RpcRequestAirdropConfig>,
-);
 
 /// A ``requestAirdrop`` request.
 ///
@@ -2219,75 +2060,6 @@ impl RequestAirdrop {
 }
 
 request_boilerplate!(RequestAirdrop);
-
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
-pub struct Base64String(pub String);
-
-impl From<Transaction> for Base64String {
-    fn from(tx: Transaction) -> Self {
-        Self(base64::encode(bincode::serialize(&tx).unwrap()))
-    }
-}
-
-impl From<Base64String> for Transaction {
-    fn from(tx: Base64String) -> Self {
-        let bytes = base64::decode(tx.0).unwrap();
-        bincode::deserialize::<TransactionOriginal>(&bytes)
-            .unwrap()
-            .into()
-    }
-}
-
-impl From<VersionedTransaction> for Base64String {
-    fn from(tx: VersionedTransaction) -> Self {
-        Self(base64::encode(bincode::serialize(&tx).unwrap()))
-    }
-}
-
-impl From<Base64String> for VersionedTransaction {
-    fn from(tx: Base64String) -> Self {
-        let bytes = base64::decode(tx.0).unwrap();
-        bincode::deserialize::<VersionedTransactionOriginal>(&bytes)
-            .unwrap()
-            .into()
-    }
-}
-
-impl From<Vec<u8>> for Base64String {
-    fn from(tx: Vec<u8>) -> Self {
-        Self(base64::encode(tx))
-    }
-}
-
-impl From<Base64String> for Vec<u8> {
-    fn from(tx: Base64String) -> Self {
-        base64::decode(tx.0).unwrap()
-    }
-}
-
-impl From<VersionedMessage> for Base64String {
-    fn from(m: VersionedMessage) -> Self {
-        let orig = VersionedMessageOriginal::from(m);
-        Self(base64::encode(orig.serialize()))
-    }
-}
-
-impl From<Base64String> for VersionedMessage {
-    fn from(m: Base64String) -> Self {
-        let bytes = base64::decode(m.0).unwrap();
-        bincode::deserialize::<VersionedMessageOriginal>(&bytes)
-            .unwrap()
-            .into()
-    }
-}
-
-#[serde_as]
-#[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Default)]
-pub struct SendTransactionParams<T: From<Base64String> + Into<Base64String> + Clone>(
-    #[serde_as(as = "FromInto<Base64String>")] T,
-    #[serde(default)] Option<RpcSendTransactionConfig>,
-);
 
 /// A ``sendTransaction`` request.
 ///
@@ -2426,15 +2198,6 @@ impl SendLegacyTransaction {
 }
 
 request_boilerplate!(SendLegacyTransaction);
-
-#[serde_as]
-#[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Default)]
-pub struct SendRawTransactionParams(
-    #[serde_as(as = "Base64")] Vec<u8>,
-    #[serde(default)] Option<RpcSendTransactionConfig>,
-);
-
 /// A raw ``sendTransaction`` request.
 ///
 /// Args:
@@ -2501,14 +2264,6 @@ impl SendRawTransaction {
 }
 
 request_boilerplate!(SendRawTransaction);
-
-#[serde_as]
-#[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Default)]
-pub struct SimulateTransactionParams<T: From<Base64String> + Into<Base64String> + Clone>(
-    #[serde_as(as = "FromInto<Base64String>")] T,
-    #[serde(default)] Option<RpcSimulateTransactionConfig>,
-);
 
 /// A ``simulateTransaction`` request.
 ///
@@ -2703,14 +2458,6 @@ impl AccountSubscribe {
 
 request_boilerplate!(AccountSubscribe);
 
-#[serde_as]
-#[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Default)]
-pub struct BlockSubscribeParams(
-    #[serde_as(as = "FromInto<RpcBlockSubscribeFilter>")] RpcBlockSubscribeFilterWrapper,
-    #[serde(default)] Option<RpcBlockSubscribeConfig>,
-);
-
 /// A ``blockSubscribe`` request.
 ///
 /// Args:
@@ -2768,14 +2515,6 @@ impl BlockSubscribe {
 }
 
 request_boilerplate!(BlockSubscribe);
-
-#[serde_as]
-#[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Default)]
-pub struct LogsSubscribeParams(
-    #[serde_as(as = "FromInto<RpcTransactionLogsFilter>")] TransactionLogsFilterWrapper,
-    #[serde(default)] Option<RpcTransactionLogsConfig>,
-);
 
 /// A ``logsSubscribe`` request.
 ///
@@ -2886,14 +2625,6 @@ impl ProgramSubscribe {
 }
 
 request_boilerplate!(ProgramSubscribe);
-
-#[serde_as]
-#[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Default)]
-pub struct SignatureSubscribeParams(
-    #[serde_as(as = "DisplayFromStr")] Signature,
-    #[serde(default)] Option<RpcSignatureSubscribeConfig>,
-);
 
 /// A ``signatureSubscribe`` request.
 ///

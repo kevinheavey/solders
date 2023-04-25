@@ -4477,6 +4477,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "solders-base64-string"
+version = "0.14.4"
+dependencies = [
+ "base64 0.13.1",
+ "bincode",
+ "serde",
+ "solana-sdk",
+ "solders-message",
+ "solders-transaction",
+]
+
+[[package]]
 name = "solders-commitment-config"
 version = "0.14.4"
 dependencies = [
@@ -4672,24 +4684,53 @@ dependencies = [
 ]
 
 [[package]]
+name = "solders-rpc-request-params"
+version = "0.14.4"
+dependencies = [
+ "bincode",
+ "serde",
+ "serde_with 1.14.0",
+ "solders-base64-string",
+ "solders-commitment-config",
+ "solders-hash",
+ "solders-pubkey",
+ "solders-rpc-config",
+ "solders-rpc-version",
+ "solders-signature",
+]
+
+[[package]]
+name = "solders-rpc-request-params-no-config"
+version = "0.14.4"
+dependencies = [
+ "bincode",
+ "serde",
+ "serde_with 1.14.0",
+ "solders-base64-string",
+ "solders-commitment-config",
+ "solders-message",
+ "solders-pubkey",
+ "solders-rpc-config",
+ "solders-rpc-version",
+]
+
+[[package]]
 name = "solders-rpc-requests"
 version = "0.14.4"
 dependencies = [
- "base64 0.13.1",
- "bincode",
  "camelpaste",
- "derive_more",
  "pyo3",
  "serde",
  "serde_json",
  "serde_with 1.14.0",
- "solana-sdk",
  "solders-commitment-config",
  "solders-hash",
  "solders-macros",
  "solders-message",
  "solders-pubkey",
  "solders-rpc-config",
+ "solders-rpc-request-params",
+ "solders-rpc-request-params-no-config",
  "solders-rpc-version",
  "solders-signature",
  "solders-traits",
