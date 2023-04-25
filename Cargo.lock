@@ -4710,7 +4710,6 @@ dependencies = [
  "solders-commitment-config",
  "solders-message",
  "solders-pubkey",
- "solders-rpc-config",
  "solders-rpc-version",
 ]
 
