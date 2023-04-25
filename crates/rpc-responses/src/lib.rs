@@ -59,7 +59,8 @@ use tmp_response::{
     JSON_RPC_SERVER_ERROR_UNSUPPORTED_TRANSACTION_VERSION,
 };
 
-use solders_rpc_common::{response_data_boilerplate, RpcSimulateTransactionResult};
+use solders_rpc_response_data_boilerplate::response_data_boilerplate;
+use solders_rpc_common::RpcSimulateTransactionResult;
 use solders_rpc_errors::{
     BlockCleanedUpMessage, BlockNotAvailableMessage, BlockStatusNotAvailableYetMessage,
     InternalErrorMessage, InvalidParamsMessage, InvalidRequestMessage,

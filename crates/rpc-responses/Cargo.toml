@@ -23,6 +23,7 @@ solders-transaction-error = { workspace = true }
 solders-transaction-status = { workspace = true }
 solders-rpc-responses-common = { workspace = true }
 solders-rpc-responses-tx-status = { workspace = true }
+solders-rpc-response-data-boilerplate = { workspace = true }
 solders-rpc-common = { workspace = true }
 solders-rpc-errors = { workspace = true }
 solders-rpc-version = { workspace = true }

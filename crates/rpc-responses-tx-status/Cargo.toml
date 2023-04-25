@@ -14,6 +14,6 @@ solders-macros = { workspace = true }
 solders-traits-core = { workspace = true }
 solders-transaction-error = { workspace = true }
 solders-transaction-status = { workspace = true }
-solders-rpc-common = { workspace = true }
+solders-rpc-response-data-boilerplate = { workspace = true }
 solders-signature = { workspace = true }
 solana-sdk = { workspace = true }

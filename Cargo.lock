@@ -4670,6 +4670,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "solders-rpc-response-data-boilerplate"
+version = "0.14.4"
+dependencies = [
+ "solders-traits-core",
+]
+
+[[package]]
 name = "solders-rpc-responses"
 version = "0.14.4"
 dependencies = [
@@ -4688,6 +4695,7 @@ dependencies = [
  "solders-pubkey",
  "solders-rpc-common",
  "solders-rpc-errors",
+ "solders-rpc-response-data-boilerplate",
  "solders-rpc-responses-common",
  "solders-rpc-responses-tx-status",
  "solders-rpc-version",
@@ -4714,7 +4722,7 @@ dependencies = [
  "solders-hash",
  "solders-macros",
  "solders-pubkey",
- "solders-rpc-common",
+ "solders-rpc-response-data-boilerplate",
  "solders-rpc-version",
  "solders-signature",
  "solders-traits-core",
@@ -4730,7 +4738,7 @@ dependencies = [
  "serde",
  "solana-sdk",
  "solders-macros",
- "solders-rpc-common",
+ "solders-rpc-response-data-boilerplate",
  "solders-signature",
  "solders-traits-core",
  "solders-transaction-error",

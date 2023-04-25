@@ -21,7 +21,7 @@ use solders_macros::{common_methods, richcmp_eq_only, EnumIntoPy};
 use solders_pubkey::Pubkey;
 use solders_transaction_error::TransactionErrorType;
 
-use solders_rpc_common::response_data_boilerplate;
+use solders_rpc_response_data_boilerplate::response_data_boilerplate;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]

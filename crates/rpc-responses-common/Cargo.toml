@@ -17,7 +17,7 @@ solders-traits-core = { workspace = true }
 solders-account = { workspace = true }
 solders-account-decoder = { workspace = true }
 solders-transaction-error = { workspace = true }
-solders-rpc-common = { workspace = true }
+solders-rpc-response-data-boilerplate = { workspace = true }
 solders-rpc-version = { workspace = true }
 solders-pubkey = { workspace = true }
 solders-signature = { workspace = true }

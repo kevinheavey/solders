@@ -5,7 +5,7 @@ use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use solana_sdk::transaction::TransactionError as TransactionErrorOriginal;
 use solders_macros::{common_methods, richcmp_eq_only};
-use solders_rpc_common::response_data_boilerplate;
+use solders_rpc_response_data_boilerplate::response_data_boilerplate;
 use solders_signature::Signature;
 use solders_transaction_error::TransactionErrorType;
 use solders_transaction_status::{
