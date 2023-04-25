@@ -8,7 +8,7 @@ license = "MIT"
 repository = "https://github.com/kevinheavey/solders"
 
 [dependencies]
-pyo3 = { workspace = true, features = ["macros"] }
+pyo3 = { workspace = true }
 solders-traits = { workspace = true }
 solana-sdk = { workspace = true }
 serde = { workspace = true }
