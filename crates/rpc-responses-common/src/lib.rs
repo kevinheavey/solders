@@ -20,7 +20,7 @@ use solders_hash::Hash as SolderHash;
 use solders_macros::{common_methods, richcmp_eq_only, EnumIntoPy};
 use solders_pubkey::Pubkey;
 use solders_transaction_error::TransactionErrorType;
-use solana_rpc_client_api::response::{RpcIdentity as RpcIdentityOriginal};
+use solana_rpc_client_api::response::{RpcIdentity as RpcIdentityOriginal, RpcBlockhash as RpcBlockhashOriginal};
 
 use solders_rpc_response_data_boilerplate::response_data_boilerplate;
 
@@ -374,18 +374,15 @@ impl RpcIdentity {
     }
 }
 
-// the one in solana_client doesn't derive Eq
-#[serde_as]
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "camelCase")]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct RpcBlockhash {
-    #[serde_as(as = "DisplayFromStr")]
-    #[pyo3(get)]
-    pub blockhash: SolderHash,
-    #[pyo3(get)]
-    pub last_valid_block_height: u64,
-}
+pub struct RpcBlockhash(RpcBlockhashOriginal);
+//     #[serde_as(as = "DisplayFromStr")]
+//     #[pyo3(get)]
+//     pub blockhash: SolderHash,
+//     #[pyo3(get)]
+//     pub last_valid_block_height: u64,
+// }
 
 response_data_boilerplate!(RpcBlockhash);
 
@@ -395,10 +392,20 @@ response_data_boilerplate!(RpcBlockhash);
 impl RpcBlockhash {
     #[new]
     pub fn new(blockhash: SolderHash, last_valid_block_height: u64) -> Self {
-        RpcBlockhash {
-            blockhash,
+        RpcBlockhashOriginal {
+            blockhash: blockhash.to_string(),
             last_valid_block_height,
-        }
+        }.into()
+    }
+
+    #[getter]
+    pub fn blockhash(&self) -> SolderHash {
+        self.0.blockhash.parse().unwrap()
+    }
+
+    #[getter]
+    pub fn last_valid_block_height(&self) -> u64 {
+        self.0.last_valid_block_height
     }
 }
 pub type RpcLeaderSchedule = Option<HashMap<Pubkey, Vec<usize>>>;
