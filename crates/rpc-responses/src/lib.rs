@@ -56,6 +56,7 @@ use solana_sdk::clock::{Epoch, Slot, UnixTimestamp};
 use solana_transaction_status::TransactionStatus as TransactionStatusOriginal;
 use solders_account::{Account, AccountJSON};
 use solders_account_decoder::UiTokenAmount;
+use solders_epoch_info::EpochInfo;
 use solders_hash::Hash as SolderHash;
 use solders_macros::{
     common_methods, common_methods_rpc_resp, enum_original_mapping, richcmp_eq_only, EnumIntoPy,
@@ -88,12 +89,12 @@ use solders_rpc_responses_common::{
     notification_struct_def, notification_struct_def_contextless, notification_struct_def_no_eq,
     notification_struct_def_outer, notification_struct_def_outer_no_eq, AccountMaybeJSON,
     AccountNotification, AccountNotificationJsonParsed, AccountNotificationJsonParsedResult,
-    AccountNotificationResult, BlockStoreError, EpochInfo, ProgramNotification,
-    ProgramNotificationJsonParsed, ProgramNotificationJsonParsedResult, ProgramNotificationResult,
-    ProgramNotificationType, RootNotification, RpcBlockhash, RpcIdentity, RpcKeyedAccount,
-    RpcKeyedAccountJsonParsed, RpcKeyedAccountMaybeJSON, RpcLeaderSchedule, RpcResponseContext,
-    RpcSignatureResponse, RpcTokenAccountBalance, RpcVersionInfo, RpcVoteAccountInfo,
-    RpcVoteAccountStatus, SignatureNotification, SignatureNotificationResult, SubscriptionResult,
+    AccountNotificationResult, BlockStoreError, ProgramNotification, ProgramNotificationJsonParsed,
+    ProgramNotificationJsonParsedResult, ProgramNotificationResult, ProgramNotificationType,
+    RootNotification, RpcBlockhash, RpcIdentity, RpcKeyedAccount, RpcKeyedAccountJsonParsed,
+    RpcKeyedAccountMaybeJSON, RpcLeaderSchedule, RpcResponseContext, RpcSignatureResponse,
+    RpcTokenAccountBalance, RpcVersionInfo, RpcVoteAccountInfo, RpcVoteAccountStatus,
+    SignatureNotification, SignatureNotificationResult, SubscriptionResult,
 };
 use solders_rpc_responses_tx_status::RpcConfirmedTransactionStatusWithSignature;
 

@@ -14,10 +14,7 @@ use solana_rpc_client_api::response::{
     RpcVersionInfo as RpcVersionInfoOriginal, RpcVoteAccountInfo as RpcVoteAccountInfoOriginal,
     RpcVoteAccountStatus as RpcVoteAccountStatusOriginal,
 };
-use solana_sdk::{
-    clock::{Epoch, Slot},
-    epoch_info::EpochInfo as EpochInfoOriginal,
-};
+use solana_sdk::clock::{Epoch, Slot};
 use solders_account::{Account, AccountJSON};
 use solders_account_decoder::UiTokenAmount;
 use solders_hash::Hash as SolderHash;
@@ -267,92 +264,6 @@ macro_rules! notification_contextless {
         notification_struct_def_contextless!($name, $inner);
         notification_boilerplate_contextless!($name, $inner);
     };
-}
-
-// the one in solana_client doesn't derive Eq or PartialEq
-#[derive(Serialize, Deserialize, Eq, PartialEq, Clone, Debug)]
-#[serde(rename_all = "camelCase")]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct EpochInfo {
-    #[pyo3(get)]
-    pub epoch: Epoch,
-    #[pyo3(get)]
-    pub slot_index: u64,
-    #[pyo3(get)]
-    pub slots_in_epoch: u64,
-    #[pyo3(get)]
-    pub absolute_slot: Slot,
-    #[pyo3(get)]
-    pub block_height: u64,
-    #[pyo3(get)]
-    pub transaction_count: Option<u64>,
-}
-response_data_boilerplate!(EpochInfo);
-
-#[richcmp_eq_only]
-#[common_methods]
-#[pymethods]
-impl EpochInfo {
-    #[new]
-    pub fn new(
-        epoch: Epoch,
-        slot_index: u64,
-        slots_in_epoch: u64,
-        absolute_slot: Slot,
-        block_height: u64,
-        transaction_count: Option<u64>,
-    ) -> Self {
-        Self {
-            epoch,
-            slot_index,
-            slots_in_epoch,
-            absolute_slot,
-            block_height,
-            transaction_count,
-        }
-    }
-}
-
-impl From<EpochInfo> for EpochInfoOriginal {
-    fn from(e: EpochInfo) -> Self {
-        let EpochInfo {
-            epoch,
-            slot_index,
-            slots_in_epoch,
-            absolute_slot,
-            block_height,
-            transaction_count,
-        } = e;
-        Self {
-            epoch,
-            slot_index,
-            slots_in_epoch,
-            absolute_slot,
-            block_height,
-            transaction_count,
-        }
-    }
-}
-
-impl From<EpochInfoOriginal> for EpochInfo {
-    fn from(e: EpochInfoOriginal) -> Self {
-        let EpochInfoOriginal {
-            epoch,
-            slot_index,
-            slots_in_epoch,
-            absolute_slot,
-            block_height,
-            transaction_count,
-        } = e;
-        Self {
-            epoch,
-            slot_index,
-            slots_in_epoch,
-            absolute_slot,
-            block_height,
-            transaction_count,
-        }
-    }
 }
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]

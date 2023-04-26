@@ -2,8 +2,8 @@ import contextlib as __ctxlib
 
 from solders.solders import __version__ as _version_untyped  # type: ignore
 from solders.solders import (
-    account_decoder,
     account,
+    account_decoder,
     address_lookup_table_account,
     clock,
     commitment_config,

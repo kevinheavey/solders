@@ -7,6 +7,7 @@ from jsonalias import Json
 from pytest import mark, raises
 from solders.account import Account, AccountJSON
 from solders.account_decoder import ParsedAccount, UiTokenAmount
+from solders.epoch_info import EpochInfo
 from solders.epoch_schedule import EpochSchedule
 from solders.errors import SerdeJSONError
 from solders.hash import Hash
@@ -24,7 +25,6 @@ from solders.rpc.responses import (
     AccountNotificationResult,
     BlockNotification,
     BlockNotificationResult,
-    EpochInfo,
     GetAccountInfoJsonParsedResp,
     GetAccountInfoMaybeJsonParsedResp,
     GetAccountInfoResp,

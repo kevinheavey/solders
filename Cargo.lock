@@ -4384,6 +4384,7 @@ dependencies = [
  "solders-address-lookup-table-account",
  "solders-bankrun",
  "solders-commitment-config",
+ "solders-epoch-info",
  "solders-hash",
  "solders-instruction",
  "solders-keypair",
@@ -4499,6 +4500,19 @@ dependencies = [
  "serde",
  "solana-sdk",
  "solders-traits",
+]
+
+[[package]]
+name = "solders-epoch-info"
+version = "0.14.4"
+dependencies = [
+ "derive_more",
+ "pyo3",
+ "serde",
+ "solana-program",
+ "solana-sdk",
+ "solders-macros",
+ "solders-traits-core",
 ]
 
 [[package]]
@@ -4770,6 +4784,7 @@ dependencies = [
  "solana-transaction-status",
  "solders-account",
  "solders-account-decoder",
+ "solders-epoch-info",
  "solders-hash",
  "solders-macros",
  "solders-primitives",

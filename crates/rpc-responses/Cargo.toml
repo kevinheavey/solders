@@ -19,6 +19,7 @@ solders-traits-core = { workspace = true }
 solders-traits = { workspace = true }
 solders-account = { workspace = true }
 solders-account-decoder = { workspace = true }
+solders-epoch-info = { workspace = true }
 solders-transaction-error = { workspace = true }
 solders-transaction-status = { workspace = true }
 solana-transaction-status = { workspace = true }

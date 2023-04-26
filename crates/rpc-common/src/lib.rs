@@ -30,15 +30,11 @@ impl RpcSimulateTransactionResult {
         units_consumed: Option<u64>,
         return_data: Option<TransactionReturnData>,
     ) -> Self {
-        let accounts_underlying: Option<Vec<Option<UiAccount>>> = if let Some(accs) = accounts {
-            Some(
-                accs.into_iter()
-                    .map(|maybe_acc| maybe_acc.map(UiAccount::from))
-                    .collect(),
-            )
-        } else {
-            None
-        };
+        let accounts_underlying: Option<Vec<Option<UiAccount>>> = accounts.map(|accs| {
+            accs.into_iter()
+                .map(|maybe_acc| maybe_acc.map(UiAccount::from))
+                .collect()
+        });
         Self(RpcSimulateTransactionResultOriginal {
             err: err.map(Into::into),
             logs,
@@ -69,7 +65,7 @@ impl RpcSimulateTransactionResult {
 
     #[getter]
     pub fn units_consumed(&self) -> Option<u64> {
-        self.0.units_consumed.clone()
+        self.0.units_consumed
     }
 
     #[getter]
