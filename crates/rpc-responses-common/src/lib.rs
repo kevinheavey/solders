@@ -8,6 +8,10 @@ use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, DisplayFromStr, TryFromInto};
 use solana_account_decoder::{UiAccount, UiAccountData};
+use solana_rpc_client_api::response::{
+    RpcBlockhash as RpcBlockhashOriginal, RpcIdentity as RpcIdentityOriginal,
+    RpcTokenAccountBalance as RpcTokenAccountBalanceOriginal,
+};
 use solana_sdk::{
     clock::{Epoch, Slot},
     epoch_info::EpochInfo as EpochInfoOriginal,
@@ -18,8 +22,6 @@ use solders_hash::Hash as SolderHash;
 use solders_macros::{common_methods, richcmp_eq_only, EnumIntoPy};
 use solders_pubkey::Pubkey;
 use solders_transaction_error::TransactionErrorType;
-use solana_rpc_client_api::response::{RpcIdentity as RpcIdentityOriginal, RpcBlockhash as RpcBlockhashOriginal,
-    RpcTokenAccountBalance as RpcTokenAccountBalanceOriginal};
 
 use solders_rpc_response_data_boilerplate::response_data_boilerplate;
 
@@ -363,7 +365,10 @@ response_data_boilerplate!(RpcIdentity);
 impl RpcIdentity {
     #[new]
     pub fn new(identity: Pubkey) -> Self {
-        RpcIdentityOriginal { identity: identity.to_string() }.into()
+        RpcIdentityOriginal {
+            identity: identity.to_string(),
+        }
+        .into()
     }
 
     /// Pubkey: The current node identity.
@@ -394,7 +399,8 @@ impl RpcBlockhash {
         RpcBlockhashOriginal {
             blockhash: blockhash.to_string(),
             last_valid_block_height,
-        }.into()
+        }
+        .into()
     }
 
     #[getter]
