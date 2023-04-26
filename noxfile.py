@@ -6,6 +6,7 @@ import nox
 def python(session):
     session.install(
         "pytest",
+        "pytest-asyncio",
         "maturin",
         "sphinx",
         "based58",
