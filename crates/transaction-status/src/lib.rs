@@ -8,7 +8,11 @@ use solders_hash::Hash as SolderHash;
 use solders_message::MessageHeader;
 use solders_pubkey::Pubkey;
 use solders_signature::Signature;
-use solders_traits_core::{handle_py_value_err, transaction_status_boilerplate};
+use solders_traits_core::{
+    common_methods_default, handle_py_value_err, py_from_bytes_general_via_bincode,
+    pybytes_general_via_bincode, richcmp_type_error, transaction_status_boilerplate,
+    RichcmpEqualityOnly,
+};
 use solders_transaction_error::{
     InstructionErrorBorshIO, InstructionErrorCustom, InstructionErrorFieldless,
     TransactionErrorDuplicateInstruction, TransactionErrorFieldless,
@@ -18,10 +22,10 @@ use solders_transaction_error::{
 use solders_transaction_status_enums::{TransactionDetails, UiTransactionEncoding};
 
 use std::str::FromStr;
-pub mod tmp_transaction_status;
 
 use pyo3::{
     prelude::*,
+    pyclass::CompareOp,
     types::{PyBytes, PyTuple},
     PyTypeInfo,
 };
@@ -31,17 +35,17 @@ use solana_sdk::{
     clock::UnixTimestamp, slot_history::Slot,
     transaction_context::TransactionReturnData as TransactionReturnDataOriginal,
 };
-use solders_macros::{common_methods, enum_original_mapping, richcmp_eq_only, EnumIntoPy};
-use solders_transaction::{TransactionVersion, VersionedTransaction};
-use tmp_transaction_status::{
-    EncodedConfirmedTransactionWithStatusMeta as EncodedConfirmedTransactionWithStatusMetaOriginal,
+use solana_transaction_status::{
+    parse_accounts::{
+        ParsedAccount as ParsedAccountOriginal, ParsedAccountSource as ParsedAccountSourceOriginal,
+    },
+    parse_instruction::ParsedInstruction as ParsedInstructionOriginal,
     EncodedTransaction as EncodedTransactionOriginal,
     EncodedTransactionWithStatusMeta as EncodedTransactionWithStatusMetaOriginal,
-    ParsedAccount as ParsedAccountOriginal, ParsedInstruction as ParsedInstructionOriginal,
     Reward as RewardOriginal, RewardType as RewardTypeOriginal,
     TransactionBinaryEncoding as TransactionBinaryEncodingOriginal,
     TransactionConfirmationStatus as TransactionConfirmationStatusOriginal,
-    TransactionStatus as TransactionStatusOriginal,
+    TransactionStatus as TransactionStatusOriginal, UiAccountsList as UiAccountsListOriginal,
     UiAddressTableLookup as UiAddressTableLookupOriginal,
     UiCompiledInstruction as UiCompiledInstructionOriginal,
     UiConfirmedBlock as UiConfirmedBlockOriginal,
@@ -53,6 +57,8 @@ use tmp_transaction_status::{
     UiTransactionReturnData, UiTransactionStatusMeta as UiTransactionStatusMetaOriginal,
     UiTransactionTokenBalance as UiTransactionTokenBalanceOriginal,
 };
+use solders_macros::{common_methods, enum_original_mapping, richcmp_eq_only, EnumIntoPy};
+use solders_transaction::{TransactionVersion, VersionedTransaction};
 
 #[derive(Serialize, Deserialize, Clone, Copy, Debug, Eq, Hash, PartialEq)]
 #[serde(rename_all = "camelCase")]
@@ -74,11 +80,17 @@ transaction_status_boilerplate!(UiCompiledInstruction);
 #[pymethods]
 impl UiCompiledInstruction {
     #[new]
-    fn new(program_id_index: u8, accounts: Vec<u8>, data: String) -> Self {
+    fn new(
+        program_id_index: u8,
+        accounts: Vec<u8>,
+        data: String,
+        stack_height: Option<u32>,
+    ) -> Self {
         UiCompiledInstructionOriginal {
             program_id_index,
             accounts,
             data,
+            stack_height,
         }
         .into()
     }
@@ -203,6 +215,14 @@ impl UiRawMessage {
     }
 }
 
+#[pyclass(module = "solders.transaction_status")]
+#[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq, Hash)]
+#[serde(rename_all = "camelCase")]
+#[enum_original_mapping(ParsedAccountSourceOriginal)]
+pub enum ParsedAccountSource {
+    Transaction,
+    LookupTable,
+}
 /// A duplicate representation of a Message, in raw format, for pretty JSON serialization
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.transaction_status", subclass)]
@@ -215,11 +235,17 @@ transaction_status_boilerplate!(ParsedAccount);
 #[pymethods]
 impl ParsedAccount {
     #[new]
-    fn new(pubkey: Pubkey, writable: bool, signer: bool) -> Self {
+    fn new(
+        pubkey: Pubkey,
+        writable: bool,
+        signer: bool,
+        source: Option<ParsedAccountSource>,
+    ) -> Self {
         ParsedAccountOriginal {
             pubkey: pubkey.to_string(),
             writable,
             signer,
+            source: source.map(Into::into),
         }
         .into()
     }
@@ -238,6 +264,11 @@ impl ParsedAccount {
     pub fn signer(&self) -> bool {
         self.0.signer
     }
+
+    #[getter]
+    pub fn source(&self) -> Option<ParsedAccountSource> {
+        self.0.source.clone().map(Into::into)
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
@@ -251,12 +282,18 @@ transaction_status_boilerplate!(ParsedInstruction);
 #[pymethods]
 impl ParsedInstruction {
     #[new]
-    fn new(program: String, program_id: Pubkey, parsed: &PyAny) -> PyResult<Self> {
+    fn new(
+        program: String,
+        program_id: Pubkey,
+        parsed: &PyAny,
+        stack_height: Option<u32>,
+    ) -> PyResult<Self> {
         let value = handle_py_value_err(depythonize::<Value>(parsed))?;
         Ok(ParsedInstructionOriginal {
             program,
             program_id: program_id.to_string(),
             parsed: value,
+            stack_height,
         }
         .into())
     }
@@ -275,6 +312,11 @@ impl ParsedInstruction {
     pub fn parsed(&self, py: Python<'_>) -> PyResult<PyObject> {
         handle_py_value_err(pythonize(py, &self.0.parsed))
     }
+
+    #[getter]
+    pub fn stack_height(&self) -> Option<u32> {
+        self.0.stack_height
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
@@ -288,11 +330,17 @@ transaction_status_boilerplate!(UiPartiallyDecodedInstruction);
 #[pymethods]
 impl UiPartiallyDecodedInstruction {
     #[new]
-    fn new(program_id: Pubkey, accounts: Vec<Pubkey>, data: String) -> Self {
+    fn new(
+        program_id: Pubkey,
+        accounts: Vec<Pubkey>,
+        data: String,
+        stack_height: Option<u32>,
+    ) -> Self {
         UiPartiallyDecodedInstructionOriginal {
             program_id: program_id.to_string(),
             accounts: accounts.into_iter().map(|a| a.to_string()).collect(),
             data,
+            stack_height,
         }
         .into()
     }
@@ -315,6 +363,11 @@ impl UiPartiallyDecodedInstruction {
     #[getter]
     pub fn data(&self) -> String {
         self.0.data.clone()
+    }
+
+    #[getter]
+    pub fn stack_height(&self) -> Option<u32> {
+        self.0.stack_height
     }
 }
 
@@ -495,6 +548,7 @@ impl UiTransaction {
 pub enum EncodedVersionedTransaction {
     Binary(VersionedTransaction),
     Json(UiTransaction),
+    Accounts(UiAccountsList),
 }
 
 impl From<EncodedTransaction> for EncodedVersionedTransaction {
@@ -504,6 +558,7 @@ impl From<EncodedTransaction> for EncodedVersionedTransaction {
                 VersionedTransaction::from(EncodedTransactionOriginal::from(e).decode().unwrap()),
             ),
             EncodedTransaction::Json(u) => Self::Json(u),
+            EncodedTransaction::Accounts(u) => Self::Accounts(u),
         }
     }
 }
@@ -516,6 +571,7 @@ impl From<EncodedVersionedTransaction> for EncodedTransaction {
                 TransactionBinaryEncoding::Base64,
             ),
             EncodedVersionedTransaction::Json(u) => Self::Json(u),
+            EncodedVersionedTransaction::Accounts(u) => Self::Accounts(u),
         }
     }
 }
@@ -532,12 +588,53 @@ impl From<EncodedTransactionOriginal> for EncodedVersionedTransaction {
     }
 }
 
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
+#[pyclass(module = "solders.transaction_status", subclass)]
+pub struct UiAccountsList(UiAccountsListOriginal);
+
+transaction_status_boilerplate!(UiAccountsList);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl UiAccountsList {
+    #[new]
+    pub fn new(signatures: Vec<Signature>, account_keys: Vec<ParsedAccount>) -> Self {
+        UiAccountsListOriginal {
+            signatures: signatures.into_iter().map(|s| s.to_string()).collect(),
+            account_keys: account_keys.into_iter().map(Into::into).collect(),
+        }
+        .into()
+    }
+
+    #[getter]
+    pub fn signatures(&self) -> Vec<Signature> {
+        self.0
+            .signatures
+            .clone()
+            .into_iter()
+            .map(|s| s.parse().unwrap())
+            .collect()
+    }
+
+    #[getter]
+    pub fn account_keys(&self) -> Vec<ParsedAccount> {
+        self.0
+            .account_keys
+            .clone()
+            .into_iter()
+            .map(Into::into)
+            .collect()
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, FromPyObject)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum EncodedTransaction {
     LegacyBinary(String), // Old way of expressing base-58, retained for RPC backwards compatibility
     Binary(String, TransactionBinaryEncoding),
     Json(UiTransaction),
+    Accounts(UiAccountsList),
 }
 
 impl From<EncodedTransactionOriginal> for EncodedTransaction {
@@ -546,6 +643,7 @@ impl From<EncodedTransactionOriginal> for EncodedTransaction {
             EncodedTransactionOriginal::LegacyBinary(s) => Self::LegacyBinary(s),
             EncodedTransactionOriginal::Binary(s, b) => Self::Binary(s, b.into()),
             EncodedTransactionOriginal::Json(t) => Self::Json(t.into()),
+            EncodedTransactionOriginal::Accounts(a) => Self::Accounts(a.into()),
         }
     }
 }
@@ -556,6 +654,7 @@ impl From<EncodedTransaction> for EncodedTransactionOriginal {
             EncodedTransaction::LegacyBinary(s) => Self::LegacyBinary(s),
             EncodedTransaction::Binary(s, b) => Self::Binary(s, b.into()),
             EncodedTransaction::Json(t) => Self::Json(t.into()),
+            EncodedTransaction::Accounts(t) => Self::Accounts(t.into()),
         }
     }
 }
@@ -655,8 +754,8 @@ impl UiTransactionTokenBalance {
             account_index,
             mint: mint.to_string(),
             ui_token_amount: ui_token_amount.into(),
-            owner: owner.map(|x| x.to_string()),
-            program_id: program_id.map(|x| x.to_string()),
+            owner: owner.map(|x| x.to_string()).into(),
+            program_id: program_id.map(|x| x.to_string()).into(),
         }
         .into()
     }
@@ -678,15 +777,14 @@ impl UiTransactionTokenBalance {
 
     #[getter]
     pub fn owner(&self) -> Option<Pubkey> {
-        self.0.owner.clone().map(|x| Pubkey::from_str(&x).unwrap())
+        let maybe_key: Option<String> = self.0.owner.clone().into();
+        maybe_key.map(|x| Pubkey::from_str(&x).unwrap())
     }
 
     #[getter]
     pub fn program_id(&self) -> Option<Pubkey> {
-        self.0
-            .clone()
-            .program_id
-            .map(|x| Pubkey::from_str(&x).unwrap())
+        let maybe_id: Option<String> = self.0.clone().program_id.into();
+        maybe_id.map(|x| Pubkey::from_str(&x).unwrap())
     }
 }
 
@@ -749,14 +847,51 @@ impl From<UiTransactionReturnData> for TransactionReturnData {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.transaction_status", subclass)]
 pub struct UiTransactionStatusMeta(UiTransactionStatusMetaOriginal);
-transaction_status_boilerplate!(UiTransactionStatusMeta);
+impl RichcmpEqualityOnly for UiTransactionStatusMeta {
+    fn richcmp(&self, other: &Self, op: pyo3::pyclass::CompareOp) -> PyResult<bool> {
+        match op {
+            CompareOp::Eq => Ok(self.compare(other)),
+            CompareOp::Ne => Ok(!self.compare(other)),
+            CompareOp::Lt => Err(richcmp_type_error("<")),
+            CompareOp::Gt => Err(richcmp_type_error(">")),
+            CompareOp::Le => Err(richcmp_type_error("<=")),
+            CompareOp::Ge => Err(richcmp_type_error(">=")),
+        }
+    }
+}
+
+impl UiTransactionStatusMeta {
+    fn compare(&self, other: &Self) -> bool {
+        self.err() == other.err()
+            && self.fee() == other.fee()
+            && self.pre_balances() == other.pre_balances()
+            && self.post_balances() == other.post_balances()
+            && self.inner_instructions() == other.inner_instructions()
+            && self.log_messages() == other.log_messages()
+            && self.pre_token_balances() == other.pre_token_balances()
+            && self.post_token_balances() == other.post_token_balances()
+            && self.rewards() == other.rewards()
+            && self.loaded_addresses() == other.loaded_addresses()
+            && self.return_data() == other.return_data()
+            && self.compute_units_consumed() == other.compute_units_consumed()
+    }
+}
+
+impl std::fmt::Display for UiTransactionStatusMeta {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+pybytes_general_via_bincode!(UiTransactionStatusMeta);
+py_from_bytes_general_via_bincode!(UiTransactionStatusMeta);
+common_methods_default!(UiTransactionStatusMeta);
 
 #[richcmp_eq_only]
 #[common_methods]
 #[pymethods]
 impl UiTransactionStatusMeta {
     #[pyo3(
-        signature = (err, fee, pre_balances, post_balances, inner_instructions=None, log_messages=None, pre_token_balances=None, post_token_balances=None, rewards=None, loaded_addresses=None, return_data=None)
+        signature = (err, fee, pre_balances, post_balances, inner_instructions=None, log_messages=None, pre_token_balances=None, post_token_balances=None, rewards=None, loaded_addresses=None, return_data=None, compute_units_consumed=None)
     )]
     #[new]
     pub fn new(
@@ -771,6 +906,7 @@ impl UiTransactionStatusMeta {
         rewards: Option<Rewards>,
         loaded_addresses: Option<UiLoadedAddresses>,
         return_data: Option<TransactionReturnData>,
+        compute_units_consumed: Option<u64>,
     ) -> Self {
         UiTransactionStatusMetaOriginal {
             err: err.map(|e| e.into()),
@@ -779,15 +915,21 @@ impl UiTransactionStatusMeta {
             pre_balances,
             post_balances,
             inner_instructions: inner_instructions
-                .map(|v| v.into_iter().map(|ix| ix.into()).collect()),
-            log_messages,
+                .map(|v| v.into_iter().map(|ix| ix.into()).collect())
+                .into(),
+            log_messages: log_messages.into(),
             pre_token_balances: pre_token_balances
-                .map(|v| v.into_iter().map(|bal| bal.into()).collect()),
+                .map(|v| v.into_iter().map(|bal| bal.into()).collect())
+                .into(),
             post_token_balances: post_token_balances
-                .map(|v| v.into_iter().map(|bal| bal.into()).collect()),
-            rewards: rewards.map(|v| v.into_iter().map(|r| r.into()).collect()),
-            loaded_addresses: loaded_addresses.map(|a| a.into()),
-            return_data: return_data.map(|r| r.into()),
+                .map(|v| v.into_iter().map(|bal| bal.into()).collect())
+                .into(),
+            rewards: rewards
+                .map(|v| v.into_iter().map(|r| r.into()).collect())
+                .into(),
+            loaded_addresses: loaded_addresses.map(|a| a.into()).into(),
+            return_data: return_data.map(|r| r.into()).into(),
+            compute_units_consumed: compute_units_consumed.into(),
         }
         .into()
     }
@@ -810,43 +952,45 @@ impl UiTransactionStatusMeta {
     }
     #[getter]
     pub fn inner_instructions(&self) -> Option<Vec<UiInnerInstructions>> {
-        self.0
-            .inner_instructions
-            .clone()
-            .map(|v| v.into_iter().map(|ix| ix.into()).collect())
+        let maybe_instructions: Option<Vec<UiInnerInstructionsOriginal>> =
+            self.0.inner_instructions.clone().into();
+        maybe_instructions.map(|v| v.into_iter().map(|ix| ix.into()).collect())
     }
     #[getter]
     pub fn log_messages(&self) -> Option<Vec<String>> {
-        self.0.log_messages.clone()
+        self.0.log_messages.clone().into()
     }
     #[getter]
     pub fn pre_token_balances(&self) -> Option<Vec<UiTransactionTokenBalance>> {
-        self.0
-            .pre_token_balances
-            .clone()
-            .map(|v| v.into_iter().map(|bal| bal.into()).collect())
+        let maybe_balances: Option<Vec<UiTransactionTokenBalanceOriginal>> =
+            self.0.post_token_balances.clone().into();
+        maybe_balances.map(|v| v.into_iter().map(|bal| bal.into()).collect())
     }
     #[getter]
     pub fn post_token_balances(&self) -> Option<Vec<UiTransactionTokenBalance>> {
-        self.0
-            .post_token_balances
-            .clone()
-            .map(|v| v.into_iter().map(|bal| bal.into()).collect())
+        let maybe_balances: Option<Vec<UiTransactionTokenBalanceOriginal>> =
+            self.0.post_token_balances.clone().into();
+        maybe_balances.map(|v| v.into_iter().map(|bal| bal.into()).collect())
     }
     #[getter]
     pub fn rewards(&self) -> Option<Rewards> {
-        self.0
-            .rewards
-            .clone()
-            .map(|v| v.into_iter().map(|r| r.into()).collect())
+        let maybe_rewards: Option<Vec<RewardOriginal>> = self.0.rewards.clone().into();
+        maybe_rewards.map(|v| v.into_iter().map(|r| r.into()).collect())
     }
     #[getter]
     pub fn loaded_addresses(&self) -> Option<UiLoadedAddresses> {
-        self.0.loaded_addresses.clone().map(|a| a.into())
+        let maybe_addresses: Option<UiLoadedAddressesOriginal> =
+            self.0.loaded_addresses.clone().into();
+        maybe_addresses.map(UiLoadedAddresses::from)
     }
     #[getter]
     pub fn return_data(&self) -> Option<TransactionReturnData> {
-        self.0.return_data.clone().map(|r| r.into())
+        let maybe_underlying: Option<UiTransactionReturnData> = self.0.return_data.clone().into();
+        maybe_underlying.map(|r| r.into())
+    }
+    #[getter]
+    pub fn compute_units_consumed(&self) -> Option<u64> {
+        self.0.compute_units_consumed.clone().into()
     }
 }
 
@@ -1017,11 +1161,19 @@ impl TransactionStatus {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
+// the one in transaction_status is missing Clone
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
 #[pyclass(module = "solders.transaction_status", subclass)]
-pub struct EncodedConfirmedTransactionWithStatusMeta(
-    EncodedConfirmedTransactionWithStatusMetaOriginal,
-);
+pub struct EncodedConfirmedTransactionWithStatusMeta {
+    #[pyo3(get)]
+    pub slot: Slot,
+    #[serde(flatten)]
+    #[pyo3(get)]
+    pub transaction: EncodedTransactionWithStatusMeta,
+    #[pyo3(get)]
+    pub block_time: Option<UnixTimestamp>,
+}
 
 transaction_status_boilerplate!(EncodedConfirmedTransactionWithStatusMeta);
 
@@ -1035,27 +1187,11 @@ impl EncodedConfirmedTransactionWithStatusMeta {
         transaction: EncodedTransactionWithStatusMeta,
         block_time: Option<UnixTimestamp>,
     ) -> Self {
-        EncodedConfirmedTransactionWithStatusMetaOriginal {
+        Self {
             slot,
-            transaction: transaction.into(),
+            transaction,
             block_time,
         }
-        .into()
-    }
-
-    #[getter]
-    pub fn slot(&self) -> Slot {
-        self.0.slot
-    }
-
-    #[getter]
-    pub fn transaction(&self) -> EncodedTransactionWithStatusMeta {
-        self.0.transaction.clone().into()
-    }
-
-    #[getter]
-    pub fn block_time(&self) -> Option<UnixTimestamp> {
-        self.0.block_time
     }
 }
 
@@ -1147,6 +1283,7 @@ pub fn create_transaction_status_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<UiCompiledInstruction>()?;
     m.add_class::<UiAddressTableLookup>()?;
     m.add_class::<UiRawMessage>()?;
+    m.add_class::<ParsedAccountSource>()?;
     m.add_class::<ParsedAccount>()?;
     m.add_class::<ParsedInstruction>()?;
     m.add_class::<UiPartiallyDecodedInstruction>()?;
@@ -1154,6 +1291,7 @@ pub fn create_transaction_status_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<UiTransaction>()?;
     m.add_class::<UiInnerInstructions>()?;
     m.add_class::<UiLoadedAddresses>()?;
+    m.add_class::<UiAccountsList>()?;
     m.add_class::<UiTransactionTokenBalance>()?;
     m.add_class::<RewardType>()?;
     m.add_class::<TransactionReturnData>()?;
@@ -1204,6 +1342,7 @@ pub fn create_transaction_status_mod(py: Python<'_>) -> PyResult<&PyModule> {
             vec![
                 VersionedTransaction::type_object(py),
                 UiTransaction::type_object(py),
+                UiAccountsList::type_object(py),
             ],
         ))?,
     )?;

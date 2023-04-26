@@ -1,7 +1,10 @@
-pub mod tmp_filter;
-use pyo3::prelude::*;
+use pyo3::{
+    prelude::*,
+    types::{PyLong, PyTuple},
+    PyTypeInfo,
+};
 use serde::{Deserialize, Serialize};
-use tmp_filter::{
+use solana_rpc_client_api::filter::{
     Memcmp as MemcmpOriginal, MemcmpEncodedBytes as MemcmpEncodedBytesOriginal,
     MemcmpEncoding as MemcmpEncodingOriginal, RpcFilterType as RpcFilterTypeOriginal,
 };
@@ -63,6 +66,7 @@ pybytes_general_via_bincode!(Memcmp);
 py_from_bytes_general_via_bincode!(Memcmp);
 impl_display!(Memcmp);
 
+#[allow(deprecated)]
 #[richcmp_eq_only]
 #[common_methods]
 #[pymethods]
@@ -99,11 +103,18 @@ impl Memcmp {
 impl RichcmpEqualityOnly for Memcmp {}
 solders_traits_core::common_methods_default!(Memcmp);
 
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone, Hash)]
+#[pyclass(module = "solders.transaction_status")]
+pub enum RpcFilterTypeFieldless {
+    TokenAccountState,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, FromPyObject, EnumIntoPy)]
 #[serde(rename_all = "camelCase")]
 pub enum RpcFilterType {
     DataSize(u64),
     Memcmp(Memcmp),
+    Fieldless(RpcFilterTypeFieldless),
 }
 
 impl From<RpcFilterType> for RpcFilterTypeOriginal {
@@ -111,6 +122,11 @@ impl From<RpcFilterType> for RpcFilterTypeOriginal {
         match r {
             RpcFilterType::DataSize(num) => RpcFilterTypeOriginal::DataSize(num),
             RpcFilterType::Memcmp(mem) => RpcFilterTypeOriginal::Memcmp(mem.into()),
+            RpcFilterType::Fieldless(f) => match f {
+                RpcFilterTypeFieldless::TokenAccountState => {
+                    RpcFilterTypeOriginal::TokenAccountState
+                }
+            },
         }
     }
 }
@@ -120,6 +136,9 @@ impl From<RpcFilterTypeOriginal> for RpcFilterType {
         match r {
             RpcFilterTypeOriginal::DataSize(num) => RpcFilterType::DataSize(num),
             RpcFilterTypeOriginal::Memcmp(mem) => RpcFilterType::Memcmp(mem.into()),
+            RpcFilterTypeOriginal::TokenAccountState => {
+                RpcFilterType::Fieldless(RpcFilterTypeFieldless::TokenAccountState)
+            }
         }
     }
 }
@@ -128,5 +147,17 @@ pub fn create_filter_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "filter")?;
     m.add_class::<MemcmpEncoding>()?;
     m.add_class::<Memcmp>()?;
+    m.add_class::<RpcFilterTypeFieldless>()?;
+    let typing = py.import("typing")?;
+    let union = typing.getattr("Union")?;
+    let rpc_filter_type_members = vec![
+        Memcmp::type_object(py),
+        RpcFilterTypeFieldless::type_object(py),
+        PyLong::type_object(py),
+    ];
+    m.add(
+        "RpcFilterType",
+        union.get_item(PyTuple::new(py, rpc_filter_type_members.clone()))?,
+    )?;
     Ok(m)
 }

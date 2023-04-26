@@ -4384,6 +4384,7 @@ dependencies = [
  "solders-address-lookup-table-account",
  "solders-bankrun",
  "solders-commitment-config",
+ "solders-epoch-info",
  "solders-hash",
  "solders-instruction",
  "solders-keypair",
@@ -4410,6 +4411,7 @@ dependencies = [
  "derive_more",
  "pyo3",
  "serde",
+ "solana-account-decoder",
  "solana-sdk",
  "solders-account-decoder",
  "solders-macros",
@@ -4428,6 +4430,7 @@ dependencies = [
  "pythonize",
  "serde",
  "serde_json",
+ "solana-account-decoder",
  "solana-sdk",
  "solders-macros",
  "solders-traits-core",
@@ -4497,6 +4500,19 @@ dependencies = [
  "serde",
  "solana-sdk",
  "solders-traits",
+]
+
+[[package]]
+name = "solders-epoch-info"
+version = "0.14.4"
+dependencies = [
+ "derive_more",
+ "pyo3",
+ "serde",
+ "solana-program",
+ "solana-sdk",
+ "solders-macros",
+ "solders-traits-core",
 ]
 
 [[package]]
@@ -4601,8 +4617,10 @@ dependencies = [
  "pyo3",
  "serde",
  "serde_with 1.14.0",
+ "solana-account-decoder",
+ "solana-rpc-client-api",
+ "solana-transaction-status",
  "solders-account",
- "solders-account-decoder",
  "solders-macros",
  "solders-rpc-response-data-boilerplate",
  "solders-traits-core",
@@ -4616,7 +4634,10 @@ version = "0.14.4"
 dependencies = [
  "pyo3",
  "serde",
+ "solana-account-decoder",
+ "solana-rpc-client-api",
  "solana-sdk",
+ "solana-transaction-status",
  "solders-account-decoder",
  "solders-commitment-config",
  "solders-hash",
@@ -4679,6 +4700,7 @@ dependencies = [
  "derive_more",
  "pyo3",
  "serde",
+ "solana-rpc-client-api",
  "solders-macros",
  "solders-traits-core",
  "thiserror",
@@ -4691,6 +4713,7 @@ dependencies = [
  "bincode",
  "serde",
  "serde_with 1.14.0",
+ "solana-rpc-client-api",
  "solders-base64-string",
  "solders-commitment-config",
  "solders-hash",
@@ -4755,9 +4778,13 @@ dependencies = [
  "serde",
  "serde_json",
  "serde_with 1.14.0",
+ "solana-account-decoder",
+ "solana-rpc-client-api",
  "solana-sdk",
+ "solana-transaction-status",
  "solders-account",
  "solders-account-decoder",
+ "solders-epoch-info",
  "solders-hash",
  "solders-macros",
  "solders-primitives",
@@ -4786,6 +4813,8 @@ dependencies = [
  "pyo3",
  "serde",
  "serde_with 1.14.0",
+ "solana-account-decoder",
+ "solana-rpc-client-api",
  "solana-sdk",
  "solders-account",
  "solders-account-decoder",
@@ -4806,7 +4835,7 @@ dependencies = [
  "derive_more",
  "pyo3",
  "serde",
- "solana-sdk",
+ "solana-rpc-client-api",
  "solders-macros",
  "solders-rpc-response-data-boilerplate",
  "solders-signature",
@@ -4920,7 +4949,9 @@ dependencies = [
  "pythonize",
  "serde",
  "serde_json",
+ "solana-account-decoder",
  "solana-sdk",
+ "solana-transaction-status",
  "solders-account-decoder",
  "solders-commitment-config",
  "solders-hash",
@@ -4940,6 +4971,8 @@ version = "0.14.4"
 dependencies = [
  "pyo3",
  "serde",
+ "solana-transaction-status",
+ "solders-macros",
 ]
 
 [[package]]

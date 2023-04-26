@@ -7,6 +7,7 @@ from jsonalias import Json
 from pytest import mark, raises
 from solders.account import Account, AccountJSON
 from solders.account_decoder import ParsedAccount, UiTokenAmount
+from solders.epoch_info import EpochInfo
 from solders.epoch_schedule import EpochSchedule
 from solders.errors import SerdeJSONError
 from solders.hash import Hash
@@ -24,7 +25,6 @@ from solders.rpc.responses import (
     AccountNotificationResult,
     BlockNotification,
     BlockNotificationResult,
-    EpochInfo,
     GetAccountInfoJsonParsedResp,
     GetAccountInfoMaybeJsonParsedResp,
     GetAccountInfoResp,
@@ -91,6 +91,7 @@ from solders.rpc.responses import (
     RequestAirdropResp,
     RootNotification,
     RpcAccountBalance,
+    RpcBlockCommitment,
     RpcBlockhash,
     RpcBlockProduction,
     RpcBlockProductionRange,
@@ -144,6 +145,7 @@ from solders.transaction_status import (
     TransactionConfirmationStatus,
     TransactionErrorInstructionError,
     TransactionStatus,
+    UiAccountsList,
     UiCompiledInstruction,
     UiLoadedAddresses,
     UiParsedMessage,
@@ -324,41 +326,43 @@ def test_get_block_commitment() -> None:
 }"""
     parsed = GetBlockCommitmentResp.from_json(raw)
     expected = GetBlockCommitmentResp(
-        [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            10,
-            32,
-        ],
-        42,
+        RpcBlockCommitment(
+            42,
+            [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                10,
+                32,
+            ],
+        )
     )
     assert parsed == expected
 
@@ -443,6 +447,7 @@ def test_get_block(path: str) -> None:
         ),
     ]
     encoded_tx = tx.transaction
+    assert not isinstance(encoded_tx, UiAccountsList)
     msg = encoded_tx.message
     assert msg.recent_blockhash == Hash.from_string(
         "BeSgJqfSEkmtQ6S42d2Y7qUXdfLSaXeS9DHQYqw1MLxe"
@@ -1896,6 +1901,7 @@ def test_get_transaction(path: str) -> None:
         rewards=[],
         loaded_addresses=UiLoadedAddresses([], []),
         return_data=None,
+        compute_units_consumed=None,
     )
     version = tx.version
     assert meta == expected_meta
@@ -1922,6 +1928,7 @@ def test_get_transaction(path: str) -> None:
         ),
     ]
     encoded_tx = tx.transaction
+    assert not isinstance(encoded_tx, UiAccountsList)
     msg = encoded_tx.message
     assert msg.recent_blockhash == Hash.from_string(
         "2NiTTzGXE7kW66iwM4FaoB7xMidgzMXZkh7k4AeagnW8"

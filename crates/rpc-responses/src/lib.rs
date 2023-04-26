@@ -3,7 +3,6 @@ use std::collections::HashMap;
 use std::fmt::Display;
 use std::str::FromStr;
 
-mod tmp_response;
 use camelpaste::paste;
 use derive_more::{From, Into};
 use pyo3::exceptions::PyValueError;
@@ -16,9 +15,48 @@ use pyo3::{
 use serde::{de::Error, Deserialize, Serialize, Serializer};
 use serde_json::Value;
 use serde_with::{serde_as, DisplayFromStr, FromInto, OneOrMany, TryFromInto};
+use solana_account_decoder::UiAccount;
+use solana_rpc_client_api::{
+    custom_error::{
+        JSON_RPC_SCAN_ERROR, JSON_RPC_SERVER_ERROR_BLOCK_CLEANED_UP,
+        JSON_RPC_SERVER_ERROR_BLOCK_NOT_AVAILABLE,
+        JSON_RPC_SERVER_ERROR_BLOCK_STATUS_NOT_AVAILABLE_YET,
+        JSON_RPC_SERVER_ERROR_KEY_EXCLUDED_FROM_SECONDARY_INDEX,
+        JSON_RPC_SERVER_ERROR_LONG_TERM_STORAGE_SLOT_SKIPPED,
+        JSON_RPC_SERVER_ERROR_MIN_CONTEXT_SLOT_NOT_REACHED, JSON_RPC_SERVER_ERROR_NODE_UNHEALTHY,
+        JSON_RPC_SERVER_ERROR_NO_SNAPSHOT,
+        JSON_RPC_SERVER_ERROR_SEND_TRANSACTION_PREFLIGHT_FAILURE,
+        JSON_RPC_SERVER_ERROR_SLOT_SKIPPED,
+        JSON_RPC_SERVER_ERROR_TRANSACTION_HISTORY_NOT_AVAILABLE,
+        JSON_RPC_SERVER_ERROR_TRANSACTION_PRECOMPILE_VERIFICATION_FAILURE,
+        JSON_RPC_SERVER_ERROR_TRANSACTION_SIGNATURE_LEN_MISMATCH,
+        JSON_RPC_SERVER_ERROR_TRANSACTION_SIGNATURE_VERIFICATION_FAILURE,
+        JSON_RPC_SERVER_ERROR_UNSUPPORTED_TRANSACTION_VERSION,
+    },
+    response::{
+        RpcAccountBalance as RpcAccountBalanceOriginal,
+        RpcBlockCommitment as RpcBlockCommitmentOriginal,
+        RpcBlockProduction as RpcBlockProductionOriginal,
+        RpcBlockProductionRange as RpcBlockProductionRangeOriginal,
+        RpcBlockUpdate as RpcBlockUpdateOriginal,
+        RpcBlockUpdateError as RpcBlockUpdateErrorOriginal,
+        RpcContactInfo as RpcContactInfoOriginal,
+        RpcInflationGovernor as RpcInflationGovernorOriginal,
+        RpcInflationRate as RpcInflationRateOriginal,
+        RpcInflationReward as RpcInflationRewardOriginal,
+        RpcLogsResponse as RpcLogsResponseOriginal, RpcPerfSample as RpcPerfSampleOriginal,
+        RpcSnapshotSlotInfo as RpcSnapshotSlotInfoOriginal,
+        RpcStakeActivation as RpcStakeActivationOriginal, RpcSupply as RpcSupplyOriginal,
+        RpcVote as RpcVoteOriginal, SlotInfo as SlotInfoOriginal,
+        SlotTransactionStats as SlotTransactionStatsOriginal, SlotUpdate as SlotUpdateOriginal,
+        StakeActivationState as StakeActivationStateOriginal,
+    },
+};
 use solana_sdk::clock::{Epoch, Slot, UnixTimestamp};
+use solana_transaction_status::TransactionStatus as TransactionStatusOriginal;
 use solders_account::{Account, AccountJSON};
-use solders_account_decoder::{tmp_account_decoder::UiAccount, UiTokenAmount};
+use solders_account_decoder::UiTokenAmount;
+use solders_epoch_info::EpochInfo;
 use solders_hash::Hash as SolderHash;
 use solders_macros::{
     common_methods, common_methods_rpc_resp, enum_original_mapping, richcmp_eq_only, EnumIntoPy,
@@ -30,33 +68,7 @@ use solders_traits::to_py_err;
 use solders_traits_core::{PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly};
 use solders_transaction_error::TransactionErrorType;
 use solders_transaction_status::{
-    tmp_transaction_status::TransactionStatus as TransactionStatusOriginal,
     EncodedConfirmedTransactionWithStatusMeta, TransactionStatus, UiConfirmedBlock,
-};
-use tmp_response::{
-    RpcAccountBalance as RpcAccountBalanceOriginal,
-    RpcBlockProduction as RpcBlockProductionOriginal,
-    RpcBlockProductionRange as RpcBlockProductionRangeOriginal,
-    RpcBlockUpdate as RpcBlockUpdateOriginal, RpcBlockUpdateError as RpcBlockUpdateErrorOriginal,
-    RpcContactInfo as RpcContactInfoOriginal, RpcInflationGovernor as RpcInflationGovernorOriginal,
-    RpcInflationRate as RpcInflationRateOriginal, RpcInflationReward as RpcInflationRewardOriginal,
-    RpcLogsResponse as RpcLogsResponseOriginal, RpcPerfSample as RpcPerfSampleOriginal,
-    RpcSnapshotSlotInfo as RpcSnapshotSlotInfoOriginal,
-    RpcStakeActivation as RpcStakeActivationOriginal, RpcSupply as RpcSupplyOriginal,
-    RpcVote as RpcVoteOriginal, SlotInfo as SlotInfoOriginal,
-    SlotTransactionStats as SlotTransactionStatsOriginal, SlotUpdate as SlotUpdateOriginal,
-    StakeActivationState as StakeActivationStateOriginal, JSON_RPC_SCAN_ERROR,
-    JSON_RPC_SERVER_ERROR_BLOCK_CLEANED_UP, JSON_RPC_SERVER_ERROR_BLOCK_NOT_AVAILABLE,
-    JSON_RPC_SERVER_ERROR_BLOCK_STATUS_NOT_AVAILABLE_YET,
-    JSON_RPC_SERVER_ERROR_KEY_EXCLUDED_FROM_SECONDARY_INDEX,
-    JSON_RPC_SERVER_ERROR_LONG_TERM_STORAGE_SLOT_SKIPPED,
-    JSON_RPC_SERVER_ERROR_MIN_CONTEXT_SLOT_NOT_REACHED, JSON_RPC_SERVER_ERROR_NODE_UNHEALTHY,
-    JSON_RPC_SERVER_ERROR_NO_SNAPSHOT, JSON_RPC_SERVER_ERROR_SEND_TRANSACTION_PREFLIGHT_FAILURE,
-    JSON_RPC_SERVER_ERROR_SLOT_SKIPPED, JSON_RPC_SERVER_ERROR_TRANSACTION_HISTORY_NOT_AVAILABLE,
-    JSON_RPC_SERVER_ERROR_TRANSACTION_PRECOMPILE_VERIFICATION_FAILURE,
-    JSON_RPC_SERVER_ERROR_TRANSACTION_SIGNATURE_LEN_MISMATCH,
-    JSON_RPC_SERVER_ERROR_TRANSACTION_SIGNATURE_VERIFICATION_FAILURE,
-    JSON_RPC_SERVER_ERROR_UNSUPPORTED_TRANSACTION_VERSION,
 };
 
 use solders_rpc_common::RpcSimulateTransactionResult;
@@ -77,12 +89,12 @@ use solders_rpc_responses_common::{
     notification_struct_def, notification_struct_def_contextless, notification_struct_def_no_eq,
     notification_struct_def_outer, notification_struct_def_outer_no_eq, AccountMaybeJSON,
     AccountNotification, AccountNotificationJsonParsed, AccountNotificationJsonParsedResult,
-    AccountNotificationResult, BlockStoreError, EpochInfo, ProgramNotification,
-    ProgramNotificationJsonParsed, ProgramNotificationJsonParsedResult, ProgramNotificationResult,
-    ProgramNotificationType, RootNotification, RpcBlockhash, RpcIdentity, RpcKeyedAccount,
-    RpcKeyedAccountJsonParsed, RpcKeyedAccountMaybeJSON, RpcLeaderSchedule, RpcResponseContext,
-    RpcSignatureResponse, RpcTokenAccountBalance, RpcVersionInfo, RpcVoteAccountInfo,
-    RpcVoteAccountStatus, SignatureNotification, SignatureNotificationResult, SubscriptionResult,
+    AccountNotificationResult, BlockStoreError, ProgramNotification, ProgramNotificationJsonParsed,
+    ProgramNotificationJsonParsedResult, ProgramNotificationResult, ProgramNotificationType,
+    RootNotification, RpcBlockhash, RpcIdentity, RpcKeyedAccount, RpcKeyedAccountJsonParsed,
+    RpcKeyedAccountMaybeJSON, RpcLeaderSchedule, RpcResponseContext, RpcSignatureResponse,
+    RpcTokenAccountBalance, RpcVersionInfo, RpcVoteAccountInfo, RpcVoteAccountStatus,
+    SignatureNotification, SignatureNotificationResult, SubscriptionResult,
 };
 use solders_rpc_responses_tx_status::RpcConfirmedTransactionStatusWithSignature;
 
@@ -691,33 +703,36 @@ contextful_resp_eq!(
 
 contextful_resp_eq!(GetBalanceResp, u64);
 
-// The one in solana_client isn't clonable
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "camelCase")]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, From, Into)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetBlockCommitmentResp {
-    #[pyo3(get)]
-    pub commitment: Option<[u64; 32]>,
-    #[pyo3(get)]
-    pub total_stake: u64,
-}
+pub struct RpcBlockCommitment(RpcBlockCommitmentOriginal<[u64; 32]>);
 
-resp_traits!(GetBlockCommitmentResp);
+response_data_boilerplate!(RpcBlockCommitment);
 
-#[common_methods_rpc_resp]
+#[richcmp_eq_only]
+#[common_methods]
 #[pymethods]
-impl GetBlockCommitmentResp {
-    #[pyo3(
-        signature = (commitment, total_stake)
-    )]
+impl RpcBlockCommitment {
     #[new]
-    pub fn new(commitment: Option<[u64; 32]>, total_stake: u64) -> Self {
-        Self {
+    pub fn new(total_stake: u64, commitment: Option<[u64; 32]>) -> Self {
+        RpcBlockCommitmentOriginal {
             commitment,
             total_stake,
         }
+        .into()
+    }
+    #[getter]
+    pub fn commitment(&self) -> Option<[u64; 32]> {
+        self.0.commitment
+    }
+
+    #[getter]
+    pub fn total_stake(&self) -> u64 {
+        self.0.total_stake
     }
 }
+
+contextless_resp_eq!(GetBlockCommitmentResp, RpcBlockCommitment, clone);
 
 contextless_resp_eq!(GetBlockHeightResp, u64);
 
@@ -800,29 +815,11 @@ contextless_resp_eq!(GetBlocksResp, Vec<u64>, clone);
 contextless_resp_eq!(GetBlocksWithLimitResp, Vec<u64>, clone);
 contextless_resp_eq!(GetBlockTimeResp, Option<u64>);
 
-// the one in solana_client doesn't derive Eq or PartialEq
-// TODO: it does derive these things in latest unreleased version
 #[serde_as]
-#[derive(Serialize, Deserialize, Eq, PartialEq, Clone, Debug)]
+#[derive(Serialize, Deserialize, Eq, PartialEq, Clone, Debug, From, Into)]
 #[serde(rename_all = "camelCase")]
 #[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct RpcContactInfo {
-    #[pyo3(get)]
-    #[serde_as(as = "DisplayFromStr")]
-    pub pubkey: Pubkey,
-    #[pyo3(get)]
-    pub gossip: Option<String>,
-    #[pyo3(get)]
-    pub tpu: Option<String>,
-    #[pyo3(get)]
-    pub rpc: Option<String>,
-    #[pyo3(get)]
-    pub version: Option<String>,
-    #[pyo3(get)]
-    pub feature_set: Option<u32>,
-    #[pyo3(get)]
-    pub shred_version: Option<u16>,
-}
+pub struct RpcContactInfo(pub RpcContactInfoOriginal);
 
 response_data_boilerplate!(RpcContactInfo);
 
@@ -836,59 +833,21 @@ impl RpcContactInfo {
         gossip: Option<String>,
         tpu: Option<String>,
         rpc: Option<String>,
+        pubsub: Option<String>,
         version: Option<String>,
         feature_set: Option<u32>,
         shred_version: Option<u16>,
     ) -> Self {
-        Self {
-            pubkey,
-            gossip,
-            tpu,
-            rpc,
+        Self(RpcContactInfoOriginal {
+            pubkey: pubkey.to_string(),
+            gossip: gossip.map(|x| x.parse().unwrap()),
+            tpu: tpu.map(|x| x.parse().unwrap()),
+            rpc: rpc.map(|x| x.parse().unwrap()),
+            pubsub: pubsub.map(|x| x.parse().unwrap()),
             version,
             feature_set,
             shred_version,
-        }
-    }
-}
-
-impl From<RpcContactInfo> for RpcContactInfoOriginal {
-    fn from(r: RpcContactInfo) -> Self {
-        let RpcContactInfo {
-            version,
-            feature_set,
-            shred_version,
-            ..
-        } = r;
-        Self {
-            pubkey: r.pubkey.to_string(),
-            gossip: r.gossip.map(|x| x.parse().unwrap()),
-            tpu: r.tpu.map(|x| x.parse().unwrap()),
-            rpc: r.rpc.map(|x| x.parse().unwrap()),
-            version,
-            feature_set,
-            shred_version,
-        }
-    }
-}
-
-impl From<RpcContactInfoOriginal> for RpcContactInfo {
-    fn from(r: RpcContactInfoOriginal) -> Self {
-        let RpcContactInfoOriginal {
-            version,
-            feature_set,
-            shred_version,
-            ..
-        } = r;
-        Self {
-            pubkey: r.pubkey.parse().unwrap(),
-            gossip: r.gossip.map(|x| x.to_string()),
-            tpu: r.tpu.map(|x| x.to_string()),
-            rpc: r.tpu.map(|x| x.to_string()),
-            version,
-            feature_set,
-            shred_version,
-        }
+        })
     }
 }
 
@@ -1170,12 +1129,19 @@ response_data_boilerplate!(RpcPerfSample);
 #[pymethods]
 impl RpcPerfSample {
     #[new]
-    pub fn new(slot: Slot, num_transactions: u64, num_slots: u64, sample_period_secs: u16) -> Self {
+    pub fn new(
+        slot: Slot,
+        num_transactions: u64,
+        num_slots: u64,
+        sample_period_secs: u16,
+        num_non_vote_transactions: Option<u64>,
+    ) -> Self {
         RpcPerfSampleOriginal {
             slot,
             num_transactions,
             num_slots,
             sample_period_secs,
+            num_non_vote_transactions,
         }
         .into()
     }
@@ -1195,6 +1161,10 @@ impl RpcPerfSample {
     #[getter]
     pub fn sample_period_secs(&self) -> u16 {
         self.0.sample_period_secs
+    }
+    #[getter]
+    pub fn num_non_votetransactions(&self) -> Option<u64> {
+        self.0.num_non_vote_transactions
     }
 }
 
@@ -2155,6 +2125,7 @@ pub fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<RpcBlockProductionRange>()?;
     m.add_class::<GetBlockProductionResp>()?;
     m.add_class::<GetBlockResp>()?;
+    m.add_class::<RpcBlockCommitment>()?;
     m.add_class::<GetBlockCommitmentResp>()?;
     m.add_class::<GetBlockHeightResp>()?;
     m.add_class::<GetBlocksResp>()?;

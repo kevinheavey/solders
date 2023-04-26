@@ -8,7 +8,6 @@ use solders_hash::Hash as SolderHash;
 use solders_macros::{common_methods, richcmp_eq_only, rpc_id_getter, EnumIntoPy};
 use solders_message::VersionedMessage;
 use solders_pubkey::Pubkey;
-use solders_rpc_version::V2;
 use solders_signature::Signature;
 use solders_traits::to_py_err;
 use solders_traits_core::{
@@ -35,7 +34,7 @@ use solders_rpc_request_params::{
 };
 use solders_rpc_request_params_no_config::{
     GetBlocksParams, GetFeeForMessageParams, GetMinimumBalanceForRentExemptionParams,
-    PubkeyAndCommitmentParams, UnsubscribeParams,
+    PubkeyAndCommitmentParams, UnsubscribeParams, RequestBase,
 };
 
 macro_rules! rpc_impl_display {
@@ -170,21 +169,6 @@ unsubscribe_def!(SlotUnsubscribe);
 unsubscribe_def!(SlotsUpdatesUnsubscribe);
 unsubscribe_def!(RootUnsubscribe);
 unsubscribe_def!(VoteUnsubscribe);
-
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
-struct RequestBase {
-    jsonrpc: V2,
-    id: u64,
-}
-
-impl RequestBase {
-    fn new(id: Option<u64>) -> Self {
-        Self {
-            jsonrpc: V2::TwoPointOh,
-            id: id.unwrap_or(0),
-        }
-    }
-}
 
 /// A ``getAccountInfo`` request.
 ///

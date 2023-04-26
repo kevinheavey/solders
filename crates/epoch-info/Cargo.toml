@@ -1,5 +1,5 @@
 [package]
-name = "solders-address-lookup-table-account"
+name = "solders-epoch-info"
 version = "0.14.4"
 edition = "2021"
 include = ["/src"]
@@ -11,6 +11,6 @@ pyo3 = { workspace = true }
 solders-traits-core = { workspace = true }
 solders-macros = { workspace = true }
 solana-program = { workspace = true }
+solana-sdk = { workspace = true }
 serde = { workspace = true }
 derive_more = { workspace = true }
-solders-pubkey = { workspace = true }

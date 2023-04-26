@@ -19,11 +19,13 @@ solders-macros = { workspace = true }
 base64 = { workspace = true }
 bs58 = { workspace = true }
 solders-traits-core = { workspace = true }
+solana-account-decoder = { workspace = true }
 solders-account-decoder = { workspace = true }
 solders-hash = { workspace = true }
 solders-message = { workspace = true }
 solders-transaction = { workspace = true }
+solana-transaction-status = { workspace = true }
 solders-transaction-error = { workspace = true }
 solders-transaction-status-enums = { workspace = true }
 solders-commitment-config ={ workspace = true }
-bincode ={ workspace = true }
+bincode = { workspace = true }

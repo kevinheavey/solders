@@ -6,10 +6,10 @@ use pyo3::prelude::*;
 use rpc::create_rpc_mod;
 use solders_account::create_account_mod;
 use solders_instruction::{AccountMeta, CompiledInstruction, Instruction};
+use solders_system_program::create_system_program_mod;
 use solders_traits::{BincodeError, CborError, ParseHashError, SerdeJSONError, SignerError};
 use solders_transaction_status::create_transaction_status_mod;
 use std::collections::HashMap;
-use solders_system_program::create_system_program_mod;
 use sysvar::create_sysvar_mod;
 pub mod message;
 use message::create_message_mod;
@@ -20,6 +20,7 @@ pub mod address_lookup_table_account;
 pub mod rpc;
 pub mod sysvar;
 use solders_commitment_config::{CommitmentConfig, CommitmentLevel};
+use solders_epoch_info::create_epoch_info_mod;
 use solders_hash::Hash as SolderHash;
 use solders_keypair::{null_signer::NullSigner, presigner::Presigner, Keypair};
 use solders_primitives::{
@@ -69,6 +70,7 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
     let bankrun_mod = solders_bankrun::create_bankrun_mod(py)?;
     let clock_mod = create_clock_mod(py)?;
     let rent_mod = create_rent_mod(py)?;
+    let epoch_info_mod = create_epoch_info_mod(py)?;
     let submodules = [
         errors_mod,
         hash_mod,
@@ -93,6 +95,7 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
         bankrun_mod,
         clock_mod,
         rent_mod,
+        epoch_info_mod,
     ];
     let modules: HashMap<String, &PyModule> = submodules
         .iter()

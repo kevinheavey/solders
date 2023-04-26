@@ -9,3 +9,5 @@ repository = "https://github.com/kevinheavey/solders"
 [dependencies]
 serde = { workspace = true }
 pyo3 = { workspace = true }
+solana-transaction-status = { workspace = true }
+solders-macros = { workspace = true }

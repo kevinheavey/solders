@@ -3,27 +3,12 @@ use std::str::FromStr;
 use derive_more::{From, Into};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
-use solana_sdk::transaction::TransactionError as TransactionErrorOriginal;
+use solana_rpc_client_api::response::RpcConfirmedTransactionStatusWithSignature as RpcConfirmedTransactionStatusWithSignatureOriginal;
 use solders_macros::{common_methods, richcmp_eq_only};
 use solders_rpc_response_data_boilerplate::response_data_boilerplate;
 use solders_signature::Signature;
 use solders_transaction_error::TransactionErrorType;
-use solders_transaction_status::{
-    tmp_transaction_status::TransactionConfirmationStatus as TransactionConfirmationStatusOriginal,
-    TransactionConfirmationStatus,
-};
-
-// the one in solana_client uses transaction_status
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-struct RpcConfirmedTransactionStatusWithSignatureOriginal {
-    pub signature: String,
-    pub slot: u64,
-    pub err: Option<TransactionErrorOriginal>,
-    pub memo: Option<String>,
-    pub block_time: Option<i64>,
-    pub confirmation_status: Option<TransactionConfirmationStatusOriginal>,
-}
+use solders_transaction_status::TransactionConfirmationStatus;
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
 #[pyclass(module = "solders.rpc.responses", subclass)]

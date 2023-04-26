@@ -4,17 +4,17 @@ use solders_traits_core::{
 };
 use std::fmt::Display;
 
-use crate::tmp_account_decoder::{
-    ParsedAccount as ParsedAccountOriginal, UiDataSliceConfig as UiDataSliceConfigOriginal,
-    UiTokenAmount as UiTokenAmountOriginal,
-};
 use derive_more::{From, Into};
 use pyo3::prelude::*;
 use pythonize::{depythonize, pythonize};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use solders_macros::{common_methods, richcmp_eq_only};
-pub mod tmp_account_decoder;
+use solana_account_decoder::{
+    parse_account_data::ParsedAccount as ParsedAccountOriginal,
+    parse_token::UiTokenAmount as UiTokenAmountOriginal,
+    UiAccountEncoding as UiAccountEncodingOriginal, UiDataSliceConfig as UiDataSliceConfigOriginal,
+};
+use solders_macros::{common_methods, enum_original_mapping, richcmp_eq_only};
 
 /// Configuration object for limiting returned account data.
 ///
@@ -55,6 +55,7 @@ impl RichcmpEqualityOnly for UiDataSliceConfig {}
 #[pyclass(module = "solders.account_decoder")]
 #[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq, Hash)]
 #[serde(rename_all = "camelCase")]
+#[enum_original_mapping(UiAccountEncodingOriginal)]
 pub enum UiAccountEncoding {
     Binary, // Legacy. Retained for RPC backwards compatibility
     Base58,
@@ -66,7 +67,7 @@ pub enum UiAccountEncoding {
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, From, Into)]
 #[pyclass(module = "solders.account_decoder")]
-pub struct ParsedAccount(ParsedAccountOriginal);
+pub struct ParsedAccount(pub ParsedAccountOriginal);
 
 impl RichcmpEqualityOnly for ParsedAccount {}
 impl Display for ParsedAccount {
