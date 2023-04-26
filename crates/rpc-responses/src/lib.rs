@@ -35,6 +35,7 @@ use solana_rpc_client_api::{
     },
     response::{
         RpcAccountBalance as RpcAccountBalanceOriginal,
+        RpcBlockCommitment as RpcBlockCommitmentOriginal,
         RpcBlockProduction as RpcBlockProductionOriginal,
         RpcBlockProductionRange as RpcBlockProductionRangeOriginal,
         RpcBlockUpdate as RpcBlockUpdateOriginal,
@@ -701,33 +702,36 @@ contextful_resp_eq!(
 
 contextful_resp_eq!(GetBalanceResp, u64);
 
-// The one in solana_client isn't clonable
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "camelCase")]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, From, Into)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct GetBlockCommitmentResp {
-    #[pyo3(get)]
-    pub commitment: Option<[u64; 32]>,
-    #[pyo3(get)]
-    pub total_stake: u64,
-}
+pub struct RpcBlockCommitment(RpcBlockCommitmentOriginal<[u64; 32]>);
 
-resp_traits!(GetBlockCommitmentResp);
+response_data_boilerplate!(RpcBlockCommitment);
 
-#[common_methods_rpc_resp]
+#[richcmp_eq_only]
+#[common_methods]
 #[pymethods]
-impl GetBlockCommitmentResp {
-    #[pyo3(
-        signature = (commitment, total_stake)
-    )]
+impl RpcBlockCommitment {
     #[new]
-    pub fn new(commitment: Option<[u64; 32]>, total_stake: u64) -> Self {
-        Self {
+    pub fn new(total_stake: u64, commitment: Option<[u64; 32]>) -> Self {
+        RpcBlockCommitmentOriginal {
             commitment,
             total_stake,
         }
+        .into()
+    }
+    #[getter]
+    pub fn commitment(&self) -> Option<[u64; 32]> {
+        self.0.commitment
+    }
+
+    #[getter]
+    pub fn total_stake(&self) -> u64 {
+        self.0.total_stake
     }
 }
+
+contextless_resp_eq!(GetBlockCommitmentResp, RpcBlockCommitment, clone);
 
 contextless_resp_eq!(GetBlockHeightResp, u64);
 
@@ -810,8 +814,6 @@ contextless_resp_eq!(GetBlocksResp, Vec<u64>, clone);
 contextless_resp_eq!(GetBlocksWithLimitResp, Vec<u64>, clone);
 contextless_resp_eq!(GetBlockTimeResp, Option<u64>);
 
-// the one in solana_client doesn't derive Eq or PartialEq
-// TODO: it does derive these things in latest unreleased version
 #[serde_as]
 #[derive(Serialize, Deserialize, Eq, PartialEq, Clone, Debug, From, Into)]
 #[serde(rename_all = "camelCase")]
@@ -2122,6 +2124,7 @@ pub fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<RpcBlockProductionRange>()?;
     m.add_class::<GetBlockProductionResp>()?;
     m.add_class::<GetBlockResp>()?;
+    m.add_class::<RpcBlockCommitment>()?;
     m.add_class::<GetBlockCommitmentResp>()?;
     m.add_class::<GetBlockHeightResp>()?;
     m.add_class::<GetBlocksResp>()?;
