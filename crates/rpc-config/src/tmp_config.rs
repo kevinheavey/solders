@@ -8,7 +8,7 @@ use {
     },
     // TODO: use solana_account_decoder once its dependencies are light
     solana_account_decoder::{UiDataSliceConfig, UiAccountEncoding},
-    solders_rpc_filter::tmp_filter::RpcFilterType,
+    solana_rpc_client_api::filter::RpcFilterType,
     // TODO: use solana_transaction_status once its dependencies are light
     solders_transaction_status_enums::{TransactionDetails, UiTransactionEncoding},
 };

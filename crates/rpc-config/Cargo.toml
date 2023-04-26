@@ -18,5 +18,6 @@ solders-hash = { workspace = true }
 solders-signature = { workspace = true }
 solders-transaction-status-enums = { workspace = true }
 solders-rpc-filter = { workspace = true }
+solana-rpc-client-api = { workspace = true }
 solders-commitment-config = { workspace = true }
 solana-sdk = { workspace = true }
