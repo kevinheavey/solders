@@ -946,6 +946,10 @@ impl UiTransactionStatusMeta {
         let maybe_underlying: Option<UiTransactionReturnData> = self.0.return_data.clone().into();
         maybe_underlying.map(|r| r.into())
     }
+    #[getter]
+    pub fn compute_units_consumed(&self) -> Option<u64> {
+        self.0.compute_units_consumed.clone().into()
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
