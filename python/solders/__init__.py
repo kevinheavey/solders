@@ -3,8 +3,12 @@ import contextlib as __ctxlib
 from solders.solders import __version__ as _version_untyped  # type: ignore
 from solders.solders import (
     account_decoder,
+    account,
     address_lookup_table_account,
+    clock,
     commitment_config,
+    epoch_info,
+    epoch_schedule,
     errors,
     hash,
     instruction,
@@ -13,6 +17,7 @@ from solders.solders import (
     null_signer,
     presigner,
     pubkey,
+    rent,
     rpc,
     signature,
     transaction,
