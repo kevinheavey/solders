@@ -7,9 +7,7 @@ use derive_more::{From, Into};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, DisplayFromStr, TryFromInto};
-use solana_account_decoder::{
-    parse_token::UiTokenAmount as UiTokenAmountOriginal, UiAccount, UiAccountData,
-};
+use solana_account_decoder::{UiAccount, UiAccountData};
 use solana_sdk::{
     clock::{Epoch, Slot},
     epoch_info::EpochInfo as EpochInfoOriginal,
@@ -20,7 +18,8 @@ use solders_hash::Hash as SolderHash;
 use solders_macros::{common_methods, richcmp_eq_only, EnumIntoPy};
 use solders_pubkey::Pubkey;
 use solders_transaction_error::TransactionErrorType;
-use solana_rpc_client_api::response::{RpcIdentity as RpcIdentityOriginal, RpcBlockhash as RpcBlockhashOriginal};
+use solana_rpc_client_api::response::{RpcIdentity as RpcIdentityOriginal, RpcBlockhash as RpcBlockhashOriginal,
+    RpcTokenAccountBalance as RpcTokenAccountBalanceOriginal};
 
 use solders_rpc_response_data_boilerplate::response_data_boilerplate;
 
@@ -526,15 +525,6 @@ impl RpcKeyedAccountJsonParsed {
 pub enum RpcKeyedAccountMaybeJSON {
     Binary(RpcKeyedAccount),
     Parsed(RpcKeyedAccountJsonParsed),
-}
-
-// the one in solana_client uses account_decoder
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
-#[serde(rename_all = "camelCase")]
-struct RpcTokenAccountBalanceOriginal {
-    pub address: String,
-    #[serde(flatten)]
-    pub amount: UiTokenAmountOriginal,
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone, From, Into)]
