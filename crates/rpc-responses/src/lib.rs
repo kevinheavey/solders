@@ -3,7 +3,6 @@ use std::collections::HashMap;
 use std::fmt::Display;
 use std::str::FromStr;
 
-mod tmp_response;
 use camelpaste::paste;
 use derive_more::{From, Into};
 use pyo3::exceptions::PyValueError;
@@ -34,7 +33,7 @@ use solders_transaction_status::{
     EncodedConfirmedTransactionWithStatusMeta, TransactionStatus, UiConfirmedBlock,
 };
 use solana_transaction_status::TransactionStatus as TransactionStatusOriginal;
-use tmp_response::{
+use solana_rpc_client_api::{response::{
     RpcAccountBalance as RpcAccountBalanceOriginal,
     RpcBlockProduction as RpcBlockProductionOriginal,
     RpcBlockProductionRange as RpcBlockProductionRangeOriginal,
@@ -46,7 +45,7 @@ use tmp_response::{
     RpcStakeActivation as RpcStakeActivationOriginal, RpcSupply as RpcSupplyOriginal,
     RpcVote as RpcVoteOriginal, SlotInfo as SlotInfoOriginal,
     SlotTransactionStats as SlotTransactionStatsOriginal, SlotUpdate as SlotUpdateOriginal,
-    StakeActivationState as StakeActivationStateOriginal, JSON_RPC_SCAN_ERROR,
+    StakeActivationState as StakeActivationStateOriginal}, custom_error::{JSON_RPC_SCAN_ERROR,
     JSON_RPC_SERVER_ERROR_BLOCK_CLEANED_UP, JSON_RPC_SERVER_ERROR_BLOCK_NOT_AVAILABLE,
     JSON_RPC_SERVER_ERROR_BLOCK_STATUS_NOT_AVAILABLE_YET,
     JSON_RPC_SERVER_ERROR_KEY_EXCLUDED_FROM_SECONDARY_INDEX,
@@ -57,7 +56,7 @@ use tmp_response::{
     JSON_RPC_SERVER_ERROR_TRANSACTION_PRECOMPILE_VERIFICATION_FAILURE,
     JSON_RPC_SERVER_ERROR_TRANSACTION_SIGNATURE_LEN_MISMATCH,
     JSON_RPC_SERVER_ERROR_TRANSACTION_SIGNATURE_VERIFICATION_FAILURE,
-    JSON_RPC_SERVER_ERROR_UNSUPPORTED_TRANSACTION_VERSION,
+    JSON_RPC_SERVER_ERROR_UNSUPPORTED_TRANSACTION_VERSION},
 };
 
 use solders_rpc_common::RpcSimulateTransactionResult;
@@ -804,26 +803,10 @@ contextless_resp_eq!(GetBlockTimeResp, Option<u64>);
 // the one in solana_client doesn't derive Eq or PartialEq
 // TODO: it does derive these things in latest unreleased version
 #[serde_as]
-#[derive(Serialize, Deserialize, Eq, PartialEq, Clone, Debug)]
+#[derive(Serialize, Deserialize, Eq, PartialEq, Clone, Debug, From, Into)]
 #[serde(rename_all = "camelCase")]
 #[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct RpcContactInfo {
-    #[pyo3(get)]
-    #[serde_as(as = "DisplayFromStr")]
-    pub pubkey: Pubkey,
-    #[pyo3(get)]
-    pub gossip: Option<String>,
-    #[pyo3(get)]
-    pub tpu: Option<String>,
-    #[pyo3(get)]
-    pub rpc: Option<String>,
-    #[pyo3(get)]
-    pub version: Option<String>,
-    #[pyo3(get)]
-    pub feature_set: Option<u32>,
-    #[pyo3(get)]
-    pub shred_version: Option<u16>,
-}
+pub struct RpcContactInfo(pub RpcContactInfoOriginal);
 
 response_data_boilerplate!(RpcContactInfo);
 
@@ -837,59 +820,21 @@ impl RpcContactInfo {
         gossip: Option<String>,
         tpu: Option<String>,
         rpc: Option<String>,
+        pubsub: Option<String>,
         version: Option<String>,
         feature_set: Option<u32>,
         shred_version: Option<u16>,
     ) -> Self {
-        Self {
-            pubkey,
-            gossip,
-            tpu,
-            rpc,
+        Self(RpcContactInfoOriginal {
+            pubkey: pubkey.to_string(),
+            gossip: gossip.map(|x| x.parse().unwrap()),
+            tpu: tpu.map(|x| x.parse().unwrap()),
+            rpc: rpc.map(|x| x.parse().unwrap()),
+            pubsub: pubsub.map(|x| x.parse().unwrap()),
             version,
             feature_set,
             shred_version,
-        }
-    }
-}
-
-impl From<RpcContactInfo> for RpcContactInfoOriginal {
-    fn from(r: RpcContactInfo) -> Self {
-        let RpcContactInfo {
-            version,
-            feature_set,
-            shred_version,
-            ..
-        } = r;
-        Self {
-            pubkey: r.pubkey.to_string(),
-            gossip: r.gossip.map(|x| x.parse().unwrap()),
-            tpu: r.tpu.map(|x| x.parse().unwrap()),
-            rpc: r.rpc.map(|x| x.parse().unwrap()),
-            version,
-            feature_set,
-            shred_version,
-        }
-    }
-}
-
-impl From<RpcContactInfoOriginal> for RpcContactInfo {
-    fn from(r: RpcContactInfoOriginal) -> Self {
-        let RpcContactInfoOriginal {
-            version,
-            feature_set,
-            shred_version,
-            ..
-        } = r;
-        Self {
-            pubkey: r.pubkey.parse().unwrap(),
-            gossip: r.gossip.map(|x| x.to_string()),
-            tpu: r.tpu.map(|x| x.to_string()),
-            rpc: r.tpu.map(|x| x.to_string()),
-            version,
-            feature_set,
-            shred_version,
-        }
+        })
     }
 }
 
@@ -1171,12 +1116,13 @@ response_data_boilerplate!(RpcPerfSample);
 #[pymethods]
 impl RpcPerfSample {
     #[new]
-    pub fn new(slot: Slot, num_transactions: u64, num_slots: u64, sample_period_secs: u16) -> Self {
+    pub fn new(slot: Slot, num_transactions: u64, num_slots: u64, sample_period_secs: u16, num_non_vote_transactions: Option<u64>) -> Self {
         RpcPerfSampleOriginal {
             slot,
             num_transactions,
             num_slots,
             sample_period_secs,
+            num_non_vote_transactions
         }
         .into()
     }
@@ -1196,6 +1142,10 @@ impl RpcPerfSample {
     #[getter]
     pub fn sample_period_secs(&self) -> u16 {
         self.0.sample_period_secs
+    }
+    #[getter]
+    pub fn num_non_votetransactions(&self) -> Option<u64> {
+        self.0.num_non_vote_transactions
     }
 }
 

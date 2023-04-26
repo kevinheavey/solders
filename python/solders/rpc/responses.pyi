@@ -291,6 +291,7 @@ class RpcContactInfo:
     gossip: Optional[str]
     tpu: Optional[str]
     rpc: Optional[str]
+    pubsub: Optional[str]
     version: Optional[str]
     feature_set: Optional[int]
     shred_version: Optional[int]
@@ -300,6 +301,7 @@ class RpcContactInfo:
         gossip: Optional[str] = None,
         tpu: Optional[str] = None,
         rpc: Optional[str] = None,
+        pubsub: Optional[str] = None,
         version: Optional[str] = None,
         feature_set: Optional[int] = None,
         shred_version: Optional[int] = None,
@@ -974,7 +976,12 @@ class GetProgramAccountsMaybeJsonParsedResp:
 
 class RpcPerfSample:
     def __init__(
-        self, slot: int, num_transactions: int, num_slots: int, sample_period_secs: int
+        self,
+        slot: int,
+        num_transactions: int,
+        num_slots: int,
+        sample_period_secs: int,
+        num_non_vote_transactions: Optional[int] = None,
     ) -> None: ...
     @property
     def slot(self) -> int: ...
@@ -984,6 +991,8 @@ class RpcPerfSample:
     def num_slots(self) -> int: ...
     @property
     def sample_period_secs(self) -> int: ...
+    @property
+    def num_non_vote_transactions(self) -> Optional[int]: ...
     def to_json(self) -> str: ...
     @staticmethod
     def from_json(raw: str) -> RpcPerfSample: ...
