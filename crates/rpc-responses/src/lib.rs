@@ -31,9 +31,9 @@ use solders_traits::to_py_err;
 use solders_traits_core::{PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly};
 use solders_transaction_error::TransactionErrorType;
 use solders_transaction_status::{
-    tmp_transaction_status::TransactionStatus as TransactionStatusOriginal,
     EncodedConfirmedTransactionWithStatusMeta, TransactionStatus, UiConfirmedBlock,
 };
+use solana_transaction_status::TransactionStatus as TransactionStatusOriginal;
 use tmp_response::{
     RpcAccountBalance as RpcAccountBalanceOriginal,
     RpcBlockProduction as RpcBlockProductionOriginal,

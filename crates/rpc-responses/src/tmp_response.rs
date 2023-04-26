@@ -8,7 +8,7 @@ use {
         transaction::{Result, TransactionError},
     },
     solana_account_decoder::UiAccount,
-    solders_transaction_status::tmp_transaction_status::{
+    solana_transaction_status::{
         TransactionConfirmationStatus, UiConfirmedBlock, UiTransactionReturnData,
     },
     std::{collections::HashMap, fmt, net::SocketAddr},

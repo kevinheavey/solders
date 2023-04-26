@@ -8,10 +8,8 @@ use solders_macros::{common_methods, richcmp_eq_only};
 use solders_rpc_response_data_boilerplate::response_data_boilerplate;
 use solders_signature::Signature;
 use solders_transaction_error::TransactionErrorType;
-use solders_transaction_status::{
-    tmp_transaction_status::TransactionConfirmationStatus as TransactionConfirmationStatusOriginal,
-    TransactionConfirmationStatus,
-};
+use solders_transaction_status::TransactionConfirmationStatus;
+use solana_transaction_status::TransactionConfirmationStatus as TransactionConfirmationStatusOriginal;
 
 // the one in solana_client uses transaction_status
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]

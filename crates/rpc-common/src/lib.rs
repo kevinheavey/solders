@@ -7,9 +7,8 @@ use solana_account_decoder::UiAccount;
 use solders_macros::{common_methods, richcmp_eq_only};
 use solders_rpc_response_data_boilerplate::response_data_boilerplate;
 use solders_transaction_error::TransactionErrorType;
-use solders_transaction_status::{
-    tmp_transaction_status::UiTransactionReturnData, TransactionReturnData,
-};
+use solders_transaction_status::TransactionReturnData;
+use solana_transaction_status::UiTransactionReturnData;
 
 // the one in solana_client doesn't derive Eq
 // TODO: latest does
