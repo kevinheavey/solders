@@ -11,8 +11,8 @@ pub struct UnsubscribeParams(pub (u64,));
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct RequestBase {
-    jsonrpc: V2,
-    id: u64,
+    pub jsonrpc: V2,
+    pub id: u64,
 }
 
 impl RequestBase {

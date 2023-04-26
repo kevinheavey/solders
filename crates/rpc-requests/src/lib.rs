@@ -35,7 +35,7 @@ use solders_rpc_request_params::{
 };
 use solders_rpc_request_params_no_config::{
     GetBlocksParams, GetFeeForMessageParams, GetMinimumBalanceForRentExemptionParams,
-    PubkeyAndCommitmentParams, UnsubscribeParams,
+    PubkeyAndCommitmentParams, UnsubscribeParams, RequestBase,
 };
 
 macro_rules! rpc_impl_display {
@@ -170,21 +170,6 @@ unsubscribe_def!(SlotUnsubscribe);
 unsubscribe_def!(SlotsUpdatesUnsubscribe);
 unsubscribe_def!(RootUnsubscribe);
 unsubscribe_def!(VoteUnsubscribe);
-
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
-struct RequestBase {
-    jsonrpc: V2,
-    id: u64,
-}
-
-impl RequestBase {
-    fn new(id: Option<u64>) -> Self {
-        Self {
-            jsonrpc: V2::TwoPointOh,
-            id: id.unwrap_or(0),
-        }
-    }
-}
 
 /// A ``getAccountInfo`` request.
 ///
