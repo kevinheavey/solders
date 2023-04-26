@@ -15,9 +15,45 @@ use pyo3::{
 use serde::{de::Error, Deserialize, Serialize, Serializer};
 use serde_json::Value;
 use serde_with::{serde_as, DisplayFromStr, FromInto, OneOrMany, TryFromInto};
+use solana_account_decoder::UiAccount;
+use solana_rpc_client_api::{
+    custom_error::{
+        JSON_RPC_SCAN_ERROR, JSON_RPC_SERVER_ERROR_BLOCK_CLEANED_UP,
+        JSON_RPC_SERVER_ERROR_BLOCK_NOT_AVAILABLE,
+        JSON_RPC_SERVER_ERROR_BLOCK_STATUS_NOT_AVAILABLE_YET,
+        JSON_RPC_SERVER_ERROR_KEY_EXCLUDED_FROM_SECONDARY_INDEX,
+        JSON_RPC_SERVER_ERROR_LONG_TERM_STORAGE_SLOT_SKIPPED,
+        JSON_RPC_SERVER_ERROR_MIN_CONTEXT_SLOT_NOT_REACHED, JSON_RPC_SERVER_ERROR_NODE_UNHEALTHY,
+        JSON_RPC_SERVER_ERROR_NO_SNAPSHOT,
+        JSON_RPC_SERVER_ERROR_SEND_TRANSACTION_PREFLIGHT_FAILURE,
+        JSON_RPC_SERVER_ERROR_SLOT_SKIPPED,
+        JSON_RPC_SERVER_ERROR_TRANSACTION_HISTORY_NOT_AVAILABLE,
+        JSON_RPC_SERVER_ERROR_TRANSACTION_PRECOMPILE_VERIFICATION_FAILURE,
+        JSON_RPC_SERVER_ERROR_TRANSACTION_SIGNATURE_LEN_MISMATCH,
+        JSON_RPC_SERVER_ERROR_TRANSACTION_SIGNATURE_VERIFICATION_FAILURE,
+        JSON_RPC_SERVER_ERROR_UNSUPPORTED_TRANSACTION_VERSION,
+    },
+    response::{
+        RpcAccountBalance as RpcAccountBalanceOriginal,
+        RpcBlockProduction as RpcBlockProductionOriginal,
+        RpcBlockProductionRange as RpcBlockProductionRangeOriginal,
+        RpcBlockUpdate as RpcBlockUpdateOriginal,
+        RpcBlockUpdateError as RpcBlockUpdateErrorOriginal,
+        RpcContactInfo as RpcContactInfoOriginal,
+        RpcInflationGovernor as RpcInflationGovernorOriginal,
+        RpcInflationRate as RpcInflationRateOriginal,
+        RpcInflationReward as RpcInflationRewardOriginal,
+        RpcLogsResponse as RpcLogsResponseOriginal, RpcPerfSample as RpcPerfSampleOriginal,
+        RpcSnapshotSlotInfo as RpcSnapshotSlotInfoOriginal,
+        RpcStakeActivation as RpcStakeActivationOriginal, RpcSupply as RpcSupplyOriginal,
+        RpcVote as RpcVoteOriginal, SlotInfo as SlotInfoOriginal,
+        SlotTransactionStats as SlotTransactionStatsOriginal, SlotUpdate as SlotUpdateOriginal,
+        StakeActivationState as StakeActivationStateOriginal,
+    },
+};
 use solana_sdk::clock::{Epoch, Slot, UnixTimestamp};
+use solana_transaction_status::TransactionStatus as TransactionStatusOriginal;
 use solders_account::{Account, AccountJSON};
-use solana_account_decoder::{UiAccount};
 use solders_account_decoder::UiTokenAmount;
 use solders_hash::Hash as SolderHash;
 use solders_macros::{
@@ -31,32 +67,6 @@ use solders_traits_core::{PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnl
 use solders_transaction_error::TransactionErrorType;
 use solders_transaction_status::{
     EncodedConfirmedTransactionWithStatusMeta, TransactionStatus, UiConfirmedBlock,
-};
-use solana_transaction_status::TransactionStatus as TransactionStatusOriginal;
-use solana_rpc_client_api::{response::{
-    RpcAccountBalance as RpcAccountBalanceOriginal,
-    RpcBlockProduction as RpcBlockProductionOriginal,
-    RpcBlockProductionRange as RpcBlockProductionRangeOriginal,
-    RpcBlockUpdate as RpcBlockUpdateOriginal, RpcBlockUpdateError as RpcBlockUpdateErrorOriginal,
-    RpcContactInfo as RpcContactInfoOriginal, RpcInflationGovernor as RpcInflationGovernorOriginal,
-    RpcInflationRate as RpcInflationRateOriginal, RpcInflationReward as RpcInflationRewardOriginal,
-    RpcLogsResponse as RpcLogsResponseOriginal, RpcPerfSample as RpcPerfSampleOriginal,
-    RpcSnapshotSlotInfo as RpcSnapshotSlotInfoOriginal,
-    RpcStakeActivation as RpcStakeActivationOriginal, RpcSupply as RpcSupplyOriginal,
-    RpcVote as RpcVoteOriginal, SlotInfo as SlotInfoOriginal,
-    SlotTransactionStats as SlotTransactionStatsOriginal, SlotUpdate as SlotUpdateOriginal,
-    StakeActivationState as StakeActivationStateOriginal}, custom_error::{JSON_RPC_SCAN_ERROR,
-    JSON_RPC_SERVER_ERROR_BLOCK_CLEANED_UP, JSON_RPC_SERVER_ERROR_BLOCK_NOT_AVAILABLE,
-    JSON_RPC_SERVER_ERROR_BLOCK_STATUS_NOT_AVAILABLE_YET,
-    JSON_RPC_SERVER_ERROR_KEY_EXCLUDED_FROM_SECONDARY_INDEX,
-    JSON_RPC_SERVER_ERROR_LONG_TERM_STORAGE_SLOT_SKIPPED,
-    JSON_RPC_SERVER_ERROR_MIN_CONTEXT_SLOT_NOT_REACHED, JSON_RPC_SERVER_ERROR_NODE_UNHEALTHY,
-    JSON_RPC_SERVER_ERROR_NO_SNAPSHOT, JSON_RPC_SERVER_ERROR_SEND_TRANSACTION_PREFLIGHT_FAILURE,
-    JSON_RPC_SERVER_ERROR_SLOT_SKIPPED, JSON_RPC_SERVER_ERROR_TRANSACTION_HISTORY_NOT_AVAILABLE,
-    JSON_RPC_SERVER_ERROR_TRANSACTION_PRECOMPILE_VERIFICATION_FAILURE,
-    JSON_RPC_SERVER_ERROR_TRANSACTION_SIGNATURE_LEN_MISMATCH,
-    JSON_RPC_SERVER_ERROR_TRANSACTION_SIGNATURE_VERIFICATION_FAILURE,
-    JSON_RPC_SERVER_ERROR_UNSUPPORTED_TRANSACTION_VERSION},
 };
 
 use solders_rpc_common::RpcSimulateTransactionResult;
@@ -1116,13 +1126,19 @@ response_data_boilerplate!(RpcPerfSample);
 #[pymethods]
 impl RpcPerfSample {
     #[new]
-    pub fn new(slot: Slot, num_transactions: u64, num_slots: u64, sample_period_secs: u16, num_non_vote_transactions: Option<u64>) -> Self {
+    pub fn new(
+        slot: Slot,
+        num_transactions: u64,
+        num_slots: u64,
+        sample_period_secs: u16,
+        num_non_vote_transactions: Option<u64>,
+    ) -> Self {
         RpcPerfSampleOriginal {
             slot,
             num_transactions,
             num_slots,
             sample_period_secs,
-            num_non_vote_transactions
+            num_non_vote_transactions,
         }
         .into()
     }

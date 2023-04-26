@@ -144,6 +144,7 @@ from solders.transaction_status import (
     TransactionConfirmationStatus,
     TransactionErrorInstructionError,
     TransactionStatus,
+    UiAccountsList,
     UiCompiledInstruction,
     UiLoadedAddresses,
     UiParsedMessage,
@@ -443,6 +444,7 @@ def test_get_block(path: str) -> None:
         ),
     ]
     encoded_tx = tx.transaction
+    assert not isinstance(encoded_tx, UiAccountsList)
     msg = encoded_tx.message
     assert msg.recent_blockhash == Hash.from_string(
         "BeSgJqfSEkmtQ6S42d2Y7qUXdfLSaXeS9DHQYqw1MLxe"
@@ -1922,6 +1924,7 @@ def test_get_transaction(path: str) -> None:
         ),
     ]
     encoded_tx = tx.transaction
+    assert not isinstance(encoded_tx, UiAccountsList)
     msg = encoded_tx.message
     assert msg.recent_blockhash == Hash.from_string(
         "2NiTTzGXE7kW66iwM4FaoB7xMidgzMXZkh7k4AeagnW8"

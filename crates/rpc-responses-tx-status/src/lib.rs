@@ -4,12 +4,12 @@ use derive_more::{From, Into};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use solana_sdk::transaction::TransactionError as TransactionErrorOriginal;
+use solana_transaction_status::TransactionConfirmationStatus as TransactionConfirmationStatusOriginal;
 use solders_macros::{common_methods, richcmp_eq_only};
 use solders_rpc_response_data_boilerplate::response_data_boilerplate;
 use solders_signature::Signature;
 use solders_transaction_error::TransactionErrorType;
 use solders_transaction_status::TransactionConfirmationStatus;
-use solana_transaction_status::TransactionConfirmationStatus as TransactionConfirmationStatusOriginal;
 
 // the one in solana_client uses transaction_status
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]

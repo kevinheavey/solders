@@ -7,13 +7,15 @@ use derive_more::{From, Into};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, DisplayFromStr, TryFromInto};
+use solana_account_decoder::{
+    parse_token::UiTokenAmount as UiTokenAmountOriginal, UiAccount, UiAccountData,
+};
 use solana_sdk::{
     clock::{Epoch, Slot},
     epoch_info::EpochInfo as EpochInfoOriginal,
 };
 use solders_account::{Account, AccountJSON};
 use solders_account_decoder::UiTokenAmount;
-use solana_account_decoder::{UiAccount, UiAccountData, parse_token::UiTokenAmount as UiTokenAmountOriginal};
 use solders_hash::Hash as SolderHash;
 use solders_macros::{common_methods, richcmp_eq_only, EnumIntoPy};
 use solders_pubkey::Pubkey;

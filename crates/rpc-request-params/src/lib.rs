@@ -6,6 +6,9 @@ use solders_hash::Hash as SolderHash;
 use solders_pubkey::Pubkey;
 use solders_signature::Signature;
 
+use solana_rpc_client_api::config::{
+    RpcBlockSubscribeFilter, RpcTokenAccountsFilter, RpcTransactionLogsFilter,
+};
 use solders_rpc_config::{
     RpcAccountInfoConfig, RpcBlockConfig, RpcBlockSubscribeConfig, RpcBlockSubscribeFilterWrapper,
     RpcContextConfig, RpcEpochConfig, RpcLargestAccountsFilter, RpcLeaderScheduleConfig,
@@ -14,7 +17,6 @@ use solders_rpc_config::{
     RpcSimulateTransactionConfig, RpcTokenAccountsFilterWrapper, RpcTransactionConfig,
     RpcTransactionLogsConfig, TransactionLogsFilterWrapper,
 };
-use solana_rpc_client_api::config::{RpcBlockSubscribeFilter, RpcTokenAccountsFilter, RpcTransactionLogsFilter};
 
 #[serde_as]
 #[skip_serializing_none]

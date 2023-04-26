@@ -2,6 +2,7 @@ use std::str::FromStr;
 
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
+use solana_rpc_client_api::config as rpc_config;
 use solana_sdk::commitment_config::CommitmentLevel as CommitmentLevelOriginal;
 use solders_account_decoder::{UiAccountEncoding, UiDataSliceConfig};
 use solders_commitment_config::CommitmentLevel;
@@ -12,10 +13,9 @@ use solders_signature::Signature;
 use solders_traits_core::{
     impl_display, py_from_bytes_general_via_cbor, pybytes_general_via_cbor, RichcmpEqualityOnly,
 };
-use solana_rpc_client_api::config as rpc_config;
 
-use solders_transaction_status_enums::{TransactionDetails, UiTransactionEncoding};
 use solana_transaction_status::UiTransactionEncoding as UiTransactionEncodingOriginal;
+use solders_transaction_status_enums::{TransactionDetails, UiTransactionEncoding};
 
 use solders_rpc_filter::RpcFilterType;
 

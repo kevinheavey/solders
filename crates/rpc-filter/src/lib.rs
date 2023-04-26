@@ -1,4 +1,8 @@
-use pyo3::{prelude::*, PyTypeInfo, types::{PyTuple, PyLong}};
+use pyo3::{
+    prelude::*,
+    types::{PyLong, PyTuple},
+    PyTypeInfo,
+};
 use serde::{Deserialize, Serialize};
 use solana_rpc_client_api::filter::{
     Memcmp as MemcmpOriginal, MemcmpEncodedBytes as MemcmpEncodedBytesOriginal,
@@ -102,7 +106,7 @@ solders_traits_core::common_methods_default!(Memcmp);
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone, Hash)]
 #[pyclass(module = "solders.transaction_status")]
 pub enum RpcFilterTypeFieldless {
-    TokenAccountState
+    TokenAccountState,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, FromPyObject, EnumIntoPy)]
@@ -110,7 +114,7 @@ pub enum RpcFilterTypeFieldless {
 pub enum RpcFilterType {
     DataSize(u64),
     Memcmp(Memcmp),
-    Fieldless(RpcFilterTypeFieldless)
+    Fieldless(RpcFilterTypeFieldless),
 }
 
 impl From<RpcFilterType> for RpcFilterTypeOriginal {
@@ -119,7 +123,9 @@ impl From<RpcFilterType> for RpcFilterTypeOriginal {
             RpcFilterType::DataSize(num) => RpcFilterTypeOriginal::DataSize(num),
             RpcFilterType::Memcmp(mem) => RpcFilterTypeOriginal::Memcmp(mem.into()),
             RpcFilterType::Fieldless(f) => match f {
-                RpcFilterTypeFieldless::TokenAccountState => RpcFilterTypeOriginal::TokenAccountState
+                RpcFilterTypeFieldless::TokenAccountState => {
+                    RpcFilterTypeOriginal::TokenAccountState
+                }
             },
         }
     }
@@ -130,7 +136,9 @@ impl From<RpcFilterTypeOriginal> for RpcFilterType {
         match r {
             RpcFilterTypeOriginal::DataSize(num) => RpcFilterType::DataSize(num),
             RpcFilterTypeOriginal::Memcmp(mem) => RpcFilterType::Memcmp(mem.into()),
-            RpcFilterTypeOriginal::TokenAccountState => RpcFilterType::Fieldless(RpcFilterTypeFieldless::TokenAccountState),
+            RpcFilterTypeOriginal::TokenAccountState => {
+                RpcFilterType::Fieldless(RpcFilterTypeFieldless::TokenAccountState)
+            }
         }
     }
 }

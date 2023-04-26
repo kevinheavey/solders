@@ -4,16 +4,17 @@ use solders_traits_core::{
 };
 use std::fmt::Display;
 
-use solana_account_decoder::{
-    parse_account_data::ParsedAccount as ParsedAccountOriginal, UiDataSliceConfig as UiDataSliceConfigOriginal,
-    parse_token::UiTokenAmount as UiTokenAmountOriginal, UiAccountEncoding as UiAccountEncodingOriginal,
-};
 use derive_more::{From, Into};
 use pyo3::prelude::*;
 use pythonize::{depythonize, pythonize};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use solders_macros::{common_methods, richcmp_eq_only, enum_original_mapping};
+use solana_account_decoder::{
+    parse_account_data::ParsedAccount as ParsedAccountOriginal,
+    parse_token::UiTokenAmount as UiTokenAmountOriginal,
+    UiAccountEncoding as UiAccountEncodingOriginal, UiDataSliceConfig as UiDataSliceConfigOriginal,
+};
+use solders_macros::{common_methods, enum_original_mapping, richcmp_eq_only};
 
 /// Configuration object for limiting returned account data.
 ///

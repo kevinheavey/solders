@@ -217,7 +217,7 @@ impl From<AccountJSON> for UiAccount {
             owner: acc.owner.to_string(),
             executable: acc.executable,
             rent_epoch: acc.rent_epoch,
-            space: Some(space)
+            space: Some(space),
         }
     }
 }

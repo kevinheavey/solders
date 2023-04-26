@@ -46,7 +46,6 @@ impl From<TransactionDetailsOriginal> for TransactionDetails {
     }
 }
 
-
 /// Encoding options for transaction data.
 #[pyclass(module = "solders.transaction_status")]
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]

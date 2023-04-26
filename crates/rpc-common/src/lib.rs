@@ -2,13 +2,13 @@ use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, FromInto, TryFromInto};
 
-use solders_account::Account;
 use solana_account_decoder::UiAccount;
+use solana_transaction_status::UiTransactionReturnData;
+use solders_account::Account;
 use solders_macros::{common_methods, richcmp_eq_only};
 use solders_rpc_response_data_boilerplate::response_data_boilerplate;
 use solders_transaction_error::TransactionErrorType;
 use solders_transaction_status::TransactionReturnData;
-use solana_transaction_status::UiTransactionReturnData;
 
 // the one in solana_client doesn't derive Eq
 // TODO: latest does
