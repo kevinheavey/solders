@@ -4622,6 +4622,7 @@ dependencies = [
  "solana-account-decoder",
  "solana-rpc-client-api",
  "solana-sdk",
+ "solana-transaction-status",
  "solders-account-decoder",
  "solders-commitment-config",
  "solders-hash",
@@ -4697,6 +4698,7 @@ dependencies = [
  "bincode",
  "serde",
  "serde_with 1.14.0",
+ "solana-rpc-client-api",
  "solders-base64-string",
  "solders-commitment-config",
  "solders-hash",
@@ -4952,6 +4954,8 @@ version = "0.14.4"
 dependencies = [
  "pyo3",
  "serde",
+ "solana-transaction-status",
+ "solders-macros",
 ]
 
 [[package]]

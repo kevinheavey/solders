@@ -7,7 +7,6 @@ use solders_pubkey::Pubkey;
 use solders_signature::Signature;
 
 use solders_rpc_config::{
-    tmp_config::{RpcBlockSubscribeFilter, RpcTokenAccountsFilter, RpcTransactionLogsFilter},
     RpcAccountInfoConfig, RpcBlockConfig, RpcBlockSubscribeConfig, RpcBlockSubscribeFilterWrapper,
     RpcContextConfig, RpcEpochConfig, RpcLargestAccountsFilter, RpcLeaderScheduleConfig,
     RpcProgramAccountsConfig, RpcRequestAirdropConfig, RpcSendTransactionConfig,
@@ -15,6 +14,7 @@ use solders_rpc_config::{
     RpcSimulateTransactionConfig, RpcTokenAccountsFilterWrapper, RpcTransactionConfig,
     RpcTransactionLogsConfig, TransactionLogsFilterWrapper,
 };
+use solana_rpc_client_api::config::{RpcBlockSubscribeFilter, RpcTokenAccountsFilter, RpcTransactionLogsFilter};
 
 #[serde_as]
 #[skip_serializing_none]
