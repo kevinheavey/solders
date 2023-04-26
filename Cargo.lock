@@ -4799,6 +4799,7 @@ dependencies = [
  "serde",
  "serde_with 1.14.0",
  "solana-account-decoder",
+ "solana-rpc-client-api",
  "solana-sdk",
  "solders-account",
  "solders-account-decoder",

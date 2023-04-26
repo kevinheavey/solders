@@ -20,6 +20,7 @@ use solders_hash::Hash as SolderHash;
 use solders_macros::{common_methods, richcmp_eq_only, EnumIntoPy};
 use solders_pubkey::Pubkey;
 use solders_transaction_error::TransactionErrorType;
+use solana_rpc_client_api::response::{RpcIdentity as RpcIdentityOriginal};
 
 use solders_rpc_response_data_boilerplate::response_data_boilerplate;
 
@@ -351,17 +352,9 @@ impl From<EpochInfoOriginal> for EpochInfo {
     }
 }
 
-// the one in solana_client doesn't derive Eq
-// TODO: latest does
-#[serde_as]
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct RpcIdentity {
-    /// The current node identity pubkey
-    #[serde_as(as = "DisplayFromStr")]
-    #[pyo3(get)]
-    pub identity: Pubkey,
-}
+pub struct RpcIdentity(RpcIdentityOriginal);
 
 response_data_boilerplate!(RpcIdentity);
 
@@ -371,7 +364,13 @@ response_data_boilerplate!(RpcIdentity);
 impl RpcIdentity {
     #[new]
     pub fn new(identity: Pubkey) -> Self {
-        RpcIdentity { identity }
+        RpcIdentityOriginal { identity: identity.to_string() }.into()
+    }
+
+    /// Pubkey: The current node identity.
+    #[getter]
+    pub fn identity(&self) -> Pubkey {
+        self.0.identity.parse().unwrap()
     }
 }
 
