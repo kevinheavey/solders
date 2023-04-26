@@ -8,7 +8,11 @@ use solders_hash::Hash as SolderHash;
 use solders_message::MessageHeader;
 use solders_pubkey::Pubkey;
 use solders_signature::Signature;
-use solders_traits_core::{handle_py_value_err, transaction_status_boilerplate};
+use solders_traits_core::{
+    common_methods_default, handle_py_value_err, py_from_bytes_general_via_bincode,
+    pybytes_general_via_bincode, richcmp_type_error, transaction_status_boilerplate,
+    RichcmpEqualityOnly,
+};
 use solders_transaction_error::{
     InstructionErrorBorshIO, InstructionErrorCustom, InstructionErrorFieldless,
     TransactionErrorDuplicateInstruction, TransactionErrorFieldless,
@@ -21,6 +25,7 @@ use std::str::FromStr;
 
 use pyo3::{
     prelude::*,
+    pyclass::CompareOp,
     types::{PyBytes, PyTuple},
     PyTypeInfo,
 };
@@ -842,7 +847,44 @@ impl From<UiTransactionReturnData> for TransactionReturnData {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.transaction_status", subclass)]
 pub struct UiTransactionStatusMeta(UiTransactionStatusMetaOriginal);
-transaction_status_boilerplate!(UiTransactionStatusMeta);
+impl RichcmpEqualityOnly for UiTransactionStatusMeta {
+    fn richcmp(&self, other: &Self, op: pyo3::pyclass::CompareOp) -> PyResult<bool> {
+        match op {
+            CompareOp::Eq => Ok(self.compare(other)),
+            CompareOp::Ne => Ok(!self.compare(other)),
+            CompareOp::Lt => Err(richcmp_type_error("<")),
+            CompareOp::Gt => Err(richcmp_type_error(">")),
+            CompareOp::Le => Err(richcmp_type_error("<=")),
+            CompareOp::Ge => Err(richcmp_type_error(">=")),
+        }
+    }
+}
+
+impl UiTransactionStatusMeta {
+    fn compare(&self, other: &Self) -> bool {
+        self.err() == other.err()
+            && self.fee() == other.fee()
+            && self.pre_balances() == other.pre_balances()
+            && self.post_balances() == other.post_balances()
+            && self.inner_instructions() == other.inner_instructions()
+            && self.log_messages() == other.log_messages()
+            && self.pre_token_balances() == other.pre_token_balances()
+            && self.post_token_balances() == other.post_token_balances()
+            && self.rewards() == other.rewards()
+            && self.loaded_addresses() == other.loaded_addresses()
+            && self.return_data() == other.return_data()
+            && self.compute_units_consumed() == other.compute_units_consumed()
+    }
+}
+
+impl std::fmt::Display for UiTransactionStatusMeta {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+pybytes_general_via_bincode!(UiTransactionStatusMeta);
+py_from_bytes_general_via_bincode!(UiTransactionStatusMeta);
+common_methods_default!(UiTransactionStatusMeta);
 
 #[richcmp_eq_only]
 #[common_methods]

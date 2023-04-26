@@ -1898,6 +1898,7 @@ def test_get_transaction(path: str) -> None:
         rewards=[],
         loaded_addresses=UiLoadedAddresses([], []),
         return_data=None,
+        compute_units_consumed=None,
     )
     version = tx.version
     assert meta == expected_meta
