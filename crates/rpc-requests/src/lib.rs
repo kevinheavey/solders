@@ -8,7 +8,6 @@ use solders_hash::Hash as SolderHash;
 use solders_macros::{common_methods, richcmp_eq_only, rpc_id_getter, EnumIntoPy};
 use solders_message::VersionedMessage;
 use solders_pubkey::Pubkey;
-use solders_rpc_version::V2;
 use solders_signature::Signature;
 use solders_traits::to_py_err;
 use solders_traits_core::{
