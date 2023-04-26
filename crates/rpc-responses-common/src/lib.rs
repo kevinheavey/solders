@@ -11,6 +11,8 @@ use solana_account_decoder::{UiAccount, UiAccountData};
 use solana_rpc_client_api::response::{
     RpcBlockhash as RpcBlockhashOriginal, RpcIdentity as RpcIdentityOriginal,
     RpcTokenAccountBalance as RpcTokenAccountBalanceOriginal,
+    RpcVersionInfo as RpcVersionInfoOriginal, RpcVoteAccountInfo as RpcVoteAccountInfoOriginal,
+    RpcVoteAccountStatus as RpcVoteAccountStatusOriginal,
 };
 use solana_sdk::{
     clock::{Epoch, Slot},
@@ -475,7 +477,7 @@ impl From<AccountMaybeJSON> for UiAccount {
     }
 }
 
-// the one in solana_client uses UiAccount from account_decoder which currently isn't portable
+// TODO: make the one in solana-rpc-client-api work here.
 #[serde_as]
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
@@ -562,17 +564,6 @@ impl RpcTokenAccountBalance {
         self.0.amount.clone().into()
     }
 }
-
-// the one in solana_client doesn't implement PartialEq
-#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq)]
-#[serde(rename_all = "kebab-case")]
-pub struct RpcVersionInfoOriginal {
-    /// The current version of solana-core
-    pub solana_core: String,
-    /// first 4 bytes of the FeatureSet identifier
-    pub feature_set: Option<u32>,
-}
-
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
 pub struct RpcVersionInfo(RpcVersionInfoOriginal);
@@ -602,37 +593,6 @@ impl RpcVersionInfo {
         self.0.feature_set
     }
 }
-
-// the one in solana_client doesn't implement PartialEq
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
-#[serde(rename_all = "camelCase")]
-pub struct RpcVoteAccountInfoOriginal {
-    /// Vote account address, as base-58 encoded string
-    pub vote_pubkey: String,
-
-    /// The validator identity, as base-58 encoded string
-    pub node_pubkey: String,
-
-    /// The current stake, in lamports, delegated to this vote account
-    pub activated_stake: u64,
-
-    /// An 8-bit integer used as a fraction (commission/MAX_U8) for rewards payout
-    pub commission: u8,
-
-    /// Whether this account is staked for the current epoch
-    pub epoch_vote_account: bool,
-
-    /// History of how many credits earned by the end of each epoch
-    ///   each tuple is (Epoch, credits, prev_credits)
-    pub epoch_credits: Vec<(Epoch, u64, u64)>,
-
-    /// Most recent slot voted on by this vote account (0 if no votes exist)
-    pub last_vote: u64,
-
-    /// Current root slot for this vote account (0 if not root slot exists)
-    pub root_slot: Slot,
-}
-
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
 pub struct RpcVoteAccountInfo(RpcVoteAccountInfoOriginal);
@@ -698,14 +658,6 @@ impl RpcVoteAccountInfo {
     pub fn root_slot(&self) -> Slot {
         self.0.root_slot
     }
-}
-
-// the one in solana_client doesn't derive PartialEq
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
-#[serde(rename_all = "camelCase")]
-pub struct RpcVoteAccountStatusOriginal {
-    pub current: Vec<RpcVoteAccountInfoOriginal>,
-    pub delinquent: Vec<RpcVoteAccountInfoOriginal>,
 }
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
