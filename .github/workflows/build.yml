@@ -233,36 +233,6 @@ jobs:
           name: wheels
           path: dist
 
-  linux-cross-no-bankrun:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        target: [s390x, ppc64]
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: ${{ env.python_version }}
-      - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          profile: minimal
-          default: true
-      - name: Build Wheels
-        uses: messense/maturin-action@v1
-        with:
-          target: ${{ matrix.target }}
-          manylinux: auto
-          args: --release --no-default-features --out dist
-          maturin-version: ${{ env.maturin_version }}
-      - name: Upload wheels
-        uses: actions/upload-artifact@v2
-        with:
-          name: wheels
-          path: dist
-
   sdist:
     runs-on: ubuntu-latest
     steps:
