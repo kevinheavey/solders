@@ -5,6 +5,3 @@ edition = "2021"
 include = ["/src"]
 license = "MIT"
 repository = "https://github.com/kevinheavey/solders"
-
-[dependencies]
-solders-traits-core = { workspace = true }

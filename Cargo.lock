@@ -4719,7 +4719,6 @@ dependencies = [
  "solders-hash",
  "solders-pubkey",
  "solders-rpc-config",
- "solders-rpc-version",
  "solders-signature",
 ]
 
@@ -4764,9 +4763,6 @@ dependencies = [
 [[package]]
 name = "solders-rpc-response-data-boilerplate"
 version = "0.14.4"
-dependencies = [
- "solders-traits-core",
-]
 
 [[package]]
 name = "solders-rpc-responses"
@@ -4823,7 +4819,6 @@ dependencies = [
  "solders-pubkey",
  "solders-rpc-response-data-boilerplate",
  "solders-rpc-version",
- "solders-signature",
  "solders-traits-core",
  "solders-transaction-error",
 ]

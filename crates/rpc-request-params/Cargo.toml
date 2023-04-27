@@ -14,7 +14,6 @@ solders-hash = { workspace = true }
 solders-commitment-config = { workspace = true }
 solders-rpc-config = { workspace = true }
 solana-rpc-client-api = { workspace = true }
-solders-rpc-version = { workspace = true }
 solders-pubkey = { workspace = true }
 solders-signature = { workspace = true }
 solders-base64-string = { workspace = true }
