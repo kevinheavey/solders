@@ -68,6 +68,7 @@ solders-rpc-filter = { path = "./crates/rpc-filter", version = "0.14.4" }
 solders-rpc-config = { path = "./crates/rpc-config", version = "0.14.4" }
 solders-rpc-config-macros = { path = "./crates/rpc-config-macros", version = "0.14.4" }
 solders-rpc-config-no-filter = { path = "./crates/rpc-config-no-filter", version = "0.14.4" }
+solders-rpc-config-no-rpc-api = { path = "./crates/rpc-config-no-rpc-api", version = "0.14.4" }
 solders-rpc-account-info-config = { path = "./crates/rpc-account-info-config", version = "0.14.4" }
 solders-rpc-program-accounts-config = { path = "./crates/rpc-program-accounts-config", version = "0.14.4" }
 solders-rpc-common = { path = "./crates/rpc-common", version = "0.14.4" }

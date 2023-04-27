@@ -11,3 +11,4 @@ pyo3 = { workspace = true }
 solders-rpc-config-no-filter = { workspace = true }
 solders-rpc-program-accounts-config = { workspace = true }
 solders-rpc-account-info-config = { workspace = true }
+solders-rpc-config-no-rpc-api = { workspace = true }

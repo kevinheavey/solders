@@ -4650,6 +4650,7 @@ dependencies = [
  "pyo3",
  "solders-rpc-account-info-config",
  "solders-rpc-config-no-filter",
+ "solders-rpc-config-no-rpc-api",
  "solders-rpc-program-accounts-config",
 ]
 
@@ -4673,9 +4674,21 @@ dependencies = [
  "solders-macros",
  "solders-pubkey",
  "solders-rpc-config-macros",
+ "solders-rpc-config-no-rpc-api",
  "solders-signature",
  "solders-traits-core",
  "solders-transaction-status-enums",
+]
+
+[[package]]
+name = "solders-rpc-config-no-rpc-api"
+version = "0.14.4"
+dependencies = [
+ "pyo3",
+ "serde",
+ "solders-macros",
+ "solders-pubkey",
+ "solders-traits-core",
 ]
 
 [[package]]

@@ -18,6 +18,10 @@ use solana_transaction_status::UiTransactionEncoding as UiTransactionEncodingOri
 use solders_rpc_config_macros::{
     pyclass_boilerplate, pyclass_boilerplate_with_default, rpc_config_impls,
 };
+use solders_rpc_config_no_rpc_api::{
+    RpcBlockSubscribeFilter, RpcBlockSubscribeFilterMentions, RpcTokenAccountsFilterMint,
+    RpcTokenAccountsFilterProgramId, RpcTransactionLogsFilter, RpcTransactionLogsFilterMentions,
+};
 use solders_transaction_status_enums::{TransactionDetails, UiTransactionEncoding};
 
 pyclass_boilerplate!(
@@ -674,44 +678,6 @@ impl RpcEpochConfig {
     }
 }
 
-/// Fieldless filters for ``logsSubscribe``.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-#[pyclass(module = "solders.rpc.config")]
-pub enum RpcTransactionLogsFilter {
-    All,
-    AllWithVotes,
-}
-
-/// ``mentions`` filter for ``logsSubscribe``.
-///
-/// Args:
-///     pubkey (Pubkey): Subscribe to all transactions that mention the provided Pubkey.
-///
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[pyclass(module = "solders.rpc.config", subclass)]
-pub struct RpcTransactionLogsFilterMentions(Vec<String>);
-
-#[richcmp_eq_only]
-#[pymethods]
-impl RpcTransactionLogsFilterMentions {
-    #[new]
-    pub fn new(pubkey: &Pubkey) -> Self {
-        Self(vec![pubkey.to_string()])
-    }
-
-    pub fn __repr__(&self) -> String {
-        format!("{self:#?}")
-    }
-
-    #[getter]
-    pub fn pubkey(&self) -> Pubkey {
-        Pubkey::from_str(&self.0[0]).unwrap()
-    }
-}
-
-impl RichcmpEqualityOnly for RpcTransactionLogsFilterMentions {}
-
 #[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, EnumIntoPy)]
 pub enum TransactionLogsFilterWrapper {
     Plain(RpcTransactionLogsFilter),
@@ -779,64 +745,6 @@ impl RpcTransactionLogsConfig {
         self.0.commitment.map(|c| c.into())
     }
 }
-
-/// ``mint`` filter for ``getTokenAccountsBy*`` methods.
-///
-/// Args:
-///     mint (Pubkey):  Pubkey of the specific token Mint to limit accounts to.
-///
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[pyclass(module = "solders.rpc.config", subclass)]
-pub struct RpcTokenAccountsFilterMint(Pubkey);
-
-#[richcmp_eq_only]
-#[pymethods]
-impl RpcTokenAccountsFilterMint {
-    #[new]
-    pub fn new(mint: Pubkey) -> Self {
-        Self(mint)
-    }
-
-    pub fn __repr__(&self) -> String {
-        format!("{self:#?}")
-    }
-
-    #[getter]
-    pub fn mint(&self) -> Pubkey {
-        self.0
-    }
-}
-
-impl RichcmpEqualityOnly for RpcTokenAccountsFilterMint {}
-
-/// ``programId`` filter for ``getTokenAccountsBy*`` methods.
-///
-/// Args:
-///     program_id (Pubkey):   Pubkey of the Token program that owns the accounts.
-///
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[pyclass(module = "solders.rpc.config", subclass)]
-pub struct RpcTokenAccountsFilterProgramId(Pubkey);
-
-#[richcmp_eq_only]
-#[pymethods]
-impl RpcTokenAccountsFilterProgramId {
-    #[new]
-    pub fn new(program_id: Pubkey) -> Self {
-        Self(program_id)
-    }
-
-    pub fn __repr__(&self) -> String {
-        format!("{self:#?}")
-    }
-
-    #[getter]
-    pub fn program_id(&self) -> Pubkey {
-        self.0
-    }
-}
-
-impl RichcmpEqualityOnly for RpcTokenAccountsFilterProgramId {}
 
 #[derive(FromPyObject, Clone, Debug, PartialEq, Eq, Serialize, Deserialize, EnumIntoPy)]
 pub enum RpcTokenAccountsFilterWrapper {
@@ -912,43 +820,6 @@ impl RpcSignatureSubscribeConfig {
         Self::default()
     }
 }
-
-/// Filter for ``blockSubscribe``.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-#[pyclass(module = "solders.rpc.config")]
-pub enum RpcBlockSubscribeFilter {
-    All,
-}
-
-/// ``mentions`` filter for ``blockSubscribe``.
-///
-/// Args:
-///     pubkey (Pubkey): Return only transactions that mention the provided pubkey.
-///
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[pyclass(module = "solders.rpc.config", subclass)]
-pub struct RpcBlockSubscribeFilterMentions(String);
-
-#[richcmp_eq_only]
-#[pymethods]
-impl RpcBlockSubscribeFilterMentions {
-    #[new]
-    pub fn new(pubkey: &Pubkey) -> Self {
-        Self(pubkey.to_string())
-    }
-
-    pub fn __repr__(&self) -> String {
-        format!("{self:#?}")
-    }
-
-    #[getter]
-    pub fn pubkey(&self) -> Pubkey {
-        Pubkey::from_str(&self.0).unwrap()
-    }
-}
-
-impl RichcmpEqualityOnly for RpcBlockSubscribeFilterMentions {}
 
 #[derive(FromPyObject, Serialize, Deserialize, Clone, Debug, PartialEq, Eq, EnumIntoPy)]
 pub enum RpcBlockSubscribeFilterWrapper {
