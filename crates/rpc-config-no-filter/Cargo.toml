@@ -1,0 +1,24 @@
+[package]
+name = "solders-rpc-config-no-filter"
+version = "0.14.4"
+edition = "2021"
+include = ["/src"]
+license = "MIT"
+repository = "https://github.com/kevinheavey/solders"
+
+[dependencies]
+pyo3 = { workspace = true }
+serde = { workspace = true }
+solders-macros = { workspace = true }
+solders-traits-core = { workspace = true }
+solders-account-decoder = { workspace = true }
+solana-account-decoder = { workspace = true }
+solders-pubkey = { workspace = true }
+solders-hash = { workspace = true }
+solders-signature = { workspace = true }
+solders-transaction-status-enums = { workspace = true }
+solana-transaction-status = { workspace = true }
+solana-rpc-client-api = { workspace = true }
+solders-rpc-config-macros = { workspace = true }
+solders-commitment-config = { workspace = true }
+solana-sdk = { workspace = true }

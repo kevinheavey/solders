@@ -1,0 +1,18 @@
+[package]
+name = "solders-rpc-account-info-config"
+version = "0.14.4"
+edition = "2021"
+include = ["/src"]
+license = "MIT"
+repository = "https://github.com/kevinheavey/solders"
+
+[dependencies]
+pyo3 = { workspace = true }
+serde = { workspace = true }
+solders-macros = { workspace = true }
+solders-traits-core = { workspace = true }
+solders-account-decoder = { workspace = true }
+solana-account-decoder = { workspace = true }
+solders-rpc-config-macros = { workspace = true }
+solana-rpc-client-api = { workspace = true }
+solders-commitment-config = { workspace = true }

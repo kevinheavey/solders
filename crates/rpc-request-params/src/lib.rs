@@ -9,14 +9,15 @@ use solders_signature::Signature;
 use solana_rpc_client_api::config::{
     RpcBlockSubscribeFilter, RpcTokenAccountsFilter, RpcTransactionLogsFilter,
 };
-use solders_rpc_config::{
-    RpcAccountInfoConfig, RpcBlockConfig, RpcBlockSubscribeConfig, RpcBlockSubscribeFilterWrapper,
-    RpcContextConfig, RpcEpochConfig, RpcLargestAccountsFilter, RpcLeaderScheduleConfig,
-    RpcProgramAccountsConfig, RpcRequestAirdropConfig, RpcSendTransactionConfig,
-    RpcSignatureStatusConfig, RpcSignatureSubscribeConfig, RpcSignaturesForAddressConfig,
-    RpcSimulateTransactionConfig, RpcTokenAccountsFilterWrapper, RpcTransactionConfig,
-    RpcTransactionLogsConfig, TransactionLogsFilterWrapper,
+use solders_rpc_account_info_config::RpcAccountInfoConfig;
+use solders_rpc_config_no_filter::{
+    RpcBlockConfig, RpcBlockSubscribeConfig, RpcBlockSubscribeFilterWrapper, RpcContextConfig,
+    RpcEpochConfig, RpcLargestAccountsFilter, RpcLeaderScheduleConfig, RpcRequestAirdropConfig,
+    RpcSendTransactionConfig, RpcSignatureStatusConfig, RpcSignatureSubscribeConfig,
+    RpcSignaturesForAddressConfig, RpcSimulateTransactionConfig, RpcTokenAccountsFilterWrapper,
+    RpcTransactionConfig, RpcTransactionLogsConfig, TransactionLogsFilterWrapper,
 };
+use solders_rpc_program_accounts_config::RpcProgramAccountsConfig;
 
 #[serde_as]
 #[skip_serializing_none]

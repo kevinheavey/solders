@@ -16,7 +16,9 @@ solders-macros = { workspace = true }
 solders-traits-core = { workspace = true }
 solders-traits = { workspace = true }
 solders-commitment-config = { workspace = true }
-solders-rpc-config = { workspace = true }
+solders-rpc-config-no-filter = { workspace = true }
+solders-rpc-account-info-config = { workspace = true }
+solders-rpc-program-accounts-config = { workspace = true }
 solders-rpc-request-params = { workspace = true }
 solders-rpc-request-params-no-config = { workspace = true }
 solders-rpc-version = { workspace = true }

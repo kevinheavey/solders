@@ -4610,6 +4610,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "solders-rpc-account-info-config"
+version = "0.14.4"
+dependencies = [
+ "pyo3",
+ "serde",
+ "solana-account-decoder",
+ "solana-rpc-client-api",
+ "solders-account-decoder",
+ "solders-commitment-config",
+ "solders-macros",
+ "solders-rpc-config-macros",
+ "solders-traits-core",
+]
+
+[[package]]
 name = "solders-rpc-common"
 version = "0.14.4"
 dependencies = [
@@ -4633,6 +4648,20 @@ name = "solders-rpc-config"
 version = "0.14.4"
 dependencies = [
  "pyo3",
+ "solders-rpc-account-info-config",
+ "solders-rpc-config-no-filter",
+ "solders-rpc-program-accounts-config",
+]
+
+[[package]]
+name = "solders-rpc-config-macros"
+version = "0.14.4"
+
+[[package]]
+name = "solders-rpc-config-no-filter"
+version = "0.14.4"
+dependencies = [
+ "pyo3",
  "serde",
  "solana-account-decoder",
  "solana-rpc-client-api",
@@ -4643,7 +4672,7 @@ dependencies = [
  "solders-hash",
  "solders-macros",
  "solders-pubkey",
- "solders-rpc-filter",
+ "solders-rpc-config-macros",
  "solders-signature",
  "solders-traits-core",
  "solders-transaction-status-enums",
@@ -4707,6 +4736,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "solders-rpc-program-accounts-config"
+version = "0.14.4"
+dependencies = [
+ "pyo3",
+ "serde",
+ "solana-rpc-client-api",
+ "solders-macros",
+ "solders-rpc-account-info-config",
+ "solders-rpc-config-macros",
+ "solders-rpc-filter",
+ "solders-traits-core",
+]
+
+[[package]]
 name = "solders-rpc-request-params"
 version = "0.14.4"
 dependencies = [
@@ -4718,7 +4761,9 @@ dependencies = [
  "solders-commitment-config",
  "solders-hash",
  "solders-pubkey",
- "solders-rpc-config",
+ "solders-rpc-account-info-config",
+ "solders-rpc-config-no-filter",
+ "solders-rpc-program-accounts-config",
  "solders-signature",
 ]
 
@@ -4750,7 +4795,9 @@ dependencies = [
  "solders-macros",
  "solders-message",
  "solders-pubkey",
- "solders-rpc-config",
+ "solders-rpc-account-info-config",
+ "solders-rpc-config-no-filter",
+ "solders-rpc-program-accounts-config",
  "solders-rpc-request-params",
  "solders-rpc-request-params-no-config",
  "solders-rpc-version",

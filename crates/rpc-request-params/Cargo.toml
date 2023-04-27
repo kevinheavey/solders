@@ -12,7 +12,9 @@ serde = { workspace = true }
 serde_with = { workspace = true }
 solders-hash = { workspace = true }
 solders-commitment-config = { workspace = true }
-solders-rpc-config = { workspace = true }
+solders-rpc-config-no-filter = { workspace = true }
+solders-rpc-account-info-config = { workspace = true }
+solders-rpc-program-accounts-config = { workspace = true }
 solana-rpc-client-api = { workspace = true }
 solders-pubkey = { workspace = true }
 solders-signature = { workspace = true }
