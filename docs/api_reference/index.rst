@@ -11,6 +11,7 @@ Modules:
    account
    account_decoder
    address_lookup_table_account
+   bankrun
    commitment_config
    epoch_schedule
    errors
