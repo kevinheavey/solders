@@ -12,9 +12,7 @@ Status](https://github.com/kevinheavey/solders/workflows/CI/badge.svg)](https://
 
 # Solders
 
-`solders` is a high-performance Python toolkit for Solana, written in Rust.
-
-It provides robust solutions to the following problems:
+`solders` is a high-performance Python toolkit for Solana, written in Rust. It provides robust solutions to the following problems:
 
 - Core SDK stuff: keypairs, pubkeys, signing and serializing transactions - that sort of thing.
 - RPC stuff: building requests and parsing responses (no networking stuff - if you want help with that, 

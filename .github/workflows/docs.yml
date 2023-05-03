@@ -18,7 +18,7 @@ jobs:
 
       - name: Install python dependencies
         run: |
-          pip install sphinx sphinx-rtd-theme pybip39
+          pip install sphinx==6.2.1 sphinx-rtd-theme==1.2.0 myst-parser==1.0.0 pybip39
 
       - name: Build Wheels
         uses: messense/maturin-action@v1
