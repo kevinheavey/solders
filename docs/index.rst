@@ -6,4 +6,5 @@
    :caption: Contents:
 
    self
+   examples/index
    api_reference/index
