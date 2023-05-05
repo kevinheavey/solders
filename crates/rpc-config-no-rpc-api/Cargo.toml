@@ -1,10 +1,10 @@
 [package]
 name = "solders-rpc-config-no-rpc-api"
-version = "0.14.4"
-edition = "2021"
+version = { workspace = true }
+edition = { workspace = true }
 include = ["/src"]
-license = "MIT"
-repository = "https://github.com/kevinheavey/solders"
+license = { workspace = true }
+repository = { workspace = true }
 
 [dependencies]
 pyo3 = { workspace = true }

@@ -1,11 +1,11 @@
 [package]
 name = "solders-macros"
-version = "0.14.4"
-edition = "2021"
+version = { workspace = true }
+edition = { workspace = true }
 include = ["src/*.rs", "/LICENSE"]
-license = "MIT"
+license = { workspace = true }
 description = "A collection of attribute macros to reduce boilerplate in the [solders](https://github.com/kevinheavey/solders) project."
-repository = "https://github.com/kevinheavey/solders"
+repository = { workspace = true }
 
 [lib]
 proc-macro = true
