@@ -13,7 +13,7 @@ def python(session):
         "pybip39",
         "typing-extensions",
         "jsonalias",
-        "myst-parser"
+        "myst-parser",
     )
     session.install(".", "--no-build-isolation")
     session.run("make", "test", external=True)
