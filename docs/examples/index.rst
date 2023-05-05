@@ -8,3 +8,4 @@ Examples
    keypairs
    pubkeys
    transactions
+   rpc
