@@ -27,6 +27,6 @@ solders-transaction-status = { workspace = true }
 solana-sdk = { workspace = true }
 solana-program-test = { workspace = true }
 solana-banks-client = { workspace = true }
-solana-banks-interface = { version = "1.15.2" }
+solana-banks-interface = { version = "1.14.17" }
 tarpc = { version = "0.29.0" }
 pyo3-asyncio = { version = "0.18.0", features = ["tokio-runtime"] }
