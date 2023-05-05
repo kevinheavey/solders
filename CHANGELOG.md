@@ -4,17 +4,17 @@
 
 ### Added
 
-Added `solders.message.to_bytes_versioned` and `from_bytes_versioned` to serialize versioned messages including the extra leading byte [(#45](https://github.com/kevinheavey/solders/pull/45)
+Added `solders.message.to_bytes_versioned` and `from_bytes_versioned` to serialize versioned messages including the extra leading byte [(#45)](https://github.com/kevinheavey/solders/pull/45)
 
 ### Fixed
 
-`transaction.Legacy` no longer implicitly casts to int when checking equality. This was breaking tx version checking when tx version was returned as `Legacy | int` [(#44)](https://github.com/kevinheavey/solders/pull/44
+`transaction.Legacy` no longer implicitly casts to int when checking equality. This was breaking tx version checking when tx version was returned as `Legacy | int` [(#44)](https://github.com/kevinheavey/solders/pull/44)
 
 ## [0.14.3] - 2023-01-28
 
 ### Fixed 
 
-Fix `MessageV0` JSON serialization [(#42)](https://github.com/kevinheavey/solders/pull/42
+Fix `MessageV0` JSON serialization [(#42)](https://github.com/kevinheavey/solders/pull/42)
 
 ## [0.14.2] - 2023-01-24
 
@@ -26,30 +26,30 @@ Fix `MessageV0` JSON serialization [(#42)](https://github.com/kevinheavey/solder
 
 ### Changed
 
-- Use crates.io for the `pyo3` and `pythonize` dependencies [(#38)](https://github.com/kevinheavey/solders/pull/38
+- Use crates.io for the `pyo3` and `pythonize` dependencies [(#38)](https://github.com/kevinheavey/solders/pull/38)
 
 ## [0.14.0] - 2023-01-11
 
 ### Added
 
-- Add `SimulateVersionedTransaction` [(#37)](https://github.com/kevinheavey/solders/pull/37
-- Support `VersionedMessage` in `GetFeeForMessage` [(#37)](https://github.com/kevinheavey/solders/pull/37
+- Add `SimulateVersionedTransaction` [(#37)](https://github.com/kevinheavey/solders/pull/37)
+- Support `VersionedMessage` in `GetFeeForMessage` [(#37)](https://github.com/kevinheavey/solders/pull/37)
 
 ## [0.13.0] - 2023-01-11
 
 ### Changed
 
-Rename `SendTransaction` to `SendLegacyTransaction` [(#36)](https://github.com/kevinheavey/solders/pull/36
+Rename `SendTransaction` to `SendLegacyTransaction` [(#36)](https://github.com/kevinheavey/solders/pull/36)
 
 ### Added
 
-Add `SendVersionedTransaction` [(#36)](https://github.com/kevinheavey/solders/pull/36
+Add `SendVersionedTransaction` [(#36)](https://github.com/kevinheavey/solders/pull/36)
 
 ## [0.12.0] - 2023-01-10
 
 ### Added
 
-- Add `SendRawTransaction` [(#35)](https://github.com/kevinheavey/solders/pull/35
+- Add `SendRawTransaction` [(#35)](https://github.com/kevinheavey/solders/pull/35)
 
 ## [0.11.0] - 2023-01-10
 
