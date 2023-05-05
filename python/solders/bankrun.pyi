@@ -19,7 +19,7 @@ from solders.transaction_status import (
 class BanksClient:
     async def get_account(
         self, address: Pubkey, commitment: Optional[CommitmentLevel] = None
-    ) -> Account: ...
+    ) -> Optional[Account]: ...
     async def get_balance(
         self,
         address: Pubkey,

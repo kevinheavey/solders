@@ -100,6 +100,12 @@ async def test_sysvar() -> None:
     slot = await client.get_slot()
     assert slot == 1
 
+@mark.asyncio()
+async def test_nonexistent_account() -> None:
+    context = await start()
+    client = context.banks_client
+    acc = await client.get_account(Pubkey.new_unique())
+    assert acc is None
 
 @mark.asyncio()
 async def test_warp() -> None:
