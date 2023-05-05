@@ -8,6 +8,6 @@ repository = { workspace = true }
 
 [dependencies]
 serde = { workspace = true }
-pyo3 = { workspace = true }
+pyo3 = { workspace = true, features = ["macros"] }
 solana-transaction-status = { workspace = true }
 solders-macros = { workspace = true }

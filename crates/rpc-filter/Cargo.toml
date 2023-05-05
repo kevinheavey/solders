@@ -7,7 +7,7 @@ license = { workspace = true }
 repository = { workspace = true }
 
 [dependencies]
-pyo3 = { workspace = true }
+pyo3 = { workspace = true, features = ["macros"] }
 serde = { workspace = true }
 derive_more = { workspace = true }
 solana-rpc-client-api = { workspace = true }

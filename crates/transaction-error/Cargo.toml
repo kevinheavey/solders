@@ -12,4 +12,4 @@ solana-sdk = { workspace = true }
 solders-traits-core = { workspace = true }
 solders-macros = { workspace = true }
 derive_more = { workspace = true }
-pyo3 = { workspace = true }
+pyo3 = { workspace = true, features = ["macros"] }

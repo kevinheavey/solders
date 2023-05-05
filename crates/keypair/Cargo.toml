@@ -7,7 +7,7 @@ license = { workspace = true }
 repository = { workspace = true }
 
 [dependencies]
-pyo3 = { workspace = true }
+pyo3 = { workspace = true, features = ["macros"] }
 solders-traits-core = { workspace = true }
 solders-traits = { workspace = true }
 solders-macros = { workspace = true }
