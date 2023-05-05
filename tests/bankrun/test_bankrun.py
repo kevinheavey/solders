@@ -12,32 +12,6 @@ from solders.system_program import transfer
 from solders.transaction import VersionedTransaction
 
 
-@mark.asyncio
-async def test_logging() -> None:
-    # https://github.com/solana-labs/solana-program-library/blob/bd216c8103cd8eb9f5f32e742973e7afb52f3b81/examples/rust/logging/tests/functional.rs
-    program_id = Pubkey.from_string("Logging111111111111111111111111111111111111")
-    ix = Instruction(
-        program_id,
-        bytes([5, 10, 11, 12, 13, 14]),
-        [AccountMeta(Pubkey.new_unique(), is_signer=False, is_writable=True)],
-    )
-    context = await start(programs=[("spl_example_logging", program_id)])
-    payer = context.payer
-    blockhash = context.last_blockhash
-    client = context.banks_client
-    msg = Message.new_with_blockhash([ix], payer.pubkey(), blockhash)
-    tx = VersionedTransaction(msg, [payer])
-    # let's sim it first
-    sim_res = await client.simulate_transaction(tx)
-    meta = (await client.process_transaction_with_metadata(tx)).meta
-    assert sim_res.meta == meta
-    assert meta is not None
-    assert meta.log_messages[1] == "Program log: static string"
-    assert (
-        meta.compute_units_consumed < 10_000
-    )  # not being precise here in case it changes
-
-
 async def helloworld_program(
     compute_max_units: Optional[int] = None,
 ) -> Tuple[ProgramTestContext, Pubkey, Pubkey]:

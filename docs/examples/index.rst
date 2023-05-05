@@ -9,3 +9,4 @@ Examples
    pubkeys
    transactions
    rpc
+   bankrun
