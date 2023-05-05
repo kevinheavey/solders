@@ -47,6 +47,7 @@ how this is done.
 Firstly, the program's ``.so`` file must be present in one of the following directories:
 
 * ``./tests/fixtures`` (just create this directory if it doesn't exist)
+* The current working directory
 * A directory you define in the ``BPF_OUT_DIR`` or ``SBF_OUT_DIR`` environment variables.
 
 (If you're not aware, the ``.so`` file is created when you run ``anchor build`` or ``cargo build-sbf``
