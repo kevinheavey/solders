@@ -4384,6 +4384,7 @@ dependencies = [
  "solders-address-lookup-table-account",
  "solders-bankrun",
  "solders-commitment-config",
+ "solders-compute-budget",
  "solders-epoch-info",
  "solders-hash",
  "solders-instruction",
@@ -4500,6 +4501,16 @@ dependencies = [
  "serde",
  "solana-sdk",
  "solders-traits",
+]
+
+[[package]]
+name = "solders-compute-budget"
+version = "0.14.4"
+dependencies = [
+ "pyo3",
+ "solana-sdk",
+ "solders-instruction",
+ "solders-pubkey",
 ]
 
 [[package]]

@@ -20,6 +20,7 @@ pub mod address_lookup_table_account;
 pub mod rpc;
 pub mod sysvar;
 use solders_commitment_config::{CommitmentConfig, CommitmentLevel};
+use solders_compute_budget::create_compute_budget_mod;
 use solders_epoch_info::create_epoch_info_mod;
 use solders_hash::Hash as SolderHash;
 use solders_keypair::{null_signer::NullSigner, presigner::Presigner, Keypair};
@@ -71,6 +72,7 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
     let clock_mod = create_clock_mod(py)?;
     let rent_mod = create_rent_mod(py)?;
     let epoch_info_mod = create_epoch_info_mod(py)?;
+    let compute_budget_mod = create_compute_budget_mod(py)?;
     let submodules = [
         errors_mod,
         hash_mod,
@@ -96,6 +98,7 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
         clock_mod,
         rent_mod,
         epoch_info_mod,
+        compute_budget_mod,
     ];
     let modules: HashMap<String, &PyModule> = submodules
         .iter()

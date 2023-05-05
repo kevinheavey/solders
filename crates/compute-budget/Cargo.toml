@@ -1,0 +1,13 @@
+[package]
+name = "solders-compute-budget"
+version = "0.14.4"
+edition = "2021"
+include = ["/src"]
+license = "MIT"
+repository = "https://github.com/kevinheavey/solders"
+
+[dependencies]
+pyo3 = { workspace = true }
+solana-sdk = { workspace = true }
+solders-pubkey = { workspace = true }
+solders-instruction = { workspace = true }

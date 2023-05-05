@@ -13,6 +13,7 @@ Modules:
    address_lookup_table_account
    bankrun
    commitment_config
+   compute_budget
    epoch_schedule
    errors
    hash

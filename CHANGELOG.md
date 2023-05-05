@@ -4,7 +4,8 @@
 
 ### Added
 
-Added `solders.bankrun` [(#47)](https://github.com/kevinheavey/solders/pull/47)
+- Added `solders.bankrun` [(#47)](https://github.com/kevinheavey/solders/pull/47)
+- Added `solders.compute_budget`
 
 ## [0.14.4] - 2023-02-22
 

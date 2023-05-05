@@ -7,6 +7,7 @@ from solders.solders import (
     address_lookup_table_account,
     clock,
     commitment_config,
+    compute_budget,
     epoch_info,
     epoch_schedule,
     errors,
