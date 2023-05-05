@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.15.1] - 2023-05-05
+
+### Fixed
+
+Fix type hint for `BanksClient.get_account`
+
 ## [0.15.0] - 2023-05-05
 
 ### Added
