@@ -79,7 +79,7 @@ When should I use ``solana-test-validator``?
 
 While ``bankrun`` is faster and more convenient, it is also less like a real RPC node.
 So ``solana-test-validator`` is still useful when you need to call RPC methods that ``BanksServer``
-doesn't support, or when you want to test something that depends on specific validator behaviour
+doesn't support, or when you want to test something that depends on real-life validator behaviour
 rather than just testing your program and client code.
 
 -------------------
