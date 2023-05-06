@@ -76,6 +76,7 @@ async def test_sysvar() -> None:
     client = context.banks_client
     rent_before = await client.get_rent()
     assert rent_before.burn_percent == 50
+    assert rent_before.minimum_balance(123) == 1746960 
     new_rent = Rent(
         burn_percent=0,
         exemption_threshold=rent_before.exemption_threshold,
