@@ -8,7 +8,7 @@ use solders_account::Account;
 use solders_macros::{common_methods, richcmp_eq_only};
 use solders_rpc_response_data_boilerplate::response_data_boilerplate;
 use solders_transaction_error::TransactionErrorType;
-use solders_transaction_status::TransactionReturnData;
+use solders_transaction_return_data::TransactionReturnData;
 
 #[serde_as]
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]

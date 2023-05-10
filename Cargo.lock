@@ -4490,6 +4490,7 @@ dependencies = [
  "solders-traits-core",
  "solders-transaction-confirmation-status",
  "solders-transaction-error",
+ "solders-transaction-return-data",
  "solders-transaction-status",
 ]
 
@@ -4658,12 +4659,12 @@ dependencies = [
  "serde_with 1.14.0",
  "solana-account-decoder",
  "solana-rpc-client-api",
- "solana-transaction-status",
  "solders-account",
  "solders-macros",
  "solders-rpc-response-data-boilerplate",
  "solders-traits-core",
  "solders-transaction-error",
+ "solders-transaction-return-data",
  "solders-transaction-status",
 ]
 
@@ -5027,6 +5028,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "solders-transaction-return-data"
+version = "0.15.1"
+dependencies = [
+ "base64 0.13.1",
+ "derive_more",
+ "pyo3",
+ "serde",
+ "solana-sdk",
+ "solana-transaction-status",
+ "solders-macros",
+ "solders-pubkey",
+ "solders-traits-core",
+]
+
+[[package]]
 name = "solders-transaction-status"
 version = "0.15.1"
 dependencies = [
@@ -5052,6 +5068,7 @@ dependencies = [
  "solders-transaction",
  "solders-transaction-confirmation-status",
  "solders-transaction-error",
+ "solders-transaction-return-data",
  "solders-transaction-status-enums",
 ]
 

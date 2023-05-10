@@ -17,6 +17,6 @@ solana-rpc-client-api = { workspace = true }
 solders-account = { workspace = true }
 solders-rpc-response-data-boilerplate = { workspace = true }
 solders-transaction-status = { workspace = true }
-solana-transaction-status = { workspace = true }
+solders-transaction-return-data = { workspace = true }
 solders-transaction-error = { workspace = true }
 serde_with = { workspace = true }

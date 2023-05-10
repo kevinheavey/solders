@@ -19,6 +19,7 @@ use solders_transaction_error::{
     TransactionErrorInstructionError, TransactionErrorInsufficientFundsForRent,
     TransactionErrorType,
 };
+use solders_transaction_return_data::TransactionReturnData;
 use solders_transaction_status_enums::{TransactionDetails, UiTransactionEncoding};
 use solders_transaction_confirmation_status::TransactionConfirmationStatus;
 
@@ -32,10 +33,7 @@ use pyo3::{
 };
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use solana_sdk::{
-    clock::UnixTimestamp, slot_history::Slot,
-    transaction_context::TransactionReturnData as TransactionReturnDataOriginal,
-};
+use solana_sdk::{clock::UnixTimestamp, slot_history::Slot};
 use solana_transaction_status::{
     parse_accounts::{
         ParsedAccount as ParsedAccountOriginal, ParsedAccountSource as ParsedAccountSourceOriginal,
@@ -798,51 +796,6 @@ pub enum RewardType {
     Staking,
     Voting,
 }
-
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
-#[pyclass(module = "solders.transaction_status", subclass)]
-pub struct TransactionReturnData(TransactionReturnDataOriginal);
-transaction_status_boilerplate!(TransactionReturnData);
-
-#[richcmp_eq_only]
-#[common_methods]
-#[pymethods]
-impl TransactionReturnData {
-    #[new]
-    pub fn new(program_id: Pubkey, data: Vec<u8>) -> Self {
-        TransactionReturnDataOriginal {
-            program_id: program_id.into(),
-            data,
-        }
-        .into()
-    }
-
-    #[getter]
-    pub fn program_id(&self) -> Pubkey {
-        self.0.program_id.into()
-    }
-
-    #[getter]
-    pub fn data<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        PyBytes::new(py, &self.0.data)
-    }
-}
-
-impl From<TransactionReturnData> for UiTransactionReturnData {
-    fn from(t: TransactionReturnData) -> Self {
-        TransactionReturnDataOriginal::from(t).into()
-    }
-}
-
-impl From<UiTransactionReturnData> for TransactionReturnData {
-    fn from(r: UiTransactionReturnData) -> Self {
-        Self::new(
-            r.program_id.parse().unwrap(),
-            base64::decode(r.data.0).unwrap(),
-        )
-    }
-}
-
 /// A duplicate representation of TransactionStatusMeta with `err` field
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.transaction_status", subclass)]
