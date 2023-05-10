@@ -11,9 +11,8 @@ use solana_banks_interface::{
 use solders_macros::{common_methods, richcmp_eq_only};
 use solders_traits_core::transaction_status_boilerplate;
 use solders_transaction_error::TransactionErrorType;
-use solders_transaction_status::{
-    TransactionConfirmationStatus, TransactionReturnData, TransactionStatus,
-};
+use solders_transaction_confirmation_status::TransactionConfirmationStatus;
+use solders_transaction_status::{TransactionReturnData, TransactionStatus};
 
 pub fn confirmation_status_from_banks(
     s: TransactionConfirmationStatusBanks,

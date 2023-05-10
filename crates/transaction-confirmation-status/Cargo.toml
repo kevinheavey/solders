@@ -1,0 +1,13 @@
+[package]
+name = "solders-transaction-confirmation-status"
+version = { workspace = true }
+edition = { workspace = true }
+include = ["/src"]
+license = { workspace = true }
+repository = { workspace = true }
+
+[dependencies]
+pyo3 = { workspace = true, features = ["macros"] }
+serde = { workspace = true }
+solders-macros = { workspace = true }
+solana-transaction-status = { workspace = true }

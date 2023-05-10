@@ -20,6 +20,7 @@ use solders_transaction_error::{
     TransactionErrorType,
 };
 use solders_transaction_status_enums::{TransactionDetails, UiTransactionEncoding};
+use solders_transaction_confirmation_status::TransactionConfirmationStatus;
 
 use std::str::FromStr;
 
@@ -44,7 +45,6 @@ use solana_transaction_status::{
     EncodedTransactionWithStatusMeta as EncodedTransactionWithStatusMetaOriginal,
     Reward as RewardOriginal, RewardType as RewardTypeOriginal,
     TransactionBinaryEncoding as TransactionBinaryEncodingOriginal,
-    TransactionConfirmationStatus as TransactionConfirmationStatusOriginal,
     TransactionStatus as TransactionStatusOriginal, UiAccountsList as UiAccountsListOriginal,
     UiAddressTableLookup as UiAddressTableLookupOriginal,
     UiCompiledInstruction as UiCompiledInstructionOriginal,
@@ -1086,16 +1086,6 @@ impl Reward {
     pub fn commission(&self) -> Option<u8> {
         self.0.commission
     }
-}
-
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-#[enum_original_mapping(TransactionConfirmationStatusOriginal)]
-#[pyclass(module = "solders.transaction_status")]
-pub enum TransactionConfirmationStatus {
-    Processed,
-    Confirmed,
-    Finalized,
 }
 
 pub type Rewards = Vec<Reward>;

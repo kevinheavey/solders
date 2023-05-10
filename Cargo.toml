@@ -69,6 +69,7 @@ solders-banks-interface = { path = "./crates/banks-interface", version = "=0.15.
 solders-commitment-config = { path = "./crates/commitment-config", version = "=0.15.1" }
 solders-compute-budget = { path = "./crates/compute-budget", version = "=0.15.1" }
 solders-epoch-info = { path = "./crates/epoch-info", version = "=0.15.1" }
+solders-transaction-confirmation-status = { path = "./crates/transaction-confirmation-status", version = "=0.15.1" }
 solders-transaction-status = { path = "./crates/transaction-status", version = "=0.15.1" }
 solders-transaction-status-enums = { path = "./crates/transaction-status-enums", version = "=0.15.1" }
 solders-base64-string = { path = "./crates/base64-string", version = "=0.15.1" }

@@ -26,6 +26,7 @@ solders-message = { workspace = true }
 solders-transaction = { workspace = true }
 solana-transaction-status = { workspace = true }
 solders-transaction-error = { workspace = true }
+solders-transaction-confirmation-status = { workspace = true }
 solders-transaction-status-enums = { workspace = true }
 solders-commitment-config ={ workspace = true }
 bincode = { workspace = true }

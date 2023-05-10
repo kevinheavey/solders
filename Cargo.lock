@@ -4488,6 +4488,7 @@ dependencies = [
  "solana-banks-interface",
  "solders-macros",
  "solders-traits-core",
+ "solders-transaction-confirmation-status",
  "solders-transaction-error",
  "solders-transaction-status",
 ]
@@ -4918,8 +4919,8 @@ dependencies = [
  "solders-rpc-response-data-boilerplate",
  "solders-signature",
  "solders-traits-core",
+ "solders-transaction-confirmation-status",
  "solders-transaction-error",
- "solders-transaction-status",
 ]
 
 [[package]]
@@ -5004,6 +5005,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "solders-transaction-confirmation-status"
+version = "0.15.1"
+dependencies = [
+ "pyo3",
+ "serde",
+ "solana-transaction-status",
+ "solders-macros",
+]
+
+[[package]]
 name = "solders-transaction-error"
 version = "0.15.1"
 dependencies = [
@@ -5039,6 +5050,7 @@ dependencies = [
  "solders-signature",
  "solders-traits-core",
  "solders-transaction",
+ "solders-transaction-confirmation-status",
  "solders-transaction-error",
  "solders-transaction-status-enums",
 ]
