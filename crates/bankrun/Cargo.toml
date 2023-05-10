@@ -26,4 +26,5 @@ solana-sdk = { workspace = true }
 solana-program-test = { workspace = true }
 solana-banks-client = { workspace = true }
 tarpc = { version = "0.29.0" }
+toml = "0.7.3"
 pyo3-asyncio = { version = "0.18.0", features = ["tokio-runtime"] }

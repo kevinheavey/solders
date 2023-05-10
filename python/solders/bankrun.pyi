@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import List, Optional, Sequence, Tuple
 
 from solders.account import Account
@@ -129,6 +130,14 @@ class ProgramTestContext:
 
 async def start(
     programs: Optional[Sequence[Tuple[str, Pubkey]]] = None,
+    accounts: Optional[Sequence[Tuple[Pubkey, Account]]] = None,
+    compute_max_units: Optional[int] = None,
+    transaction_account_lock_limit: Optional[int] = None,
+    use_bpf_jit: Optional[bool] = None,
+) -> ProgramTestContext: ...
+async def start_anchor(
+    path: Path,
+    extra_programs: Optional[Sequence[Tuple[str, Pubkey]]] = None,
     accounts: Optional[Sequence[Tuple[Pubkey, Account]]] = None,
     compute_max_units: Optional[int] = None,
     transaction_account_lock_limit: Optional[int] = None,

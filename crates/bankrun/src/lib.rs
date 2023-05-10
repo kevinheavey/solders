@@ -1,5 +1,10 @@
+use std::{path::PathBuf, str::FromStr};
+
 use derive_more::{From, Into};
-use pyo3::prelude::*;
+use pyo3::{
+    exceptions::{PyFileNotFoundError, PyValueError},
+    prelude::*,
+};
 use solana_banks_client::BanksClientError as BanksClientErrorOriginal;
 use solders_account::Account;
 use solders_banks_interface::{
@@ -16,6 +21,7 @@ use solders_traits::{to_py_err, BanksClientError};
 use solders_traits_core::to_py_value_err;
 use solders_transaction::VersionedTransaction;
 use tarpc::context::current;
+use toml::Table;
 use {
     solana_program_test::{
         BanksClient as BanksClientOriginal, ProgramTest,
@@ -430,18 +436,16 @@ impl BanksClient {
 }
 
 fn new_bankrun(
-    programs: Option<Vec<(&str, Pubkey)>>,
+    programs: Vec<(&str, Pubkey)>,
     compute_max_units: Option<u64>,
     transaction_account_lock_limit: Option<usize>,
     use_bpf_jit: Option<bool>,
-    accounts: Option<Vec<(Pubkey, Account)>>,
+    accounts: Vec<(Pubkey, Account)>,
 ) -> ProgramTest {
     let mut pt = ProgramTest::default();
     pt.prefer_bpf(true);
-    if let Some(progs) = programs {
-        for prog in progs {
-            pt.add_program(prog.0, prog.1.into(), None);
-        }
+    for prog in programs {
+        pt.add_program(prog.0, prog.1.into(), None);
     }
     if let Some(cmu) = compute_max_units {
         pt.set_compute_max_units(cmu);
@@ -452,10 +456,8 @@ fn new_bankrun(
     if let Some(use_jit) = use_bpf_jit {
         pt.use_bpf_jit(use_jit);
     }
-    if let Some(accs) = accounts {
-        for acc in accs {
-            pt.add_account(acc.0.into(), acc.1.into());
-        }
+    for acc in accounts {
+        pt.add_account(acc.0.into(), acc.1.into());
     }
     pt
 }
@@ -489,11 +491,84 @@ pub fn start<'p>(
     use_bpf_jit: Option<bool>,
 ) -> PyResult<&'p PyAny> {
     let pt = new_bankrun(
+        programs.unwrap_or_default(),
+        compute_max_units,
+        transaction_account_lock_limit,
+        use_bpf_jit,
+        accounts.unwrap_or_default(),
+    );
+    pyo3_asyncio::tokio::future_into_py(py, async move {
+        let inner = pt.start_with_context().await;
+        let res: PyResult<PyObject> =
+            Python::with_gil(|py| Ok(ProgramTestContext(inner).into_py(py)));
+        res
+    })
+}
+
+/// Start a bankrun in an Anchor workspace, with all the workspace programs deployed.
+///
+/// This will spin up a BanksServer and a BanksClient,
+/// deploy programs and add accounts as instructed.
+///
+/// Args:
+///     path (pathlib.Path): Path to root of the Anchor project.
+///     extra_programs (Optional[Sequence[Tuple[str, Pubkey]]]): A sequence of (program_name, program_id) tuples
+///         indicating extra programs to deploy alongside the Anchor workspace programs. See the main bankrun docs for more explanation
+///         on how to add programs.
+///     accounts (Optional[Sequence[Tuple[Pubkey, Account]]]): A sequence of (address, account_object) tuples, indicating
+///         what data to write to the given addresses.
+///     compute_max_units (Optional[int]): Override the default compute unit limit for a transaction.
+///     transaction_account_lock_limit (Optional[int]): Override the default transaction account lock limit.
+///     use_bpf_jit (Optional[bool]): Execute the program with JIT if true, interpreted if false.
+///
+/// Returns:
+///     ProgramTestContext: a container for stuff you'll need to send transactions and interact with the test environment.
+///     
+#[pyfunction]
+pub fn start_anchor<'p>(
+    py: Python<'p>,
+    path: PathBuf,
+    extra_programs: Option<Vec<(&str, Pubkey)>>,
+    accounts: Option<Vec<(Pubkey, Account)>>,
+    compute_max_units: Option<u64>,
+    transaction_account_lock_limit: Option<usize>,
+    use_bpf_jit: Option<bool>,
+) -> PyResult<&'p PyAny> {
+    let mut programs = extra_programs.unwrap_or_default();
+    let mut anchor_toml_path = path.clone();
+    let mut sbf_out_dir = path.clone();
+    sbf_out_dir.push("target/deploy");
+    anchor_toml_path.push("Anchor.toml");
+    let toml_str = std::fs::read_to_string(anchor_toml_path)
+        .map_err(|e| PyFileNotFoundError::new_err(e.to_string()))?;
+    let parsed_toml = Table::from_str(&toml_str).unwrap();
+    let toml_programs_raw = parsed_toml
+        .get("programs")
+        .and_then(|x| x.get("localnet"))
+        .ok_or(PyValueError::new_err(
+            "`programs.localnet` not found in Anchor.toml",
+        ))?;
+    let toml_programs_parsed = toml_programs_raw.as_table().ok_or(PyValueError::new_err(
+        "Failed to parse `programs.localnet` table.",
+    ))?;
+    for (key, val) in toml_programs_parsed {
+        let pubkey_with_quotes = val.to_string();
+        let pubkey_str = &pubkey_with_quotes[1..pubkey_with_quotes.len() - 1];
+        let pk = Pubkey::new_from_str(pubkey_str).or_else(|_| {
+            Err(PyValueError::new_err(format!(
+                "Invalid pubkey in `programs.localnet` table. {}",
+                val
+            )))
+        })?;
+        programs.push((key, pk));
+    }
+    std::env::set_var("SBF_OUT_DIR", sbf_out_dir);
+    let pt = new_bankrun(
         programs,
         compute_max_units,
         transaction_account_lock_limit,
         use_bpf_jit,
-        accounts,
+        accounts.unwrap_or_default(),
     );
     pyo3_asyncio::tokio::future_into_py(py, async move {
         let inner = pt.start_with_context().await;
@@ -599,5 +674,6 @@ pub fn create_bankrun_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<BanksTransactionResultWithMeta>()?;
     m.add_class::<BanksTransactionMeta>()?;
     m.add_function(wrap_pyfunction!(start, m)?)?;
+    m.add_function(wrap_pyfunction!(start_anchor, m)?)?;
     Ok(m)
 }

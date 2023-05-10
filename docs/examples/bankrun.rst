@@ -64,6 +64,19 @@ from the Solana monorepo that just does some logging:
 The ``.so`` file must be named ``spl_example_logging.so``, since ``spl_example_logging`` is
 the name we used in the ``programs`` parameter.
 
+------------------
+Anchor integration
+------------------
+
+If you have an Anchor workspace, ``bankrun`` can make some extra assumptions that make it more
+convenient to get started. Just use ``start_anchor`` and give it the path to the project root
+(the folder containing the ``Anchor.toml`` file). The programs in the workspace will be automatically
+deployed to the test environment.
+
+Example:
+
+.. literalinclude:: ../../tests/bankrun/test_anchor.py
+
 --------------
 Other features
 --------------
