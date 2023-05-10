@@ -3,7 +3,6 @@ use derive_more::{From, Into};
 extern crate base64;
 use pythonize::{depythonize, pythonize};
 use solders_account_decoder::UiTokenAmount;
-use solders_commitment_config::CommitmentConfig;
 use solders_hash::Hash as SolderHash;
 use solders_message::MessageHeader;
 use solders_pubkey::Pubkey;
@@ -22,6 +21,7 @@ use solders_transaction_error::{
 };
 use solders_transaction_return_data::TransactionReturnData;
 use solders_transaction_status_enums::{TransactionDetails, UiTransactionEncoding};
+use solders_transaction_status_struct::TransactionStatus;
 
 use std::str::FromStr;
 
@@ -43,8 +43,7 @@ use solana_transaction_status::{
     EncodedTransactionWithStatusMeta as EncodedTransactionWithStatusMetaOriginal,
     Reward as RewardOriginal, RewardType as RewardTypeOriginal,
     TransactionBinaryEncoding as TransactionBinaryEncodingOriginal,
-    TransactionStatus as TransactionStatusOriginal, UiAccountsList as UiAccountsListOriginal,
-    UiAddressTableLookup as UiAddressTableLookupOriginal,
+    UiAccountsList as UiAccountsListOriginal, UiAddressTableLookup as UiAddressTableLookupOriginal,
     UiCompiledInstruction as UiCompiledInstructionOriginal,
     UiConfirmedBlock as UiConfirmedBlockOriginal,
     UiInnerInstructions as UiInnerInstructionsOriginal, UiInstruction as UiInstructionOriginal,
@@ -1042,67 +1041,6 @@ impl Reward {
 }
 
 pub type Rewards = Vec<Reward>;
-
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
-#[pyclass(module = "solders.transaction_status", subclass)]
-pub struct TransactionStatus(pub TransactionStatusOriginal);
-
-transaction_status_boilerplate!(TransactionStatus);
-
-#[richcmp_eq_only]
-#[common_methods]
-#[pymethods]
-impl TransactionStatus {
-    #[new]
-    pub fn new(
-        slot: Slot,
-        confirmations: Option<usize>,
-        status: Option<TransactionErrorType>,
-        err: Option<TransactionErrorType>,
-        confirmation_status: Option<TransactionConfirmationStatus>,
-    ) -> Self {
-        TransactionStatusOriginal {
-            slot,
-            confirmations,
-            status: status.map_or(Ok(()), |e| Err(e.into())),
-            err: err.map(Into::into),
-            confirmation_status: confirmation_status.map(Into::into),
-        }
-        .into()
-    }
-
-    #[getter]
-    pub fn slot(&self) -> Slot {
-        self.0.slot
-    }
-    #[getter]
-    pub fn confirmations(&self) -> Option<usize> {
-        self.0.confirmations
-    }
-    #[getter]
-    pub fn status(&self) -> Option<TransactionErrorType> {
-        self.0
-            .status
-            .clone()
-            .map_or_else(|e| Some(e.into()), |_s| None)
-    }
-    #[getter]
-    pub fn err(&self) -> Option<TransactionErrorType> {
-        self.0.err.clone().map(Into::into)
-    }
-    #[getter]
-    pub fn confirmation_status(&self) -> Option<TransactionConfirmationStatus> {
-        self.0.confirmation_status.clone().map(Into::into)
-    }
-
-    pub fn satisfies_commitment(&self, commitment_config: CommitmentConfig) -> bool {
-        self.0.satisfies_commitment(commitment_config.into())
-    }
-
-    pub fn find_confirmation_status(&self) -> TransactionConfirmationStatus {
-        self.0.confirmation_status().into()
-    }
-}
 
 // the one in transaction_status is missing Clone
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]

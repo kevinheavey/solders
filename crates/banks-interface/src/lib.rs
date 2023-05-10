@@ -11,7 +11,7 @@ use solders_traits_core::transaction_status_boilerplate;
 use solders_transaction_confirmation_status::TransactionConfirmationStatus;
 use solders_transaction_error::TransactionErrorType;
 use solders_transaction_return_data::TransactionReturnData;
-use solders_transaction_status::TransactionStatus;
+use solders_transaction_status_struct::TransactionStatus;
 
 pub fn confirmation_status_from_banks(
     s: TransactionConfirmationStatusBanks,

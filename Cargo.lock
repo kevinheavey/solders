@@ -4491,7 +4491,7 @@ dependencies = [
  "solders-transaction-confirmation-status",
  "solders-transaction-error",
  "solders-transaction-return-data",
- "solders-transaction-status",
+ "solders-transaction-status-struct",
 ]
 
 [[package]]
@@ -4665,7 +4665,6 @@ dependencies = [
  "solders-traits-core",
  "solders-transaction-error",
  "solders-transaction-return-data",
- "solders-transaction-status",
 ]
 
 [[package]]
@@ -4882,6 +4881,7 @@ dependencies = [
  "solders-traits-core",
  "solders-transaction-error",
  "solders-transaction-status",
+ "solders-transaction-status-struct",
  "thiserror",
 ]
 
@@ -5058,7 +5058,6 @@ dependencies = [
  "solana-sdk",
  "solana-transaction-status",
  "solders-account-decoder",
- "solders-commitment-config",
  "solders-hash",
  "solders-macros",
  "solders-message",
@@ -5070,6 +5069,7 @@ dependencies = [
  "solders-transaction-error",
  "solders-transaction-return-data",
  "solders-transaction-status-enums",
+ "solders-transaction-status-struct",
 ]
 
 [[package]]
@@ -5080,6 +5080,21 @@ dependencies = [
  "serde",
  "solana-transaction-status",
  "solders-macros",
+]
+
+[[package]]
+name = "solders-transaction-status-struct"
+version = "0.15.1"
+dependencies = [
+ "derive_more",
+ "pyo3",
+ "serde",
+ "solana-transaction-status",
+ "solders-commitment-config",
+ "solders-macros",
+ "solders-traits-core",
+ "solders-transaction-confirmation-status",
+ "solders-transaction-error",
 ]
 
 [[package]]

@@ -67,9 +67,8 @@ use solders_signature::Signature;
 use solders_traits::to_py_err;
 use solders_traits_core::{PyBytesBincode, PyFromBytesBincode, RichcmpEqualityOnly};
 use solders_transaction_error::TransactionErrorType;
-use solders_transaction_status::{
-    EncodedConfirmedTransactionWithStatusMeta, TransactionStatus, UiConfirmedBlock,
-};
+use solders_transaction_status::{EncodedConfirmedTransactionWithStatusMeta, UiConfirmedBlock};
+use solders_transaction_status_struct::TransactionStatus;
 
 use solders_rpc_common::RpcSimulateTransactionResult;
 use solders_rpc_errors_no_tx_status::{

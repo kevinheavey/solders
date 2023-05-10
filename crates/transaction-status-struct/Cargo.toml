@@ -1,5 +1,5 @@
 [package]
-name = "solders-rpc-common"
+name = "solders-transaction-status-struct"
 version = { workspace = true }
 edition = { workspace = true }
 include = ["/src"]
@@ -12,10 +12,7 @@ serde = { workspace = true }
 derive_more = { workspace = true }
 solders-macros = { workspace = true }
 solders-traits-core = { workspace = true }
-solana-account-decoder = { workspace = true }
-solana-rpc-client-api = { workspace = true }
-solders-account = { workspace = true }
-solders-rpc-response-data-boilerplate = { workspace = true }
-solders-transaction-return-data = { workspace = true }
+solana-transaction-status = { workspace = true }
 solders-transaction-error = { workspace = true }
-serde_with = { workspace = true }
+solders-transaction-confirmation-status = { workspace = true }
+solders-commitment-config = { workspace = true }

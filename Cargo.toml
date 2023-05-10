@@ -3,7 +3,7 @@ name = "solders"
 version = { workspace = true }
 edition = { workspace = true }
 include = ["/src", "/LICENSE", "/pyproject.toml"]
-description = "Python binding to the Solana Rust SDK"
+description = "Python bindings for Solana Rust tools"
 license = { workspace = true }
 repository = { workspace = true }
 
@@ -73,6 +73,7 @@ solders-transaction-confirmation-status = { path = "./crates/transaction-confirm
 solders-transaction-return-data = { path = "./crates/transaction-return-data", version = "=0.15.1" }
 solders-transaction-status = { path = "./crates/transaction-status", version = "=0.15.1" }
 solders-transaction-status-enums = { path = "./crates/transaction-status-enums", version = "=0.15.1" }
+solders-transaction-status-struct = { path = "./crates/transaction-status-struct", version = "=0.15.1" }
 solders-base64-string = { path = "./crates/base64-string", version = "=0.15.1" }
 solders-rpc-filter = { path = "./crates/rpc-filter", version = "=0.15.1" }
 solders-rpc-config = { path = "./crates/rpc-config", version = "=0.15.1" }

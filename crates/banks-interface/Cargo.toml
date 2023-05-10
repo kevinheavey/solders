@@ -15,6 +15,6 @@ solders-traits-core = { workspace = true }
 solders-transaction-error = { workspace = true }
 solders-transaction-confirmation-status = { workspace = true }
 solders-transaction-return-data = { workspace = true }
-solders-transaction-status = { workspace = true }
+solders-transaction-status-struct = { workspace = true }
 solana-banks-client = { workspace = true }
 solana-banks-interface = { version = "1.14.17" }

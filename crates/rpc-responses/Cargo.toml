@@ -23,6 +23,7 @@ solders-epoch-info = { workspace = true }
 solders-transaction-error = { workspace = true }
 solders-transaction-status = { workspace = true }
 solana-transaction-status = { workspace = true }
+solders-transaction-status-struct = { workspace = true }
 solana-rpc-client-api = { workspace = true }
 solders-rpc-responses-common = { workspace = true }
 solders-rpc-responses-tx-status = { workspace = true }
