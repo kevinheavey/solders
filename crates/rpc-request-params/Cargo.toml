@@ -5,6 +5,7 @@ edition = { workspace = true }
 include = ["/src"]
 license = { workspace = true }
 repository = { workspace = true }
+description = "Solders RPC request params crate."
 
 [dependencies]
 bincode = { workspace = true }

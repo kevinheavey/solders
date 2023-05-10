@@ -5,6 +5,7 @@ edition = { workspace = true }
 include = ["/src"]
 license = { workspace = true }
 repository = { workspace = true }
+description = "Solders transaction confirmation status crate."
 
 [dependencies]
 pyo3 = { workspace = true, features = ["macros"] }

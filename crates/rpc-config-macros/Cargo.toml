@@ -5,3 +5,4 @@ edition = { workspace = true }
 include = ["/src"]
 license = { workspace = true }
 repository = { workspace = true }
+description = "Solders RPC config macros crate."
