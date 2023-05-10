@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.16.0] - 2023-05-10
+
+### Added
+
+Added `bankrun.start_anchor()`
+
+### Fixed
+
+Fix type hint for `BanksClient.get_account`
+
 ## [0.15.1] - 2023-05-05
 
 ### Fixed
