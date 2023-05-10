@@ -65,6 +65,7 @@ solders-traits = { path = "./crates/traits", version = "=0.15.1" }
 solders-traits-core = { path = "./crates/traits-core", version = "=0.15.1" }
 solders-account-decoder = { path = "./crates/account-decoder", version = "=0.15.1" }
 solders-bankrun = { path = "./crates/bankrun", version = "=0.15.1" }
+solders-banks-interface = { path = "./crates/banks-interface", version = "=0.15.1" }
 solders-commitment-config = { path = "./crates/commitment-config", version = "=0.15.1" }
 solders-compute-budget = { path = "./crates/compute-budget", version = "=0.15.1" }
 solders-epoch-info = { path = "./crates/epoch-info", version = "=0.15.1" }

@@ -1,0 +1,18 @@
+[package]
+name = "solders-banks-interface"
+version = { workspace = true }
+edition = { workspace = true }
+include = ["/src"]
+license = { workspace = true }
+repository = { workspace = true }
+
+[dependencies]
+pyo3 = { workspace = true, features = ["macros"] }
+serde = { workspace = true }
+derive_more = { workspace = true }
+solders-macros = { workspace = true }
+solders-traits-core = { workspace = true }
+solders-transaction-error = { workspace = true }
+solders-transaction-status = { workspace = true }
+solana-banks-client = { workspace = true }
+solana-banks-interface = { version = "1.14.17" }

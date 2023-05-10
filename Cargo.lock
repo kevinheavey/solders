@@ -4458,12 +4458,11 @@ dependencies = [
  "derive_more",
  "pyo3",
  "pyo3-asyncio",
- "serde",
  "solana-banks-client",
- "solana-banks-interface",
  "solana-program-test",
  "solana-sdk",
  "solders-account",
+ "solders-banks-interface",
  "solders-commitment-config",
  "solders-hash",
  "solders-keypair",
@@ -4475,9 +4474,22 @@ dependencies = [
  "solders-traits",
  "solders-traits-core",
  "solders-transaction",
+ "tarpc",
+]
+
+[[package]]
+name = "solders-banks-interface"
+version = "0.15.1"
+dependencies = [
+ "derive_more",
+ "pyo3",
+ "serde",
+ "solana-banks-client",
+ "solana-banks-interface",
+ "solders-macros",
+ "solders-traits-core",
  "solders-transaction-error",
  "solders-transaction-status",
- "tarpc",
 ]
 
 [[package]]

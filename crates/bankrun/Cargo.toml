@@ -8,25 +8,22 @@ repository = { workspace = true }
 
 [dependencies]
 pyo3 = { workspace = true, features = ["macros"] }
-serde = { workspace = true }
 derive_more = { workspace = true }
+solders-banks-interface = { workspace = true }
 solders-macros = { workspace = true }
 solders-hash = { workspace = true }
 solders-primitives = { workspace = true }
 solders-commitment-config = { workspace = true }
+solders-message = { workspace = true }
 solders-pubkey = { workspace = true }
 solders-traits = { workspace = true, features = ["banks-client"]}
 solders-traits-core = { workspace = true }
 solders-account = { workspace = true }
 solders-keypair = { workspace = true }
 solders-transaction = { workspace = true }
-solders-transaction-error = { workspace = true }
-solders-message = { workspace = true }
 solders-signature = { workspace = true }
-solders-transaction-status = { workspace = true }
 solana-sdk = { workspace = true }
 solana-program-test = { workspace = true }
 solana-banks-client = { workspace = true }
-solana-banks-interface = { version = "1.14.17" }
 tarpc = { version = "0.29.0" }
 pyo3-asyncio = { version = "0.18.0", features = ["tokio-runtime"] }
