@@ -4,7 +4,7 @@ use solders_rpc_config_no_filter::{
     RpcBlockConfig, RpcBlockProductionConfig, RpcBlockProductionConfigRange,
     RpcBlockSubscribeConfig, RpcContextConfig, RpcEpochConfig, RpcGetVoteAccountsConfig,
     RpcLargestAccountsFilter, RpcLeaderScheduleConfig, RpcSignatureSubscribeConfig,
-    RpcSignaturesForAddressConfig, RpcSupplyConfig, RpcTransactionConfig, RpcTransactionLogsConfig,
+    RpcSupplyConfig, RpcTransactionConfig, RpcTransactionLogsConfig,
 };
 use solders_rpc_config_no_rpc_api::{
     RpcBlockSubscribeFilter, RpcBlockSubscribeFilterMentions, RpcTransactionLogsFilter,
@@ -15,6 +15,7 @@ use solders_rpc_program_accounts_config::RpcProgramAccountsConfig;
 use solders_rpc_request_airdrop_config::RpcRequestAirdropConfig;
 use solders_rpc_send_transaction_config::RpcSendTransactionConfig;
 use solders_rpc_sig_status_config::RpcSignatureStatusConfig;
+use solders_rpc_sigs_for_address_config::RpcSignaturesForAddressConfig;
 use solders_rpc_sim_transaction_config::RpcSimulateTransactionConfig;
 use solders_rpc_simulate_tx_accounts_config::RpcSimulateTransactionAccountsConfig;
 

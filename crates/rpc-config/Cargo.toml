@@ -14,6 +14,7 @@ solders-rpc-account-info-config = { workspace = true }
 solders-rpc-request-airdrop-config = { workspace = true }
 solders-rpc-send-transaction-config = { workspace = true }
 solders-rpc-sig-status-config = { workspace = true }
+solders-rpc-sigs-for-address-config = { workspace = true }
 solders-rpc-sim-transaction-config = { workspace = true }
 solders-rpc-simulate-tx-accounts-config = { workspace = true }
 solders-rpc-config-no-rpc-api = { workspace = true }

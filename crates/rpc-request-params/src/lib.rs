@@ -13,13 +13,14 @@ use solders_rpc_account_info_config::RpcAccountInfoConfig;
 use solders_rpc_config_no_filter::{
     RpcBlockConfig, RpcBlockSubscribeConfig, RpcBlockSubscribeFilterWrapper, RpcContextConfig,
     RpcEpochConfig, RpcLargestAccountsFilter, RpcLeaderScheduleConfig, RpcSignatureSubscribeConfig,
-    RpcSignaturesForAddressConfig, RpcTokenAccountsFilterWrapper, RpcTransactionConfig,
-    RpcTransactionLogsConfig, TransactionLogsFilterWrapper,
+    RpcTokenAccountsFilterWrapper, RpcTransactionConfig, RpcTransactionLogsConfig,
+    TransactionLogsFilterWrapper,
 };
 use solders_rpc_program_accounts_config::RpcProgramAccountsConfig;
 use solders_rpc_request_airdrop_config::RpcRequestAirdropConfig;
 use solders_rpc_send_transaction_config::RpcSendTransactionConfig;
 use solders_rpc_sig_status_config::RpcSignatureStatusConfig;
+use solders_rpc_sigs_for_address_config::RpcSignaturesForAddressConfig;
 use solders_rpc_sim_transaction_config::RpcSimulateTransactionConfig;
 
 #[serde_as]
