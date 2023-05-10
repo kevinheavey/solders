@@ -1,5 +1,5 @@
 [package]
-name = "solders-rpc-config-no-filter"
+name = "solders-rpc-sim-transaction-config"
 version = { workspace = true }
 edition = { workspace = true }
 include = ["/src"]
@@ -10,13 +10,10 @@ repository = { workspace = true }
 pyo3 = { workspace = true, features = ["macros"] }
 serde = { workspace = true }
 solders-macros = { workspace = true }
-solders-traits-core = { workspace = true }
-solana-account-decoder = { workspace = true }
-solders-pubkey = { workspace = true }
-solders-signature = { workspace = true }
-solders-transaction-status-enums = { workspace = true }
 solana-rpc-client-api = { workspace = true }
 solders-rpc-config-macros = { workspace = true }
-solders-rpc-config-no-rpc-api = { workspace = true }
+solders-rpc-simulate-tx-accounts-config = { workspace = true }
 solders-commitment-config = { workspace = true }
-solana-sdk = { workspace = true }
+solders-traits-core = { workspace = true }
+solana-transaction-status = { workspace = true }
+solders-transaction-status-enums = { workspace = true }

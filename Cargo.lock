@@ -4679,6 +4679,7 @@ dependencies = [
  "solders-rpc-request-airdrop-config",
  "solders-rpc-send-transaction-config",
  "solders-rpc-sig-status-config",
+ "solders-rpc-sim-transaction-config",
  "solders-rpc-simulate-tx-accounts-config",
 ]
 
@@ -4695,13 +4696,11 @@ dependencies = [
  "solana-account-decoder",
  "solana-rpc-client-api",
  "solana-sdk",
- "solana-transaction-status",
  "solders-commitment-config",
  "solders-macros",
  "solders-pubkey",
  "solders-rpc-config-macros",
  "solders-rpc-config-no-rpc-api",
- "solders-rpc-simulate-tx-accounts-config",
  "solders-signature",
  "solders-traits-core",
  "solders-transaction-status-enums",
@@ -4821,6 +4820,7 @@ dependencies = [
  "solders-rpc-request-airdrop-config",
  "solders-rpc-send-transaction-config",
  "solders-rpc-sig-status-config",
+ "solders-rpc-sim-transaction-config",
  "solders-signature",
 ]
 
@@ -4860,6 +4860,7 @@ dependencies = [
  "solders-rpc-request-params-no-config",
  "solders-rpc-send-transaction-config",
  "solders-rpc-sig-status-config",
+ "solders-rpc-sim-transaction-config",
  "solders-rpc-version",
  "solders-signature",
  "solders-traits",
@@ -4973,6 +4974,22 @@ dependencies = [
  "solders-macros",
  "solders-rpc-config-macros",
  "solders-traits-core",
+]
+
+[[package]]
+name = "solders-rpc-sim-transaction-config"
+version = "0.15.1"
+dependencies = [
+ "pyo3",
+ "serde",
+ "solana-rpc-client-api",
+ "solana-transaction-status",
+ "solders-commitment-config",
+ "solders-macros",
+ "solders-rpc-config-macros",
+ "solders-rpc-simulate-tx-accounts-config",
+ "solders-traits-core",
+ "solders-transaction-status-enums",
 ]
 
 [[package]]
