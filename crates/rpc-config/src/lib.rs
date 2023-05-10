@@ -3,10 +3,9 @@ use solders_rpc_account_info_config::RpcAccountInfoConfig;
 use solders_rpc_config_no_filter::{
     RpcBlockConfig, RpcBlockProductionConfig, RpcBlockProductionConfigRange,
     RpcBlockSubscribeConfig, RpcContextConfig, RpcEpochConfig, RpcGetVoteAccountsConfig,
-    RpcLargestAccountsFilter, RpcLeaderScheduleConfig, RpcRequestAirdropConfig,
-    RpcSendTransactionConfig, RpcSignatureStatusConfig, RpcSignatureSubscribeConfig,
-    RpcSignaturesForAddressConfig, RpcSimulateTransactionAccountsConfig,
-    RpcSimulateTransactionConfig, RpcSupplyConfig, RpcTransactionConfig, RpcTransactionLogsConfig,
+    RpcLargestAccountsFilter, RpcLeaderScheduleConfig, RpcSendTransactionConfig,
+    RpcSignatureSubscribeConfig, RpcSignaturesForAddressConfig, RpcSimulateTransactionConfig,
+    RpcSupplyConfig, RpcTransactionConfig, RpcTransactionLogsConfig,
 };
 use solders_rpc_config_no_rpc_api::{
     RpcBlockSubscribeFilter, RpcBlockSubscribeFilterMentions, RpcTransactionLogsFilter,
@@ -14,6 +13,9 @@ use solders_rpc_config_no_rpc_api::{
 };
 use solders_rpc_config_no_rpc_api::{RpcTokenAccountsFilterMint, RpcTokenAccountsFilterProgramId};
 use solders_rpc_program_accounts_config::RpcProgramAccountsConfig;
+use solders_rpc_request_airdrop_config::RpcRequestAirdropConfig;
+use solders_rpc_sig_status_config::RpcSignatureStatusConfig;
+use solders_rpc_simulate_tx_accounts_config::RpcSimulateTransactionAccountsConfig;
 
 pub fn create_config_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let config_mod = PyModule::new(py, "config")?;

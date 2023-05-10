@@ -12,12 +12,14 @@ use solana_rpc_client_api::config::{
 use solders_rpc_account_info_config::RpcAccountInfoConfig;
 use solders_rpc_config_no_filter::{
     RpcBlockConfig, RpcBlockSubscribeConfig, RpcBlockSubscribeFilterWrapper, RpcContextConfig,
-    RpcEpochConfig, RpcLargestAccountsFilter, RpcLeaderScheduleConfig, RpcRequestAirdropConfig,
-    RpcSendTransactionConfig, RpcSignatureStatusConfig, RpcSignatureSubscribeConfig,
-    RpcSignaturesForAddressConfig, RpcSimulateTransactionConfig, RpcTokenAccountsFilterWrapper,
-    RpcTransactionConfig, RpcTransactionLogsConfig, TransactionLogsFilterWrapper,
+    RpcEpochConfig, RpcLargestAccountsFilter, RpcLeaderScheduleConfig, RpcSendTransactionConfig,
+    RpcSignatureSubscribeConfig, RpcSignaturesForAddressConfig, RpcSimulateTransactionConfig,
+    RpcTokenAccountsFilterWrapper, RpcTransactionConfig, RpcTransactionLogsConfig,
+    TransactionLogsFilterWrapper,
 };
 use solders_rpc_program_accounts_config::RpcProgramAccountsConfig;
+use solders_rpc_request_airdrop_config::RpcRequestAirdropConfig;
+use solders_rpc_sig_status_config::RpcSignatureStatusConfig;
 
 #[serde_as]
 #[skip_serializing_none]

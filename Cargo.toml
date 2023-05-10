@@ -87,6 +87,7 @@ solders-rpc-errors = { path = "./crates/rpc-errors", version = "=0.15.1" }
 solders-rpc-errors-common = { path = "./crates/rpc-errors-common", version = "=0.15.1" }
 solders-rpc-errors-tx-status = { path = "./crates/rpc-errors-tx-status", version = "=0.15.1" }
 solders-rpc-errors-no-tx-status = { path = "./crates/rpc-errors-no-tx-status", version = "=0.15.1" }
+solders-rpc-request-airdrop-config = { path = "./crates/rpc-request-airdrop-config", version = "=0.15.1" }
 solders-rpc-request-params = { path = "./crates/rpc-request-params", version = "=0.15.1" }
 solders-rpc-request-params-no-config = { path = "./crates/rpc-request-params-no-config", version = "=0.15.1" }
 solders-rpc-requests = { path = "./crates/rpc-requests", version = "=0.15.1" }
@@ -94,6 +95,8 @@ solders-rpc-responses = { path = "./crates/rpc-responses", version = "=0.15.1" }
 solders-rpc-responses-common = { path = "./crates/rpc-responses-common", version = "=0.15.1" }
 solders-rpc-responses-tx-status = { path = "./crates/rpc-responses-tx-status", version = "=0.15.1" }
 solders-rpc-response-data-boilerplate = { path = "./crates/rpc-response-data-boilerplate", version = "=0.15.1" }
+solders-rpc-simulate-tx-accounts-config = { path = "./crates/rpc-simulate-tx-accounts-config", version = "=0.15.1" }
+solders-rpc-sig-status-config = { path = "./crates/rpc-sig-status-config", version = "=0.15.1" }
 solders-rpc-version = { path = "./crates/rpc-version", version = "=0.15.1" }
 solders-primitives = { path = "./crates/primitives", version = "=0.15.1" }
 solders-pubkey = { path = "./crates/pubkey", version = "=0.15.1" }

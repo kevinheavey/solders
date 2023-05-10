@@ -4,9 +4,7 @@ use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use solana_rpc_client_api::config as rpc_config;
 use solana_sdk::commitment_config::CommitmentLevel as CommitmentLevelOriginal;
-use solders_account_decoder::UiAccountEncoding;
 use solders_commitment_config::CommitmentLevel;
-use solders_hash::Hash as SolderHash;
 use solders_macros::{common_methods, richcmp_eq_only, EnumIntoPy};
 use solders_pubkey::Pubkey;
 use solders_signature::Signature;
@@ -22,32 +20,8 @@ use solders_rpc_config_no_rpc_api::{
     RpcBlockSubscribeFilter, RpcBlockSubscribeFilterMentions, RpcTokenAccountsFilterMint,
     RpcTokenAccountsFilterProgramId, RpcTransactionLogsFilter, RpcTransactionLogsFilterMentions,
 };
+use solders_rpc_simulate_tx_accounts_config::RpcSimulateTransactionAccountsConfig;
 use solders_transaction_status_enums::{TransactionDetails, UiTransactionEncoding};
-
-pyclass_boilerplate!(
-/// Configuration object for ``getSignatureStatuses``.
-///
-/// Args:
-///     search_transaction_history:  If True, a Solana node will search its ledger cache for any signatures not found in the recent status cache
-    => RpcSignatureStatusConfig
-);
-
-#[richcmp_eq_only]
-#[common_methods]
-#[pymethods]
-impl RpcSignatureStatusConfig {
-    #[new]
-    pub fn new(search_transaction_history: bool) -> Self {
-        Self(rpc_config::RpcSignatureStatusConfig {
-            search_transaction_history,
-        })
-    }
-
-    #[getter]
-    pub fn search_transaction_history(&self) -> bool {
-        self.0.search_transaction_history
-    }
-}
 
 pyclass_boilerplate_with_default!(
     /// Configuration object for ``sendTransaction``.
@@ -122,53 +96,6 @@ impl RpcSendTransactionConfig {
     #[pyo3(name = "default")]
     pub fn new_default() -> Self {
         Self::default()
-    }
-}
-
-pyclass_boilerplate_with_default!(
-    /// Accounts configuration for ``simulateTransaction``.
-    ///
-    /// Args:
-    ///     encoding (Optional[UiAccountEncoding]): Encoding for returned Account data
-    ///     addresses (Sequence[Pubkey]): An array of accounts to return.
-    => RpcSimulateTransactionAccountsConfig
-);
-
-#[richcmp_eq_only]
-#[common_methods]
-#[pymethods]
-impl RpcSimulateTransactionAccountsConfig {
-    #[new]
-    pub fn new(addresses: Vec<Pubkey>, encoding: Option<UiAccountEncoding>) -> Self {
-        Self(rpc_config::RpcSimulateTransactionAccountsConfig {
-            encoding: encoding.map(Into::into),
-            addresses: addresses.iter().map(|a| a.to_string()).collect(),
-        })
-    }
-
-    /// Create a new default instance of this class.
-    ///
-    /// Returns:
-    ///     RpcSimulateTransactionAccountsConfig: The default instance.
-    #[staticmethod]
-    #[pyo3(name = "default")]
-    pub fn new_default() -> Self {
-        Self::default()
-    }
-
-    #[getter]
-    pub fn addresses(&self) -> Vec<Pubkey> {
-        self.0
-            .addresses
-            .clone()
-            .iter()
-            .map(|s| Pubkey::from_str(s).unwrap())
-            .collect()
-    }
-
-    #[getter]
-    pub fn encoding(&self) -> Option<UiAccountEncoding> {
-        self.0.encoding.map(Into::into)
     }
 }
 
@@ -248,51 +175,6 @@ impl RpcSimulateTransactionConfig {
     #[getter]
     pub fn min_context_slot(&self) -> Option<u64> {
         self.0.min_context_slot
-    }
-}
-
-pyclass_boilerplate_with_default!(
-    /// Configuration object for ``requestAirdrop``.
-    /// 
-    /// Args:
-    ///     recent_blockhash (Optional[Hash]): The ID of a recent ledger entry.
-    ///     commitment (Optional[CommitmentLevel]): Bank state to query.
-    /// 
-=> RpcRequestAirdropConfig);
-
-#[richcmp_eq_only]
-#[common_methods]
-#[pymethods]
-impl RpcRequestAirdropConfig {
-    #[new]
-    pub fn new(recent_blockhash: Option<SolderHash>, commitment: Option<CommitmentLevel>) -> Self {
-        Self(rpc_config::RpcRequestAirdropConfig {
-            recent_blockhash: recent_blockhash.map(|h| h.to_string()),
-            commitment: commitment.map(|c| c.into()),
-        })
-    }
-
-    /// Create a new default instance of this class.
-    ///
-    /// Returns:
-    ///     RpcRequestAirdropConfig: The default instance.
-    #[staticmethod]
-    #[pyo3(name = "default")]
-    pub fn new_default() -> Self {
-        Self::default()
-    }
-
-    #[getter]
-    pub fn recent_blockhash(&self) -> Option<SolderHash> {
-        self.0
-            .recent_blockhash
-            .clone()
-            .map(|s| SolderHash::from_str(&s).unwrap())
-    }
-
-    #[getter]
-    pub fn commitment(&self) -> Option<CommitmentLevel> {
-        self.0.commitment.map(|c| c.into())
     }
 }
 
