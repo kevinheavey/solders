@@ -19,11 +19,12 @@ use solders_rpc_account_info_config::RpcAccountInfoConfig;
 use solders_rpc_config_no_filter::{
     RpcBlockConfig, RpcBlockProductionConfig, RpcBlockSubscribeConfig,
     RpcBlockSubscribeFilterWrapper, RpcContextConfig, RpcEpochConfig, RpcGetVoteAccountsConfig,
-    RpcLargestAccountsFilter, RpcLeaderScheduleConfig, RpcSendTransactionConfig,
+    RpcLargestAccountsFilter, RpcLeaderScheduleConfig,
     RpcSignatureSubscribeConfig, RpcSignaturesForAddressConfig, RpcSimulateTransactionConfig,
     RpcSupplyConfig, RpcTokenAccountsFilterWrapper, RpcTransactionConfig, RpcTransactionLogsConfig,
     TransactionLogsFilterWrapper,
 };
+use solders_rpc_send_transaction_config::RpcSendTransactionConfig;
 use solders_rpc_program_accounts_config::RpcProgramAccountsConfig;
 use solders_rpc_request_airdrop_config::RpcRequestAirdropConfig;
 use solders_rpc_request_params::{

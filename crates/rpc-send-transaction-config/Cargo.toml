@@ -1,0 +1,19 @@
+[package]
+name = "solders-rpc-send-transaction-config"
+version = { workspace = true }
+edition = { workspace = true }
+include = ["/src"]
+license = { workspace = true }
+repository = { workspace = true }
+
+[dependencies]
+pyo3 = { workspace = true, features = ["macros"] }
+serde = { workspace = true }
+solders-macros = { workspace = true }
+solana-sdk = { workspace = true }
+solana-rpc-client-api = { workspace = true }
+solders-rpc-config-macros = { workspace = true }
+solders-commitment-config = { workspace = true }
+solders-traits-core = { workspace = true }
+solana-transaction-status = { workspace = true }
+solders-transaction-status-enums = { workspace = true }

@@ -16,6 +16,7 @@ solders-rpc-config-no-filter = { workspace = true }
 solders-rpc-account-info-config = { workspace = true }
 solders-rpc-program-accounts-config = { workspace = true }
 solders-rpc-request-airdrop-config = { workspace = true }
+solders-rpc-send-transaction-config = { workspace = true }
 solders-rpc-sig-status-config = { workspace = true }
 solana-rpc-client-api = { workspace = true }
 solders-pubkey = { workspace = true }

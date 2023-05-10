@@ -3,10 +3,11 @@ use solders_rpc_account_info_config::RpcAccountInfoConfig;
 use solders_rpc_config_no_filter::{
     RpcBlockConfig, RpcBlockProductionConfig, RpcBlockProductionConfigRange,
     RpcBlockSubscribeConfig, RpcContextConfig, RpcEpochConfig, RpcGetVoteAccountsConfig,
-    RpcLargestAccountsFilter, RpcLeaderScheduleConfig, RpcSendTransactionConfig,
+    RpcLargestAccountsFilter, RpcLeaderScheduleConfig,
     RpcSignatureSubscribeConfig, RpcSignaturesForAddressConfig, RpcSimulateTransactionConfig,
     RpcSupplyConfig, RpcTransactionConfig, RpcTransactionLogsConfig,
 };
+use solders_rpc_send_transaction_config::RpcSendTransactionConfig;
 use solders_rpc_config_no_rpc_api::{
     RpcBlockSubscribeFilter, RpcBlockSubscribeFilterMentions, RpcTransactionLogsFilter,
     RpcTransactionLogsFilterMentions,

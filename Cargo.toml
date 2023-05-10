@@ -95,8 +95,9 @@ solders-rpc-responses = { path = "./crates/rpc-responses", version = "=0.15.1" }
 solders-rpc-responses-common = { path = "./crates/rpc-responses-common", version = "=0.15.1" }
 solders-rpc-responses-tx-status = { path = "./crates/rpc-responses-tx-status", version = "=0.15.1" }
 solders-rpc-response-data-boilerplate = { path = "./crates/rpc-response-data-boilerplate", version = "=0.15.1" }
-solders-rpc-simulate-tx-accounts-config = { path = "./crates/rpc-simulate-tx-accounts-config", version = "=0.15.1" }
+solders-rpc-send-transaction-config = { path = "./crates/rpc-send-transaction-config", version = "=0.15.1" }
 solders-rpc-sig-status-config = { path = "./crates/rpc-sig-status-config", version = "=0.15.1" }
+solders-rpc-simulate-tx-accounts-config = { path = "./crates/rpc-simulate-tx-accounts-config", version = "=0.15.1" }
 solders-rpc-version = { path = "./crates/rpc-version", version = "=0.15.1" }
 solders-primitives = { path = "./crates/primitives", version = "=0.15.1" }
 solders-pubkey = { path = "./crates/pubkey", version = "=0.15.1" }
