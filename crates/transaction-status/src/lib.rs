@@ -13,6 +13,7 @@ use solders_traits_core::{
     pybytes_general_via_bincode, richcmp_type_error, transaction_status_boilerplate,
     RichcmpEqualityOnly,
 };
+use solders_transaction_confirmation_status::TransactionConfirmationStatus;
 use solders_transaction_error::{
     InstructionErrorBorshIO, InstructionErrorCustom, InstructionErrorFieldless,
     TransactionErrorDuplicateInstruction, TransactionErrorFieldless,
@@ -21,7 +22,6 @@ use solders_transaction_error::{
 };
 use solders_transaction_return_data::TransactionReturnData;
 use solders_transaction_status_enums::{TransactionDetails, UiTransactionEncoding};
-use solders_transaction_confirmation_status::TransactionConfirmationStatus;
 
 use std::str::FromStr;
 
