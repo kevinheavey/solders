@@ -77,6 +77,19 @@ Example:
 
 .. literalinclude:: ../../tests/bankrun/test_anchor.py
 
+-----------
+Time travel
+-----------
+
+Many programs rely on the ``Clock`` sysvar: for example, a mint that doesn't become available until after
+a certain time. With ``bankrun`` you can dynamically overwrite the ``Clock`` sysvar using ``context.set_clock()``.
+Here's an example using a program that panics if ``clock.unix_timestamp`` is greater than 100
+(which is on January 1st 1970):
+
+.. literalinclude:: ../../tests/bankrun/clock-example/test_set_clock.py
+
+See also: ``context.warp_to_slot()``, which lets you jump to a future slot.
+
 --------------
 Other features
 --------------
@@ -85,7 +98,6 @@ Other things you can do with ``bankrun`` include:
 
 * Adding arbitrary account data with the ``accounts`` parameter.
 * Changing the max compute units with the ``compute_max_units`` parameter.
-* Jumping to a future slot with ``context.warp_to_slot()``.
 
 --------------------------------------------
 When should I use ``solana-test-validator``?
