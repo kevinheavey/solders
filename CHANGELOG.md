@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.17.0] - 2023-05-11
+
+### Added
+
+Added partial support for the SPL Token Program.
+
 ## [0.16.0] - 2023-05-10
 
 ### Added
