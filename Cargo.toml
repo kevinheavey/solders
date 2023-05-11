@@ -41,6 +41,7 @@ solders-signature = { workspace = true }
 solders-transaction-status = { workspace = true }
 solders-hash = { workspace = true }
 solders-keypair = { workspace = true }
+solders-token = { workspace = true }
 solders-transaction = { workspace = true }
 solders-bankrun = { workspace = true, optional = true }
 
@@ -112,6 +113,7 @@ solders-address-lookup-table-account = { path = "./crates/address-lookup-table-a
 solders-message = { path = "./crates/message", version = "=0.16.0" }
 solders-signature = { path = "./crates/signature", version = "=0.16.0" }
 solders-keypair = { path = "./crates/keypair", version = "=0.16.0" }
+solders-token = { path = "./crates/token", version = "=0.16.0" }
 solders-transaction = { path = "./crates/transaction", version = "=0.16.0" }
 solders-transaction-error = { path = "./crates/transaction-error", version = "=0.16.0" }
 solders-account = { path = "./crates/account", version = "=0.16.0" }

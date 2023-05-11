@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Optional, Tuple
 
 from pytest import mark, raises
@@ -29,6 +30,29 @@ async def helloworld_program(
     )
     return context, program_id, greeted_pubkey
 
+async def helloworld_program_via_set_account(
+    compute_max_units: Optional[int] = None,
+) -> Tuple[ProgramTestContext, Pubkey, Pubkey]:
+    program_id = Pubkey.new_unique()
+    greeted_pubkey = Pubkey.new_unique()
+    program_bytes = Path("tests/fixtures/helloworld.so").read_bytes()
+    context = await start(
+        accounts=[
+            (
+                greeted_pubkey,
+                Account(lamports=5, data=bytes([0, 0, 0, 0]), owner=program_id),
+            )
+        ],
+        compute_max_units=compute_max_units,
+    )
+    executable_account = Account(
+        lamports=1_000_000_000_000,
+        data=program_bytes,
+        owner=Pubkey.from_string("BPFLoader2111111111111111111111111111111111"),
+        executable=True
+    )
+    context.set_account(program_id, executable_account)
+    return context, program_id, greeted_pubkey
 
 @mark.asyncio
 async def test_helloworld() -> None:
@@ -150,7 +174,6 @@ async def test_many_instructions() -> None:
 
 @mark.asyncio
 async def test_transfer() -> None:
-    # https://github.com/solana-labs/example-helloworld/blob/36eb41d1290732786e13bd097668d8676254a139/src/program-rust/tests/lib.rs
     context = await start()
     receiver = Pubkey.new_unique()
     num_txs = 2
@@ -180,3 +203,25 @@ async def test_transfer() -> None:
         == total_ix_count * transfer_lamports_base
         + num_ixs * ((num_txs - 1) * num_txs) / 2
     )
+
+@mark.asyncio
+async def test_add_program_via_set_account() -> None:
+    # https://github.com/solana-labs/example-helloworld/blob/36eb41d1290732786e13bd097668d8676254a139/src/program-rust/tests/lib.rs
+    context, program_id, greeted_pubkey = await helloworld_program_via_set_account()
+    ix = Instruction(
+        program_id,
+        bytes([0]),
+        [AccountMeta(greeted_pubkey, is_signer=False, is_writable=True)],
+    )
+    client = context.banks_client
+    payer = context.payer
+    blockhash = context.last_blockhash
+    greeted_account_before = await client.get_account(greeted_pubkey)
+    assert greeted_account_before is not None
+    assert greeted_account_before.data == bytes([0, 0, 0, 0])
+    msg = Message.new_with_blockhash([ix], payer.pubkey(), blockhash)
+    tx = VersionedTransaction(msg, [payer])
+    await client.process_transaction(tx)
+    greeted_account_after = await client.get_account(greeted_pubkey)
+    assert greeted_account_after is not None
+    assert greeted_account_after.data == bytes([1, 0, 0, 0])

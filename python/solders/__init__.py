@@ -21,6 +21,7 @@ from solders.solders import (
     rent,
     rpc,
     signature,
+    token,
     transaction,
     transaction_status,
 )
@@ -48,6 +49,7 @@ __all_core = [
     "pubkey",
     "rpc",
     "signature",
+    "token",
     "transaction",
     "transaction_status",
     "sysvar",

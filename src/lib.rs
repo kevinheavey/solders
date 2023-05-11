@@ -9,6 +9,7 @@ use solders_instruction::{AccountMeta, CompiledInstruction, Instruction};
 use solders_system_program::create_system_program_mod;
 use solders_traits::{BincodeError, CborError, ParseHashError, SerdeJSONError, SignerError};
 use solders_transaction_status::create_transaction_status_mod;
+use solders_token::create_token_mod;
 use std::collections::HashMap;
 use sysvar::create_sysvar_mod;
 pub mod message;
@@ -73,6 +74,7 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
     let rent_mod = create_rent_mod(py)?;
     let epoch_info_mod = create_epoch_info_mod(py)?;
     let compute_budget_mod = create_compute_budget_mod(py)?;
+    let token_mod = create_token_mod(py)?;
     let submodules = [
         errors_mod,
         hash_mod,
@@ -99,6 +101,7 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
         rent_mod,
         epoch_info_mod,
         compute_budget_mod,
+        token_mod,
     ];
     let modules: HashMap<String, &PyModule> = submodules
         .iter()

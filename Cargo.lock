@@ -4408,6 +4408,7 @@ dependencies = [
  "solders-rpc-responses",
  "solders-signature",
  "solders-system-program",
+ "solders-token",
  "solders-traits",
  "solders-transaction",
  "solders-transaction-status",
@@ -5075,6 +5076,21 @@ dependencies = [
  "solders-pubkey",
  "solders-traits",
  "solders-traits-core",
+]
+
+[[package]]
+name = "solders-token"
+version = "0.16.0"
+dependencies = [
+ "derive_more",
+ "pyo3",
+ "serde",
+ "solana-program",
+ "solders-macros",
+ "solders-pubkey",
+ "solders-traits-core",
+ "spl-associated-token-account",
+ "spl-token",
 ]
 
 [[package]]

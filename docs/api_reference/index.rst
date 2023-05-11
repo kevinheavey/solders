@@ -27,5 +27,6 @@ Modules:
    signature
    system_program
    sysvar
+   token/index
    transaction_status
    transaction
