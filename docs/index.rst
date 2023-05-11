@@ -5,5 +5,5 @@
    :maxdepth: 1
 
    self
-   examples/index
+   tutorials/index
    api_reference/index
