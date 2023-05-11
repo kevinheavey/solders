@@ -4517,6 +4517,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "solders-clock-example"
+version = "0.0.0"
+dependencies = [
+ "solana-program",
+]
+
+[[package]]
 name = "solders-commitment-config"
 version = "0.16.0"
 dependencies = [

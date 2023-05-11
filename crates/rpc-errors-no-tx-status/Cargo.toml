@@ -1,3 +1,5 @@
+cargo-features = ["workspace-inheritance"]
+
 [package]
 name = "solders-rpc-errors-no-tx-status"
 version = { workspace = true }

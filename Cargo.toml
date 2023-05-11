@@ -1,3 +1,5 @@
+cargo-features = ["workspace-inheritance"]
+
 [package]
 name = "solders"
 version = { workspace = true }
@@ -49,7 +51,8 @@ bankrun = ["dep:solders-bankrun"]
 [workspace]
 members = [
     ".",
-    "crates/*"
+    "crates/*",
+    "tests/bankrun/clock-example"
 ]
 
 [workspace.package]

@@ -1,3 +1,5 @@
+cargo-features = ["workspace-inheritance"]
+
 [package]
 name = "solders-rpc-request-airdrop-config"
 version = { workspace = true }

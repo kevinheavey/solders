@@ -1,3 +1,5 @@
+cargo-features = ["workspace-inheritance"]
+
 [package]
 name = "solders-rpc-sig-status-config"
 version = { workspace = true }

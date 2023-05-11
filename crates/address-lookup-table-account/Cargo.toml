@@ -1,3 +1,5 @@
+cargo-features = ["workspace-inheritance"]
+
 [package]
 name = "solders-address-lookup-table-account"
 version = { workspace = true }
