@@ -17,8 +17,10 @@ async def test_set_clock() -> None:
     ixs = [Instruction(program_id=program_id, data=b"", accounts=[])]
     msg = Message.new_with_blockhash(ixs, payer.pubkey(), blockhash)
     tx = VersionedTransaction(msg, [payer])
+    # this will fail because it's not January 1970 anymore
     with raises(BanksClientError):
         await client.process_transaction(tx)
+    # so let's turn back time
     current_clock = await client.get_clock()
     context.set_clock(
         Clock(
@@ -38,4 +40,5 @@ async def test_set_clock() -> None:
     ]
     msg2 = Message.new_with_blockhash(ixs2, payer.pubkey(), blockhash)
     tx2 = VersionedTransaction(msg2, [payer])
+    # now the transaction goes through
     await client.process_transaction(tx2)
