@@ -2,7 +2,7 @@
 Bankrun
 =======
 
-The ``bankrun`` module offers a quick, lightweight solution for integration tests on Solana programs.
+The ``bankrun`` module offers a quick and powerful yet lightweight solution for testing Solana programs.
 While people often use ``solana-test-validator`` for this,
 ``bankrun`` is orders of magnitude faster and far more convenient.
 You don't have to
@@ -86,9 +86,27 @@ a certain time. With ``bankrun`` you can dynamically overwrite the ``Clock`` sys
 Here's an example using a program that panics if ``clock.unix_timestamp`` is greater than 100
 (which is on January 1st 1970):
 
-.. literalinclude:: ../../tests/bankrun/clock-example/test_set_clock.py
+.. literalinclude:: ../../tests/bankrun/clock-example/test_clock_example.py
 
 See also: ``context.warp_to_slot()``, which lets you jump to a future slot.
+
+--------------------------
+Writing arbitrary accounts
+--------------------------
+
+Bankrun lets you write any account data you want, regardless of
+whether the account state would even be possible.
+
+Here's an example where we give an account a bunch of USDC,
+even though we don't have the USDC mint keypair. This is
+convenient for testing because it means we don't have to
+work with fake USDC in our tests:
+
+.. literalinclude:: ../../tests/bankrun/test_usdc_mint.py
+
+.. tip::
+   If you want to set account data *after* calling ``bankrun.start()``,
+   you can use ``context.set_account()``.
 
 --------------
 Other features
@@ -96,8 +114,8 @@ Other features
 
 Other things you can do with ``bankrun`` include:
 
-* Adding arbitrary account data with the ``accounts`` parameter.
 * Changing the max compute units with the ``compute_max_units`` parameter.
+* Changing the transaction account lock limit with the ``transaction_account_lock_limit`` parameter.
 
 --------------------------------------------
 When should I use ``solana-test-validator``?
@@ -107,6 +125,9 @@ While ``bankrun`` is faster and more convenient, it is also less like a real RPC
 So ``solana-test-validator`` is still useful when you need to call RPC methods that ``BanksServer``
 doesn't support, or when you want to test something that depends on real-life validator behaviour
 rather than just testing your program and client code.
+
+In general though I would recommend using ``bankrun`` wherever possible, as it will make your life
+much easier.
 
 -------------------
 Supported platforms

@@ -536,7 +536,7 @@ pub fn start_anchor<'p>(
 ) -> PyResult<&'p PyAny> {
     let mut programs = extra_programs.unwrap_or_default();
     let mut anchor_toml_path = path.clone();
-    let mut sbf_out_dir = path.clone();
+    let mut sbf_out_dir = path;
     sbf_out_dir.push("target/deploy");
     anchor_toml_path.push("Anchor.toml");
     let toml_str = std::fs::read_to_string(anchor_toml_path)
@@ -545,20 +545,20 @@ pub fn start_anchor<'p>(
     let toml_programs_raw = parsed_toml
         .get("programs")
         .and_then(|x| x.get("localnet"))
-        .ok_or(PyValueError::new_err(
+        .ok_or_else(|| PyValueError::new_err(
             "`programs.localnet` not found in Anchor.toml",
         ))?;
-    let toml_programs_parsed = toml_programs_raw.as_table().ok_or(PyValueError::new_err(
+    let toml_programs_parsed = toml_programs_raw.as_table().ok_or_else(|| PyValueError::new_err(
         "Failed to parse `programs.localnet` table.",
     ))?;
     for (key, val) in toml_programs_parsed {
         let pubkey_with_quotes = val.to_string();
         let pubkey_str = &pubkey_with_quotes[1..pubkey_with_quotes.len() - 1];
-        let pk = Pubkey::new_from_str(pubkey_str).or_else(|_| {
-            Err(PyValueError::new_err(format!(
+        let pk = Pubkey::new_from_str(pubkey_str).map_err(|_| {
+            PyValueError::new_err(format!(
                 "Invalid pubkey in `programs.localnet` table. {}",
                 val
-            )))
+            ))
         })?;
         programs.push((key, pk));
     }

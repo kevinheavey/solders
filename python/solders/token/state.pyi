@@ -1,0 +1,83 @@
+from typing import List, Optional, Sequence
+
+from solders.pubkey import Pubkey
+
+class Mint:
+    decimals: int
+    freeze_authority: Optional[Pubkey]
+    is_initialized: bool
+    mint_authority: Optional[Pubkey]
+    supply: int
+    @classmethod
+    def __init__(
+        self,
+        mint_authority: Optional[Pubkey],
+        supply: int,
+        decimals: int,
+        is_initialized: bool,
+        freeze_authority: Optional[Pubkey] = None,
+    ) -> None: ...
+    @staticmethod
+    def default() -> "Mint": ...
+    @staticmethod
+    def from_bytes(raw: bytes) -> "Mint": ...
+    def __bytes__(self) -> bytes: ...
+    def __richcmp__(self, other: "Mint", op: int) -> bool: ...
+    def __str__(self) -> str: ...
+    def __repr__(self) -> str: ...
+
+class Multisig:
+    is_initialized: bool
+    m: int
+    n: int
+    signers: List[Pubkey]
+    @classmethod
+    def __init__(
+        self, m: int, n: int, is_initialized: bool, signers: Sequence[Pubkey]
+    ) -> None: ...
+    @staticmethod
+    def default() -> "Multisig": ...
+    @staticmethod
+    def from_bytes(raw: bytes) -> "Multisig": ...
+    def __richcmp__(self, other: "Multisig", op: int) -> bool: ...
+    def __bytes__(self) -> bytes: ...
+    def __str__(self) -> str: ...
+    def __repr__(self) -> str: ...
+
+class TokenAccountState:
+    Uninitialized: "TokenAccountState"
+    Initialized: "TokenAccountState"
+    Frozen: "TokenAccountState"
+    def __int__(self) -> int: ...
+    def __str__(self) -> str: ...
+    def __repr__(self) -> str: ...
+    def __eq__(self, o: object) -> bool: ...
+
+class TokenAccount:
+    amount: int
+    close_authority: Optional[Pubkey]
+    delegate: Optional[Pubkey]
+    delegated_amount: int
+    is_native: Optional[int]
+    mint: Pubkey
+    owner: Pubkey
+    state: TokenAccountState
+    def __init__(
+        self,
+        mint: Pubkey,
+        owner: Pubkey,
+        amount: int,
+        delegate: Optional[Pubkey],
+        state: TokenAccountState,
+        is_native: Optional[int],
+        delegated_amount: int,
+        close_authority: Optional[int] = None,
+    ) -> None: ...
+    @staticmethod
+    def default() -> "TokenAccount": ...
+    @staticmethod
+    def from_bytes(raw: bytes) -> "TokenAccount": ...
+    def __richcmp__(self, other: "TokenAccount", op: int) -> bool: ...
+    def __bytes__(self) -> bytes: ...
+    def __str__(self) -> str: ...
+    def __repr__(self) -> str: ...
