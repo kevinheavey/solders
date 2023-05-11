@@ -4,7 +4,7 @@
 
 ### Added
 
-Added partial support for the SPL Token Program.
+Added partial support for the SPL Token Program [(#53)](https://github.com/kevinheavey/solders/pull/53)
 
 ## [0.16.0] - 2023-05-10
 
