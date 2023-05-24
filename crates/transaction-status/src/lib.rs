@@ -915,7 +915,7 @@ impl UiTransactionStatusMeta {
     #[getter]
     pub fn pre_token_balances(&self) -> Option<Vec<UiTransactionTokenBalance>> {
         let maybe_balances: Option<Vec<UiTransactionTokenBalanceOriginal>> =
-            self.0.post_token_balances.clone().into();
+            self.0.pre_token_balances.clone().into();
         maybe_balances.map(|v| v.into_iter().map(|bal| bal.into()).collect())
     }
     #[getter]
