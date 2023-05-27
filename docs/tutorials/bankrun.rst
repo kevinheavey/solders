@@ -44,7 +44,7 @@ Deploying programs
 ------------------
 
 Most of the time we want to do more than just mess around with token transfers - 
-we want to test our own programs.``solana-program-test`` is a bit fussy about
+we want to test our own programs. ``solana-program-test`` is a bit fussy about
 how this is done.
 
 Firstly, the program's ``.so`` file must be present in one of the following directories:
