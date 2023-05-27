@@ -49,7 +49,7 @@ impl Clock {
         self.0.slot
     }
 
-    /// The timestamp of the first ``Slot`` in this ``Epoch``.
+    /// int: The timestamp of the first ``Slot`` in this ``Epoch``.
     #[getter]
     pub fn epoch_start_timestamp(&self) -> UnixTimestamp {
         self.0.epoch_start_timestamp
