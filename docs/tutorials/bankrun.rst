@@ -9,8 +9,11 @@ You don't have to
 take care of an external process and you can start as many ``bankrun``
 instances as you like without worrying about ports in use or hogging your machines resources.
 
+You can also do things that are not possible with ``solana-test-validator``,
+such as jumping back and forth in time or dynamically setting account data.
+
 If you've used `solana-program-test <https://crates.io/crates/solana-program-test>`_
-you'll be familiar with ``bankrun``, since that's what it uses under-the-hood.
+you'll be familiar with ``bankrun``, since that's what it uses under the hood.
 
 For those unfamiliar, ``bankrun`` and ``solana-program-test`` work by spinning up a lightweight
 ``BanksServer`` that's like an RPC but much faster, and creating a ``BanksClient`` to talk to the
