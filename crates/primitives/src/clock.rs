@@ -14,7 +14,7 @@ use solders_traits_core::transaction_status_boilerplate;
 
 /// A representation of network time.
 ///
-/// All members of `Clock` start from 0 upon network boot.
+/// All members of ``Clock`` start from 0 upon network boot.
 #[pyclass(module = "solders.account", subclass)]
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Default, From, Into)]
 pub struct Clock(pub ClockOriginal);
@@ -49,7 +49,7 @@ impl Clock {
         self.0.slot
     }
 
-    /// The timestamp of the first `Slot` in this `Epoch`.
+    /// The timestamp of the first ``Slot`` in this ``Epoch``.
     #[getter]
     pub fn epoch_start_timestamp(&self) -> UnixTimestamp {
         self.0.epoch_start_timestamp
