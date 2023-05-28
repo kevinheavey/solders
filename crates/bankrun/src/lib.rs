@@ -350,6 +350,7 @@ impl BanksClient {
     /// corresponding to the given commitment level.
     ///
     /// Args:
+    ///     address (Pubkey): The account to look up.
     ///     commitment (Optional[CommitmentLevel]): The commitment level to use.
     ///
     /// Returns:
