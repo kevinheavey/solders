@@ -99,7 +99,7 @@ impl BanksClient {
         })
     }
 
-    /// Send a transaction and return any preflight (sanitization or simulation) errors, or return
+    /// Send a transaction and raise any preflight (sanitization or simulation) errors, or return
     /// after the transaction has been rejected or reached the given level of commitment.
     ///
     /// Args:
