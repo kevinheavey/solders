@@ -74,58 +74,7 @@ impl BanksClient {
         })
     }
 
-    /// Send a transaction and wait until the transaction has been finalized or rejected.
-    ///
-    /// Args:
-    ///     transaction (VersionedTransaction): The transaction to send.
-    ///     commitment (Optional[CommitmentLevel]): The commitment to use.
-    ///
-    pub fn process_transaction<'p>(
-        &'p mut self,
-        py: Python<'p>,
-        transaction: VersionedTransaction,
-        commitment: Option<CommitmentLevel>,
-    ) -> PyResult<&'p PyAny> {
-        let tx_inner = transaction.0.into_legacy_transaction().unwrap();
-        let commitment_inner = CommitmentLevelOriginal::from(commitment.unwrap_or_default());
-        let mut underlying = self.0.clone();
-        pyo3_asyncio::tokio::future_into_py(py, async move {
-            let res = underlying
-                .process_transaction_with_commitment(tx_inner, commitment_inner)
-                .await
-                .map_err(to_py_err);
-            let pyobj: PyResult<PyObject> = Python::with_gil(|py| res.map(|x| x.into_py(py)));
-            pyobj
-        })
-    }
-
-    /// Send a transaction and raise any preflight (sanitization or simulation) errors, or return
-    /// after the transaction has been rejected or reached the given level of commitment.
-    ///
-    /// Args:
-    ///     transaction (VersionedTransaction): The transaction to send.
-    ///     commitment (Optional[CommitmentLevel]): The commitment to use.
-    ///
-    pub fn process_transaction_with_preflight<'p>(
-        &'p mut self,
-        py: Python<'p>,
-        transaction: VersionedTransaction,
-        commitment: Option<CommitmentLevel>,
-    ) -> PyResult<&'p PyAny> {
-        let tx_inner = transaction.0.into_legacy_transaction().unwrap();
-        let commitment_inner = CommitmentLevelOriginal::from(commitment.unwrap_or_default());
-        let mut underlying = self.0.clone();
-        pyo3_asyncio::tokio::future_into_py(py, async move {
-            let res = underlying
-                .process_transaction_with_preflight_and_commitment(tx_inner, commitment_inner)
-                .await
-                .map_err(to_py_err);
-            let pyobj: PyResult<PyObject> = Python::with_gil(|py| res.map(|x| x.into_py(py)));
-            pyobj
-        })
-    }
-
-    /// Process a transaction and return the result with metadata.
+    /// Process a transaction and return the transaction metadata, raising any errors.
     ///
     /// Args:
     ///     transaction (VersionedTransaction): The transaction to send.
@@ -133,7 +82,7 @@ impl BanksClient {
     /// Returns:
     ///     BanksTransactionResultWithMeta: The transaction result and metadata.
     ///
-    pub fn process_transaction_with_metadata<'p>(
+    pub fn process_transaction<'p>(
         &'p mut self,
         py: Python<'p>,
         transaction: VersionedTransaction,
@@ -145,8 +94,15 @@ impl BanksClient {
                 .process_transaction_with_metadata(tx_inner)
                 .await
                 .map_err(to_py_err);
+            let meta = match res {
+                Ok(r) => match r.result {
+                    Err(e) => Err(to_py_err(e)),
+                    Ok(()) => Ok(r.metadata.map(BanksTransactionMeta::from))
+                },
+                Err(e) => Err(e)
+            };
             let pyobj: PyResult<PyObject> = Python::with_gil(|py| {
-                res.map(|x| BanksTransactionResultWithMeta::from(x).into_py(py))
+                meta.map(|x| x.into_py(py))
             });
             pyobj
         })

@@ -50,15 +50,7 @@ class BanksClient:
         self,
         transaction: VersionedTransaction,
         commitment: Optional[CommitmentLevel] = None,
-    ) -> None: ...
-    async def process_transaction_with_metadata(
-        self, Transaction: VersionedTransaction
-    ) -> BanksTransactionResultWithMeta: ...
-    async def process_transaction_with_preflight(
-        self,
-        transaction: VersionedTransaction,
-        commitment: Optional[CommitmentLevel] = None,
-    ) -> None: ...
+    ) -> BanksTransactionMeta: ...
     async def send_transaction(self, transaction: VersionedTransaction) -> None: ...
     async def simulate_transaction(
         self,
