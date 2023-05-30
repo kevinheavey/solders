@@ -10,7 +10,7 @@ from solders.message import Message
 from solders.pubkey import Pubkey
 from solders.rent import Rent
 from solders.system_program import transfer
-from solders.transaction import VersionedTransaction
+from solders.transaction import TransactionError, VersionedTransaction
 
 
 async def helloworld_program(
@@ -90,7 +90,7 @@ async def test_compute_limit() -> None:
     blockhash = context.last_blockhash
     msg = Message.new_with_blockhash([ix], payer.pubkey(), blockhash)
     tx = VersionedTransaction(msg, [payer])
-    with raises(BanksClientError):
+    with raises(TransactionError):
         await client.process_transaction(tx)
 
 
@@ -195,7 +195,7 @@ async def test_transfer() -> None:
         ]
         msg = Message.new_with_blockhash(ixs, payer.pubkey(), blockhash)
         tx = VersionedTransaction(msg, [payer])
-        await client.process_transaction_with_preflight(tx)
+        await client.process_transaction(tx)
     total_ix_count = num_ixs * num_txs
     balance_after = await client.get_balance(receiver)
     assert (
