@@ -1,13 +1,16 @@
 use derive_more::{From, Into};
 use pyo3::{prelude::*, types::PyBytes};
 use solana_program::{program_option::COption, program_pack::Pack};
-use solders_macros::{common_methods_core, richcmp_eq_only, enum_original_mapping};
+use solders_macros::{common_methods_core, enum_original_mapping, richcmp_eq_only};
 use solders_pubkey::Pubkey;
 use solders_traits_core::{
     impl_display, to_py_value_err, CommonMethodsCore, PyBytesGeneral, PyFromBytesGeneral,
     RichcmpEqualityOnly,
 };
-use spl_token::state::{Mint as MintOriginal, Account as TokenAccountOriginal, AccountState, Multisig as MultisigOriginal};
+use spl_token::state::{
+    Account as TokenAccountOriginal, AccountState, Mint as MintOriginal,
+    Multisig as MultisigOriginal,
+};
 
 macro_rules! token_boilerplate {
     ($typ:ident, $inner:ident) => {
@@ -19,19 +22,18 @@ macro_rules! token_boilerplate {
                 PyBytes::new(py, &inner)
             }
         }
-        
+
         impl PyFromBytesGeneral for $typ {
             fn py_from_bytes_general(raw: &[u8]) -> PyResult<Self> {
                 let inner = $inner::unpack(raw).map_err(|e| to_py_value_err(&e))?;
                 Ok(inner.into())
             }
         }
-        
+
         impl CommonMethodsCore for $typ {}
         impl RichcmpEqualityOnly for $typ {}
     };
 }
-
 
 /// A token mint.
 ///
@@ -143,7 +145,7 @@ pub enum TokenAccountState {
 ///     is_native (Optional[int]): If is_native is not ``None``,
 ///         this is a native token, and the value logs the rent-exempt reserve.
 ///         An Account is required to be rent-exempt, so the value is used by
-///         the Processor to ensure that wrapped SOL accounts do not 
+///         the Processor to ensure that wrapped SOL accounts do not
 ///         drop below this threshold.
 ///     delegated_amount (int): The amount delegated.
 ///     close_authority (Optional[Pubkey]): Optional authority to close the account.
@@ -261,17 +263,12 @@ pub struct Multisig(pub MultisigOriginal);
 #[pymethods]
 impl Multisig {
     #[new]
-    pub fn new(
-        m: u8,
-        n: u8,
-        is_initialized: bool,
-        signers: [Pubkey; 11],
-    ) -> Self {
+    pub fn new(m: u8, n: u8, is_initialized: bool, signers: [Pubkey; 11]) -> Self {
         MultisigOriginal {
             m,
             n,
             is_initialized,
-            signers: signers.map(Into::into)
+            signers: signers.map(Into::into),
         }
         .into()
     }

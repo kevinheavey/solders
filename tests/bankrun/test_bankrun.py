@@ -3,14 +3,14 @@ from typing import Optional, Tuple
 
 from pytest import mark, raises
 from solders.account import Account
-from solders.bankrun import BanksClientError, ProgramTestContext, start
+from solders.bankrun import ProgramTestContext, start
 from solders.clock import Clock
 from solders.instruction import AccountMeta, Instruction
 from solders.message import Message
 from solders.pubkey import Pubkey
 from solders.rent import Rent
 from solders.system_program import transfer
-from solders.transaction import VersionedTransaction
+from solders.transaction import TransactionError, VersionedTransaction
 
 
 async def helloworld_program(
@@ -29,6 +29,7 @@ async def helloworld_program(
         compute_max_units=compute_max_units,
     )
     return context, program_id, greeted_pubkey
+
 
 async def helloworld_program_via_set_account(
     compute_max_units: Optional[int] = None,
@@ -49,10 +50,11 @@ async def helloworld_program_via_set_account(
         lamports=1_000_000_000_000,
         data=program_bytes,
         owner=Pubkey.from_string("BPFLoader2111111111111111111111111111111111"),
-        executable=True
+        executable=True,
     )
     context.set_account(program_id, executable_account)
     return context, program_id, greeted_pubkey
+
 
 @mark.asyncio
 async def test_helloworld() -> None:
@@ -90,7 +92,7 @@ async def test_compute_limit() -> None:
     blockhash = context.last_blockhash
     msg = Message.new_with_blockhash([ix], payer.pubkey(), blockhash)
     tx = VersionedTransaction(msg, [payer])
-    with raises(BanksClientError):
+    with raises(TransactionError):
         await client.process_transaction(tx)
 
 
@@ -195,7 +197,7 @@ async def test_transfer() -> None:
         ]
         msg = Message.new_with_blockhash(ixs, payer.pubkey(), blockhash)
         tx = VersionedTransaction(msg, [payer])
-        await client.process_transaction_with_preflight(tx)
+        await client.process_transaction(tx)
     total_ix_count = num_ixs * num_txs
     balance_after = await client.get_balance(receiver)
     assert (
@@ -203,6 +205,21 @@ async def test_transfer() -> None:
         == total_ix_count * transfer_lamports_base
         + num_ixs * ((num_txs - 1) * num_txs) / 2
     )
+
+
+@mark.asyncio
+async def test_missing_program() -> None:
+    context = await start()
+    program_id = Pubkey.new_unique()
+    client = context.banks_client
+    payer = context.payer
+    blockhash = context.last_blockhash
+    ix = Instruction(program_id, b"", [])
+    msg = Message.new_with_blockhash([ix], payer.pubkey(), blockhash)
+    tx = VersionedTransaction(msg, [payer])
+    with raises(TransactionError):
+        await client.process_transaction(tx)
+
 
 @mark.asyncio
 async def test_add_program_via_set_account() -> None:

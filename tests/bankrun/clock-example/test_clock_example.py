@@ -1,10 +1,10 @@
 from pytest import mark, raises
-from solders.bankrun import BanksClientError, start
+from solders.bankrun import start
 from solders.clock import Clock
 from solders.instruction import Instruction
 from solders.message import Message
 from solders.pubkey import Pubkey
-from solders.transaction import VersionedTransaction
+from solders.transaction import TransactionError, VersionedTransaction
 
 
 @mark.asyncio
@@ -18,7 +18,7 @@ async def test_set_clock() -> None:
     msg = Message.new_with_blockhash(ixs, payer.pubkey(), blockhash)
     tx = VersionedTransaction(msg, [payer])
     # this will fail because it's not January 1970 anymore
-    with raises(BanksClientError):
+    with raises(TransactionError):
         await client.process_transaction(tx)
     # so let's turn back time
     current_clock = await client.get_clock()

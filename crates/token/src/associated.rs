@@ -1,6 +1,6 @@
 use pyo3::prelude::*;
-use spl_associated_token_account::get_associated_token_address as get_ata;
 use solders_pubkey::Pubkey;
+use spl_associated_token_account::get_associated_token_address as get_ata;
 
 /// Derives the associated token account address for the given wallet address and token mint.
 #[pyfunction]

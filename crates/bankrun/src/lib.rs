@@ -74,58 +74,7 @@ impl BanksClient {
         })
     }
 
-    /// Send a transaction and wait until the transaction has been finalized or rejected.
-    ///
-    /// Args:
-    ///     transaction (VersionedTransaction): The transaction to send.
-    ///     commitment (Optional[CommitmentLevel]): The commitment to use.
-    ///
-    pub fn process_transaction<'p>(
-        &'p mut self,
-        py: Python<'p>,
-        transaction: VersionedTransaction,
-        commitment: Option<CommitmentLevel>,
-    ) -> PyResult<&'p PyAny> {
-        let tx_inner = transaction.0.into_legacy_transaction().unwrap();
-        let commitment_inner = CommitmentLevelOriginal::from(commitment.unwrap_or_default());
-        let mut underlying = self.0.clone();
-        pyo3_asyncio::tokio::future_into_py(py, async move {
-            let res = underlying
-                .process_transaction_with_commitment(tx_inner, commitment_inner)
-                .await
-                .map_err(to_py_err);
-            let pyobj: PyResult<PyObject> = Python::with_gil(|py| res.map(|x| x.into_py(py)));
-            pyobj
-        })
-    }
-
-    /// Send a transaction and raise any preflight (sanitization or simulation) errors, or return
-    /// after the transaction has been rejected or reached the given level of commitment.
-    ///
-    /// Args:
-    ///     transaction (VersionedTransaction): The transaction to send.
-    ///     commitment (Optional[CommitmentLevel]): The commitment to use.
-    ///
-    pub fn process_transaction_with_preflight<'p>(
-        &'p mut self,
-        py: Python<'p>,
-        transaction: VersionedTransaction,
-        commitment: Option<CommitmentLevel>,
-    ) -> PyResult<&'p PyAny> {
-        let tx_inner = transaction.0.into_legacy_transaction().unwrap();
-        let commitment_inner = CommitmentLevelOriginal::from(commitment.unwrap_or_default());
-        let mut underlying = self.0.clone();
-        pyo3_asyncio::tokio::future_into_py(py, async move {
-            let res = underlying
-                .process_transaction_with_preflight_and_commitment(tx_inner, commitment_inner)
-                .await
-                .map_err(to_py_err);
-            let pyobj: PyResult<PyObject> = Python::with_gil(|py| res.map(|x| x.into_py(py)));
-            pyobj
-        })
-    }
-
-    /// Process a transaction and return the result with metadata.
+    /// Process a transaction and return the transaction metadata, raising any errors.
     ///
     /// Args:
     ///     transaction (VersionedTransaction): The transaction to send.
@@ -133,7 +82,7 @@ impl BanksClient {
     /// Returns:
     ///     BanksTransactionResultWithMeta: The transaction result and metadata.
     ///
-    pub fn process_transaction_with_metadata<'p>(
+    pub fn process_transaction<'p>(
         &'p mut self,
         py: Python<'p>,
         transaction: VersionedTransaction,
@@ -145,9 +94,14 @@ impl BanksClient {
                 .process_transaction_with_metadata(tx_inner)
                 .await
                 .map_err(to_py_err);
-            let pyobj: PyResult<PyObject> = Python::with_gil(|py| {
-                res.map(|x| BanksTransactionResultWithMeta::from(x).into_py(py))
-            });
+            let meta = match res {
+                Ok(r) => match r.result {
+                    Err(e) => Err(to_py_err(e)),
+                    Ok(()) => Ok(BanksTransactionMeta::from(r.metadata.unwrap())),
+                },
+                Err(e) => Err(e),
+            };
+            let pyobj: PyResult<PyObject> = Python::with_gil(|py| meta.map(|x| x.into_py(py)));
             pyobj
         })
     }
@@ -477,7 +431,7 @@ fn new_bankrun(
 ///     compute_max_units (Optional[int]): Override the default compute unit limit for a transaction.
 ///     transaction_account_lock_limit (Optional[int]): Override the default transaction account lock limit.
 ///     use_bpf_jit (Optional[bool]): Execute the program with JIT if true, interpreted if false.
-
+///
 ///
 /// Returns:
 ///     ProgramTestContext: a container for stuff you'll need to send transactions and interact with the test environment.
@@ -546,12 +500,10 @@ pub fn start_anchor<'p>(
     let toml_programs_raw = parsed_toml
         .get("programs")
         .and_then(|x| x.get("localnet"))
-        .ok_or_else(|| PyValueError::new_err(
-            "`programs.localnet` not found in Anchor.toml",
-        ))?;
-    let toml_programs_parsed = toml_programs_raw.as_table().ok_or_else(|| PyValueError::new_err(
-        "Failed to parse `programs.localnet` table.",
-    ))?;
+        .ok_or_else(|| PyValueError::new_err("`programs.localnet` not found in Anchor.toml"))?;
+    let toml_programs_parsed = toml_programs_raw
+        .as_table()
+        .ok_or_else(|| PyValueError::new_err("Failed to parse `programs.localnet` table."))?;
     for (key, val) in toml_programs_parsed {
         let pubkey_with_quotes = val.to_string();
         let pubkey_str = &pubkey_with_quotes[1..pubkey_with_quotes.len() - 1];
