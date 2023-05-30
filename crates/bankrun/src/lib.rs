@@ -97,7 +97,7 @@ impl BanksClient {
             let meta = match res {
                 Ok(r) => match r.result {
                     Err(e) => Err(to_py_err(e)),
-                    Ok(()) => Ok(r.metadata.map(BanksTransactionMeta::from)),
+                    Ok(()) => Ok(BanksTransactionMeta::from(r.metadata.unwrap())),
                 },
                 Err(e) => Err(e),
             };
