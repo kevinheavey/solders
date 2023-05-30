@@ -3,7 +3,7 @@ from typing import Optional, Tuple
 
 from pytest import mark, raises
 from solders.account import Account
-from solders.bankrun import BanksClientError, ProgramTestContext, start
+from solders.bankrun import ProgramTestContext, start
 from solders.clock import Clock
 from solders.instruction import AccountMeta, Instruction
 from solders.message import Message
@@ -203,6 +203,19 @@ async def test_transfer() -> None:
         == total_ix_count * transfer_lamports_base
         + num_ixs * ((num_txs - 1) * num_txs) / 2
     )
+
+@mark.asyncio
+async def test_missing_program() -> None:
+    context = await start()
+    program_id = Pubkey.new_unique()
+    client = context.banks_client
+    payer = context.payer
+    blockhash = context.last_blockhash
+    ix = Instruction(program_id, b"", [])
+    msg = Message.new_with_blockhash([ix], payer.pubkey(), blockhash)
+    tx = VersionedTransaction(msg, [payer])
+    with raises(TransactionError):
+        await client.process_transaction(tx)
 
 @mark.asyncio
 async def test_add_program_via_set_account() -> None:
