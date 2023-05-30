@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.18.0] - Unreleased
+
+### Changed
+
+- Rename `process_transaction_with_metadata` to just `process_transaction`.
+  Remove `process_transaction_with_preflight` and the old `process_transaction`
+  which had too many footguns. The new `process_transaction` uses the Rust
+  `process_transaction_with_metadata` under the hood.
+
+### Fixed
+
+- Remove `.string()` from `pubkey.pyi` as the method no longer exists [(#57)](https://github.com/kevinheavey/solders/pull/57)
+- Fix `pre_token_balances` getter [(#59)](https://github.com/kevinheavey/solders/pull/59)
+
 ## [0.17.0] - 2023-05-11
 
 ### Added
