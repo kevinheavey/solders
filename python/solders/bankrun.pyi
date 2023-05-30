@@ -49,7 +49,6 @@ class BanksClient:
     async def process_transaction(
         self,
         transaction: VersionedTransaction,
-        commitment: Optional[CommitmentLevel] = None,
     ) -> BanksTransactionMeta: ...
     async def send_transaction(self, transaction: VersionedTransaction) -> None: ...
     async def simulate_transaction(
