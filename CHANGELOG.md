@@ -7,7 +7,7 @@
 - Rename `process_transaction_with_metadata` to just `process_transaction`.
   Remove `process_transaction_with_preflight` and the old `process_transaction`
   which had too many footguns. The new `process_transaction` uses the Rust
-  `process_transaction_with_metadata` under the hood.
+  `process_transaction_with_metadata` under the hood. [(#60)](https://github.com/kevinheavey/solders/pull/60)
 
 ### Fixed
 
