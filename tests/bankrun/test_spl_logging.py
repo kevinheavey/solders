@@ -22,7 +22,7 @@ async def test_logging() -> None:
     tx = VersionedTransaction(msg, [payer])
     # let's sim it first
     sim_res = await client.simulate_transaction(tx)
-    meta = (await client.process_transaction(tx))
+    meta = await client.process_transaction(tx)
     assert sim_res.meta == meta
     assert meta is not None
     assert meta.log_messages[1] == "Program log: static string"

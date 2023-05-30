@@ -97,13 +97,11 @@ impl BanksClient {
             let meta = match res {
                 Ok(r) => match r.result {
                     Err(e) => Err(to_py_err(e)),
-                    Ok(()) => Ok(r.metadata.map(BanksTransactionMeta::from))
+                    Ok(()) => Ok(r.metadata.map(BanksTransactionMeta::from)),
                 },
-                Err(e) => Err(e)
+                Err(e) => Err(e),
             };
-            let pyobj: PyResult<PyObject> = Python::with_gil(|py| {
-                meta.map(|x| x.into_py(py))
-            });
+            let pyobj: PyResult<PyObject> = Python::with_gil(|py| meta.map(|x| x.into_py(py)));
             pyobj
         })
     }
@@ -502,12 +500,10 @@ pub fn start_anchor<'p>(
     let toml_programs_raw = parsed_toml
         .get("programs")
         .and_then(|x| x.get("localnet"))
-        .ok_or_else(|| PyValueError::new_err(
-            "`programs.localnet` not found in Anchor.toml",
-        ))?;
-    let toml_programs_parsed = toml_programs_raw.as_table().ok_or_else(|| PyValueError::new_err(
-        "Failed to parse `programs.localnet` table.",
-    ))?;
+        .ok_or_else(|| PyValueError::new_err("`programs.localnet` not found in Anchor.toml"))?;
+    let toml_programs_parsed = toml_programs_raw
+        .as_table()
+        .ok_or_else(|| PyValueError::new_err("Failed to parse `programs.localnet` table."))?;
     for (key, val) in toml_programs_parsed {
         let pubkey_with_quotes = val.to_string();
         let pubkey_str = &pubkey_with_quotes[1..pubkey_with_quotes.len() - 1];

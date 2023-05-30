@@ -30,6 +30,7 @@ async def helloworld_program(
     )
     return context, program_id, greeted_pubkey
 
+
 async def helloworld_program_via_set_account(
     compute_max_units: Optional[int] = None,
 ) -> Tuple[ProgramTestContext, Pubkey, Pubkey]:
@@ -49,10 +50,11 @@ async def helloworld_program_via_set_account(
         lamports=1_000_000_000_000,
         data=program_bytes,
         owner=Pubkey.from_string("BPFLoader2111111111111111111111111111111111"),
-        executable=True
+        executable=True,
     )
     context.set_account(program_id, executable_account)
     return context, program_id, greeted_pubkey
+
 
 @mark.asyncio
 async def test_helloworld() -> None:
@@ -204,6 +206,7 @@ async def test_transfer() -> None:
         + num_ixs * ((num_txs - 1) * num_txs) / 2
     )
 
+
 @mark.asyncio
 async def test_missing_program() -> None:
     context = await start()
@@ -216,6 +219,7 @@ async def test_missing_program() -> None:
     tx = VersionedTransaction(msg, [payer])
     with raises(TransactionError):
         await client.process_transaction(tx)
+
 
 @mark.asyncio
 async def test_add_program_via_set_account() -> None:
