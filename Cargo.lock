@@ -2174,7 +2174,7 @@ dependencies = [
  "libc",
  "log",
  "miow",
- "ntapi 0.3.7",
+ "ntapi",
  "winapi",
 ]
 
@@ -2246,15 +2246,6 @@ name = "ntapi"
 version = "0.3.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c28774a7fd2fbb4f0babd8237ce554b73af68021b5f695a3cebd6c59bac0980f"
-dependencies = [
- "winapi",
-]
-
-[[package]]
-name = "ntapi"
-version = "0.4.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e8a3895c6391c39d7fe7ebc444a87eb2991b2a0bc718fdabd071eec617fc68e4"
 dependencies = [
  "winapi",
 ]
@@ -4550,7 +4541,6 @@ version = "0.18.0"
 dependencies = [
  "bincode",
  "derive_more",
- "ntapi 0.4.1",
  "pyo3",
  "serde",
  "solana-sdk",
