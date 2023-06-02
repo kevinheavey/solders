@@ -124,7 +124,6 @@ async def start(
     accounts: Optional[Sequence[Tuple[Pubkey, Account]]] = None,
     compute_max_units: Optional[int] = None,
     transaction_account_lock_limit: Optional[int] = None,
-    use_bpf_jit: Optional[bool] = None,
 ) -> ProgramTestContext: ...
 async def start_anchor(
     path: Path,
@@ -132,5 +131,4 @@ async def start_anchor(
     accounts: Optional[Sequence[Tuple[Pubkey, Account]]] = None,
     compute_max_units: Optional[int] = None,
     transaction_account_lock_limit: Optional[int] = None,
-    use_bpf_jit: Optional[bool] = None,
 ) -> ProgramTestContext: ...

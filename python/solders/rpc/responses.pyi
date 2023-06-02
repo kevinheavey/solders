@@ -306,6 +306,7 @@ class RpcContactInfo:
     pubkey: Pubkey
     gossip: Optional[str]
     tpu: Optional[str]
+    tpu_quic: Optional[str]
     rpc: Optional[str]
     pubsub: Optional[str]
     version: Optional[str]
@@ -316,6 +317,7 @@ class RpcContactInfo:
         pubkey: Pubkey,
         gossip: Optional[str] = None,
         tpu: Optional[str] = None,
+        tpu_quic: Optional[str] = None,
         rpc: Optional[str] = None,
         pubsub: Optional[str] = None,
         version: Optional[str] = None,
