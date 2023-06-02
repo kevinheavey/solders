@@ -380,8 +380,8 @@ impl BanksClient {
         pyo3_asyncio::tokio::future_into_py(py, async move {
             let res = async_res!(underlying.get_fee_for_message_with_commitment_and_context(
                 current(),
+                message_inner,
                 commitment_inner,
-                message_inner
             ));
             let pyobj: PyResult<Option<PyObject>> =
                 Python::with_gil(|py| res.map(|x| x.map(|num| num.into_py(py))));
@@ -394,7 +394,6 @@ fn new_bankrun(
     programs: Vec<(&str, Pubkey)>,
     compute_max_units: Option<u64>,
     transaction_account_lock_limit: Option<usize>,
-    use_bpf_jit: Option<bool>,
     accounts: Vec<(Pubkey, Account)>,
 ) -> ProgramTest {
     let mut pt = ProgramTest::default();
@@ -407,9 +406,6 @@ fn new_bankrun(
     }
     if let Some(lock_lim) = transaction_account_lock_limit {
         pt.set_transaction_account_lock_limit(lock_lim);
-    }
-    if let Some(use_jit) = use_bpf_jit {
-        pt.use_bpf_jit(use_jit);
     }
     for acc in accounts {
         pt.add_account(acc.0.into(), acc.1.into());
@@ -430,7 +426,6 @@ fn new_bankrun(
 ///         what data to write to the given addresses.
 ///     compute_max_units (Optional[int]): Override the default compute unit limit for a transaction.
 ///     transaction_account_lock_limit (Optional[int]): Override the default transaction account lock limit.
-///     use_bpf_jit (Optional[bool]): Execute the program with JIT if true, interpreted if false.
 ///
 ///
 /// Returns:
@@ -443,13 +438,11 @@ pub fn start<'p>(
     accounts: Option<Vec<(Pubkey, Account)>>,
     compute_max_units: Option<u64>,
     transaction_account_lock_limit: Option<usize>,
-    use_bpf_jit: Option<bool>,
 ) -> PyResult<&'p PyAny> {
     let pt = new_bankrun(
         programs.unwrap_or_default(),
         compute_max_units,
         transaction_account_lock_limit,
-        use_bpf_jit,
         accounts.unwrap_or_default(),
     );
     pyo3_asyncio::tokio::future_into_py(py, async move {
@@ -474,7 +467,6 @@ pub fn start<'p>(
 ///         what data to write to the given addresses.
 ///     compute_max_units (Optional[int]): Override the default compute unit limit for a transaction.
 ///     transaction_account_lock_limit (Optional[int]): Override the default transaction account lock limit.
-///     use_bpf_jit (Optional[bool]): Execute the program with JIT if true, interpreted if false.
 ///
 /// Returns:
 ///     ProgramTestContext: a container for stuff you'll need to send transactions and interact with the test environment.
@@ -487,7 +479,6 @@ pub fn start_anchor<'p>(
     accounts: Option<Vec<(Pubkey, Account)>>,
     compute_max_units: Option<u64>,
     transaction_account_lock_limit: Option<usize>,
-    use_bpf_jit: Option<bool>,
 ) -> PyResult<&'p PyAny> {
     let mut programs = extra_programs.unwrap_or_default();
     let mut anchor_toml_path = path.clone();
@@ -520,7 +511,6 @@ pub fn start_anchor<'p>(
         programs,
         compute_max_units,
         transaction_account_lock_limit,
-        use_bpf_jit,
         accounts.unwrap_or_default(),
     );
     pyo3_asyncio::tokio::future_into_py(py, async move {

@@ -103,6 +103,7 @@ pub enum InstructionErrorFieldless {
     MaxAccountsDataAllocationsExceeded,
     MaxAccountsExceeded,
     MaxInstructionTraceLengthExceeded,
+    BuiltinProgramsMustConsumeComputeUnits
 }
 
 #[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, EnumIntoPy)]
@@ -204,6 +205,9 @@ impl From<InstructionErrorType> for InstructionErrorOriginal {
                 InstructionErrorFieldless::MaxAccountsExceeded => Self::MaxAccountsExceeded,
                 InstructionErrorFieldless::MaxInstructionTraceLengthExceeded => {
                     Self::MaxInstructionTraceLengthExceeded
+                },
+                InstructionErrorFieldless::BuiltinProgramsMustConsumeComputeUnits => {
+                    Self::BuiltinProgramsMustConsumeComputeUnits
                 }
             },
         }
@@ -372,6 +376,9 @@ impl From<InstructionErrorOriginal> for InstructionErrorType {
             InstructionErrorOriginal::MaxInstructionTraceLengthExceeded => {
                 Self::Fieldless(InstructionErrorFieldless::MaxInstructionTraceLengthExceeded)
             }
+            InstructionErrorOriginal::BuiltinProgramsMustConsumeComputeUnits => {
+                Self::Fieldless(InstructionErrorFieldless::BuiltinProgramsMustConsumeComputeUnits)
+            }
         }
     }
 }
@@ -472,6 +479,8 @@ pub enum TransactionErrorFieldless {
     WouldExceedMaxVoteCostLimit,
     WouldExceedAccountDataTotalLimit,
     MaxLoadedAccountsDataSizeExceeded,
+    ResanitizationNeeded,
+    InvalidLoadedAccountsDataSizeLimit
 }
 
 #[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, EnumIntoPy)]
@@ -566,6 +575,12 @@ impl From<TransactionErrorType> for TransactionErrorOriginal {
                 }
                 TransactionErrorFieldless::MaxLoadedAccountsDataSizeExceeded => {
                     Self::MaxLoadedAccountsDataSizeExceeded
+                }
+                TransactionErrorFieldless::ResanitizationNeeded => {
+                    Self::ResanitizationNeeded
+                }
+                TransactionErrorFieldless::InvalidLoadedAccountsDataSizeLimit => {
+                    Self::InvalidLoadedAccountsDataSizeLimit
                 }
             },
         }
@@ -679,6 +694,12 @@ impl From<TransactionErrorOriginal> for TransactionErrorType {
             }
             TransactionErrorOriginal::MaxLoadedAccountsDataSizeExceeded => {
                 Self::Fieldless(TransactionErrorFieldless::MaxLoadedAccountsDataSizeExceeded)
+            }
+            TransactionErrorOriginal::ResanitizationNeeded => {
+                Self::Fieldless(TransactionErrorFieldless::ResanitizationNeeded)
+            }
+            TransactionErrorOriginal::InvalidLoadedAccountsDataSizeLimit => {
+                Self::Fieldless(TransactionErrorFieldless::InvalidLoadedAccountsDataSizeLimit)
             }
         }
     }
