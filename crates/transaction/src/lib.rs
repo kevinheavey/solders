@@ -215,7 +215,7 @@ impl VersionedTransaction {
 ///     >>> blockhash = Hash.default()  # replace with a real blockhash
 ///     >>> tx = Transaction([payer], message, blockhash)
 ///
-pub struct Transaction(TransactionOriginal);
+pub struct Transaction(pub TransactionOriginal);
 
 #[richcmp_eq_only]
 #[common_methods]
