@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.18.1] - 2023-06-03
+
+### Changed
+
+- Accept `Transaction | VersionedTransaction` in bankrun transaction methods [(#62)](https://github.com/kevinheavey/solders/pull/62)
+
 ## [0.18.0] - 2023-06-02
 
 ### Changed

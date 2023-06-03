@@ -103,7 +103,7 @@ pub enum InstructionErrorFieldless {
     MaxAccountsDataAllocationsExceeded,
     MaxAccountsExceeded,
     MaxInstructionTraceLengthExceeded,
-    BuiltinProgramsMustConsumeComputeUnits
+    BuiltinProgramsMustConsumeComputeUnits,
 }
 
 #[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, EnumIntoPy)]
@@ -205,7 +205,7 @@ impl From<InstructionErrorType> for InstructionErrorOriginal {
                 InstructionErrorFieldless::MaxAccountsExceeded => Self::MaxAccountsExceeded,
                 InstructionErrorFieldless::MaxInstructionTraceLengthExceeded => {
                     Self::MaxInstructionTraceLengthExceeded
-                },
+                }
                 InstructionErrorFieldless::BuiltinProgramsMustConsumeComputeUnits => {
                     Self::BuiltinProgramsMustConsumeComputeUnits
                 }
@@ -480,7 +480,7 @@ pub enum TransactionErrorFieldless {
     WouldExceedAccountDataTotalLimit,
     MaxLoadedAccountsDataSizeExceeded,
     ResanitizationNeeded,
-    InvalidLoadedAccountsDataSizeLimit
+    InvalidLoadedAccountsDataSizeLimit,
 }
 
 #[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, EnumIntoPy)]
@@ -576,9 +576,7 @@ impl From<TransactionErrorType> for TransactionErrorOriginal {
                 TransactionErrorFieldless::MaxLoadedAccountsDataSizeExceeded => {
                     Self::MaxLoadedAccountsDataSizeExceeded
                 }
-                TransactionErrorFieldless::ResanitizationNeeded => {
-                    Self::ResanitizationNeeded
-                }
+                TransactionErrorFieldless::ResanitizationNeeded => Self::ResanitizationNeeded,
                 TransactionErrorFieldless::InvalidLoadedAccountsDataSizeLimit => {
                     Self::InvalidLoadedAccountsDataSizeLimit
                 }

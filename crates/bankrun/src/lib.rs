@@ -19,7 +19,7 @@ use solders_pubkey::Pubkey;
 use solders_signature::Signature;
 use solders_traits::{to_py_err, BanksClientError};
 use solders_traits_core::to_py_value_err;
-use solders_transaction::VersionedTransaction;
+use solders_transaction::{Transaction, VersionedTransaction};
 use tarpc::context::current;
 use toml::Table;
 use {
@@ -39,12 +39,10 @@ macro_rules! async_res {
     };
 }
 
-macro_rules! res_to_py_obj {
-    ($fut:expr) => {{
-        let res = async_res!($fut);
-        let pyobj: PyResult<PyObject> = Python::with_gil(|py| res.map(|x| x.into_py(py)));
-        pyobj
-    }};
+#[derive(FromPyObject, Clone, PartialEq, Eq, Debug)]
+pub enum TransactionType {
+    Legacy(Transaction),
+    Versioned(VersionedTransaction),
 }
 
 /// A client for the ledger state, from the perspective of an arbitrary validator.
@@ -60,24 +58,29 @@ impl BanksClient {
     /// Send a transaction and return immediately.
     ///
     /// Args:
-    ///     transaction (VersionedTransaction): The transaction to send.
+    ///     transaction (Transaction | VersionedTransaction): The transaction to send.
     ///
     pub fn send_transaction<'p>(
         &'p mut self,
         py: Python<'p>,
-        transaction: VersionedTransaction,
+        transaction: TransactionType,
     ) -> PyResult<&'p PyAny> {
-        let tx_inner = transaction.0;
         let mut underlying = self.0.clone();
         pyo3_asyncio::tokio::future_into_py(py, async move {
-            res_to_py_obj!(underlying.send_transaction(tx_inner))
+            let res = match transaction {
+                TransactionType::Legacy(t) => underlying.send_transaction(t.0).await,
+                TransactionType::Versioned(t) => underlying.send_transaction(t.0).await,
+            };
+            let pyobj: PyResult<PyObject> =
+                Python::with_gil(|py| res.map_err(to_py_err).map(|x| x.into_py(py)));
+            pyobj
         })
     }
 
     /// Process a transaction and return the transaction metadata, raising any errors.
     ///
     /// Args:
-    ///     transaction (VersionedTransaction): The transaction to send.
+    ///     transaction (Transaction | VersionedTransaction): The transaction to send.
     ///
     /// Returns:
     ///     BanksTransactionResultWithMeta: The transaction result and metadata.
@@ -85,15 +88,19 @@ impl BanksClient {
     pub fn process_transaction<'p>(
         &'p mut self,
         py: Python<'p>,
-        transaction: VersionedTransaction,
+        transaction: TransactionType,
     ) -> PyResult<&'p PyAny> {
-        let tx_inner = transaction.0.into_legacy_transaction().unwrap();
         let mut underlying = self.0.clone();
         pyo3_asyncio::tokio::future_into_py(py, async move {
-            let res = underlying
-                .process_transaction_with_metadata(tx_inner)
-                .await
-                .map_err(to_py_err);
+            let awaited = match transaction {
+                TransactionType::Legacy(t) => {
+                    underlying.process_transaction_with_metadata(t.0).await
+                }
+                TransactionType::Versioned(t) => {
+                    underlying.process_transaction_with_metadata(t.0).await
+                }
+            };
+            let res = awaited.map_err(to_py_err);
             let meta = match res {
                 Ok(r) => match r.result {
                     Err(e) => Err(to_py_err(e)),
@@ -109,7 +116,7 @@ impl BanksClient {
     /// Simulate a transaction at the given commitment level.
     ///
     /// Args:
-    ///     transaction (VersionedTransaction): The transaction to simulate.
+    ///     transaction (Transaction | VersionedTransaction): The transaction to simulate.
     ///     commitment (Optional[CommitmentLevel]): The commitment level to use.
     ///
     /// Returns:
@@ -118,17 +125,25 @@ impl BanksClient {
     pub fn simulate_transaction<'p>(
         &'p mut self,
         py: Python<'p>,
-        transaction: VersionedTransaction,
+        transaction: TransactionType,
         commitment: Option<CommitmentLevel>,
     ) -> PyResult<&'p PyAny> {
-        let tx_inner = transaction.0.into_legacy_transaction().unwrap();
         let commitment_inner = CommitmentLevelOriginal::from(commitment.unwrap_or_default());
         let mut underlying = self.0.clone();
         pyo3_asyncio::tokio::future_into_py(py, async move {
-            let res = underlying
-                .simulate_transaction_with_commitment(tx_inner, commitment_inner)
-                .await
-                .map_err(to_py_err);
+            let awaited = match transaction {
+                TransactionType::Legacy(t) => {
+                    underlying
+                        .simulate_transaction_with_commitment(t.0, commitment_inner)
+                        .await
+                }
+                TransactionType::Versioned(t) => {
+                    underlying
+                        .simulate_transaction_with_commitment(t.0, commitment_inner)
+                        .await
+                }
+            };
+            let res = awaited.map_err(to_py_err);
             let pyobj: PyResult<PyObject> = Python::with_gil(|py| {
                 res.map(|x| BanksTransactionResultWithMeta::from(x).into_py(py))
             });
