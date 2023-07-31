@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.19.0] - 2023-07-31
+
+- Add Token Program ID (`solders.token.ID`)
+
 ## [0.18.1] - 2023-06-03
 
 ### Changed
