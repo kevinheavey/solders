@@ -2,6 +2,7 @@ from pytest import mark
 from solders.account import Account
 from solders.bankrun import start
 from solders.pubkey import Pubkey
+from solders.token import ID as TOKEN_PROGRAM_ID
 from solders.token.associated import get_associated_token_address
 from solders.token.state import TokenAccount, TokenAccountState
 
@@ -29,7 +30,7 @@ async def test_infinite_usdc_mint() -> None:
                 Account(
                     lamports=1_000_000_000,
                     data=bytes(token_acc),
-                    owner=owner,
+                    owner=TOKEN_PROGRAM_ID,
                     executable=False,
                 ),
             )
