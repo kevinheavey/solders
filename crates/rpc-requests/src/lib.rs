@@ -2808,9 +2808,7 @@ pub fn batch_to_json(reqs: Vec<Body>) -> String {
 ///     }]
 ///
 #[pyfunction]
-pub fn batch_from_json(raw: &str) -> PyResult<Vec<PyObject>> {
-    let gil = Python::acquire_gil();
-    let py = gil.python();
+pub fn batch_from_json(py: Python<'_>, raw: &str) -> PyResult<Vec<PyObject>> {
     let deser: Vec<Body> = serde_json::from_str(raw).unwrap();
     Ok(deser.into_iter().map(|x| x.into_py(py)).collect())
 }
