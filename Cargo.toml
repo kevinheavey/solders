@@ -62,7 +62,7 @@ license = "MIT"
 edition = "2021"
 
 [workspace.dependencies]
-pyo3 = { version = "0.18.0", default-features = false }
+pyo3 = { version = "0.19.2", default-features = false }
 solders-macros = { path = "./crates/macros", version = "=0.18.1" }
 solders-traits = { path = "./crates/traits", version = "=0.18.1" }
 solders-traits-core = { path = "./crates/traits-core", version = "=0.18.1" }
@@ -131,7 +131,7 @@ serde_cbor = "^0.11.2"
 derive_more = "0.99.17"
 solana-program-test = "1.16.0"
 solana-banks-client = "1.16.0"
-pythonize = "0.18.0"
+pythonize = "0.19.0"
 bs58 = "0.4.0"
 thiserror = "^1.0.31"
 camelpaste = "0.1.0"
