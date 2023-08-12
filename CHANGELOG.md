@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+### Changed
+
 - Use PyO3 v0.19.2 [(#64)](https://github.com/kevinheavey/solders/pull/64)
 
 ## [0.19.0] - 2023-07-31
