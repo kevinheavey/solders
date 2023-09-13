@@ -46,7 +46,7 @@ impl Signature {
 
     #[new]
     pub fn new(signature_bytes: [u8; Self::LENGTH]) -> Self {
-        SignatureOriginal::new(&signature_bytes).into()
+        SignatureOriginal::from(signature_bytes).into()
     }
 
     #[staticmethod]
@@ -149,7 +149,7 @@ impl Signature {
 impl PyHash for Signature {}
 impl PyFromBytesGeneral for Signature {
     fn py_from_bytes_general(raw: &[u8]) -> PyResult<Self> {
-        Ok(SignatureOriginal::new(raw).into())
+        Ok(SignatureOriginal::try_from(raw).unwrap().into())
     }
 }
 solders_traits_core::common_methods_default!(Signature);
