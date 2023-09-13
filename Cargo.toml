@@ -118,19 +118,19 @@ solders-transaction-error = { path = "./crates/transaction-error", version = "=0
 solders-account = { path = "./crates/account", version = "=0.18.1" }
 solders-hash = { path = "./crates/hash", version = "=0.18.1" }
 serde_with = { version = "^1.14.0", features = ["base64"] }
-solana-sdk = "1.16.3"
-solana-account-decoder = "1.16.3"
-solana-transaction-status = "1.16.3"
-solana-rpc-client-api = "1.16.3"
-solana-program = "1.16.3"
+solana-sdk = { git = "https://github.com/solana-labs/solana", rev = "3ffd78f" }
+solana-account-decoder = { git = "https://github.com/solana-labs/solana", rev = "3ffd78f" }
+solana-transaction-status = { git = "https://github.com/solana-labs/solana", rev = "3ffd78f" }
+solana-rpc-client-api = { git = "https://github.com/solana-labs/solana", rev = "3ffd78f" }
+solana-program = { git = "https://github.com/solana-labs/solana", rev = "3ffd78f" }
 bincode = "1.3.3"
 base64 = "0.13.0"
-serde = "^1.0.136"
-serde_json = "^1.0.59"
+serde = "^1.0.188"
+serde_json = "^1.0.106"
 serde_cbor = "^0.11.2"
 derive_more = "0.99.17"
-solana-program-test = "1.16.3"
-solana-banks-client = "1.16.3"
+solana-program-test = { git = "https://github.com/solana-labs/solana", rev = "3ffd78f" }
+solana-banks-client = { git = "https://github.com/solana-labs/solana", rev = "3ffd78f" }
 pythonize = "0.19.0"
 bs58 = "0.4.0"
 thiserror = "^1.0.31"
