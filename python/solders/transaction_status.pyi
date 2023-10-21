@@ -644,10 +644,14 @@ class TransactionErrorProgramExecutionTemporarilyRestricted:
     ) -> bool: ...
     def __hash__(self) -> int: ...
     @staticmethod
-    def from_bytes(raw: bytes) -> "TransactionErrorProgramExecutionTemporarilyRestricted": ...
+    def from_bytes(
+        raw: bytes,
+    ) -> "TransactionErrorProgramExecutionTemporarilyRestricted": ...
     def to_json(self) -> str: ...
     @staticmethod
-    def from_json(raw: str) -> "TransactionErrorProgramExecutionTemporarilyRestricted": ...
+    def from_json(
+        raw: str,
+    ) -> "TransactionErrorProgramExecutionTemporarilyRestricted": ...
 
 class TransactionErrorFieldless:
     AccountInUse: "TransactionErrorFieldless"
@@ -702,7 +706,7 @@ TransactionErrorType = Union[
     TransactionErrorInstructionError,
     TransactionErrorDuplicateInstruction,
     TransactionErrorInsufficientFundsForRent,
-    TransactionErrorProgramExecutionTemporarilyRestricted
+    TransactionErrorProgramExecutionTemporarilyRestricted,
 ]
 
 class Reward:

@@ -499,7 +499,7 @@ pub enum TransactionErrorFieldless {
     MaxLoadedAccountsDataSizeExceeded,
     ResanitizationNeeded,
     InvalidLoadedAccountsDataSizeLimit,
-    UnbalancedTransaction
+    UnbalancedTransaction,
 }
 
 #[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, EnumIntoPy)]
@@ -507,7 +507,7 @@ pub enum TransactionErrorTypeTagged {
     InstructionError(TransactionErrorInstructionError),
     DuplicateInstruction(TransactionErrorDuplicateInstruction),
     InsufficientFundsForRent(TransactionErrorInsufficientFundsForRent),
-    ProgramExecutionTemporarilyRestricted(TransactionErrorProgramExecutionTemporarilyRestricted)
+    ProgramExecutionTemporarilyRestricted(TransactionErrorProgramExecutionTemporarilyRestricted),
 }
 
 #[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, EnumIntoPy)]
@@ -605,9 +605,7 @@ impl From<TransactionErrorType> for TransactionErrorOriginal {
                 TransactionErrorFieldless::InvalidLoadedAccountsDataSizeLimit => {
                     Self::InvalidLoadedAccountsDataSizeLimit
                 }
-                TransactionErrorFieldless::UnbalancedTransaction => {
-                    Self::UnbalancedTransaction
-                }
+                TransactionErrorFieldless::UnbalancedTransaction => Self::UnbalancedTransaction,
             },
         }
     }
@@ -632,9 +630,11 @@ impl From<TransactionErrorOriginal> for TransactionErrorType {
                 ))
             }
             TransactionErrorOriginal::ProgramExecutionTemporarilyRestricted { account_index } => {
-                Self::Tagged(TransactionErrorTypeTagged::ProgramExecutionTemporarilyRestricted(
-                    TransactionErrorProgramExecutionTemporarilyRestricted { account_index },
-                ))
+                Self::Tagged(
+                    TransactionErrorTypeTagged::ProgramExecutionTemporarilyRestricted(
+                        TransactionErrorProgramExecutionTemporarilyRestricted { account_index },
+                    ),
+                )
             }
             TransactionErrorOriginal::AccountInUse => {
                 Self::Fieldless(TransactionErrorFieldless::AccountInUse)
