@@ -92,7 +92,7 @@ impl Keypair {
     ///
     /// Example:
     ///      >>> from solders.keypair import Keypair
-    ///      >>> raw_bytes = bytes([1] * 64)
+    ///      >>> raw_bytes = b'\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x8a\x88\xe3\xddt\t\xf1\x95\xfdR\xdb-<\xba]r\xcag\t\xbf\x1d\x94\x12\x1b\xf3t\x88\x01\xb4\x0fo\\'
     ///      >>> assert Keypair.from_bytes(raw_bytes).to_bytes_array() == list(raw_bytes)
     ///
     pub fn to_bytes_array(&self) -> [u8; Self::LENGTH] {
@@ -110,8 +110,8 @@ impl Keypair {
     ///
     /// Example:
     ///     >>> from solders.keypair import Keypair
-    ///     >>> raw_bytes = bytes([0] * 64)
-    ///     >>> base58_str = "1" * 64
+    ///     >>> raw_bytes = b'\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x8a\x88\xe3\xddt\t\xf1\x95\xfdR\xdb-<\xba]r\xcag\t\xbf\x1d\x94\x12\x1b\xf3t\x88\x01\xb4\x0fo\\'
+    ///     >>> base58_str = "2AXDGYSE4f2sz7tvMMzyHvUfcoJmxudvdhBcmiUSo6iuCXagjUCKEQF21awZnUGxmwD4m9vGXuC3qieHXJQHAcT"
     ///     >>> kp = Keypair.from_base58_string(base58_str)
     ///     >>> assert kp == Keypair.from_bytes(raw_bytes)
     ///     >>> assert str(kp) == base58_str
@@ -143,7 +143,7 @@ impl Keypair {
     ///     >>> from solders.keypair import Keypair
     ///     >>> from solders.pubkey import Pubkey
     ///     >>> seed_bytes = bytes([0] * 32)
-    ///     >>> pubkey_bytes = bytes([1] * 32)
+    ///     >>> pubkey_bytes = b";j'\xbc\xce\xb6\xa4-b\xa3\xa8\xd0*o\rse2\x15w\x1d\xe2C\xa6:\xc0H\xa1\x8bY\xda)"
     ///     >>> kp = Keypair.from_bytes(seed_bytes + pubkey_bytes)
     ///     >>> assert kp.pubkey() == Pubkey(pubkey_bytes)
     ///

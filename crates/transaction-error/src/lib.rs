@@ -499,6 +499,7 @@ pub enum TransactionErrorFieldless {
     MaxLoadedAccountsDataSizeExceeded,
     ResanitizationNeeded,
     InvalidLoadedAccountsDataSizeLimit,
+    UnbalancedTransaction
 }
 
 #[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, EnumIntoPy)]
@@ -603,6 +604,9 @@ impl From<TransactionErrorType> for TransactionErrorOriginal {
                 TransactionErrorFieldless::ResanitizationNeeded => Self::ResanitizationNeeded,
                 TransactionErrorFieldless::InvalidLoadedAccountsDataSizeLimit => {
                     Self::InvalidLoadedAccountsDataSizeLimit
+                }
+                TransactionErrorFieldless::UnbalancedTransaction => {
+                    Self::UnbalancedTransaction
                 }
             },
         }
@@ -727,6 +731,9 @@ impl From<TransactionErrorOriginal> for TransactionErrorType {
             }
             TransactionErrorOriginal::InvalidLoadedAccountsDataSizeLimit => {
                 Self::Fieldless(TransactionErrorFieldless::InvalidLoadedAccountsDataSizeLimit)
+            }
+            TransactionErrorOriginal::UnbalancedTransaction => {
+                Self::Fieldless(TransactionErrorFieldless::UnbalancedTransaction)
             }
         }
     }

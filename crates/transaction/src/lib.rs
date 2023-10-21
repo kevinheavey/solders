@@ -114,8 +114,8 @@ impl VersionedTransaction {
     }
 
     /// Sanity checks the Transaction properties.
-    pub fn sanitize(&self, require_static_program_ids: bool) -> PyResult<()> {
-        handle_py_err(self.0.sanitize(require_static_program_ids))
+    pub fn sanitize(&self) -> PyResult<()> {
+        handle_py_err(self.0.sanitize())
     }
 
     /// Returns the version of the transaction.

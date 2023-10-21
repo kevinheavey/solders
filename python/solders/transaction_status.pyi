@@ -680,6 +680,9 @@ class TransactionErrorFieldless:
     WouldExceedMaxVotefCostLimit: "TransactionErrorFieldless"
     WouldExceedAccountDataTotalLimit: "TransactionErrorFieldless"
     MaxLoadedAccountsDataSizeExceeded: "TransactionErrorFieldless"
+    ResanitizationNeeded: "TransactionErrorFieldless"
+    InvalidLoadedAccountsDataSizeLimit: "TransactionErrorFieldless"
+    UnbalancedTransaction: "TransactionErrorFieldless"
     def __int__(self) -> int: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...

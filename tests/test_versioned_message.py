@@ -31,7 +31,7 @@ def test_sanitize(
         recent_blockhash=default_message.recent_blockhash,
         instructions=default_message.instructions,
         address_table_lookups=default_message.address_table_lookups,
-    ).sanitize(True)
+    ).sanitize()
 
 
 def test_sanitize_with_instruction(
@@ -45,7 +45,7 @@ def test_sanitize_with_instruction(
         ],
         recent_blockhash=default_message.recent_blockhash,
         address_table_lookups=default_message.address_table_lookups,
-    ).sanitize(True)
+    ).sanitize()
 
 
 def test_sanitize_with_table_lookup(
@@ -63,7 +63,7 @@ def test_sanitize_with_table_lookup(
         ],
         recent_blockhash=default_message.recent_blockhash,
         instructions=default_message.instructions,
-    ).sanitize(True)
+    ).sanitize()
 
 
 def test_sanitize_with_table_lookup_and_ix_with_dynamic_program_id(
@@ -88,9 +88,8 @@ def test_sanitize_with_table_lookup_and_ix_with_dynamic_program_id(
         ],
         recent_blockhash=default_message.recent_blockhash,
     )
-    message.sanitize(False)
     with raises(SanitizeError):
-        message.sanitize(True)
+        message.sanitize()
 
 
 def test_sanitize_with_table_lookup_and_ix_with_static_program_id(
@@ -112,7 +111,7 @@ def test_sanitize_with_table_lookup_and_ix_with_static_program_id(
             )
         ],
         recent_blockhash=default_message.recent_blockhash,
-    ).sanitize(True)
+    ).sanitize()
 
 
 def test_sanitize_without_signer(
@@ -126,7 +125,7 @@ def test_sanitize_without_signer(
         address_table_lookups=default_message.address_table_lookups,
     )
     with raises(SanitizeError):
-        msg.sanitize(True)
+        msg.sanitize()
 
 
 def test_sanitize_without_writable_signer(
@@ -144,7 +143,7 @@ def test_sanitize_without_writable_signer(
         address_table_lookups=default_message.address_table_lookups,
     )
     with raises(SanitizeError):
-        msg.sanitize(True)
+        msg.sanitize()
 
 
 def test_sanitize_with_empty_table_lookup(
@@ -164,7 +163,7 @@ def test_sanitize_with_empty_table_lookup(
         instructions=default_message.instructions,
     )
     with raises(SanitizeError):
-        msg.sanitize(True)
+        msg.sanitize()
 
 
 def test_sanitize_with_max_account_keys(
@@ -177,7 +176,7 @@ def test_sanitize_with_max_account_keys(
         recent_blockhash=default_message.recent_blockhash,
         instructions=default_message.instructions,
         address_table_lookups=default_message.address_table_lookups,
-    ).sanitize(True)
+    ).sanitize()
 
 
 def test_sanitize_with_too_many_account_keys(
@@ -191,7 +190,7 @@ def test_sanitize_with_too_many_account_keys(
         address_table_lookups=default_message.address_table_lookups,
     )
     with raises(SanitizeError):
-        message.sanitize(True)
+        message.sanitize()
 
 
 def test_sanitize_with_max_table_loaded_keys(
@@ -209,7 +208,7 @@ def test_sanitize_with_max_table_loaded_keys(
         ],
         recent_blockhash=default_message.recent_blockhash,
         instructions=default_message.instructions,
-    ).sanitize(True)
+    ).sanitize()
 
 
 def test_sanitize_with_too_many_table_loaded_keys(
@@ -229,7 +228,7 @@ def test_sanitize_with_too_many_table_loaded_keys(
         instructions=default_message.instructions,
     )
     with raises(SanitizeError):
-        message.sanitize(True)
+        message.sanitize()
 
 
 def test_sanitize_with_invalid_ix_program_id(
@@ -255,9 +254,9 @@ def test_sanitize_with_invalid_ix_program_id(
         recent_blockhash=default_message.recent_blockhash,
     )
     with raises(SanitizeError):
-        message.sanitize(True)
+        message.sanitize()
     with raises(SanitizeError):
-        message.sanitize(False)
+        message.sanitize()
 
 
 def test_sanitize_with_invalid_ix_account(
@@ -279,7 +278,7 @@ def test_sanitize_with_invalid_ix_account(
         recent_blockhash=default_message.recent_blockhash,
     )
     with raises(SanitizeError):
-        message.sanitize(True)
+        message.sanitize()
 
 
 def test_try_compile() -> None:
