@@ -169,7 +169,6 @@ def test_sanitize_with_empty_table_lookup(
 def test_sanitize_with_max_account_keys(
     default_header_with_one_req_signature: MessageHeader, default_message: MessageV0
 ) -> None:
-
     MessageV0(
         header=default_header_with_one_req_signature,
         account_keys=[Pubkey.new_unique() for i in range(256)],
