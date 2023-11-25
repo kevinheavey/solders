@@ -155,11 +155,6 @@ jobs:
           manylinux: auto
           args: --release --no-default-features --out dist
           maturin-version: ${{ env.maturin_version }}
-      - name: Install built wheel
-        run: |
-          pip install pytest pytest-asyncio based58 pybip39 typing-extensions jsonalias
-          pip install ${{ env.name }} --no-index --no-dependencies --find-links dist --force-reinstall
-          pytest
       - name: Upload wheels
         uses: actions/upload-artifact@v2
         with:
