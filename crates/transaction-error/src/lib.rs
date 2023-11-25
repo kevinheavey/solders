@@ -446,6 +446,24 @@ impl TransactionErrorInsufficientFundsForRent {
     }
 }
 
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
+#[pyclass(module = "solders.transaction_status", subclass)]
+pub struct TransactionErrorProgramExecutionTemporarilyRestricted {
+    #[pyo3(get)]
+    account_index: u8,
+}
+transaction_status_boilerplate!(TransactionErrorProgramExecutionTemporarilyRestricted);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl TransactionErrorProgramExecutionTemporarilyRestricted {
+    #[new]
+    pub fn new(account_index: u8) -> Self {
+        Self { account_index }
+    }
+}
+
 #[pyclass(module = "solders.transaction_status")]
 #[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum TransactionErrorFieldless {
@@ -481,6 +499,7 @@ pub enum TransactionErrorFieldless {
     MaxLoadedAccountsDataSizeExceeded,
     ResanitizationNeeded,
     InvalidLoadedAccountsDataSizeLimit,
+    UnbalancedTransaction,
 }
 
 #[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, EnumIntoPy)]
@@ -488,6 +507,7 @@ pub enum TransactionErrorTypeTagged {
     InstructionError(TransactionErrorInstructionError),
     DuplicateInstruction(TransactionErrorDuplicateInstruction),
     InsufficientFundsForRent(TransactionErrorInsufficientFundsForRent),
+    ProgramExecutionTemporarilyRestricted(TransactionErrorProgramExecutionTemporarilyRestricted),
 }
 
 #[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, EnumIntoPy)]
@@ -515,6 +535,11 @@ impl From<TransactionErrorType> for TransactionErrorOriginal {
                 }
                 TransactionErrorTypeTagged::InsufficientFundsForRent(e) => {
                     Self::InsufficientFundsForRent {
+                        account_index: e.account_index,
+                    }
+                }
+                TransactionErrorTypeTagged::ProgramExecutionTemporarilyRestricted(e) => {
+                    Self::ProgramExecutionTemporarilyRestricted {
                         account_index: e.account_index,
                     }
                 }
@@ -580,6 +605,7 @@ impl From<TransactionErrorType> for TransactionErrorOriginal {
                 TransactionErrorFieldless::InvalidLoadedAccountsDataSizeLimit => {
                     Self::InvalidLoadedAccountsDataSizeLimit
                 }
+                TransactionErrorFieldless::UnbalancedTransaction => Self::UnbalancedTransaction,
             },
         }
     }
@@ -602,6 +628,13 @@ impl From<TransactionErrorOriginal> for TransactionErrorType {
                 Self::Tagged(TransactionErrorTypeTagged::InsufficientFundsForRent(
                     TransactionErrorInsufficientFundsForRent { account_index },
                 ))
+            }
+            TransactionErrorOriginal::ProgramExecutionTemporarilyRestricted { account_index } => {
+                Self::Tagged(
+                    TransactionErrorTypeTagged::ProgramExecutionTemporarilyRestricted(
+                        TransactionErrorProgramExecutionTemporarilyRestricted { account_index },
+                    ),
+                )
             }
             TransactionErrorOriginal::AccountInUse => {
                 Self::Fieldless(TransactionErrorFieldless::AccountInUse)
@@ -698,6 +731,9 @@ impl From<TransactionErrorOriginal> for TransactionErrorType {
             }
             TransactionErrorOriginal::InvalidLoadedAccountsDataSizeLimit => {
                 Self::Fieldless(TransactionErrorFieldless::InvalidLoadedAccountsDataSizeLimit)
+            }
+            TransactionErrorOriginal::UnbalancedTransaction => {
+                Self::Fieldless(TransactionErrorFieldless::UnbalancedTransaction)
             }
         }
     }

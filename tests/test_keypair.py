@@ -23,10 +23,10 @@ def test_to_bytes_array() -> None:
 
 def test_str() -> None:
     expected = (
-        "2AXDGYSE4f2sz7tvMMzyHvUfcoJmxudvdhBcmiUSo6ij"
-        "wfYmfZYsKRxboQMPh3R4kUhXRVdtSXFXMheka4Rc4P2"
+        "2AXDGYSE4f2sz7tvMMzyHvUfcoJmxudvdhBcmiUSo6iu"
+        "CXagjUCKEQF21awZnUGxmwD4m9vGXuC3qieHXJQHAcT"
     )
-    kp = Keypair.from_bytes([1] * 64)
+    kp = Keypair.from_seed([1] * 32)
     assert str(kp) == expected
     assert Keypair.from_base58_string(expected) == kp
 

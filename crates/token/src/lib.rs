@@ -18,6 +18,8 @@ pub fn create_token_mod(py: Python<'_>) -> PyResult<&PyModule> {
     for submod in submodules {
         token_mod.add_submodule(submod)?;
     }
-    token_mod.add("ID", solders_pubkey::Pubkey(spl_token::ID)).unwrap();
+    token_mod
+        .add("ID", solders_pubkey::Pubkey(spl_token::ID))
+        .unwrap();
     Ok(token_mod)
 }

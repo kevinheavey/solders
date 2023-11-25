@@ -8,7 +8,6 @@
 Status](https://github.com/kevinheavey/solders/workflows/CI/badge.svg)](https://github.com/kevinheavey/solders/actions?query=workflow%3ACI)
 [![PyPI version](https://badge.fury.io/py/solders.svg)](https://badge.fury.io/py/solders)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/kevinheavey/solders/blob/main/LICENSE)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 # Solders
 

@@ -632,6 +632,27 @@ class TransactionErrorInsufficientFundsForRent:
     @staticmethod
     def from_json(raw: str) -> "TransactionErrorInsufficientFundsForRent": ...
 
+class TransactionErrorProgramExecutionTemporarilyRestricted:
+    account_index: int
+    def __init__(self, account_index: int) -> None: ...
+    def __str__(self) -> str: ...
+    def __repr__(self) -> str: ...
+    def __bytes__(self) -> bytes: ...
+    def __eq__(
+        self,
+        other: object,
+    ) -> bool: ...
+    def __hash__(self) -> int: ...
+    @staticmethod
+    def from_bytes(
+        raw: bytes,
+    ) -> "TransactionErrorProgramExecutionTemporarilyRestricted": ...
+    def to_json(self) -> str: ...
+    @staticmethod
+    def from_json(
+        raw: str,
+    ) -> "TransactionErrorProgramExecutionTemporarilyRestricted": ...
+
 class TransactionErrorFieldless:
     AccountInUse: "TransactionErrorFieldless"
     AccountLoadedTwice: "TransactionErrorFieldless"
@@ -663,6 +684,9 @@ class TransactionErrorFieldless:
     WouldExceedMaxVotefCostLimit: "TransactionErrorFieldless"
     WouldExceedAccountDataTotalLimit: "TransactionErrorFieldless"
     MaxLoadedAccountsDataSizeExceeded: "TransactionErrorFieldless"
+    ResanitizationNeeded: "TransactionErrorFieldless"
+    InvalidLoadedAccountsDataSizeLimit: "TransactionErrorFieldless"
+    UnbalancedTransaction: "TransactionErrorFieldless"
     def __int__(self) -> int: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
@@ -682,6 +706,7 @@ TransactionErrorType = Union[
     TransactionErrorInstructionError,
     TransactionErrorDuplicateInstruction,
     TransactionErrorInsufficientFundsForRent,
+    TransactionErrorProgramExecutionTemporarilyRestricted,
 ]
 
 class Reward:
