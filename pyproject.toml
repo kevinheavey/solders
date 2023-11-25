@@ -56,9 +56,8 @@ reportMissingModuleSource = false
 
 [tool.ruff]
 line-length = 120
-
 select = ["A", "B", "D", "E", "F", "I", "ARG", "BLE", "C4", "SIM", "PLC", "PLE", "PLR", "PLW", "RUF"]
-ignore = ["D203"]
+ignore = ["D203", "PLR0913"]
 
 # Exclude a variety of commonly ignored directories.
 exclude = [

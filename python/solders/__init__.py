@@ -56,6 +56,6 @@ __all_core = [
     "system_program",
 ]
 
-__all__ = [*__all_core, "bankrun"] if __has_bankrun else __all_core
+__all__ = [*__all_core, "bankrun"] if __has_bankrun else __all_core  # noqa: PLE0605
 
 __version__: str = _version_untyped
