@@ -138,7 +138,7 @@ def create_account_with_seed(params: CreateAccountWithSeedParams) -> Instruction
 
     Returns:
         Instruction: The instruction to create the account.
-    """
+    """  # noqa: E501
     return _create_account_with_seed(dict(params))
 
 
