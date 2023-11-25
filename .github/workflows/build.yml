@@ -101,12 +101,8 @@ jobs:
           name: wheels
           path: dist
 
-  linux:
+  linux-x86_64:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        target: [x86_64, i686]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -122,12 +118,44 @@ jobs:
       - name: Build Wheels
         uses: messense/maturin-action@v1
         with:
-          target: ${{ matrix.target }}
+          target: x86_64
           manylinux: auto
           args: --release --out dist
           maturin-version: ${{ env.maturin_version }}
       - name: Install built wheel
         if: matrix.target == 'x86_64'
+        run: |
+          pip install pytest pytest-asyncio based58 pybip39 typing-extensions jsonalias
+          pip install ${{ env.name }} --no-index --no-dependencies --find-links dist --force-reinstall
+          pytest
+      - name: Upload wheels
+        uses: actions/upload-artifact@v2
+        with:
+          name: wheels
+          path: dist
+
+  linux-i686:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ env.python_version }}
+          architecture: x64
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          profile: minimal
+          default: true
+      - name: Build Wheels
+        uses: messense/maturin-action@v1
+        with:
+          target: i686
+          manylinux: auto
+          args: --release --no-default-features --out dist
+          maturin-version: ${{ env.maturin_version }}
+      - name: Install built wheel
         run: |
           pip install pytest pytest-asyncio based58 pybip39 typing-extensions jsonalias
           pip install ${{ env.name }} --no-index --no-dependencies --find-links dist --force-reinstall
