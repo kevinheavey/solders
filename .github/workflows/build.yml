@@ -6,14 +6,13 @@ on:
   pull_request:
     branches: [main]
 
-env:
-  CARGO_REGISTRIES_CRATES_IO_PROTOCOL: sparse
 
 env:
   name: solders
   python_version: "3.7"
   CARGO_INCREMENTAL: 0
   RUSTFLAGS: "-D warnings"
+  CARGO_REGISTRIES_CRATES_IO_PROTOCOL: sparse
   maturin_version: "0.14.10"
 
 jobs:
