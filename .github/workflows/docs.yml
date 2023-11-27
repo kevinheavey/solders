@@ -4,7 +4,8 @@ on:
   push:
     branches: [main]
 
-CARGO_REGISTRIES_CRATES_IO_PROTOCOL: sparse
+env:
+  CARGO_REGISTRIES_CRATES_IO_PROTOCOL: sparse
 
 jobs:
   build:
