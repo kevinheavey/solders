@@ -6,6 +6,8 @@ on:
   pull_request:
     branches: [main]
 
+CARGO_REGISTRIES_CRATES_IO_PROTOCOL: sparse
+
 env:
   name: solders
   python_version: "3.7"
