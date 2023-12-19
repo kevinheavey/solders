@@ -1,6 +1,6 @@
 from base64 import b64decode
 from pathlib import Path
-from typing import Dict, List, Union, cast
+from typing import Dict, List, Union
 
 from based58 import b58decode
 from jsonalias import Json
