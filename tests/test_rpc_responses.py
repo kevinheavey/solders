@@ -1,6 +1,6 @@
 from base64 import b64decode
 from pathlib import Path
-from typing import Dict, List, Union
+from typing import Dict, List, Union, cast
 
 from based58 import b58decode
 from jsonalias import Json
@@ -1190,6 +1190,22 @@ def test_get_program_accounts_without_context() -> None:
         ),
         pubkey=Pubkey.from_string("CxELquR1gPP8wHe33gZ4QxqGB3sZ9RSwsJ2KshVewkFY"),
     )
+
+def test_keyed_account_from_json() -> None:
+    raw = """{
+    "pubkey": "7wZpAKYM1uygtosoF42V4a5tVLsrzpSN6Uedaxc6vGrQ",
+    "account": {
+        "lamports": 16258560,
+        "data": "error: data too large for bs58 encoding",
+        "owner": "675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8",
+        "executable": false,
+        "rentEpoch": 0,
+        "space": 2208
+    }
+}
+    """
+    with raises(ValueError, match="Cannot decode JsonParsed here"):
+        RpcKeyedAccount.from_json(raw)
 
 
 def test_get_program_accounts_without_context_json_parsed() -> None:
