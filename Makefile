@@ -5,7 +5,7 @@ lint:
 	cargo clippy --no-default-features && cargo clippy && ruff python tests && mypy .
 
 fmt:
-	cargo fmt && ruff format python tests.
+	cargo fmt && ruff format python tests
 
 serve:
 	python -m http.server -d docs/_build/html
