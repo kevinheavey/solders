@@ -21,7 +21,7 @@ def test_pickle(account: Account) -> None:
 def test_json(account: Account) -> None:
     assert Account.from_json(account.to_json()) == account
 
-def test_program_notification_issue_69() -> None:
+def test_account_from_json() -> None:
     # https://github.com/kevinheavey/solders/issues/69
     raw = """{
     "lamports": 16258560,
@@ -32,4 +32,6 @@ def test_program_notification_issue_69() -> None:
     "space": 2208
 }
     """
-    assert Account.from_json(raw).rent_epoch == 0
+    parsed = Account.from_json(raw)
+    assert parsed.rent_epoch == 0
+    assert parsed.data == b"error: data too large for bs58 encoding"
