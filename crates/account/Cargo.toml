@@ -11,6 +11,8 @@ description = "Solders Account crate."
 [dependencies]
 pyo3 = { workspace = true, features = ["macros"] }
 serde = { workspace = true }
+serde_bytes.workspace = true
+serde_with.workspace = true
 derive_more = { workspace = true }
 solana-sdk = { workspace = true }
 solders-macros = { workspace = true }

@@ -28,8 +28,10 @@ use {
         ProgramTestContext as ProgramTestContextOriginal,
     },
     solana_sdk::{
-        account::AccountSharedData, clock::Clock as ClockOriginal,
-        commitment_config::CommitmentLevel as CommitmentLevelOriginal, slot_history::Slot,
+        account::{Account as AccountOriginal, AccountSharedData},
+        clock::Clock as ClockOriginal,
+        commitment_config::CommitmentLevel as CommitmentLevelOriginal,
+        slot_history::Slot,
     },
 };
 
@@ -590,8 +592,10 @@ impl ProgramTestContext {
     ///     account (Account): The account object to write.
     ///
     pub fn set_account(&mut self, address: &Pubkey, account: Account) {
-        self.0
-            .set_account(address.as_ref(), &AccountSharedData::from(account.0));
+        self.0.set_account(
+            address.as_ref(),
+            &AccountSharedData::from(AccountOriginal::from(account)),
+        );
     }
 
     /// Overwrite the clock sysvar.

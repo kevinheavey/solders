@@ -15,10 +15,23 @@ def test_bytes(account: Account) -> None:
 
 
 def test_pickle(account: Account) -> None:
-    obj = Account.default()
-    assert pickle.loads(pickle.dumps(obj)) == obj
+    assert pickle.loads(pickle.dumps(account)) == account
 
 
-def test_json() -> None:
-    obj = Account.default()
-    assert Account.from_json(obj.to_json()) == obj
+def test_json(account: Account) -> None:
+    assert Account.from_json(account.to_json()) == account
+
+def test_account_from_json() -> None:
+    # https://github.com/kevinheavey/solders/issues/69
+    raw = """{
+    "lamports": 16258560,
+    "data": "error: data too large for bs58 encoding",
+    "owner": "675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8",
+    "executable": false,
+    "rentEpoch": 0,
+    "space": 2208
+}
+    """
+    parsed = Account.from_json(raw)
+    assert parsed.rent_epoch == 0
+    assert parsed.data == b"error: data too large for bs58 encoding"

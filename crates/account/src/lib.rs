@@ -1,20 +1,21 @@
 #![allow(clippy::redundant_closure)]
 use std::str::FromStr;
 
-use derive_more::{From, Into};
 use pyo3::{prelude::*, types::PyBytes};
 use serde::{Deserialize, Serialize};
+use serde_with::{serde_as, DisplayFromStr};
 use solana_sdk::{account::Account as AccountOriginal, clock::Epoch};
 use solders_macros::{common_methods, richcmp_eq_only};
 use solders_pubkey::Pubkey;
 use solders_traits_core::{
-    impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
-    RichcmpEqualityOnly,
+    py_from_bytes_general_via_bincode, pybytes_general_via_bincode, RichcmpEqualityOnly,
 };
 
 use solana_account_decoder::{UiAccount, UiAccountData, UiAccountEncoding};
 use solders_account_decoder::ParsedAccount;
 
+// The Account from solana_sdk doesn't serialize the owner pubkey as base58,
+// so we copy it and change that.
 /// An Account with data that is stored on chain.
 ///
 /// Args:
@@ -24,9 +25,66 @@ use solders_account_decoder::ParsedAccount;
 ///     executable (bool): Whether this account's data contains a loaded program (and is now read-only). Defaults to False.
 ///     epoch_info (int): The epoch at which this account will next owe rent. Defaults to 0.
 ///
+#[serde_as]
+#[derive(Serialize, Deserialize, PartialEq, Eq, Clone, Default, Debug)]
+#[serde(rename_all = "camelCase")]
 #[pyclass(module = "solders.account", subclass)]
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Default, From, Into)]
-pub struct Account(pub AccountOriginal);
+pub struct Account {
+    /// lamports in the account
+    #[pyo3(get)]
+    pub lamports: u64,
+    /// data held in this account
+    #[serde(with = "serde_bytes")]
+    pub data: Vec<u8>,
+    /// the program that owns this account. If executable, the program that loads this account.
+    #[serde_as(as = "DisplayFromStr")]
+    #[pyo3(get)]
+    pub owner: Pubkey,
+    /// this account's data contains a loaded program (and is now read-only)
+    #[pyo3(get)]
+    pub executable: bool,
+    /// the epoch at which this account will next owe rent
+    #[pyo3(get)]
+    pub rent_epoch: Epoch,
+}
+
+impl From<AccountOriginal> for Account {
+    fn from(value: AccountOriginal) -> Self {
+        let AccountOriginal {
+            lamports,
+            data,
+            owner,
+            executable,
+            rent_epoch,
+        } = value;
+        Self {
+            lamports,
+            data,
+            owner: owner.into(),
+            executable,
+            rent_epoch,
+        }
+    }
+}
+
+impl From<Account> for AccountOriginal {
+    fn from(value: Account) -> Self {
+        let Account {
+            lamports,
+            data,
+            owner,
+            executable,
+            rent_epoch,
+        } = value;
+        Self {
+            lamports,
+            data,
+            owner: owner.into(),
+            executable,
+            rent_epoch,
+        }
+    }
+}
 
 #[richcmp_eq_only]
 #[common_methods]
@@ -51,34 +109,10 @@ impl Account {
         .into()
     }
 
-    /// int: Lamports in the account.
-    #[getter]
-    pub fn lamports(&self) -> u64 {
-        self.0.lamports
-    }
-
     /// bytes: Data held in this account.
     #[getter]
     pub fn data<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        PyBytes::new(py, &self.0.data)
-    }
-
-    /// Pubkey: The program that owns this account. If executable, the program that loads this account.
-    #[getter]
-    pub fn owner(&self) -> Pubkey {
-        self.0.owner.into()
-    }
-
-    /// Whether this account's data contains a loaded program (and is now read-only).
-    #[getter]
-    pub fn executable(&self) -> bool {
-        self.0.executable
-    }
-
-    /// int: The epoch at which this account will next owe rent.
-    #[getter]
-    pub fn rent_epoch(&self) -> Epoch {
-        self.0.rent_epoch
+        PyBytes::new(py, &self.data)
     }
 
     #[staticmethod]
@@ -93,7 +127,11 @@ impl Account {
     }
 }
 
-impl_display!(Account);
+impl std::fmt::Display for Account {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
 pybytes_general_via_bincode!(Account);
 py_from_bytes_general_via_bincode!(Account);
 
@@ -112,13 +150,12 @@ impl TryFrom<UiAccount> for Account {
 
 impl From<Account> for UiAccount {
     fn from(acc: Account) -> Self {
-        let underlying = acc.0;
         Self {
-            lamports: underlying.lamports,
-            data: UiAccountData::Binary(base64::encode(underlying.data), UiAccountEncoding::Base64),
-            owner: underlying.owner.to_string(),
-            executable: underlying.executable,
-            rent_epoch: underlying.rent_epoch,
+            lamports: acc.lamports,
+            data: UiAccountData::Binary(base64::encode(acc.data), UiAccountEncoding::Base64),
+            owner: acc.owner.to_string(),
+            executable: acc.executable,
+            rent_epoch: acc.rent_epoch,
             space: None,
         }
     }
@@ -133,6 +170,7 @@ impl From<Account> for UiAccount {
 ///     executable (bool): Whether this account's data contains a loaded program (and is now read-only). Defaults to False.
 ///     epoch_info (int): The epoch at which this account will next owe rent. Defaults to 0.
 ///
+#[serde_as]
 #[derive(Deserialize, Serialize, PartialEq, Eq, Clone, Debug)]
 #[serde(rename_all = "camelCase")]
 #[pyclass(module = "solders.account", subclass)]
@@ -145,6 +183,7 @@ pub struct AccountJSON {
     pub data: ParsedAccount,
     /// Pubkey: The program that owns this account. If executable, the program that loads this account.
     #[pyo3(get)]
+    #[serde_as(as = "DisplayFromStr")]
     pub owner: Pubkey,
     /// bool: Whether this account's data contains a loaded program (and is now read-only).
     #[pyo3(get)]
