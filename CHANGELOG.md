@@ -2,11 +2,14 @@
 
 ## Unreleased
 
-### Changed
+### Fixed
 
 - Fix (de)serialization of Account `owner` field [(#70)](https://github.com/kevinheavey/solders/pull/70)
+
+### Changed
+
 - Use PyO3 v0.19.2 [(#64)](https://github.com/kevinheavey/solders/pull/64)
-- Upgrade to Solana 1.17.6 [(#65)](https://github.com/kevinheavey/solders/pull/65)
+- Upgrade to Solana 1.17.12 [(#71)](https://github.com/kevinheavey/solders/pull/71)
 
 ## [0.19.0] - 2023-07-31
 
