@@ -1,11 +1,15 @@
 use derive_more::{From, Into};
 use pyo3::{prelude::*, types::PyBytes};
 use serde::{Deserialize, Serialize};
-use solana_sdk::signer::{
-    keypair::{
-        keypair_from_seed, keypair_from_seed_phrase_and_passphrase, Keypair as KeypairOriginal,
+use solana_sdk::{
+    derivation_path::DerivationPath,
+    signature::keypair_from_seed_and_derivation_path,
+    signer::{
+        keypair::{
+            keypair_from_seed, keypair_from_seed_phrase_and_passphrase, Keypair as KeypairOriginal,
+        },
+        Signer as SignerTrait,
     },
-    Signer as SignerTrait,
 };
 use solders_macros::{common_methods, pyhash, richcmp_signer};
 use solders_pubkey::Pubkey;
@@ -191,6 +195,30 @@ impl Keypair {
     ///
     pub fn from_seed(seed: [u8; 32]) -> PyResult<Self> {
         handle_py_value_err(keypair_from_seed(&seed))
+    }
+
+    #[staticmethod]
+    /// Generate a keypair from a 32-byte seed and derivation path..
+    ///
+    /// Args:
+    ///     seed (bytes): 32-byte seed.
+    ///     dpath (string): derivation path.
+    /// Returns:
+    ///     Keypair: The generated keypair.
+    ///
+    /// Example:
+    ///     >>> from solders.keypair import Keypair
+    ///     >>> from solders.pubkey import Pubkey
+    ///     >>> seed_bytes = bytes([0] * 64)
+    ///     >>> account_index = 0
+    ///     >>> derivation_path = f"m/44'/501'/0'/{account_index}'"
+    ///     >>> from_seed = Keypair.from_seed_and_derivation_path(seed_bytes, derivation_path)
+
+    pub fn from_seed_and_derivation_path(seed: [u8; 64], dpath: &str) -> PyResult<Self> {
+        handle_py_value_err(keypair_from_seed_and_derivation_path(
+            &seed,
+            Some(DerivationPath::from_key_str(&dpath).unwrap()),
+        ))
     }
 
     #[staticmethod]
