@@ -5,6 +5,7 @@ from typing import Any, Callable
 from pybip39 import Mnemonic, Seed
 from pytest import mark, raises
 from solders.keypair import Keypair
+from mnemonic import Mnemonic
 
 
 def test_from_seed_and_derivation_path():
