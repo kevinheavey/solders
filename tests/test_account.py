@@ -21,6 +21,7 @@ def test_pickle(account: Account) -> None:
 def test_json(account: Account) -> None:
     assert Account.from_json(account.to_json()) == account
 
+
 def test_account_from_json() -> None:
     # https://github.com/kevinheavey/solders/issues/69
     raw = """{

@@ -217,7 +217,7 @@ impl Keypair {
     pub fn from_seed_and_derivation_path(seed: [u8; 64], dpath: &str) -> PyResult<Self> {
         handle_py_value_err(keypair_from_seed_and_derivation_path(
             &seed,
-            Some(DerivationPath::from_absolute_path_str(&dpath).unwrap()),
+            Some(DerivationPath::from_absolute_path_str(dpath).unwrap()),
         ))
     }
 
