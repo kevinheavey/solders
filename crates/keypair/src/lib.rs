@@ -213,11 +213,11 @@ impl Keypair {
     ///     >>> account_index = 0
     ///     >>> derivation_path = f"m/44'/501'/0'/{account_index}'"
     ///     >>> from_seed = Keypair.from_seed_and_derivation_path(seed_bytes, derivation_path)
-
+    ///
     pub fn from_seed_and_derivation_path(seed: [u8; 64], dpath: &str) -> PyResult<Self> {
         handle_py_value_err(keypair_from_seed_and_derivation_path(
             &seed,
-            Some(DerivationPath::from_key_str(&dpath).unwrap()),
+            Some(DerivationPath::from_absolute_path_str(&dpath).unwrap()),
         ))
     }
 
