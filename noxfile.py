@@ -14,6 +14,7 @@ def python(session):
         "typing-extensions",
         "jsonalias",
         "myst-parser",
+        "mnemonic",
     )
     session.install(".", "--no-build-isolation")
     session.run("make", "test", external=True)
