@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Added
+
+- Add `Keypair.from_seed_and_derivation_path` [(#75)](https://github.com/kevinheavey/solders/pull/75)
+
 ### Fixed
 
 - Fix (de)serialization of Account `owner` field [(#70)](https://github.com/kevinheavey/solders/pull/70)
