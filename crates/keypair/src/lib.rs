@@ -202,7 +202,7 @@ impl Keypair {
     ///
     /// Args:
     ///     seed (bytes): 32-byte seed.
-    ///     dpath (string): derivation path.
+    ///     dpath (str): derivation path.
     /// Returns:
     ///     Keypair: The generated keypair.
     ///
