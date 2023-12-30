@@ -1191,6 +1191,7 @@ def test_get_program_accounts_without_context() -> None:
         pubkey=Pubkey.from_string("CxELquR1gPP8wHe33gZ4QxqGB3sZ9RSwsJ2KshVewkFY"),
     )
 
+
 def test_keyed_account_from_json() -> None:
     raw = """{
     "pubkey": "7wZpAKYM1uygtosoF42V4a5tVLsrzpSN6Uedaxc6vGrQ",

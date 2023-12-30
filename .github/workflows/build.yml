@@ -36,7 +36,7 @@ jobs:
           maturin-version: ${{ env.maturin_version }}
       - name: Install built wheel
         run: |
-          pip install pytest pytest-asyncio based58 pybip39 typing-extensions jsonalias
+          pip install pytest pytest-asyncio based58 pybip39 mnemonic typing-extensions jsonalias
           pip install ${{ env.name }} --no-index --no-dependencies --find-links dist --force-reinstall
           pytest
 
@@ -61,7 +61,7 @@ jobs:
           maturin-version: ${{ env.maturin_version }}
       - name: Install built wheel
         run: |
-          pip install pytest pytest-asyncio based58 pybip39 typing-extensions jsonalias
+          pip install pytest pytest-asyncio based58 pybip39 mnemonic typing-extensions jsonalias
           pip install ${{ env.name }} --no-index --no-dependencies --find-links dist --force-reinstall
           pytest
       - name: Upload wheels
@@ -92,7 +92,7 @@ jobs:
           maturin-version: ${{ env.maturin_version }}
       - name: Install built wheel
         run: |
-          python -m pip install pytest pytest-asyncio based58 pybip39 typing-extensions jsonalias
+          python -m pip install pytest pytest-asyncio based58 pybip39 mnemonic typing-extensions jsonalias
           python -m pip install ${{ env.name }} --no-index --no-dependencies --find-links dist --force-reinstall
           python -m pytest --ignore=tests/bankrun
       - name: Upload wheels
@@ -125,7 +125,7 @@ jobs:
       - name: Install built wheel
         if: matrix.target == 'x86_64'
         run: |
-          pip install pytest pytest-asyncio based58 pybip39 typing-extensions jsonalias
+          pip install pytest pytest-asyncio based58 pybip39 mnemonic typing-extensions jsonalias
           pip install ${{ env.name }} --no-index --no-dependencies --find-links dist --force-reinstall
           pytest
       - name: Upload wheels
@@ -189,7 +189,7 @@ jobs:
           options: -v ${{ github.workspace }}:/io -w /io
           run: |
             apk add py3-pip
-            pip3 install -U pip pytest pytest-asyncio based58 pybip39 typing-extensions jsonalias --break-system-packages
+            pip3 install -U pip pytest pytest-asyncio based58 pybip39 mnemonic typing-extensions jsonalias --break-system-packages
             pip3 install ${{ env.name }} --find-links /io/dist/ --force-reinstall --no-index --no-dependencies --break-system-packages
             python3 -m pytest
       - name: Upload wheels

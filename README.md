@@ -4,8 +4,6 @@
 
 ---
 
-[![Actions
-Status](https://github.com/kevinheavey/solders/workflows/CI/badge.svg)](https://github.com/kevinheavey/solders/actions?query=workflow%3ACI)
 [![PyPI version](https://badge.fury.io/py/solders.svg)](https://badge.fury.io/py/solders)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/kevinheavey/solders/blob/main/LICENSE)
 

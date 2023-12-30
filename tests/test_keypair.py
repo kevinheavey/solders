@@ -2,9 +2,19 @@ import pickle
 from operator import ge, gt, le, lt
 from typing import Any, Callable
 
+import mnemonic
 from pybip39 import Mnemonic, Seed
 from pytest import mark, raises
 from solders.keypair import Keypair
+
+
+def test_from_seed_and_derivation_path() -> None:
+    mnemo = mnemonic.Mnemonic("english")
+    seed = mnemo.to_seed(
+        "pill tomorrow foster begin walnut borrow virtual kick shift mutual shoe scatter"
+    )
+    pubkey = Keypair.from_seed_and_derivation_path(seed, "m/44'/501'/0'/0'").pubkey()
+    assert str(pubkey) == "5F86TNSTre3CYwZd1wELsGQGhqG2HkN3d8zxhbyBSnzm"
 
 
 def test_from_bytes() -> None:
