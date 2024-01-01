@@ -200,6 +200,7 @@ def test_get_account_info() -> None:
     assert isinstance(parsed2, GetAccountInfoMaybeJsonParsedResp)
     assert parsed.value == parsed2.value
 
+
 def test_get_account_info_base64_zstd() -> None:
     raw_base64 = '{"jsonrpc":"2.0","result":{"context":{"apiVersion":"1.16.21","slot":239322946},"value":{"data":["AQAAABzjWe1aAS4E+hQrnHUaHF6Hz9CgFhuchf/TG3jN/Nj2NjtW5UDjEQAGAQEAAAAqnl7btTwEZ5CY/3sSZRcUQ0/AjFYqmjuGEQXmctQicw==","base64"],"executable":false,"lamports":225456886647,"owner":"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA","rentEpoch":361,"space":82}},"id":0}'
     raw_base64_zstd = '{"jsonrpc":"2.0","result":{"context":{"apiVersion":"1.16.21","slot":239322949},"value":{"data":["KLUv/QBYkQIAAQAAABzjWe1aAS4E+hQrnHUaHF6Hz9CgFhuchf/TG3jN/Nj2NjtW5UDjEQAGAQEAAAAqnl7btTwEZ5CY/3sSZRcUQ0/AjFYqmjuGEQXmctQicw==","base64+zstd"],"executable":false,"lamports":225456886647,"owner":"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA","rentEpoch":361,"space":82}},"id":0}'
@@ -210,6 +211,7 @@ def test_get_account_info_base64_zstd() -> None:
     assert parsed_base64_value is not None
     assert parsed_base64_zstd_value is not None
     assert parsed_base64_value.data == parsed_base64_zstd_value.data
+
 
 def test_get_account_info_null() -> None:
     raw = '{"jsonrpc":"2.0","result":{"context":{"apiVersion":"1.10.26","slot":146423291},"value":null},"id":1}'
