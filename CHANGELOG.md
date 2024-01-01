@@ -1,10 +1,11 @@
 # Changelog
 
-## Unreleased
+## [0.19.0] - 2024-01-01
 
 ### Added
 
 - Add `Keypair.from_seed_and_derivation_path` [(#75)](https://github.com/kevinheavey/solders/pull/75)
+- Add Token Program ID (`solders.token.ID`)
 
 ### Fixed
 
@@ -14,10 +15,6 @@
 
 - Use PyO3 v0.19.2 [(#64)](https://github.com/kevinheavey/solders/pull/64)
 - Upgrade to Solana 1.17.12 [(#71)](https://github.com/kevinheavey/solders/pull/71)
-
-## [0.19.0] - 2023-07-31
-
-- Add Token Program ID (`solders.token.ID`)
 
 ## [0.18.1] - 2023-06-03
 
