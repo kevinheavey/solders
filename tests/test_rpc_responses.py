@@ -206,6 +206,8 @@ def test_get_account_info_base64_zstd() -> None:
     raw_base64_zstd = '{"jsonrpc":"2.0","result":{"context":{"apiVersion":"1.16.21","slot":239322949},"value":{"data":["KLUv/QBYkQIAAQAAABzjWe1aAS4E+hQrnHUaHF6Hz9CgFhuchf/TG3jN/Nj2NjtW5UDjEQAGAQEAAAAqnl7btTwEZ5CY/3sSZRcUQ0/AjFYqmjuGEQXmctQicw==","base64+zstd"],"executable":false,"lamports":225456886647,"owner":"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA","rentEpoch":361,"space":82}},"id":0}'
     parsed_base64 = GetAccountInfoResp.from_json(raw_base64)
     parsed_base64_zstd = GetAccountInfoResp.from_json(raw_base64_zstd)
+    assert isinstance(parsed_base64, GetAccountInfoResp)
+    assert isinstance(parsed_base64_zstd, GetAccountInfoResp)
     parsed_base64_value = parsed_base64.value
     parsed_base64_zstd_value = parsed_base64_zstd.value
     assert parsed_base64_value is not None
