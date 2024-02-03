@@ -2,16 +2,18 @@ use derive_more::{From, Into};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use solana_program::{
-    address_lookup_table_account::AddressLookupTableAccount as AddressLookupTableAccountOriginal,
+    address_lookup_table::{
+        instruction::derive_lookup_table_address as derive_lookup_table_address_original,
+        AddressLookupTableAccount as AddressLookupTableAccountOriginal,
+    },
     pubkey::Pubkey as PubkeyOriginal,
 };
 use solders_macros::{common_methods, richcmp_eq_only};
+use solders_pubkey::Pubkey;
 use solders_traits_core::{
     impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
     RichcmpEqualityOnly,
 };
-
-use solders_pubkey::Pubkey;
 
 #[derive(Serialize, Deserialize)]
 #[serde(remote = "AddressLookupTableAccountOriginal")]
@@ -61,4 +63,14 @@ impl AddressLookupTableAccount {
             .map(|a| a.into())
             .collect()
     }
+}
+
+#[pyfunction]
+pub fn derive_lookup_table_address(
+    authority_address: Pubkey,
+    recent_block_slot: u64,
+) -> (Pubkey, u8) {
+    let (lookup_table_address, bump_seed) =
+        derive_lookup_table_address_original(&authority_address.into(), recent_block_slot);
+    (lookup_table_address.into(), bump_seed)
 }

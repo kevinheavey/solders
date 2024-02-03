@@ -1,4 +1,4 @@
-from typing import List, Sequence
+from typing import List, Sequence, Tuple
 
 from solders.pubkey import Pubkey
 
@@ -21,3 +21,7 @@ class AddressLookupTableAccount:
     def key(self) -> Pubkey: ...
     @property
     def addresses(self) -> List[Pubkey]: ...
+
+def derive_lookup_table_address(
+    authority_address: Pubkey, recent_block_slot: int
+) -> Tuple[Pubkey, int]: ...

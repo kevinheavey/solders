@@ -1,4 +1,4 @@
-from typing import cast
+from typing import cast, Tuple, Optional, List
 from typing_extensions import Final, TypedDict
 
 from solders._system_program import ID as _ID
@@ -45,6 +45,24 @@ from solders._system_program import (
 )
 from solders._system_program import (
     initialize_nonce_account as _initialize_nonce_account,
+)
+from solders._system_program import (
+    close_lookup_table as _close_lookup_table,
+)
+from solders._system_program import (
+    create_lookup_table as _create_lookup_table,
+)
+from solders._system_program import (
+    create_lookup_table_signed as _create_lookup_table_signed,
+)
+from solders._system_program import (
+    deactivate_lookup_table as _deactivate_lookup_table,
+)
+from solders._system_program import (
+    extend_lookup_table as _extend_lookup_table,
+)
+from solders._system_program import (
+    freeze_lookup_table as _freeze_lookup_table,
 )
 from solders._system_program import transfer as _transfer
 from solders._system_program import transfer_with_seed as _transfer_with_seed
@@ -555,6 +573,144 @@ def decode_authorize_nonce_account(
     )
 
 
+class CloseLookupTableParams(TypedDict):
+    """Close lookup table system transaction params."""
+
+    lookup_table_address: Pubkey
+    authority_address: Pubkey
+    recipient_address: Pubkey
+
+
+def close_lookup_table(params: CloseLookupTableParams) -> Instruction:
+    """Returns an instruction that closes an address lookup table account.
+
+    The account will be deallocated and the lamports will be drained
+    to the recipient address.
+
+    Args:
+        params (CloseLookupTableParams): The CloseLookupTable params.
+
+    Returns:
+        Instruction: The CloseLookupTable instruction.
+    """
+    return _close_lookup_table(dict(params))
+
+
+class CreateLookupTableParams(TypedDict):
+    """Create lookup table system transaction params."""
+
+    authority_address: Pubkey
+    payer_address: Pubkey
+    recent_slot: int
+
+
+def create_lookup_table(params: CreateLookupTableParams) -> Tuple[Instruction, Pubkey]:
+    """Constructs an instruction to create a table account.
+
+    Returns the instruction and the table account`s derived address.
+
+    Args:
+        params (CreateLookupTableParams): The CreateLookupTable params.
+
+    Returns:
+        Tuple[Instruction, PubKey]: The CreateLookupTable instruction
+        and the table account`s derived address
+    """
+    return _create_lookup_table(dict(params))
+
+
+class CreateLookupTableSignedParams(TypedDict):
+    """Create lookup table signed system transaction params."""
+
+    authority_address: Pubkey
+    payer_address: Pubkey
+    recent_slot: int
+
+
+def create_lookup_table_signed(
+    params: CreateLookupTableSignedParams,
+) -> Tuple[Instruction, Pubkey]:
+    """Constructs an instruction to create a table account.
+
+     Returns the instruction and the table account`s derived address.
+
+
+    Args:
+        params (CreateLookupTableSignedParams): The CreateLookupTableSigned params.
+
+    Returns:
+        Tuple[Instruction, PubKey]: The CreateLookupTableSigned instruction
+        and the table account's derived address
+    """
+    return _create_lookup_table_signed(dict(params))
+
+
+class DeactivateLookupTableParams(TypedDict):
+    """Deactivate lookup table system transaction params."""
+
+    lookup_table_address: Pubkey
+    authority_address: Pubkey
+
+
+def deactivate_lookup_table(params: DeactivateLookupTableParams) -> Instruction:
+    """Constructs an instruction that deactivates an address lookup table.
+
+    So that it cannot be extended again and will be unusable and eligible
+    for closure after a short amount of time.
+
+    Args:
+        params (DeactivateLookupTableParams): The DeactivateLookupTable params.
+
+    Returns:
+        Instruction: The DeactivateLookupTable instruction.
+
+    """
+    return _deactivate_lookup_table(dict(params))
+
+
+class ExtendLookupTableParams(TypedDict):
+    """Extend lookup table system transaction params."""
+
+    payer_address: Optional[Pubkey]
+    lookup_table_address: Pubkey
+    authority_address: Pubkey
+    new_addresses: List[Pubkey]
+
+
+def extend_lookup_table(params: ExtendLookupTableParams) -> Instruction:
+    """Constructs an instruction which extends an ATL account with new addresses.
+
+    Args:
+        params (ExtendLookupTableParams): the ExtendLookupTable params.
+
+    Returns:
+        Instruction: The ExtendLookupTable instruction.
+    """
+    return _extend_lookup_table(dict(params))
+
+
+class FreezeLookupTableParams(TypedDict):
+    """Freeze lookup table system transaction params."""
+
+    lookup_table_address: Pubkey
+    authority_address: Pubkey
+
+
+def freeze_lookup_table(params: FreezeLookupTableParams) -> Instruction:
+    """Constructs an instruction that freezes an address lookup table.
+
+    So that it can never be closed or extended again.
+    Empty lookup tables cannot be frozen.
+
+    Args:
+        params (FreezeLookupTableParams): The FreezeLookupTable params.
+
+    Returns:
+        Instruction: The FreezeLookupTable instruction.
+    """
+    return _freeze_lookup_table(dict(params))
+
+
 __all__ = [
     "ID",
     "transfer_many",
@@ -596,4 +752,16 @@ __all__ = [
     "AuthorizeNonceAccountParams",
     "authorize_nonce_account",
     "decode_authorize_nonce_account",
+    "CloseLookupTableParams",
+    "close_lookup_table",
+    "CreateLookupTableParams",
+    "create_lookup_table",
+    "CreateLookupTableSignedParams",
+    "create_lookup_table_signed",
+    "DeactivateLookupTableParams",
+    "deactivate_lookup_table",
+    "ExtendLookupTableParams",
+    "extend_lookup_table",
+    "FreezeLookupTableParams",
+    "freeze_lookup_table",
 ]
