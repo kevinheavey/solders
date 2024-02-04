@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.20.0] - Unreleased
+
+### Added
+
+- Upgrade to Solana 1.18.1 [(#80)](https://github.com/kevinheavey/solders/pull/80)
+
 ## [0.19.0] - 2024-01-01
 
 ### Added
