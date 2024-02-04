@@ -235,3 +235,12 @@ def test_message_missing_byte() -> None:
     with raises(TransactionError):
         signed_tx_populate_bad.verify_and_hash_message()
     signed_tx_populate_good.verify_and_hash_message()
+
+
+def test_versioned_transaction_json() -> None:
+    signer = Keypair()
+    msg = MessageV0.try_compile(signer.pubkey(), [], [], Hash.default())
+    tx = VersionedTransaction(msg, [signer])
+    json = tx.to_json()
+    parsed = VersionedTransaction.from_json(json)
+    assert parsed == tx
