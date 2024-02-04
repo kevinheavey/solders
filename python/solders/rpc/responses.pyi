@@ -37,6 +37,7 @@ from solders.transaction_status import (
     TransactionReturnData,
     TransactionStatus,
     UiConfirmedBlock,
+    UiInnerInstructions,
 )
 
 class RpcResponseContext:
@@ -446,6 +447,7 @@ class RpcSimulateTransactionResult:
     accounts: Optional[List[Optional[Account]]]
     units_consumed: Optional[int]
     return_data: Optional[TransactionReturnData]
+    inner_instructions: Optional[List[UiInnerInstructions]]
     def __init__(
         self,
         err: Optional[TransactionErrorType] = None,
@@ -453,6 +455,7 @@ class RpcSimulateTransactionResult:
         accounts: Optional[Sequence[Optional[Account]]] = None,
         units_consumed: Optional[int] = None,
         return_data: Optional[TransactionReturnData] = None,
+        inner_instructions: Optional[List[UiInnerInstructions]] = None,
     ) -> None: ...
     def to_json(self) -> str: ...
     @staticmethod

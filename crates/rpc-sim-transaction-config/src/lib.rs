@@ -32,13 +32,14 @@ pyclass_boilerplate_with_default!(
 #[pymethods]
 impl RpcSimulateTransactionConfig {
     #[new]
-    #[pyo3(signature = (sig_verify=false, replace_recent_blockhash=false, commitment=None, accounts=None, min_context_slot=None))]
+    #[pyo3(signature = (sig_verify=false, replace_recent_blockhash=false, commitment=None, accounts=None, min_context_slot=None, inner_instructions=false))]
     fn new(
         sig_verify: bool,
         replace_recent_blockhash: bool,
         commitment: Option<CommitmentLevel>,
         accounts: Option<RpcSimulateTransactionAccountsConfig>,
         min_context_slot: Option<u64>,
+        inner_instructions: bool,
     ) -> Self {
         Self(rpc_config::RpcSimulateTransactionConfig {
             sig_verify,
@@ -47,6 +48,7 @@ impl RpcSimulateTransactionConfig {
             encoding: Some(UiTransactionEncodingOriginal::Base64),
             accounts: accounts.map(|a| a.into()),
             min_context_slot,
+            inner_instructions,
         })
     }
 
@@ -88,5 +90,10 @@ impl RpcSimulateTransactionConfig {
     #[getter]
     pub fn min_context_slot(&self) -> Option<u64> {
         self.0.min_context_slot
+    }
+
+    #[getter]
+    pub fn inner_instructions(&self) -> bool {
+        self.0.inner_instructions
     }
 }

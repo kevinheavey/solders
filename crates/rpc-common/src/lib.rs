@@ -4,11 +4,13 @@ use serde_with::serde_as;
 
 use solana_account_decoder::UiAccount;
 use solana_rpc_client_api::response::RpcSimulateTransactionResult as RpcSimulateTransactionResultOriginal;
+use solana_transaction_status::UiInnerInstructions as UiInnerInstructionsOriginal;
 use solders_account::Account;
 use solders_macros::{common_methods, richcmp_eq_only};
 use solders_rpc_response_data_boilerplate::response_data_boilerplate;
 use solders_transaction_error::TransactionErrorType;
 use solders_transaction_return_data::TransactionReturnData;
+use solders_transaction_status::UiInnerInstructions;
 
 #[serde_as]
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
@@ -29,18 +31,22 @@ impl RpcSimulateTransactionResult {
         accounts: Option<Vec<Option<Account>>>,
         units_consumed: Option<u64>,
         return_data: Option<TransactionReturnData>,
+        inner_instructions: Option<Vec<UiInnerInstructions>>,
     ) -> Self {
         let accounts_underlying: Option<Vec<Option<UiAccount>>> = accounts.map(|accs| {
             accs.into_iter()
                 .map(|maybe_acc| maybe_acc.map(UiAccount::from))
                 .collect()
         });
+        let inner_instructions_underlying: Option<Vec<UiInnerInstructionsOriginal>> =
+            inner_instructions.map(|ixns| ixns.into_iter().map(Into::into).collect());
         Self(RpcSimulateTransactionResultOriginal {
             err: err.map(Into::into),
             logs,
             accounts: accounts_underlying,
             units_consumed,
             return_data: return_data.map(Into::into),
+            inner_instructions: inner_instructions_underlying,
         })
     }
 
