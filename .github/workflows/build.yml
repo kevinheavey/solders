@@ -245,7 +245,7 @@ jobs:
         with:
           target: aarch64
           manylinux: auto
-          args: --release --out dist
+          args: --release --no-default-features --out dist
           maturin-version: ${{ env.maturin_version }}
       - name: Upload wheels
         uses: actions/upload-artifact@v2
