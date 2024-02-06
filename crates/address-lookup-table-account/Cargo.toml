@@ -16,3 +16,4 @@ solana-program = { workspace = true }
 serde = { workspace = true }
 derive_more = { workspace = true }
 solders-pubkey = { workspace = true }
+solders-hash = { workspace = true }

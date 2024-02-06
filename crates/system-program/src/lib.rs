@@ -1,5 +1,13 @@
 use dict_derive::{FromPyObject, IntoPyObject};
 use pyo3::{exceptions::PyValueError, prelude::*};
+use solana_program::address_lookup_table::instruction::{
+    close_lookup_table as close_lookup_table_original,
+    create_lookup_table as create_lookup_table_original,
+    create_lookup_table_signed as create_lookup_table_signed_original,
+    deactivate_lookup_table as deactivate_lookup_table_original,
+    extend_lookup_table as extend_lookup_table_original,
+    freeze_lookup_table as freeze_lookup_table_original,
+};
 use solana_sdk::{
     instruction::Instruction as InstructionOriginal,
     pubkey::Pubkey as PubkeyOriginal,
@@ -19,10 +27,10 @@ use solana_sdk::{
     },
     system_program,
 };
-use solders_traits::handle_py_err;
 
 use solders_instruction::Instruction;
 use solders_pubkey::Pubkey;
+use solders_traits::handle_py_err;
 
 fn convert_instructions_from_original(ixs: Vec<InstructionOriginal>) -> Vec<Instruction> {
     ixs.into_iter().map(Instruction::from).collect()
@@ -59,6 +67,13 @@ pub fn create_system_program_mod(py: Python<'_>) -> PyResult<&PyModule> {
         wrap_pyfunction!(decode_withdraw_nonce_account, system_program_mod)?,
         wrap_pyfunction!(authorize_nonce_account, system_program_mod)?,
         wrap_pyfunction!(decode_authorize_nonce_account, system_program_mod)?,
+        // address_lookup_table_program
+        wrap_pyfunction!(close_lookup_table, system_program_mod)?,
+        wrap_pyfunction!(create_lookup_table, system_program_mod)?,
+        wrap_pyfunction!(create_lookup_table_signed, system_program_mod)?,
+        wrap_pyfunction!(deactivate_lookup_table, system_program_mod)?,
+        wrap_pyfunction!(extend_lookup_table, system_program_mod)?,
+        wrap_pyfunction!(freeze_lookup_table, system_program_mod)?,
     ];
     for func in funcs {
         system_program_mod.add_function(func)?;
@@ -633,4 +648,108 @@ pub fn decode_authorize_nonce_account(
             "Not an AuthorizeNonceAccount instruction",
         )),
     }
+}
+
+#[derive(FromPyObject, IntoPyObject)]
+pub struct CloseLookupTableParams {
+    lookup_table_address: Pubkey,
+    authority_address: Pubkey,
+    recipient_address: Pubkey,
+}
+
+#[pyfunction]
+pub fn close_lookup_table(params: CloseLookupTableParams) -> Instruction {
+    close_lookup_table_original(
+        params.lookup_table_address.into(),
+        params.authority_address.into(),
+        params.recipient_address.into(),
+    )
+    .into()
+}
+
+#[derive(FromPyObject, IntoPyObject)]
+pub struct CreateLookupTableParams {
+    authority_address: Pubkey,
+    payer_address: Pubkey,
+    recent_slot: u64,
+}
+
+#[pyfunction]
+pub fn create_lookup_table(params: CreateLookupTableParams) -> (Instruction, Pubkey) {
+    let (instruction, lookup_table_address) = create_lookup_table_original(
+        params.authority_address.into(),
+        params.payer_address.into(),
+        params.recent_slot,
+    );
+    (instruction.into(), lookup_table_address.into())
+}
+
+#[derive(FromPyObject, IntoPyObject)]
+pub struct CreateLookupTableSignedParams {
+    authority_address: Pubkey,
+    payer_address: Pubkey,
+    recent_slot: u64,
+}
+
+#[pyfunction]
+pub fn create_lookup_table_signed(params: CreateLookupTableSignedParams) -> (Instruction, Pubkey) {
+    let (instruction, lookup_table_address) = create_lookup_table_signed_original(
+        params.authority_address.into(),
+        params.payer_address.into(),
+        params.recent_slot,
+    );
+    (instruction.into(), lookup_table_address.into())
+}
+
+#[derive(FromPyObject, IntoPyObject)]
+pub struct DeactivateLookupTableParams {
+    lookup_table_address: Pubkey,
+    authority_address: Pubkey,
+}
+
+#[pyfunction]
+pub fn deactivate_lookup_table(params: DeactivateLookupTableParams) -> Instruction {
+    deactivate_lookup_table_original(
+        params.lookup_table_address.into(),
+        params.authority_address.into(),
+    )
+    .into()
+}
+
+#[derive(FromPyObject, IntoPyObject)]
+pub struct ExtendLookupTableParams {
+    lookup_table_address: Pubkey,
+    authority_address: Pubkey,
+    payer_address: Option<Pubkey>,
+    new_addresses: Vec<Pubkey>,
+}
+
+#[pyfunction]
+pub fn extend_lookup_table(params: ExtendLookupTableParams) -> Instruction {
+    extend_lookup_table_original(
+        params.lookup_table_address.into(),
+        params.authority_address.into(),
+        params.payer_address.map(Into::into),
+        params
+            .new_addresses
+            .into_iter()
+            .map(Into::into)
+            .collect::<Vec<_>>(),
+    )
+    .into()
+}
+
+#[derive(FromPyObject, IntoPyObject)]
+pub struct FreezeLookupTableParams {
+    lookup_table_address: Pubkey,
+    authority_address: Pubkey,
+}
+
+#[pyfunction]
+pub fn freeze_lookup_table(params: FreezeLookupTableParams) -> Instruction {
+    freeze_lookup_table_original(
+        params.lookup_table_address.into(),
+        params.authority_address.into(),
+    )
+    .into()
 }
