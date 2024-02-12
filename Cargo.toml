@@ -19,34 +19,44 @@ solana-sdk = { workspace = true }
 bincode = { workspace = true }
 serde = { workspace = true }
 derive_more = { workspace = true }
-solders-traits = { workspace = true }
-solders-primitives = { workspace = true }
-solders-account = { workspace = true }
-solders-account-decoder = { workspace = true }
+solders-account = { workspace = true, optional = true }
+solders-account-decoder = { workspace = true, optional = true }
+solders-address-lookup-table-account = { workspace = true }
+solders-bankrun = { workspace = true, optional = true }
 solders-compute-budget = { workspace = true }
 solders-commitment-config = { workspace = true }
 solders-epoch-info = { workspace = true }
-solders-rpc-filter = { workspace = true }
-solders-rpc-config = { workspace = true }
-solders-rpc-errors = { workspace = true }
-solders-rpc-requests = { workspace = true }
-solders-rpc-responses = { workspace = true }
-solders-pubkey = { workspace = true }
-solders-system-program = { workspace = true }
-solders-instruction = { workspace = true }
-solders-message = { workspace = true }
-solders-address-lookup-table-account = { workspace = true }
-solders-signature = { workspace = true }
-solders-transaction-status = { workspace = true }
 solders-hash = { workspace = true }
+solders-instruction = { workspace = true }
 solders-keypair = { workspace = true }
-solders-token = { workspace = true }
+solders-message = { workspace = true }
+solders-primitives = { workspace = true }
+solders-pubkey = { workspace = true }
+solders-rpc-config = { workspace = true, optional = true }
+solders-rpc-errors = { workspace = true, optional = true }
+solders-rpc-filter = { workspace = true, optional = true }
+solders-rpc-requests = { workspace = true, optional = true }
+solders-rpc-responses = { workspace = true, optional = true }
+solders-signature = { workspace = true }
+solders-system-program = { workspace = true }
+solders-traits = { workspace = true }
 solders-transaction = { workspace = true }
-solders-bankrun = { workspace = true, optional = true }
+solders-transaction-status = { workspace = true, optional = true }
+solders-token = { workspace = true }
 
 [features]
-default = ["bankrun"]
+default = ["bankrun", "ring"]
 bankrun = ["dep:solders-bankrun"]
+ring = [
+    "dep:solders-account",
+    "dep:solders-account-decoder",
+    "dep:solders-rpc-config",
+    "dep:solders-rpc-errors",
+    "dep:solders-rpc-filter",
+    "dep:solders-rpc-requests",
+    "dep:solders-rpc-responses",
+    "dep:solders-transaction-status"
+]
 
 [workspace]
 members = [
@@ -56,73 +66,73 @@ members = [
 ]
 
 [workspace.package]
-version = "0.19.0"
+version = "0.20.0"
 repository = "https://github.com/kevinheavey/solders"
 license = "MIT"
 edition = "2021"
 
 [workspace.dependencies]
 pyo3 = { version = "0.19.2", default-features = false }
-solders-macros = { path = "./crates/macros", version = "=0.19.0" }
-solders-traits = { path = "./crates/traits", version = "=0.19.0" }
-solders-traits-core = { path = "./crates/traits-core", version = "=0.19.0" }
-solders-account-decoder = { path = "./crates/account-decoder", version = "=0.19.0" }
-solders-bankrun = { path = "./crates/bankrun", version = "=0.19.0" }
-solders-banks-interface = { path = "./crates/banks-interface", version = "=0.19.0" }
-solders-commitment-config = { path = "./crates/commitment-config", version = "=0.19.0" }
-solders-compute-budget = { path = "./crates/compute-budget", version = "=0.19.0" }
-solders-epoch-info = { path = "./crates/epoch-info", version = "=0.19.0" }
-solders-transaction-confirmation-status = { path = "./crates/transaction-confirmation-status", version = "=0.19.0" }
-solders-transaction-return-data = { path = "./crates/transaction-return-data", version = "=0.19.0" }
-solders-transaction-status = { path = "./crates/transaction-status", version = "=0.19.0" }
-solders-transaction-status-enums = { path = "./crates/transaction-status-enums", version = "=0.19.0" }
-solders-transaction-status-struct = { path = "./crates/transaction-status-struct", version = "=0.19.0" }
-solders-base64-string = { path = "./crates/base64-string", version = "=0.19.0" }
-solders-rpc-filter = { path = "./crates/rpc-filter", version = "=0.19.0" }
-solders-rpc-config = { path = "./crates/rpc-config", version = "=0.19.0" }
-solders-rpc-config-macros = { path = "./crates/rpc-config-macros", version = "=0.19.0" }
-solders-rpc-config-no-filter = { path = "./crates/rpc-config-no-filter", version = "=0.19.0" }
-solders-rpc-config-no-rpc-api = { path = "./crates/rpc-config-no-rpc-api", version = "=0.19.0" }
-solders-rpc-account-info-config = { path = "./crates/rpc-account-info-config", version = "=0.19.0" }
-solders-rpc-program-accounts-config = { path = "./crates/rpc-program-accounts-config", version = "=0.19.0" }
-solders-rpc-common = { path = "./crates/rpc-common", version = "=0.19.0" }
-solders-rpc-errors = { path = "./crates/rpc-errors", version = "=0.19.0" }
-solders-rpc-errors-common = { path = "./crates/rpc-errors-common", version = "=0.19.0" }
-solders-rpc-errors-tx-status = { path = "./crates/rpc-errors-tx-status", version = "=0.19.0" }
-solders-rpc-errors-no-tx-status = { path = "./crates/rpc-errors-no-tx-status", version = "=0.19.0" }
-solders-rpc-request-airdrop-config = { path = "./crates/rpc-request-airdrop-config", version = "=0.19.0" }
-solders-rpc-request-params = { path = "./crates/rpc-request-params", version = "=0.19.0" }
-solders-rpc-request-params-no-config = { path = "./crates/rpc-request-params-no-config", version = "=0.19.0" }
-solders-rpc-requests = { path = "./crates/rpc-requests", version = "=0.19.0" }
-solders-rpc-responses = { path = "./crates/rpc-responses", version = "=0.19.0" }
-solders-rpc-responses-common = { path = "./crates/rpc-responses-common", version = "=0.19.0" }
-solders-rpc-responses-tx-status = { path = "./crates/rpc-responses-tx-status", version = "=0.19.0" }
-solders-rpc-response-data-boilerplate = { path = "./crates/rpc-response-data-boilerplate", version = "=0.19.0" }
-solders-rpc-send-transaction-config = { path = "./crates/rpc-send-transaction-config", version = "=0.19.0" }
-solders-rpc-sig-status-config = { path = "./crates/rpc-sig-status-config", version = "=0.19.0" }
-solders-rpc-sigs-for-address-config = { path = "./crates/rpc-sigs-for-address-config", version = "=0.19.0" }
-solders-rpc-sim-transaction-config = { path = "./crates/rpc-sim-transaction-config", version = "=0.19.0" }
-solders-rpc-simulate-tx-accounts-config = { path = "./crates/rpc-simulate-tx-accounts-config", version = "=0.19.0" }
-solders-rpc-version = { path = "./crates/rpc-version", version = "=0.19.0" }
-solders-primitives = { path = "./crates/primitives", version = "=0.19.0" }
-solders-pubkey = { path = "./crates/pubkey", version = "=0.19.0" }
-solders-system-program = { path = "./crates/system-program", version = "=0.19.0" }
-solders-instruction = { path = "./crates/instruction", version = "=0.19.0" }
-solders-address-lookup-table-account = { path = "./crates/address-lookup-table-account", version = "=0.19.0" }
-solders-message = { path = "./crates/message", version = "=0.19.0" }
-solders-signature = { path = "./crates/signature", version = "=0.19.0" }
-solders-keypair = { path = "./crates/keypair", version = "=0.19.0" }
-solders-token = { path = "./crates/token", version = "=0.19.0" }
-solders-transaction = { path = "./crates/transaction", version = "=0.19.0" }
-solders-transaction-error = { path = "./crates/transaction-error", version = "=0.19.0" }
-solders-account = { path = "./crates/account", version = "=0.19.0" }
-solders-hash = { path = "./crates/hash", version = "=0.19.0" }
+solders-macros = { path = "./crates/macros", version = "=0.20.0" }
+solders-traits = { path = "./crates/traits", version = "=0.20.0" }
+solders-traits-core = { path = "./crates/traits-core", version = "=0.20.0" }
+solders-account-decoder = { path = "./crates/account-decoder", version = "=0.20.0" }
+solders-bankrun = { path = "./crates/bankrun", version = "=0.20.0" }
+solders-banks-interface = { path = "./crates/banks-interface", version = "=0.20.0" }
+solders-commitment-config = { path = "./crates/commitment-config", version = "=0.20.0" }
+solders-compute-budget = { path = "./crates/compute-budget", version = "=0.20.0" }
+solders-epoch-info = { path = "./crates/epoch-info", version = "=0.20.0" }
+solders-transaction-confirmation-status = { path = "./crates/transaction-confirmation-status", version = "=0.20.0" }
+solders-transaction-return-data = { path = "./crates/transaction-return-data", version = "=0.20.0" }
+solders-transaction-status = { path = "./crates/transaction-status", version = "=0.20.0" }
+solders-transaction-status-enums = { path = "./crates/transaction-status-enums", version = "=0.20.0" }
+solders-transaction-status-struct = { path = "./crates/transaction-status-struct", version = "=0.20.0" }
+solders-base64-string = { path = "./crates/base64-string", version = "=0.20.0" }
+solders-rpc-filter = { path = "./crates/rpc-filter", version = "=0.20.0" }
+solders-rpc-config = { path = "./crates/rpc-config", version = "=0.20.0" }
+solders-rpc-config-macros = { path = "./crates/rpc-config-macros", version = "=0.20.0" }
+solders-rpc-config-no-filter = { path = "./crates/rpc-config-no-filter", version = "=0.20.0" }
+solders-rpc-config-no-rpc-api = { path = "./crates/rpc-config-no-rpc-api", version = "=0.20.0" }
+solders-rpc-account-info-config = { path = "./crates/rpc-account-info-config", version = "=0.20.0" }
+solders-rpc-program-accounts-config = { path = "./crates/rpc-program-accounts-config", version = "=0.20.0" }
+solders-rpc-common = { path = "./crates/rpc-common", version = "=0.20.0" }
+solders-rpc-errors = { path = "./crates/rpc-errors", version = "=0.20.0" }
+solders-rpc-errors-common = { path = "./crates/rpc-errors-common", version = "=0.20.0" }
+solders-rpc-errors-tx-status = { path = "./crates/rpc-errors-tx-status", version = "=0.20.0" }
+solders-rpc-errors-no-tx-status = { path = "./crates/rpc-errors-no-tx-status", version = "=0.20.0" }
+solders-rpc-request-airdrop-config = { path = "./crates/rpc-request-airdrop-config", version = "=0.20.0" }
+solders-rpc-request-params = { path = "./crates/rpc-request-params", version = "=0.20.0" }
+solders-rpc-request-params-no-config = { path = "./crates/rpc-request-params-no-config", version = "=0.20.0" }
+solders-rpc-requests = { path = "./crates/rpc-requests", version = "=0.20.0" }
+solders-rpc-responses = { path = "./crates/rpc-responses", version = "=0.20.0" }
+solders-rpc-responses-common = { path = "./crates/rpc-responses-common", version = "=0.20.0" }
+solders-rpc-responses-tx-status = { path = "./crates/rpc-responses-tx-status", version = "=0.20.0" }
+solders-rpc-response-data-boilerplate = { path = "./crates/rpc-response-data-boilerplate", version = "=0.20.0" }
+solders-rpc-send-transaction-config = { path = "./crates/rpc-send-transaction-config", version = "=0.20.0" }
+solders-rpc-sig-status-config = { path = "./crates/rpc-sig-status-config", version = "=0.20.0" }
+solders-rpc-sigs-for-address-config = { path = "./crates/rpc-sigs-for-address-config", version = "=0.20.0" }
+solders-rpc-sim-transaction-config = { path = "./crates/rpc-sim-transaction-config", version = "=0.20.0" }
+solders-rpc-simulate-tx-accounts-config = { path = "./crates/rpc-simulate-tx-accounts-config", version = "=0.20.0" }
+solders-rpc-version = { path = "./crates/rpc-version", version = "=0.20.0" }
+solders-primitives = { path = "./crates/primitives", version = "=0.20.0" }
+solders-pubkey = { path = "./crates/pubkey", version = "=0.20.0" }
+solders-system-program = { path = "./crates/system-program", version = "=0.20.0" }
+solders-instruction = { path = "./crates/instruction", version = "=0.20.0" }
+solders-address-lookup-table-account = { path = "./crates/address-lookup-table-account", version = "=0.20.0" }
+solders-message = { path = "./crates/message", version = "=0.20.0" }
+solders-signature = { path = "./crates/signature", version = "=0.20.0" }
+solders-keypair = { path = "./crates/keypair", version = "=0.20.0" }
+solders-token = { path = "./crates/token", version = "=0.20.0" }
+solders-transaction = { path = "./crates/transaction", version = "=0.20.0" }
+solders-transaction-error = { path = "./crates/transaction-error", version = "=0.20.0" }
+solders-account = { path = "./crates/account", version = "=0.20.0" }
+solders-hash = { path = "./crates/hash", version = "=0.20.0" }
 serde_with = { version = "^1.14.0", features = ["base64"] }
-solana-sdk = "1.17.12"
-solana-account-decoder = "1.17.12"
-solana-transaction-status = "1.17.12"
-solana-rpc-client-api = "1.17.12"
-solana-program = "1.17.12"
+solana-sdk = "1.18.1"
+solana-account-decoder = "1.18.1"
+solana-transaction-status = "1.18.1"
+solana-rpc-client-api = "1.18.1"
+solana-program = "1.18.1"
 bincode = "1.3.3"
 base64 = "0.13.0"
 serde = "^1.0.188"
@@ -130,8 +140,8 @@ serde_bytes = "0.11.12"
 serde_json = "^1.0.106"
 serde_cbor = "^0.11.2"
 derive_more = "0.99.17"
-solana-program-test = "1.17.12"
-solana-banks-client = "1.17.12"
+solana-program-test = "1.18.1"
+solana-banks-client = "1.18.1"
 pythonize = "0.19.0"
 bs58 = "0.4.0"
 thiserror = "^1.0.31"

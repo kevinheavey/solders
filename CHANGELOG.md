@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.20.0] - 2024-02-12
+
+### Added
+
+- Add address lookup table instructions and state [(#79)](https://github.com/kevinheavey/solders/pull/79)
+
+### Changed
+
+- Upgrade to Solana 1.18.1 [(#80)](https://github.com/kevinheavey/solders/pull/80). This also takes out the `ring` dependency (and all crates that use it) for linux-aarch64 builds.
+
 ## [0.19.0] - 2024-01-01
 
 ### Added

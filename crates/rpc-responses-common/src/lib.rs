@@ -383,7 +383,7 @@ impl From<AccountMaybeJSON> for UiAccount {
     fn from(a: AccountMaybeJSON) -> Self {
         match a {
             AccountMaybeJSON::Binary(acc) => Self::from(acc),
-            AccountMaybeJSON::Parsed(acc) => Self::try_from(acc).unwrap(),
+            AccountMaybeJSON::Parsed(acc) => Self::from(acc),
         }
     }
 }
