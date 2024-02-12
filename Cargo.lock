@@ -4965,6 +4965,7 @@ dependencies = [
  "pyo3",
  "serde",
  "solana-program",
+ "solders-hash",
  "solders-macros",
  "solders-pubkey",
  "solders-traits-core",
