@@ -19,34 +19,44 @@ solana-sdk = { workspace = true }
 bincode = { workspace = true }
 serde = { workspace = true }
 derive_more = { workspace = true }
-solders-traits = { workspace = true }
-solders-primitives = { workspace = true }
-solders-account = { workspace = true }
-solders-account-decoder = { workspace = true }
+solders-account = { workspace = true, optional = true }
+solders-account-decoder = { workspace = true, optional = true }
+solders-address-lookup-table-account = { workspace = true }
+solders-bankrun = { workspace = true, optional = true }
 solders-compute-budget = { workspace = true }
 solders-commitment-config = { workspace = true }
 solders-epoch-info = { workspace = true }
-solders-rpc-filter = { workspace = true }
-solders-rpc-config = { workspace = true }
-solders-rpc-errors = { workspace = true }
-solders-rpc-requests = { workspace = true }
-solders-rpc-responses = { workspace = true }
-solders-pubkey = { workspace = true }
-solders-system-program = { workspace = true }
-solders-instruction = { workspace = true }
-solders-message = { workspace = true }
-solders-address-lookup-table-account = { workspace = true }
-solders-signature = { workspace = true }
-solders-transaction-status = { workspace = true }
 solders-hash = { workspace = true }
+solders-instruction = { workspace = true }
 solders-keypair = { workspace = true }
-solders-token = { workspace = true }
+solders-message = { workspace = true }
+solders-primitives = { workspace = true }
+solders-pubkey = { workspace = true }
+solders-rpc-config = { workspace = true, optional = true }
+solders-rpc-errors = { workspace = true, optional = true }
+solders-rpc-filter = { workspace = true, optional = true }
+solders-rpc-requests = { workspace = true, optional = true }
+solders-rpc-responses = { workspace = true, optional = true }
+solders-signature = { workspace = true }
+solders-system-program = { workspace = true }
+solders-traits = { workspace = true }
 solders-transaction = { workspace = true }
-solders-bankrun = { workspace = true, optional = true }
+solders-transaction-status = { workspace = true, optional = true }
+solders-token = { workspace = true }
 
 [features]
-default = ["bankrun"]
+default = ["bankrun", "ring"]
 bankrun = ["dep:solders-bankrun"]
+ring = [
+    "dep:solders-account",
+    "dep:solders-account-decoder",
+    "dep:solders-rpc-config",
+    "dep:solders-rpc-errors",
+    "dep:solders-rpc-filter",
+    "dep:solders-rpc-requests",
+    "dep:solders-rpc-responses",
+    "dep:solders-transaction-status"
+]
 
 [workspace]
 members = [
