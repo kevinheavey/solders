@@ -4,7 +4,7 @@
 
 ### Added
 
-- Upgrade to Solana 1.18.1 [(#80)](https://github.com/kevinheavey/solders/pull/80)
+- Upgrade to Solana 1.18.1 [(#80)](https://github.com/kevinheavey/solders/pull/80). This also takes out the `ring` dependency (and all crates that use it) for linux-aarch64 builds.
 
 ## [0.19.0] - 2024-01-01
 
