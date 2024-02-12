@@ -162,7 +162,7 @@ pub struct SlotHashes(SlotHashesOriginal);
 
 impl Clone for SlotHashes {
     fn clone(&self) -> Self {
-        SlotHashes(SlotHashesOriginal::new(self.0.slot_hashes().clone()))
+        SlotHashes(SlotHashesOriginal::new(self.0.slot_hashes()))
     }
 }
 
