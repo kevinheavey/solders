@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.21.0] - Unreleased
+
+### Changed
+
+- Use pyo3 20.2 [(#81)](https://github.com/kevinheavey/solders/pull/81).
+
 ## [0.20.0] - 2024-02-12
 
 ### Added
