@@ -342,6 +342,7 @@ impl Transaction {
     ///     >>> blockhash = Hash.default()  # replace with a real blockhash
     ///     >>> tx = Transaction.new_signed_with_payer([instruction], payer.pubkey(), [payer], blockhash);
     ///
+    #[pyo3(signature = (instructions, payer, signing_keypairs, recent_blockhash))]
     pub fn new_signed_with_payer(
         instructions: Vec<Instruction>,
         payer: Option<Pubkey>,

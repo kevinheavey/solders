@@ -10,7 +10,7 @@ description = "Solders system program crate."
 
 [dependencies]
 pyo3 = { workspace = true, features = ["macros"] }
-dict_derive = "0.4.0"
+dict_derive = "0.5.0"
 solders-traits-core = { workspace = true }
 solders-traits = { workspace = true }
 solders-instruction = { workspace = true }
