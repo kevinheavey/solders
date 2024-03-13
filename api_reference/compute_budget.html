@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Compute Budget &mdash; solders 0.21.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Epoch Schedule" href="epoch_schedule.html" />
+    <link rel="prev" title="Commitment Config" href="commitment_config.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            solders
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Solders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="account.html">Account</a></li>
+<li class="toctree-l2"><a class="reference internal" href="account_decoder.html">Account Decoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="address_lookup_table_account.html">Address Lookup Table Account</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bankrun.html">Bankrun</a></li>
+<li class="toctree-l2"><a class="reference internal" href="commitment_config.html">Commitment Config</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Compute Budget</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#solders.compute_budget.request_heap_frame"><code class="docutils literal notranslate"><span class="pre">request_heap_frame()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.compute_budget.set_compute_unit_limit"><code class="docutils literal notranslate"><span class="pre">set_compute_unit_limit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.compute_budget.set_compute_unit_price"><code class="docutils literal notranslate"><span class="pre">set_compute_unit_price()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="epoch_schedule.html">Epoch Schedule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="errors.html">Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hash.html">Hash</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instruction.html">Instruction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="keypair.html">Keypair</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message.html">Message</a></li>
+<li class="toctree-l2"><a class="reference internal" href="null_signer.html">Null Signer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="presigner.html">Presigner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pubkey.html">Pubkey</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rpc/index.html">RPC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="signature.html">Signature</a></li>
+<li class="toctree-l2"><a class="reference internal" href="system_program.html">System Program</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sysvar.html">Sysvar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="token/index.html">SPL Token</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transaction_status.html">Transaction Status</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transaction.html">Transaction</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">solders</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API Reference</a></li>
+      <li class="breadcrumb-item active">Compute Budget</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/kevinheavey/solders/blob/main/docs/api_reference/compute_budget.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-solders.compute_budget">
+<span id="compute-budget"></span><h1>Compute Budget<a class="headerlink" href="#module-solders.compute_budget" title="Permalink to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.compute_budget.request_heap_frame">
+<span class="sig-name descname"><span class="pre">request_heap_frame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bytes_</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.compute_budget.request_heap_frame" title="Permalink to this definition"></a></dt>
+<dd><p>Request a specific transaction-wide program heap region size in bytes.
+The value requested must be a multiple of 1024. This new heap region
+size applies to each program executed in the transaction, including all
+calls to CPIs.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.compute_budget.set_compute_unit_limit">
+<span class="sig-name descname"><span class="pre">set_compute_unit_limit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">units</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.compute_budget.set_compute_unit_limit" title="Permalink to this definition"></a></dt>
+<dd><p>Set a specific compute unit limit that the transaction is allowed to consume.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.compute_budget.set_compute_unit_price">
+<span class="sig-name descname"><span class="pre">set_compute_unit_price</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">micro_lamports</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.compute_budget.set_compute_unit_price" title="Permalink to this definition"></a></dt>
+<dd><p>Set a compute unit price in “micro-lamports” to pay a higher transaction
+fee for higher transaction prioritization.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="commitment_config.html" class="btn btn-neutral float-left" title="Commitment Config" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="epoch_schedule.html" class="btn btn-neutral float-right" title="Epoch Schedule" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Kevin Heavey.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

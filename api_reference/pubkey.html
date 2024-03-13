@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pubkey &mdash; solders 0.21.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="RPC" href="rpc/index.html" />
+    <link rel="prev" title="Presigner" href="presigner.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            solders
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Solders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="account.html">Account</a></li>
+<li class="toctree-l2"><a class="reference internal" href="account_decoder.html">Account Decoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="address_lookup_table_account.html">Address Lookup Table Account</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bankrun.html">Bankrun</a></li>
+<li class="toctree-l2"><a class="reference internal" href="commitment_config.html">Commitment Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compute_budget.html">Compute Budget</a></li>
+<li class="toctree-l2"><a class="reference internal" href="epoch_schedule.html">Epoch Schedule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="errors.html">Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hash.html">Hash</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instruction.html">Instruction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="keypair.html">Keypair</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message.html">Message</a></li>
+<li class="toctree-l2"><a class="reference internal" href="null_signer.html">Null Signer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="presigner.html">Presigner</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Pubkey</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#solders.pubkey.Pubkey"><code class="docutils literal notranslate"><span class="pre">Pubkey</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#solders.pubkey.Pubkey.LENGTH"><code class="docutils literal notranslate"><span class="pre">Pubkey.LENGTH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.pubkey.Pubkey.create_program_address"><code class="docutils literal notranslate"><span class="pre">Pubkey.create_program_address()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.pubkey.Pubkey.create_with_seed"><code class="docutils literal notranslate"><span class="pre">Pubkey.create_with_seed()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.pubkey.Pubkey.default"><code class="docutils literal notranslate"><span class="pre">Pubkey.default()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.pubkey.Pubkey.find_program_address"><code class="docutils literal notranslate"><span class="pre">Pubkey.find_program_address()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.pubkey.Pubkey.from_bytes"><code class="docutils literal notranslate"><span class="pre">Pubkey.from_bytes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.pubkey.Pubkey.from_json"><code class="docutils literal notranslate"><span class="pre">Pubkey.from_json()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.pubkey.Pubkey.from_string"><code class="docutils literal notranslate"><span class="pre">Pubkey.from_string()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.pubkey.Pubkey.is_on_curve"><code class="docutils literal notranslate"><span class="pre">Pubkey.is_on_curve()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.pubkey.Pubkey.new_unique"><code class="docutils literal notranslate"><span class="pre">Pubkey.new_unique()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.pubkey.Pubkey.to_json"><code class="docutils literal notranslate"><span class="pre">Pubkey.to_json()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="rpc/index.html">RPC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="signature.html">Signature</a></li>
+<li class="toctree-l2"><a class="reference internal" href="system_program.html">System Program</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sysvar.html">Sysvar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="token/index.html">SPL Token</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transaction_status.html">Transaction Status</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transaction.html">Transaction</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">solders</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API Reference</a></li>
+      <li class="breadcrumb-item active">Pubkey</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/kevinheavey/solders/blob/main/docs/api_reference/pubkey.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-solders.pubkey">
+<span id="pubkey"></span><h1>Pubkey<a class="headerlink" href="#module-solders.pubkey" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.pubkey.Pubkey">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Pubkey</span></span><a class="headerlink" href="#solders.pubkey.Pubkey" title="Permalink to this definition"></a></dt>
+<dd><p>A public key.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pubkey_bytes</strong> (<em>bytes</em>) – The pubkey in bytes.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.pubkey</span> <span class="kn">import</span> <span class="n">Pubkey</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pubkey</span> <span class="o">=</span> <span class="n">Pubkey</span><span class="p">(</span><span class="nb">bytes</span><span class="p">([</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mi">32</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">pubkey</span><span class="p">)</span>
+<span class="go">&#39;4vJ9JU1bJJE96FWSJKvHsmmFADCg4gpZQff4P3bkLKi&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">bytes</span><span class="p">(</span><span class="n">pubkey</span><span class="p">)</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span>
+<span class="go">&#39;0101010101010101010101010101010101010101010101010101010101010101&#39;</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.pubkey.Pubkey.LENGTH">
+<span class="sig-name descname"><span class="pre">LENGTH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">32</span></em><a class="headerlink" href="#solders.pubkey.Pubkey.LENGTH" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.pubkey.Pubkey.create_program_address">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_program_address</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seeds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">program_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.pubkey.Pubkey.create_program_address" title="Permalink to this definition"></a></dt>
+<dd><p>Derive a program address from seeds and a program ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seeds</strong> (<em>Sequence</em><em>[</em><em>bytes</em><em>]</em>) – The seeds to use.</p></li>
+<li><p><strong>program_id</strong> (<a class="reference internal" href="#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a>) – The program ID.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The derived program address.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey">Pubkey</a></p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.pubkey</span> <span class="kn">import</span> <span class="n">Pubkey</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">program_id</span> <span class="o">=</span> <span class="n">Pubkey</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="s2">&quot;BPFLoader1111111111111111111111111111111111&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Pubkey</span><span class="o">.</span><span class="n">create_program_address</span><span class="p">([</span><span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">([</span><span class="mi">1</span><span class="p">])],</span> <span class="n">program_id</span><span class="p">)</span>
+<span class="go">Pubkey(</span>
+<span class="go">    3gF2KMe9KiC6FNVBmfg9i267aMPvK37FewCip4eGBFcT,</span>
+<span class="go">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.pubkey.Pubkey.create_with_seed">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_with_seed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">program_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.pubkey.Pubkey.create_with_seed" title="Permalink to this definition"></a></dt>
+<dd><p>Derive a pubkey from another key, a seed, and a program ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base</strong> (<a class="reference internal" href="#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a>) – The other pubkey to use.</p></li>
+<li><p><strong>seed</strong> (<em>str</em>) – The seed string</p></li>
+<li><p><strong>program_id</strong> (<a class="reference internal" href="#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a>) – The program ID.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The derived pubkey.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey">Pubkey</a></p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.pubkey</span> <span class="kn">import</span> <span class="n">Pubkey</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">default_public_key</span> <span class="o">=</span> <span class="n">Pubkey</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Pubkey</span><span class="o">.</span><span class="n">create_with_seed</span><span class="p">(</span><span class="n">default_public_key</span><span class="p">,</span> <span class="s2">&quot;limber chicken: 4/45&quot;</span><span class="p">,</span> <span class="n">default_public_key</span><span class="p">)</span>
+<span class="go">Pubkey(</span>
+<span class="go">    9h1HyLCW5dZnBVap8C5egQ9Z6pHyjsh5MNy83iPqqRuq,</span>
+<span class="go">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.pubkey.Pubkey.default">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">default</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.pubkey.Pubkey.default" title="Permalink to this definition"></a></dt>
+<dd><p>Create a new default pubkey.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The default pubkey.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey">Pubkey</a></p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.pubkey</span> <span class="kn">import</span> <span class="n">Pubkey</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Pubkey</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>
+<span class="go">Pubkey(</span>
+<span class="go">    11111111111111111111111111111111,</span>
+<span class="go">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.pubkey.Pubkey.find_program_address">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">find_program_address</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seeds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">program_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.pubkey.Pubkey.find_program_address" title="Permalink to this definition"></a></dt>
+<dd><p>Find a valid <a class="reference external" href="https://docs.solana.com/developing/programming-model/calling-between-programs#program-derived-addresses">program derived address</a> and its corresponding bump seed.</p>
+<p>Program derived addresses (PDAs) are account keys that only the program,
+<code class="docutils literal notranslate"><span class="pre">program_id</span></code>, has the authority to sign. The address is of the same form
+as a Solana <code class="docutils literal notranslate"><span class="pre">Pubkey</span></code>, except they are ensured to not be on the ed25519
+curve and thus have no associated private key. When performing
+cross-program invocations the program can “sign” for the key by calling
+<code class="docutils literal notranslate"><span class="pre">invoke_signed</span></code> and passing the same seeds used to generate the
+address, along with the calculated <em>bump seed</em>, which this function
+returns as the second tuple element. The runtime will verify that the
+program associated with this address is the caller and thus authorized
+to be the signer.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">seeds</span></code> are application-specific, and must be carefully selected to
+uniquely derive accounts per application requirements. It is common to
+use static strings and other pubkeys as seeds.</p>
+<p>Because the program address must not lie on the ed25519 curve, there may
+be seed and program id combinations that are invalid. For this reason,
+an extra seed (the bump seed) is calculated that results in a
+point off the curve. The bump seed must be passed as an additional seed
+when calling <code class="docutils literal notranslate"><span class="pre">invoke_signed</span></code>.</p>
+<p><strong>Warning</strong>: Because of the way the seeds are hashed there is a potential
+for program address collisions for the same program id.  The seeds are
+hashed sequentially which means that seeds {“abcdef”}, {“abc”, “def”},
+and {“ab”, “cd”, “ef”} will all result in the same program address given
+the same program id. Since the chance of collision is local to a given
+program id, the developer of that program must take care to choose seeds
+that do not collide with each other. For seed schemes that are susceptible
+to this type of hash collision, a common remedy is to insert separators
+between seeds, e.g. transforming {“abc”, “def”} into {“abc”, “-”, “def”}.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seeds</strong> (<em>Sequence</em><em>[</em><em>bytes</em><em>]</em>) – The seeds to use.</p></li>
+<li><p><strong>program_id</strong> (<a class="reference internal" href="#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a>) – The program ID.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The PDA.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey">Pubkey</a></p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.pubkey</span> <span class="kn">import</span> <span class="n">Pubkey</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">program_id</span> <span class="o">=</span> <span class="n">Pubkey</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="s2">&quot;BPFLoader1111111111111111111111111111111111&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">program_address</span><span class="p">,</span> <span class="n">nonce</span> <span class="o">=</span> <span class="n">Pubkey</span><span class="o">.</span><span class="n">find_program_address</span><span class="p">([</span><span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">],</span> <span class="n">program_id</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">program_address</span>
+<span class="go">Pubkey(</span>
+<span class="go">    EXWkUCz3YJU9TDVk39ogA4TwoVsUi75ZDhH6yT7acPgQ,</span>
+<span class="go">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nonce</span>
+<span class="go">255</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.pubkey.Pubkey.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.pubkey.Pubkey.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Construct from <code class="docutils literal notranslate"><span class="pre">bytes</span></code>. Equivalent to <code class="docutils literal notranslate"><span class="pre">Pubkey.__init__</span></code> but included for the sake of consistency.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>raw</strong> (<em>bytes</em>) – the pubkey bytes.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a <code class="docutils literal notranslate"><span class="pre">Pubkey</span></code> object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey">Pubkey</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.pubkey.Pubkey.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.pubkey.Pubkey.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.pubkey.Pubkey.from_string">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.pubkey.Pubkey.from_string" title="Permalink to this definition"></a></dt>
+<dd><p>Retrieve a pubkey from a base58 string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the pubkey obtained from the base58 string.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey">Pubkey</a></p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.pubkey</span> <span class="kn">import</span> <span class="n">Pubkey</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Pubkey</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="s2">&quot;BPFLoader1111111111111111111111111111111111&quot;</span><span class="p">)</span>
+<span class="go">Pubkey(</span>
+<span class="go">    BPFLoader1111111111111111111111111111111111,</span>
+<span class="go">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.pubkey.Pubkey.is_on_curve">
+<span class="sig-name descname"><span class="pre">is_on_curve</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.pubkey.Pubkey.is_on_curve" title="Permalink to this definition"></a></dt>
+<dd><p>Check that the pubkey is on the ed25519 curve.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>True</cite> if the pubkey is on the curve.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.pubkey.Pubkey.new_unique">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">new_unique</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.pubkey.Pubkey.new_unique" title="Permalink to this definition"></a></dt>
+<dd><p>Unique pubkey for tests and benchmarks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Randomly generated pubkey.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey">Pubkey</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.pubkey.Pubkey.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.pubkey.Pubkey.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="presigner.html" class="btn btn-neutral float-left" title="Presigner" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="rpc/index.html" class="btn btn-neutral float-right" title="RPC" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Kevin Heavey.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RPC helpers &mdash; solders 0.21.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Bankrun" href="bankrun.html" />
+    <link rel="prev" title="Transactions" href="transactions.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            solders
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Solders</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="keypairs.html">Keypairs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pubkeys.html">Pubkeys</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transactions.html">Transactions</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">RPC helpers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#building-an-rpc-request">Building an RPC request</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#building-a-batch-rpc-request">Building a batch RPC request</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#parsing-an-rpc-response">Parsing an RPC response</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#parsing-an-rpc-batch-repsonse">Parsing an RPC batch repsonse</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bankrun.html">Bankrun</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">solders</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Tutorials</a></li>
+      <li class="breadcrumb-item active">RPC helpers</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/kevinheavey/solders/blob/main/docs/tutorials/rpc.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="rpc-helpers">
+<h1>RPC helpers<a class="headerlink" href="#rpc-helpers" title="Permalink to this heading"></a></h1>
+<p>While <code class="docutils literal notranslate"><span class="pre">solders</span></code> doesn’t talk to RPCs directly, it does help to build RPC request JSONs
+and parse RPC responses. It even supports batch requests (calling multiple RPC methods in one go).</p>
+<section id="building-an-rpc-request">
+<h2>Building an RPC request<a class="headerlink" href="#building-an-rpc-request" title="Permalink to this heading"></a></h2>
+<p>Here we build a <code class="docutils literal notranslate"><span class="pre">getFeeForMessage</span></code> request and convert it to a JSON string
+using the <code class="docutils literal notranslate"><span class="pre">.to_json()</span></code> method:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.rpc.requests</span> <span class="kn">import</span> <span class="n">GetFeeForMessage</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.commitment_config</span> <span class="kn">import</span> <span class="n">CommitmentLevel</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.message</span> <span class="kn">import</span> <span class="n">MessageV0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">GetFeeForMessage</span><span class="p">(</span><span class="n">MessageV0</span><span class="o">.</span><span class="n">default</span><span class="p">(),</span> <span class="n">commitment</span><span class="o">=</span><span class="n">CommitmentLevel</span><span class="o">.</span><span class="n">Processed</span><span class="p">)</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span>
+<span class="go">&#39;{&quot;method&quot;:&quot;getFeeForMessage&quot;,&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:0,&quot;params&quot;:[&quot;gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA&quot;,{&quot;commitment&quot;:&quot;processed&quot;}]}&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="building-a-batch-rpc-request">
+<h2>Building a batch RPC request<a class="headerlink" href="#building-a-batch-rpc-request" title="Permalink to this heading"></a></h2>
+<p>We can combine a list of RPC request objects into a single JSON request using
+the <code class="docutils literal notranslate"><span class="pre">batch_to_json</span></code> function:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.rpc.requests</span> <span class="kn">import</span> <span class="n">batch_to_json</span><span class="p">,</span> <span class="n">GetClusterNodes</span><span class="p">,</span> <span class="n">GetEpochSchedule</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">batch_to_json</span><span class="p">([</span><span class="n">GetClusterNodes</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">GetEpochSchedule</span><span class="p">(</span><span class="mi">1</span><span class="p">)])</span>
+<span class="go">&#39;[{&quot;method&quot;:&quot;getClusterNodes&quot;,&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:0},{&quot;method&quot;:&quot;getEpochSchedule&quot;,&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1}]&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="parsing-an-rpc-response">
+<h2>Parsing an RPC response<a class="headerlink" href="#parsing-an-rpc-response" title="Permalink to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">rpc.repsonses</span></code> module parses JSON RPC responses into strongly-typed objects:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">solders.rpc.responses</span> <span class="kn">import</span> <span class="n">GetStakeActivationResp</span><span class="p">,</span> <span class="n">RpcStakeActivation</span><span class="p">,</span> <span class="n">StakeActivationState</span>
+<span class="n">raw</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;{</span>
+<span class="s2">&quot;jsonrpc&quot;: &quot;2.0&quot;,</span>
+<span class="s2">&quot;result&quot;: { &quot;active&quot;: 197717120, &quot;inactive&quot;: 0, &quot;state&quot;: &quot;active&quot; },</span>
+<span class="s2">&quot;id&quot;: 1</span>
+<span class="s2">}&quot;&quot;&quot;</span>
+<span class="n">parsed</span> <span class="o">=</span> <span class="n">GetStakeActivationResp</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+<span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parsed</span><span class="p">,</span> <span class="n">GetStakeActivationResp</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">parsed</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="n">RpcStakeActivation</span><span class="p">(</span>
+    <span class="n">state</span><span class="o">=</span><span class="n">StakeActivationState</span><span class="o">.</span><span class="n">Active</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="mi">197717120</span><span class="p">,</span> <span class="n">inactive</span><span class="o">=</span><span class="mi">0</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="parsing-an-rpc-batch-repsonse">
+<h2>Parsing an RPC batch repsonse<a class="headerlink" href="#parsing-an-rpc-batch-repsonse" title="Permalink to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">batch_from_json</span></code> function parses an RPC batch response into a list of objects:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.rpc.responses</span> <span class="kn">import</span> <span class="n">batch_from_json</span><span class="p">,</span> <span class="n">GetBlockHeightResp</span><span class="p">,</span> <span class="n">GetFirstAvailableBlockResp</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">raw</span> <span class="o">=</span> <span class="s1">&#39;[{ &quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;result&quot;: 1233, &quot;id&quot;: 1 },{ &quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;result&quot;: 111, &quot;id&quot;: 1 }]&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">batch_from_json</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="p">[</span><span class="n">GetBlockHeightResp</span><span class="p">,</span> <span class="n">GetFirstAvailableBlockResp</span><span class="p">])</span>
+<span class="go">[GetBlockHeightResp(</span>
+<span class="go">    1233,</span>
+<span class="go">), GetFirstAvailableBlockResp(</span>
+<span class="go">    111,</span>
+<span class="go">)]</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="transactions.html" class="btn btn-neutral float-left" title="Transactions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="bankrun.html" class="btn btn-neutral float-right" title="Bankrun" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Kevin Heavey.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

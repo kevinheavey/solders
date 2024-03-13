@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bankrun &mdash; solders 0.21.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Commitment Config" href="commitment_config.html" />
+    <link rel="prev" title="Address Lookup Table Account" href="address_lookup_table_account.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            solders
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Solders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="account.html">Account</a></li>
+<li class="toctree-l2"><a class="reference internal" href="account_decoder.html">Account Decoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="address_lookup_table_account.html">Address Lookup Table Account</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Bankrun</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#solders.bankrun.BanksClientError"><code class="docutils literal notranslate"><span class="pre">BanksClientError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.bankrun.BanksClient"><code class="docutils literal notranslate"><span class="pre">BanksClient</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#solders.bankrun.BanksClient.get_account"><code class="docutils literal notranslate"><span class="pre">BanksClient.get_account()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.bankrun.BanksClient.get_balance"><code class="docutils literal notranslate"><span class="pre">BanksClient.get_balance()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.bankrun.BanksClient.get_block_height"><code class="docutils literal notranslate"><span class="pre">BanksClient.get_block_height()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.bankrun.BanksClient.get_clock"><code class="docutils literal notranslate"><span class="pre">BanksClient.get_clock()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.bankrun.BanksClient.get_fee_for_message"><code class="docutils literal notranslate"><span class="pre">BanksClient.get_fee_for_message()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.bankrun.BanksClient.get_latest_blockhash"><code class="docutils literal notranslate"><span class="pre">BanksClient.get_latest_blockhash()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.bankrun.BanksClient.get_rent"><code class="docutils literal notranslate"><span class="pre">BanksClient.get_rent()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.bankrun.BanksClient.get_slot"><code class="docutils literal notranslate"><span class="pre">BanksClient.get_slot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.bankrun.BanksClient.get_transaction_status"><code class="docutils literal notranslate"><span class="pre">BanksClient.get_transaction_status()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.bankrun.BanksClient.get_transaction_statuses"><code class="docutils literal notranslate"><span class="pre">BanksClient.get_transaction_statuses()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.bankrun.BanksClient.process_transaction"><code class="docutils literal notranslate"><span class="pre">BanksClient.process_transaction()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.bankrun.BanksClient.send_transaction"><code class="docutils literal notranslate"><span class="pre">BanksClient.send_transaction()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.bankrun.BanksClient.simulate_transaction"><code class="docutils literal notranslate"><span class="pre">BanksClient.simulate_transaction()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.bankrun.ProgramTestContext"><code class="docutils literal notranslate"><span class="pre">ProgramTestContext</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#solders.bankrun.ProgramTestContext.banks_client"><code class="docutils literal notranslate"><span class="pre">ProgramTestContext.banks_client</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.bankrun.ProgramTestContext.increment_vote_account_credits"><code class="docutils literal notranslate"><span class="pre">ProgramTestContext.increment_vote_account_credits()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.bankrun.ProgramTestContext.last_blockhash"><code class="docutils literal notranslate"><span class="pre">ProgramTestContext.last_blockhash</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.bankrun.ProgramTestContext.payer"><code class="docutils literal notranslate"><span class="pre">ProgramTestContext.payer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.bankrun.ProgramTestContext.set_account"><code class="docutils literal notranslate"><span class="pre">ProgramTestContext.set_account()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.bankrun.ProgramTestContext.set_clock"><code class="docutils literal notranslate"><span class="pre">ProgramTestContext.set_clock()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.bankrun.ProgramTestContext.set_rent"><code class="docutils literal notranslate"><span class="pre">ProgramTestContext.set_rent()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.bankrun.ProgramTestContext.warp_to_slot"><code class="docutils literal notranslate"><span class="pre">ProgramTestContext.warp_to_slot()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.bankrun.BanksTransactionResultWithMeta"><code class="docutils literal notranslate"><span class="pre">BanksTransactionResultWithMeta</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#solders.bankrun.BanksTransactionResultWithMeta.from_bytes"><code class="docutils literal notranslate"><span class="pre">BanksTransactionResultWithMeta.from_bytes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.bankrun.BanksTransactionResultWithMeta.from_json"><code class="docutils literal notranslate"><span class="pre">BanksTransactionResultWithMeta.from_json()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.bankrun.BanksTransactionResultWithMeta.meta"><code class="docutils literal notranslate"><span class="pre">BanksTransactionResultWithMeta.meta</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.bankrun.BanksTransactionResultWithMeta.result"><code class="docutils literal notranslate"><span class="pre">BanksTransactionResultWithMeta.result</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.bankrun.BanksTransactionResultWithMeta.to_json"><code class="docutils literal notranslate"><span class="pre">BanksTransactionResultWithMeta.to_json()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.bankrun.BanksTransactionMeta"><code class="docutils literal notranslate"><span class="pre">BanksTransactionMeta</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#solders.bankrun.BanksTransactionMeta.compute_units_consumed"><code class="docutils literal notranslate"><span class="pre">BanksTransactionMeta.compute_units_consumed</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.bankrun.BanksTransactionMeta.from_bytes"><code class="docutils literal notranslate"><span class="pre">BanksTransactionMeta.from_bytes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.bankrun.BanksTransactionMeta.from_json"><code class="docutils literal notranslate"><span class="pre">BanksTransactionMeta.from_json()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.bankrun.BanksTransactionMeta.log_messages"><code class="docutils literal notranslate"><span class="pre">BanksTransactionMeta.log_messages</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.bankrun.BanksTransactionMeta.return_data"><code class="docutils literal notranslate"><span class="pre">BanksTransactionMeta.return_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.bankrun.BanksTransactionMeta.to_json"><code class="docutils literal notranslate"><span class="pre">BanksTransactionMeta.to_json()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.bankrun.start"><code class="docutils literal notranslate"><span class="pre">start()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.bankrun.start_anchor"><code class="docutils literal notranslate"><span class="pre">start_anchor()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="commitment_config.html">Commitment Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compute_budget.html">Compute Budget</a></li>
+<li class="toctree-l2"><a class="reference internal" href="epoch_schedule.html">Epoch Schedule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="errors.html">Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hash.html">Hash</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instruction.html">Instruction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="keypair.html">Keypair</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message.html">Message</a></li>
+<li class="toctree-l2"><a class="reference internal" href="null_signer.html">Null Signer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="presigner.html">Presigner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pubkey.html">Pubkey</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rpc/index.html">RPC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="signature.html">Signature</a></li>
+<li class="toctree-l2"><a class="reference internal" href="system_program.html">System Program</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sysvar.html">Sysvar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="token/index.html">SPL Token</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transaction_status.html">Transaction Status</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transaction.html">Transaction</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">solders</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API Reference</a></li>
+      <li class="breadcrumb-item active">Bankrun</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/kevinheavey/solders/blob/main/docs/api_reference/bankrun.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-solders.bankrun">
+<span id="bankrun"></span><h1>Bankrun<a class="headerlink" href="#module-solders.bankrun" title="Permalink to this heading"></a></h1>
+<dl class="py exception">
+<dt class="sig sig-object py" id="solders.bankrun.BanksClientError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BanksClientError</span></span><a class="headerlink" href="#solders.bankrun.BanksClientError" title="Permalink to this definition"></a></dt>
+<dd><p>Raised when BanksClient encounters an error.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.bankrun.BanksClient">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BanksClient</span></span><a class="headerlink" href="#solders.bankrun.BanksClient" title="Permalink to this definition"></a></dt>
+<dd><p>A client for the ledger state, from the perspective of an arbitrary validator.</p>
+<p>The client is used to send transactions and query account data, among other things.
+Use <code class="docutils literal notranslate"><span class="pre">bankrun.start()</span></code> to initialize a BanksClient.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.bankrun.BanksClient.get_account">
+<span class="sig-name descname"><span class="pre">get_account</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">commitment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.bankrun.BanksClient.get_account" title="Permalink to this definition"></a></dt>
+<dd><p>Return the account at the given address at the slot corresponding to the given
+commitment level. If the account is not found, None is returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> (<a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a>) – The account address to look up.</p></li>
+<li><p><strong>commitment</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="commitment_config.html#solders.commitment_config.CommitmentLevel" title="solders.commitment_config.CommitmentLevel"><em>CommitmentLevel</em></a><em>]</em>) – The commitment level to use.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The account object, if the account exists</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[<a class="reference internal" href="account.html#solders.account.Account" title="solders.account.Account">Account</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.bankrun.BanksClient.get_balance">
+<span class="sig-name descname"><span class="pre">get_balance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">commitment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.bankrun.BanksClient.get_balance" title="Permalink to this definition"></a></dt>
+<dd><p>Return the balance in lamports of an account at the given address at the slot
+corresponding to the given commitment level.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> (<a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a>) – The account to look up.</p></li>
+<li><p><strong>commitment</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="commitment_config.html#solders.commitment_config.CommitmentLevel" title="solders.commitment_config.CommitmentLevel"><em>CommitmentLevel</em></a><em>]</em>) – The commitment level to use.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The account balance in lamports.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.bankrun.BanksClient.get_block_height">
+<span class="sig-name descname"><span class="pre">get_block_height</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">commitment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.bankrun.BanksClient.get_block_height" title="Permalink to this definition"></a></dt>
+<dd><p>Get the current block height.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>commitment</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="commitment_config.html#solders.commitment_config.CommitmentLevel" title="solders.commitment_config.CommitmentLevel"><em>CommitmentLevel</em></a><em>]</em>) – The commitment level to use.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The current block height.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.bankrun.BanksClient.get_clock">
+<span class="sig-name descname"><span class="pre">get_clock</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.bankrun.BanksClient.get_clock" title="Permalink to this definition"></a></dt>
+<dd><p>Get the cluster clock.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the clock object.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Clock</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.bankrun.BanksClient.get_fee_for_message">
+<span class="sig-name descname"><span class="pre">get_fee_for_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">commitment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.bankrun.BanksClient.get_fee_for_message" title="Permalink to this definition"></a></dt>
+<dd><p>Get the fee in lamports for a given message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>message</strong> (<a class="reference internal" href="message.html#solders.message.Message" title="solders.message.Message"><em>Message</em></a>) – The message to check.</p></li>
+<li><p><strong>commitment</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="commitment_config.html#solders.commitment_config.CommitmentLevel" title="solders.commitment_config.CommitmentLevel"><em>CommitmentLevel</em></a><em>]</em>) – The commitment level to use.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The fee for the given message.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.bankrun.BanksClient.get_latest_blockhash">
+<span class="sig-name descname"><span class="pre">get_latest_blockhash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">commitment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.bankrun.BanksClient.get_latest_blockhash" title="Permalink to this definition"></a></dt>
+<dd><p>Returns latest blockhash and last valid block height for given commitment level.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>commitment</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="commitment_config.html#solders.commitment_config.CommitmentLevel" title="solders.commitment_config.CommitmentLevel"><em>CommitmentLevel</em></a><em>]</em>) – The commitment level to use.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The blockhash and last valid block height.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[<a class="reference internal" href="hash.html#solders.hash.Hash" title="solders.hash.Hash">Hash</a>, int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.bankrun.BanksClient.get_rent">
+<span class="sig-name descname"><span class="pre">get_rent</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.bankrun.BanksClient.get_rent" title="Permalink to this definition"></a></dt>
+<dd><p>Get the cluster rent.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The rent object.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Rent</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.bankrun.BanksClient.get_slot">
+<span class="sig-name descname"><span class="pre">get_slot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">commitment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.bankrun.BanksClient.get_slot" title="Permalink to this definition"></a></dt>
+<dd><p>Get the slot that has reached the given commitment level (or the default commitment).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>commitment</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="commitment_config.html#solders.commitment_config.CommitmentLevel" title="solders.commitment_config.CommitmentLevel"><em>CommitmentLevel</em></a><em>]</em>) – The commitment level to use.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The current slot.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.bankrun.BanksClient.get_transaction_status">
+<span class="sig-name descname"><span class="pre">get_transaction_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signature</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.bankrun.BanksClient.get_transaction_status" title="Permalink to this definition"></a></dt>
+<dd><p>Return the status of a transaction with a signature matching the transaction’s first
+signature.</p>
+<p>Return None if the transaction is not found, which may be because the
+blockhash was expired or the fee-paying account had insufficient funds to pay the
+transaction fee. Note that servers rarely store the full transaction history. This
+method may return None if the transaction status has been discarded.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>signature</strong> (<a class="reference internal" href="signature.html#solders.signature.Signature" title="solders.signature.Signature"><em>Signature</em></a>) – The transaction signature (the first signature of the transaction).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The transaction status, if found.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[<a class="reference internal" href="transaction_status.html#solders.transaction_status.TransactionStatus" title="solders.transaction_status.TransactionStatus">TransactionStatus</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.bankrun.BanksClient.get_transaction_statuses">
+<span class="sig-name descname"><span class="pre">get_transaction_statuses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signatures</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.bankrun.BanksClient.get_transaction_statuses" title="Permalink to this definition"></a></dt>
+<dd><p>Same as <code class="docutils literal notranslate"><span class="pre">get_transaction_status</span></code>, but for multiple transactions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>signatures</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="signature.html#solders.signature.Signature" title="solders.signature.Signature"><em>Signature</em></a><em>]</em>) – The transaction signatures.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The transaction statuses, if found.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[Optional[<a class="reference internal" href="transaction_status.html#solders.transaction_status.TransactionStatus" title="solders.transaction_status.TransactionStatus">TransactionStatus</a>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.bankrun.BanksClient.process_transaction">
+<span class="sig-name descname"><span class="pre">process_transaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transaction</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.bankrun.BanksClient.process_transaction" title="Permalink to this definition"></a></dt>
+<dd><p>Process a transaction and return the transaction metadata, raising any errors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>transaction</strong> (<a class="reference internal" href="transaction.html#solders.transaction.Transaction" title="solders.transaction.Transaction"><em>Transaction</em></a><em> | </em><a class="reference internal" href="transaction.html#solders.transaction.VersionedTransaction" title="solders.transaction.VersionedTransaction"><em>VersionedTransaction</em></a>) – The transaction to send.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The transaction result and metadata.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#solders.bankrun.BanksTransactionResultWithMeta" title="solders.bankrun.BanksTransactionResultWithMeta">BanksTransactionResultWithMeta</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.bankrun.BanksClient.send_transaction">
+<span class="sig-name descname"><span class="pre">send_transaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transaction</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.bankrun.BanksClient.send_transaction" title="Permalink to this definition"></a></dt>
+<dd><p>Send a transaction and return immediately.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>transaction</strong> (<a class="reference internal" href="transaction.html#solders.transaction.Transaction" title="solders.transaction.Transaction"><em>Transaction</em></a><em> | </em><a class="reference internal" href="transaction.html#solders.transaction.VersionedTransaction" title="solders.transaction.VersionedTransaction"><em>VersionedTransaction</em></a>) – The transaction to send.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.bankrun.BanksClient.simulate_transaction">
+<span class="sig-name descname"><span class="pre">simulate_transaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transaction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">commitment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.bankrun.BanksClient.simulate_transaction" title="Permalink to this definition"></a></dt>
+<dd><p>Simulate a transaction at the given commitment level.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>transaction</strong> (<a class="reference internal" href="transaction.html#solders.transaction.Transaction" title="solders.transaction.Transaction"><em>Transaction</em></a><em> | </em><a class="reference internal" href="transaction.html#solders.transaction.VersionedTransaction" title="solders.transaction.VersionedTransaction"><em>VersionedTransaction</em></a>) – The transaction to simulate.</p></li>
+<li><p><strong>commitment</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="commitment_config.html#solders.commitment_config.CommitmentLevel" title="solders.commitment_config.CommitmentLevel"><em>CommitmentLevel</em></a><em>]</em>) – The commitment level to use.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The transaction simulation result.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#solders.bankrun.BanksTransactionResultWithMeta" title="solders.bankrun.BanksTransactionResultWithMeta">BanksTransactionResultWithMeta</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.bankrun.ProgramTestContext">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ProgramTestContext</span></span><a class="headerlink" href="#solders.bankrun.ProgramTestContext" title="Permalink to this definition"></a></dt>
+<dd><p>The result of calling <cite>bankrun.start()</cite>.</p>
+<p>Contains a BanksClient, a recent blockhash and a funded payer keypair.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.bankrun.ProgramTestContext.banks_client">
+<span class="sig-name descname"><span class="pre">banks_client</span></span><a class="headerlink" href="#solders.bankrun.ProgramTestContext.banks_client" title="Permalink to this definition"></a></dt>
+<dd><p>The client for this test.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#solders.bankrun.BanksClient" title="solders.bankrun.BanksClient">BanksClient</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.bankrun.ProgramTestContext.increment_vote_account_credits">
+<span class="sig-name descname"><span class="pre">increment_vote_account_credits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vote_account_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_credits</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.bankrun.ProgramTestContext.increment_vote_account_credits" title="Permalink to this definition"></a></dt>
+<dd><p>Manually increment vote credits for the current epoch in the specified vote account to simulate validator voting activity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vote_account_address</strong> (<a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a>) – The vote account addess in which to increment credits.</p></li>
+<li><p><strong>number_of_credits</strong> (<em>int</em>) – How many credits to increment by.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.bankrun.ProgramTestContext.last_blockhash">
+<span class="sig-name descname"><span class="pre">last_blockhash</span></span><a class="headerlink" href="#solders.bankrun.ProgramTestContext.last_blockhash" title="Permalink to this definition"></a></dt>
+<dd><p>The last blockhash registered when the client was initialized.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="hash.html#solders.hash.Hash" title="solders.hash.Hash">Hash</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.bankrun.ProgramTestContext.payer">
+<span class="sig-name descname"><span class="pre">payer</span></span><a class="headerlink" href="#solders.bankrun.ProgramTestContext.payer" title="Permalink to this definition"></a></dt>
+<dd><p>A funded keypair for sending transactions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="keypair.html#solders.keypair.Keypair" title="solders.keypair.Keypair">Keypair</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.bankrun.ProgramTestContext.set_account">
+<span class="sig-name descname"><span class="pre">set_account</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">account</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.bankrun.ProgramTestContext.set_account" title="Permalink to this definition"></a></dt>
+<dd><p>Create or overwrite an account, subverting normal runtime checks.</p>
+<p>This method exists to make it easier to set up artificial situations
+that would be difficult to replicate by sending individual transactions.
+Beware that it can be used to create states that would not be reachable
+by sending transactions!</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> (<a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a>) – The address to write to.</p></li>
+<li><p><strong>account</strong> (<a class="reference internal" href="account.html#solders.account.Account" title="solders.account.Account"><em>Account</em></a>) – The account object to write.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.bankrun.ProgramTestContext.set_clock">
+<span class="sig-name descname"><span class="pre">set_clock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">clock</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.bankrun.ProgramTestContext.set_clock" title="Permalink to this definition"></a></dt>
+<dd><p>Overwrite the clock sysvar.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>clock</strong> (<em>Clock</em>) – The new clock object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.bankrun.ProgramTestContext.set_rent">
+<span class="sig-name descname"><span class="pre">set_rent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rent</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.bankrun.ProgramTestContext.set_rent" title="Permalink to this definition"></a></dt>
+<dd><p>Overwrite the rent sysvar.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>rent</strong> (<em>Rent</em>) – The new rent object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.bankrun.ProgramTestContext.warp_to_slot">
+<span class="sig-name descname"><span class="pre">warp_to_slot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">warp_slot</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.bankrun.ProgramTestContext.warp_to_slot" title="Permalink to this definition"></a></dt>
+<dd><p>Force the working bank ahead to a new slot</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>warp_slot</strong> (<em>int</em>) – The slot to warp to.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.bankrun.BanksTransactionResultWithMeta">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BanksTransactionResultWithMeta</span></span><a class="headerlink" href="#solders.bankrun.BanksTransactionResultWithMeta" title="Permalink to this definition"></a></dt>
+<dd><p>A transaction result.</p>
+<p>Contains transaction metadata, and the transaction error, if there is one.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.bankrun.BanksTransactionResultWithMeta.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.bankrun.BanksTransactionResultWithMeta.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.bankrun.BanksTransactionResultWithMeta.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.bankrun.BanksTransactionResultWithMeta.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.bankrun.BanksTransactionResultWithMeta.meta">
+<span class="sig-name descname"><span class="pre">meta</span></span><a class="headerlink" href="#solders.bankrun.BanksTransactionResultWithMeta.meta" title="Permalink to this definition"></a></dt>
+<dd><p>The transaction metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[<a class="reference internal" href="#solders.bankrun.BanksTransactionMeta" title="solders.bankrun.BanksTransactionMeta">BanksTransactionMeta</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.bankrun.BanksTransactionResultWithMeta.result">
+<span class="sig-name descname"><span class="pre">result</span></span><a class="headerlink" href="#solders.bankrun.BanksTransactionResultWithMeta.result" title="Permalink to this definition"></a></dt>
+<dd><p>The transaction error info, if the transaction failed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[TransactionErrorType]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.bankrun.BanksTransactionResultWithMeta.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.bankrun.BanksTransactionResultWithMeta.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.bankrun.BanksTransactionMeta">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BanksTransactionMeta</span></span><a class="headerlink" href="#solders.bankrun.BanksTransactionMeta" title="Permalink to this definition"></a></dt>
+<dd><p>Transaction metadata.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.bankrun.BanksTransactionMeta.compute_units_consumed">
+<span class="sig-name descname"><span class="pre">compute_units_consumed</span></span><a class="headerlink" href="#solders.bankrun.BanksTransactionMeta.compute_units_consumed" title="Permalink to this definition"></a></dt>
+<dd><p>The number of compute units consumed by the transaction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.bankrun.BanksTransactionMeta.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.bankrun.BanksTransactionMeta.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.bankrun.BanksTransactionMeta.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.bankrun.BanksTransactionMeta.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.bankrun.BanksTransactionMeta.log_messages">
+<span class="sig-name descname"><span class="pre">log_messages</span></span><a class="headerlink" href="#solders.bankrun.BanksTransactionMeta.log_messages" title="Permalink to this definition"></a></dt>
+<dd><p>The log messages written during transaction execution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.bankrun.BanksTransactionMeta.return_data">
+<span class="sig-name descname"><span class="pre">return_data</span></span><a class="headerlink" href="#solders.bankrun.BanksTransactionMeta.return_data" title="Permalink to this definition"></a></dt>
+<dd><p>The transaction return data, if present.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[<a class="reference internal" href="transaction_status.html#solders.transaction_status.TransactionReturnData" title="solders.transaction_status.TransactionReturnData">TransactionReturnData</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.bankrun.BanksTransactionMeta.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.bankrun.BanksTransactionMeta.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.bankrun.start">
+<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">programs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accounts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_max_units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transaction_account_lock_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.bankrun.start" title="Permalink to this definition"></a></dt>
+<dd><p>Start a bankrun!</p>
+<p>This will spin up a BanksServer and a BanksClient,
+deploy programs and add accounts as instructed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>programs</strong> (<em>Optional</em><em>[</em><em>Sequence</em><em>[</em><em>Tuple</em><em>[</em><em>str</em><em>, </em><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a><em>]</em><em>]</em><em>]</em>) – A sequence of (program_name, program_id) tuples
+indicating which programs to deploy to the test environment. See the main bankrun docs for more explanation
+on how to add programs.</p></li>
+<li><p><strong>accounts</strong> (<em>Optional</em><em>[</em><em>Sequence</em><em>[</em><em>Tuple</em><em>[</em><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a><em>, </em><a class="reference internal" href="account.html#solders.account.Account" title="solders.account.Account"><em>Account</em></a><em>]</em><em>]</em><em>]</em>) – A sequence of (address, account_object) tuples, indicating
+what data to write to the given addresses.</p></li>
+<li><p><strong>compute_max_units</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – Override the default compute unit limit for a transaction.</p></li>
+<li><p><strong>transaction_account_lock_limit</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – Override the default transaction account lock limit.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a container for stuff you’ll need to send transactions and interact with the test environment.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#solders.bankrun.ProgramTestContext" title="solders.bankrun.ProgramTestContext">ProgramTestContext</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.bankrun.start_anchor">
+<span class="sig-name descname"><span class="pre">start_anchor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_programs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accounts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_max_units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transaction_account_lock_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.bankrun.start_anchor" title="Permalink to this definition"></a></dt>
+<dd><p>Start a bankrun in an Anchor workspace, with all the workspace programs deployed.</p>
+<p>This will spin up a BanksServer and a BanksClient,
+deploy programs and add accounts as instructed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>pathlib.Path</em>) – Path to root of the Anchor project.</p></li>
+<li><p><strong>extra_programs</strong> (<em>Optional</em><em>[</em><em>Sequence</em><em>[</em><em>Tuple</em><em>[</em><em>str</em><em>, </em><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a><em>]</em><em>]</em><em>]</em>) – A sequence of (program_name, program_id) tuples
+indicating extra programs to deploy alongside the Anchor workspace programs. See the main bankrun docs for more explanation
+on how to add programs.</p></li>
+<li><p><strong>accounts</strong> (<em>Optional</em><em>[</em><em>Sequence</em><em>[</em><em>Tuple</em><em>[</em><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a><em>, </em><a class="reference internal" href="account.html#solders.account.Account" title="solders.account.Account"><em>Account</em></a><em>]</em><em>]</em><em>]</em>) – A sequence of (address, account_object) tuples, indicating
+what data to write to the given addresses.</p></li>
+<li><p><strong>compute_max_units</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – Override the default compute unit limit for a transaction.</p></li>
+<li><p><strong>transaction_account_lock_limit</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – Override the default transaction account lock limit.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a container for stuff you’ll need to send transactions and interact with the test environment.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#solders.bankrun.ProgramTestContext" title="solders.bankrun.ProgramTestContext">ProgramTestContext</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="address_lookup_table_account.html" class="btn btn-neutral float-left" title="Address Lookup Table Account" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="commitment_config.html" class="btn btn-neutral float-right" title="Commitment Config" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Kevin Heavey.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,1643 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Config &mdash; solders 0.21.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Errors" href="errors.html" />
+    <link rel="prev" title="RPC" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            solders
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Solders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../account.html">Account</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../account_decoder.html">Account Decoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../address_lookup_table_account.html">Address Lookup Table Account</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bankrun.html">Bankrun</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../commitment_config.html">Commitment Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compute_budget.html">Compute Budget</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../epoch_schedule.html">Epoch Schedule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../errors.html">Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../hash.html">Hash</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../instruction.html">Instruction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../keypair.html">Keypair</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../message.html">Message</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../null_signer.html">Null Signer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../presigner.html">Presigner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pubkey.html">Pubkey</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">RPC</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Config</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.config.RpcSignatureStatusConfig"><code class="docutils literal notranslate"><span class="pre">RpcSignatureStatusConfig</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.config.RpcSendTransactionConfig"><code class="docutils literal notranslate"><span class="pre">RpcSendTransactionConfig</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.config.RpcSimulateTransactionAccountsConfig"><code class="docutils literal notranslate"><span class="pre">RpcSimulateTransactionAccountsConfig</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.config.RpcSimulateTransactionConfig"><code class="docutils literal notranslate"><span class="pre">RpcSimulateTransactionConfig</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.config.RpcRequestAirdropConfig"><code class="docutils literal notranslate"><span class="pre">RpcRequestAirdropConfig</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.config.RpcLeaderScheduleConfig"><code class="docutils literal notranslate"><span class="pre">RpcLeaderScheduleConfig</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.config.RpcBlockProductionConfigRange"><code class="docutils literal notranslate"><span class="pre">RpcBlockProductionConfigRange</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.config.RpcBlockProductionConfig"><code class="docutils literal notranslate"><span class="pre">RpcBlockProductionConfig</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.config.RpcGetVoteAccountsConfig"><code class="docutils literal notranslate"><span class="pre">RpcGetVoteAccountsConfig</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.config.RpcLargestAccountsFilter"><code class="docutils literal notranslate"><span class="pre">RpcLargestAccountsFilter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.config.RpcSupplyConfig"><code class="docutils literal notranslate"><span class="pre">RpcSupplyConfig</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.config.RpcEpochConfig"><code class="docutils literal notranslate"><span class="pre">RpcEpochConfig</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.config.RpcAccountInfoConfig"><code class="docutils literal notranslate"><span class="pre">RpcAccountInfoConfig</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.config.RpcProgramAccountsConfig"><code class="docutils literal notranslate"><span class="pre">RpcProgramAccountsConfig</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.config.RpcTransactionLogsFilter"><code class="docutils literal notranslate"><span class="pre">RpcTransactionLogsFilter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.config.RpcTransactionLogsFilterMentions"><code class="docutils literal notranslate"><span class="pre">RpcTransactionLogsFilterMentions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.config.RpcTransactionLogsConfig"><code class="docutils literal notranslate"><span class="pre">RpcTransactionLogsConfig</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.config.RpcTokenAccountsFilterMint"><code class="docutils literal notranslate"><span class="pre">RpcTokenAccountsFilterMint</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.config.RpcTokenAccountsFilterProgramId"><code class="docutils literal notranslate"><span class="pre">RpcTokenAccountsFilterProgramId</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.config.RpcSignatureSubscribeConfig"><code class="docutils literal notranslate"><span class="pre">RpcSignatureSubscribeConfig</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.config.RpcBlockSubscribeFilter"><code class="docutils literal notranslate"><span class="pre">RpcBlockSubscribeFilter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.config.RpcBlockSubscribeFilterMentions"><code class="docutils literal notranslate"><span class="pre">RpcBlockSubscribeFilterMentions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.config.RpcBlockSubscribeConfig"><code class="docutils literal notranslate"><span class="pre">RpcBlockSubscribeConfig</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.config.RpcSignaturesForAddressConfig"><code class="docutils literal notranslate"><span class="pre">RpcSignaturesForAddressConfig</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.config.RpcBlockConfig"><code class="docutils literal notranslate"><span class="pre">RpcBlockConfig</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.config.RpcTransactionConfig"><code class="docutils literal notranslate"><span class="pre">RpcTransactionConfig</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.config.RpcContextConfig"><code class="docutils literal notranslate"><span class="pre">RpcContextConfig</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="errors.html">Errors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="filter.html">Filter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="requests.html">Requests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="responses.html">Responses</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../signature.html">Signature</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../system_program.html">System Program</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sysvar.html">Sysvar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../token/index.html">SPL Token</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../transaction_status.html">Transaction Status</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../transaction.html">Transaction</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">solders</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="index.html">RPC</a></li>
+      <li class="breadcrumb-item active">Config</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/kevinheavey/solders/blob/main/docs/api_reference/rpc/config.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-solders.rpc.config">
+<span id="config"></span><h1>Config<a class="headerlink" href="#module-solders.rpc.config" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSignatureStatusConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RpcSignatureStatusConfig</span></span><a class="headerlink" href="#solders.rpc.config.RpcSignatureStatusConfig" title="Permalink to this definition"></a></dt>
+<dd><p>Configuration object for <code class="docutils literal notranslate"><span class="pre">getSignatureStatuses</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>search_transaction_history</strong> – If True, a Solana node will search its ledger cache for any signatures not found in the recent status cache</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSignatureStatusConfig.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcSignatureStatusConfig.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSignatureStatusConfig.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcSignatureStatusConfig.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSignatureStatusConfig.search_transaction_history">
+<span class="sig-name descname"><span class="pre">search_transaction_history</span></span><a class="headerlink" href="#solders.rpc.config.RpcSignatureStatusConfig.search_transaction_history" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSignatureStatusConfig.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcSignatureStatusConfig.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSendTransactionConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RpcSendTransactionConfig</span></span><a class="headerlink" href="#solders.rpc.config.RpcSendTransactionConfig" title="Permalink to this definition"></a></dt>
+<dd><p>Configuration object for <code class="docutils literal notranslate"><span class="pre">sendTransaction</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>skip_preflight</strong> (<em>bool</em>) – If true, skip the preflight transaction checks.</p></li>
+<li><p><strong>preflight_commitment</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../commitment_config.html#solders.commitment_config.CommitmentLevel" title="solders.commitment_config.CommitmentLevel"><em>CommitmentLevel</em></a><em>]</em>) – Commitment level to use for preflight checks.</p></li>
+<li><p><strong>max_retries</strong> – (Optional[int]): Maximum number of times for the RPC node to retry sending
+the transaction to the leader. If this parameter not provided, the RPC node will
+retry the transaction until it is finalized or until the blockhash expires.</p></li>
+<li><p><strong>min_context_slot</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – The minimum slot that the request can be evaluated at.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSendTransactionConfig.default">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">default</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcSendTransactionConfig.default" title="Permalink to this definition"></a></dt>
+<dd><p>Create a new default instance of this class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The default instance.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#solders.rpc.config.RpcSendTransactionConfig" title="solders.rpc.config.RpcSendTransactionConfig">RpcSendTransactionConfig</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSendTransactionConfig.encoding">
+<span class="sig-name descname"><span class="pre">encoding</span></span><a class="headerlink" href="#solders.rpc.config.RpcSendTransactionConfig.encoding" title="Permalink to this definition"></a></dt>
+<dd><p>Encoding used for the transaction data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../transaction_status.html#solders.transaction_status.UiTransactionEncoding" title="solders.transaction_status.UiTransactionEncoding">UiTransactionEncoding</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSendTransactionConfig.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcSendTransactionConfig.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSendTransactionConfig.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcSendTransactionConfig.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSendTransactionConfig.max_retries">
+<span class="sig-name descname"><span class="pre">max_retries</span></span><a class="headerlink" href="#solders.rpc.config.RpcSendTransactionConfig.max_retries" title="Permalink to this definition"></a></dt>
+<dd><p>Maximum number of times for the RPC node to retry sending the transaction to the leader.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSendTransactionConfig.min_context_slot">
+<span class="sig-name descname"><span class="pre">min_context_slot</span></span><a class="headerlink" href="#solders.rpc.config.RpcSendTransactionConfig.min_context_slot" title="Permalink to this definition"></a></dt>
+<dd><p>The minimum slot that the request can be evaluated at.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSendTransactionConfig.preflight_commitment">
+<span class="sig-name descname"><span class="pre">preflight_commitment</span></span><a class="headerlink" href="#solders.rpc.config.RpcSendTransactionConfig.preflight_commitment" title="Permalink to this definition"></a></dt>
+<dd><p>Commitment level to use for preflight checks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[<a class="reference internal" href="../commitment_config.html#solders.commitment_config.CommitmentLevel" title="solders.commitment_config.CommitmentLevel">CommitmentLevel</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSendTransactionConfig.skip_preflight">
+<span class="sig-name descname"><span class="pre">skip_preflight</span></span><a class="headerlink" href="#solders.rpc.config.RpcSendTransactionConfig.skip_preflight" title="Permalink to this definition"></a></dt>
+<dd><p>If true, skip the preflight transaction checks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSendTransactionConfig.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcSendTransactionConfig.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSimulateTransactionAccountsConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RpcSimulateTransactionAccountsConfig</span></span><a class="headerlink" href="#solders.rpc.config.RpcSimulateTransactionAccountsConfig" title="Permalink to this definition"></a></dt>
+<dd><p>Accounts configuration for <code class="docutils literal notranslate"><span class="pre">simulateTransaction</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>encoding</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../account_decoder.html#solders.account_decoder.UiAccountEncoding" title="solders.account_decoder.UiAccountEncoding"><em>UiAccountEncoding</em></a><em>]</em>) – Encoding for returned Account data</p></li>
+<li><p><strong>addresses</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="../pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a><em>]</em>) – An array of accounts to return.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSimulateTransactionAccountsConfig.addresses">
+<span class="sig-name descname"><span class="pre">addresses</span></span><a class="headerlink" href="#solders.rpc.config.RpcSimulateTransactionAccountsConfig.addresses" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSimulateTransactionAccountsConfig.default">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">default</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcSimulateTransactionAccountsConfig.default" title="Permalink to this definition"></a></dt>
+<dd><p>Create a new default instance of this class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The default instance.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#solders.rpc.config.RpcSimulateTransactionAccountsConfig" title="solders.rpc.config.RpcSimulateTransactionAccountsConfig">RpcSimulateTransactionAccountsConfig</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSimulateTransactionAccountsConfig.encoding">
+<span class="sig-name descname"><span class="pre">encoding</span></span><a class="headerlink" href="#solders.rpc.config.RpcSimulateTransactionAccountsConfig.encoding" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSimulateTransactionAccountsConfig.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcSimulateTransactionAccountsConfig.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSimulateTransactionAccountsConfig.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcSimulateTransactionAccountsConfig.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSimulateTransactionAccountsConfig.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcSimulateTransactionAccountsConfig.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSimulateTransactionConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RpcSimulateTransactionConfig</span></span><a class="headerlink" href="#solders.rpc.config.RpcSimulateTransactionConfig" title="Permalink to this definition"></a></dt>
+<dd><p>Configuration object for <code class="docutils literal notranslate"><span class="pre">simulateTransaction</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sig_verify</strong> (<em>bool</em>) – If True the transaction signatures will be verified
+(conflicts with <code class="docutils literal notranslate"><span class="pre">replace_recent_blockhash</span></code>).</p></li>
+<li><p><strong>replace_recent_blockhash</strong> (<em>bool</em>) – If True the transaction recent blockhash
+will be replaced with the most recent blockhash
+(conflicts with <code class="docutils literal notranslate"><span class="pre">sig_verify</span></code>).</p></li>
+<li><p><strong>commitment</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../commitment_config.html#solders.commitment_config.CommitmentLevel" title="solders.commitment_config.CommitmentLevel"><em>CommitmentLevel</em></a><em>]</em>) – Commitment level at which to simulate the transaction.</p></li>
+<li><p><strong>accounts</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="#solders.rpc.config.RpcSimulateTransactionAccountsConfig" title="solders.rpc.config.RpcSimulateTransactionAccountsConfig"><em>RpcSimulateTransactionAccountsConfig</em></a><em>]</em>) – Accounts configuration object.</p></li>
+<li><p><strong>min_context_slot</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – The minimum slot that the request can be evaluated at.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSimulateTransactionConfig.accounts">
+<span class="sig-name descname"><span class="pre">accounts</span></span><a class="headerlink" href="#solders.rpc.config.RpcSimulateTransactionConfig.accounts" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSimulateTransactionConfig.commitment">
+<span class="sig-name descname"><span class="pre">commitment</span></span><a class="headerlink" href="#solders.rpc.config.RpcSimulateTransactionConfig.commitment" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSimulateTransactionConfig.default">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">default</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcSimulateTransactionConfig.default" title="Permalink to this definition"></a></dt>
+<dd><p>Create a new default instance of this class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The default instance.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#solders.rpc.config.RpcSimulateTransactionConfig" title="solders.rpc.config.RpcSimulateTransactionConfig">RpcSimulateTransactionConfig</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSimulateTransactionConfig.encoding">
+<span class="sig-name descname"><span class="pre">encoding</span></span><a class="headerlink" href="#solders.rpc.config.RpcSimulateTransactionConfig.encoding" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSimulateTransactionConfig.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcSimulateTransactionConfig.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSimulateTransactionConfig.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcSimulateTransactionConfig.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSimulateTransactionConfig.inner_instructions">
+<span class="sig-name descname"><span class="pre">inner_instructions</span></span><a class="headerlink" href="#solders.rpc.config.RpcSimulateTransactionConfig.inner_instructions" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSimulateTransactionConfig.min_context_slot">
+<span class="sig-name descname"><span class="pre">min_context_slot</span></span><a class="headerlink" href="#solders.rpc.config.RpcSimulateTransactionConfig.min_context_slot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSimulateTransactionConfig.replace_recent_blockhash">
+<span class="sig-name descname"><span class="pre">replace_recent_blockhash</span></span><a class="headerlink" href="#solders.rpc.config.RpcSimulateTransactionConfig.replace_recent_blockhash" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSimulateTransactionConfig.sig_verify">
+<span class="sig-name descname"><span class="pre">sig_verify</span></span><a class="headerlink" href="#solders.rpc.config.RpcSimulateTransactionConfig.sig_verify" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSimulateTransactionConfig.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcSimulateTransactionConfig.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcRequestAirdropConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RpcRequestAirdropConfig</span></span><a class="headerlink" href="#solders.rpc.config.RpcRequestAirdropConfig" title="Permalink to this definition"></a></dt>
+<dd><p>Configuration object for <code class="docutils literal notranslate"><span class="pre">requestAirdrop</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>recent_blockhash</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../hash.html#solders.hash.Hash" title="solders.hash.Hash"><em>Hash</em></a><em>]</em>) – The ID of a recent ledger entry.</p></li>
+<li><p><strong>commitment</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../commitment_config.html#solders.commitment_config.CommitmentLevel" title="solders.commitment_config.CommitmentLevel"><em>CommitmentLevel</em></a><em>]</em>) – Bank state to query.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcRequestAirdropConfig.commitment">
+<span class="sig-name descname"><span class="pre">commitment</span></span><a class="headerlink" href="#solders.rpc.config.RpcRequestAirdropConfig.commitment" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcRequestAirdropConfig.default">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">default</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcRequestAirdropConfig.default" title="Permalink to this definition"></a></dt>
+<dd><p>Create a new default instance of this class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The default instance.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#solders.rpc.config.RpcRequestAirdropConfig" title="solders.rpc.config.RpcRequestAirdropConfig">RpcRequestAirdropConfig</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcRequestAirdropConfig.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcRequestAirdropConfig.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcRequestAirdropConfig.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcRequestAirdropConfig.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcRequestAirdropConfig.recent_blockhash">
+<span class="sig-name descname"><span class="pre">recent_blockhash</span></span><a class="headerlink" href="#solders.rpc.config.RpcRequestAirdropConfig.recent_blockhash" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcRequestAirdropConfig.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcRequestAirdropConfig.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcLeaderScheduleConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RpcLeaderScheduleConfig</span></span><a class="headerlink" href="#solders.rpc.config.RpcLeaderScheduleConfig" title="Permalink to this definition"></a></dt>
+<dd><p>Configuration object for <code class="docutils literal notranslate"><span class="pre">getLeaderSchedule</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>identity</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a><em>]</em>) – Validator identity.</p></li>
+<li><p><strong>commitment</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../commitment_config.html#solders.commitment_config.CommitmentLevel" title="solders.commitment_config.CommitmentLevel"><em>CommitmentLevel</em></a><em>]</em>) – Bank state to query.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcLeaderScheduleConfig.commitment">
+<span class="sig-name descname"><span class="pre">commitment</span></span><a class="headerlink" href="#solders.rpc.config.RpcLeaderScheduleConfig.commitment" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcLeaderScheduleConfig.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcLeaderScheduleConfig.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcLeaderScheduleConfig.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcLeaderScheduleConfig.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcLeaderScheduleConfig.identity">
+<span class="sig-name descname"><span class="pre">identity</span></span><a class="headerlink" href="#solders.rpc.config.RpcLeaderScheduleConfig.identity" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcLeaderScheduleConfig.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcLeaderScheduleConfig.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcBlockProductionConfigRange">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RpcBlockProductionConfigRange</span></span><a class="headerlink" href="#solders.rpc.config.RpcBlockProductionConfigRange" title="Permalink to this definition"></a></dt>
+<dd><p>Range object for <code class="docutils literal notranslate"><span class="pre">RpcBlockProductionConfig</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>first_slot</strong> (<em>int</em>) – First slot in the range</p></li>
+<li><p><strong>last_slot</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – Last slot in the range.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcBlockProductionConfigRange.first_slot">
+<span class="sig-name descname"><span class="pre">first_slot</span></span><a class="headerlink" href="#solders.rpc.config.RpcBlockProductionConfigRange.first_slot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcBlockProductionConfigRange.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcBlockProductionConfigRange.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcBlockProductionConfigRange.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcBlockProductionConfigRange.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcBlockProductionConfigRange.last_slot">
+<span class="sig-name descname"><span class="pre">last_slot</span></span><a class="headerlink" href="#solders.rpc.config.RpcBlockProductionConfigRange.last_slot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcBlockProductionConfigRange.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcBlockProductionConfigRange.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcBlockProductionConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RpcBlockProductionConfig</span></span><a class="headerlink" href="#solders.rpc.config.RpcBlockProductionConfig" title="Permalink to this definition"></a></dt>
+<dd><p>Configuration object for <code class="docutils literal notranslate"><span class="pre">getBlockProduction</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>identity</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a><em>]</em>) – Validator identity.</p></li>
+<li><p><strong>range</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="#solders.rpc.config.RpcBlockProductionConfigRange" title="solders.rpc.config.RpcBlockProductionConfigRange"><em>RpcBlockProductionConfigRange</em></a><em>]</em>) – Slot range to query. Current epoch if <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>commitment</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../commitment_config.html#solders.commitment_config.CommitmentLevel" title="solders.commitment_config.CommitmentLevel"><em>CommitmentLevel</em></a><em>]</em>) – Bank state to query.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcBlockProductionConfig.commitment">
+<span class="sig-name descname"><span class="pre">commitment</span></span><a class="headerlink" href="#solders.rpc.config.RpcBlockProductionConfig.commitment" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcBlockProductionConfig.default">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">default</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcBlockProductionConfig.default" title="Permalink to this definition"></a></dt>
+<dd><p>Create a new default instance of this class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The default instance.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#solders.rpc.config.RpcBlockProductionConfig" title="solders.rpc.config.RpcBlockProductionConfig">RpcBlockProductionConfig</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcBlockProductionConfig.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcBlockProductionConfig.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcBlockProductionConfig.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcBlockProductionConfig.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcBlockProductionConfig.identity">
+<span class="sig-name descname"><span class="pre">identity</span></span><a class="headerlink" href="#solders.rpc.config.RpcBlockProductionConfig.identity" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcBlockProductionConfig.range">
+<span class="sig-name descname"><span class="pre">range</span></span><a class="headerlink" href="#solders.rpc.config.RpcBlockProductionConfig.range" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcBlockProductionConfig.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcBlockProductionConfig.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcGetVoteAccountsConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RpcGetVoteAccountsConfig</span></span><a class="headerlink" href="#solders.rpc.config.RpcGetVoteAccountsConfig" title="Permalink to this definition"></a></dt>
+<dd><p>Configuration object for <code class="docutils literal notranslate"><span class="pre">getVoteAccounts</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vote_pubkey</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a><em>]</em>) – Validator vote address.</p></li>
+<li><p><strong>commitment</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../commitment_config.html#solders.commitment_config.CommitmentLevel" title="solders.commitment_config.CommitmentLevel"><em>CommitmentLevel</em></a><em>]</em>) – Bank state to query.</p></li>
+<li><p><strong>keep_unstaked_delinquents</strong> (<em>Optional</em><em>[</em><em>bool</em><em>]</em>) – Do not filter out delinquent validators with no stake.</p></li>
+<li><p><strong>delinquent_slot_distance</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – Specify the number of slots behind the tip that a validator
+must fall to be considered delinquent.
+NOTE: For the sake of consistency between ecosystem products, it is not recommended that
+this argument be specified.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcGetVoteAccountsConfig.commitment">
+<span class="sig-name descname"><span class="pre">commitment</span></span><a class="headerlink" href="#solders.rpc.config.RpcGetVoteAccountsConfig.commitment" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcGetVoteAccountsConfig.default">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">default</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcGetVoteAccountsConfig.default" title="Permalink to this definition"></a></dt>
+<dd><p>Create a new default instance of this class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The default instance.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#solders.rpc.config.RpcGetVoteAccountsConfig" title="solders.rpc.config.RpcGetVoteAccountsConfig">RpcGetVoteAccountsConfig</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcGetVoteAccountsConfig.delinquent_slot_distance">
+<span class="sig-name descname"><span class="pre">delinquent_slot_distance</span></span><a class="headerlink" href="#solders.rpc.config.RpcGetVoteAccountsConfig.delinquent_slot_distance" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcGetVoteAccountsConfig.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcGetVoteAccountsConfig.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcGetVoteAccountsConfig.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcGetVoteAccountsConfig.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcGetVoteAccountsConfig.keep_unstaked_delinquents">
+<span class="sig-name descname"><span class="pre">keep_unstaked_delinquents</span></span><a class="headerlink" href="#solders.rpc.config.RpcGetVoteAccountsConfig.keep_unstaked_delinquents" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcGetVoteAccountsConfig.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcGetVoteAccountsConfig.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcGetVoteAccountsConfig.vote_pubkey">
+<span class="sig-name descname"><span class="pre">vote_pubkey</span></span><a class="headerlink" href="#solders.rpc.config.RpcGetVoteAccountsConfig.vote_pubkey" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcLargestAccountsFilter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RpcLargestAccountsFilter</span></span><a class="headerlink" href="#solders.rpc.config.RpcLargestAccountsFilter" title="Permalink to this definition"></a></dt>
+<dd><p>Filter for <code class="docutils literal notranslate"><span class="pre">getLargestAccounts</span></code>.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcLargestAccountsFilter.Circulating">
+<span class="sig-name descname"><span class="pre">Circulating</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">RpcLargestAccountsFilter.Circulating</span></em><a class="headerlink" href="#solders.rpc.config.RpcLargestAccountsFilter.Circulating" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcLargestAccountsFilter.NonCirculating">
+<span class="sig-name descname"><span class="pre">NonCirculating</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">RpcLargestAccountsFilter.NonCirculating</span></em><a class="headerlink" href="#solders.rpc.config.RpcLargestAccountsFilter.NonCirculating" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSupplyConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RpcSupplyConfig</span></span><a class="headerlink" href="#solders.rpc.config.RpcSupplyConfig" title="Permalink to this definition"></a></dt>
+<dd><p>Configuration object for <code class="docutils literal notranslate"><span class="pre">getSupply</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>commitment</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../commitment_config.html#solders.commitment_config.CommitmentLevel" title="solders.commitment_config.CommitmentLevel"><em>CommitmentLevel</em></a><em>]</em>) – Bank state to query.</p></li>
+<li><p><strong>exclude_non_circulating_accounts_list</strong> (<em>bool</em>) – Exclude non circulating accounts list from response.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSupplyConfig.commitment">
+<span class="sig-name descname"><span class="pre">commitment</span></span><a class="headerlink" href="#solders.rpc.config.RpcSupplyConfig.commitment" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSupplyConfig.default">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">default</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcSupplyConfig.default" title="Permalink to this definition"></a></dt>
+<dd><p>Create a new default instance of this class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The default instance.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#solders.rpc.config.RpcSupplyConfig" title="solders.rpc.config.RpcSupplyConfig">RpcSupplyConfig</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSupplyConfig.exclude_non_circulating_accounts_list">
+<span class="sig-name descname"><span class="pre">exclude_non_circulating_accounts_list</span></span><a class="headerlink" href="#solders.rpc.config.RpcSupplyConfig.exclude_non_circulating_accounts_list" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSupplyConfig.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcSupplyConfig.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSupplyConfig.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcSupplyConfig.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSupplyConfig.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcSupplyConfig.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcEpochConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RpcEpochConfig</span></span><a class="headerlink" href="#solders.rpc.config.RpcEpochConfig" title="Permalink to this definition"></a></dt>
+<dd><p>Configuration object containing epoch information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>epoch</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – Epoch is a unit of time a given leader schedule is honored, some number of Slots.</p></li>
+<li><p><strong>commitment</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../commitment_config.html#solders.commitment_config.CommitmentLevel" title="solders.commitment_config.CommitmentLevel"><em>CommitmentLevel</em></a><em>]</em>) – Bank state to query.</p></li>
+<li><p><strong>min_context_slot</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – The minimum slot that the request can be evaluated at.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcEpochConfig.commitment">
+<span class="sig-name descname"><span class="pre">commitment</span></span><a class="headerlink" href="#solders.rpc.config.RpcEpochConfig.commitment" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcEpochConfig.default">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">default</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcEpochConfig.default" title="Permalink to this definition"></a></dt>
+<dd><p>Create a new default instance of this class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The default instance.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#solders.rpc.config.RpcEpochConfig" title="solders.rpc.config.RpcEpochConfig">RpcEpochConfig</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcEpochConfig.epoch">
+<span class="sig-name descname"><span class="pre">epoch</span></span><a class="headerlink" href="#solders.rpc.config.RpcEpochConfig.epoch" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcEpochConfig.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcEpochConfig.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcEpochConfig.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcEpochConfig.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcEpochConfig.min_context_slot">
+<span class="sig-name descname"><span class="pre">min_context_slot</span></span><a class="headerlink" href="#solders.rpc.config.RpcEpochConfig.min_context_slot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcEpochConfig.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcEpochConfig.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcAccountInfoConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RpcAccountInfoConfig</span></span><a class="headerlink" href="#solders.rpc.config.RpcAccountInfoConfig" title="Permalink to this definition"></a></dt>
+<dd><p>Configuration object for <code class="docutils literal notranslate"><span class="pre">getAccountInfo</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>encoding</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../account_decoder.html#solders.account_decoder.UiAccountEncoding" title="solders.account_decoder.UiAccountEncoding"><em>UiAccountEncoding</em></a><em>]</em>) – Encoding for returned account data.</p></li>
+<li><p><strong>data_slice</strong> (<em>Optiona;</em><em>[</em><a class="reference internal" href="../account_decoder.html#solders.account_decoder.UiDataSliceConfig" title="solders.account_decoder.UiDataSliceConfig"><em>UiDataSliceConfig</em></a><em>]</em>) – Limit the returned account data.</p></li>
+<li><p><strong>commitment</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../commitment_config.html#solders.commitment_config.CommitmentLevel" title="solders.commitment_config.CommitmentLevel"><em>CommitmentLevel</em></a><em>]</em>) – Bank state to query.</p></li>
+<li><p><strong>min_context_slot</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – The minimum slot that the request can be evaluated at.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcAccountInfoConfig.commitment">
+<span class="sig-name descname"><span class="pre">commitment</span></span><a class="headerlink" href="#solders.rpc.config.RpcAccountInfoConfig.commitment" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcAccountInfoConfig.data_slice">
+<span class="sig-name descname"><span class="pre">data_slice</span></span><a class="headerlink" href="#solders.rpc.config.RpcAccountInfoConfig.data_slice" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcAccountInfoConfig.default">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">default</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcAccountInfoConfig.default" title="Permalink to this definition"></a></dt>
+<dd><p>Create a new default instance of this class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The default instance.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#solders.rpc.config.RpcEpochConfig" title="solders.rpc.config.RpcEpochConfig">RpcEpochConfig</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcAccountInfoConfig.encoding">
+<span class="sig-name descname"><span class="pre">encoding</span></span><a class="headerlink" href="#solders.rpc.config.RpcAccountInfoConfig.encoding" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcAccountInfoConfig.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcAccountInfoConfig.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcAccountInfoConfig.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcAccountInfoConfig.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcAccountInfoConfig.min_context_slot">
+<span class="sig-name descname"><span class="pre">min_context_slot</span></span><a class="headerlink" href="#solders.rpc.config.RpcAccountInfoConfig.min_context_slot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcAccountInfoConfig.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcAccountInfoConfig.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcProgramAccountsConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RpcProgramAccountsConfig</span></span><a class="headerlink" href="#solders.rpc.config.RpcProgramAccountsConfig" title="Permalink to this definition"></a></dt>
+<dd><p>Configuration object for <code class="docutils literal notranslate"><span class="pre">getProgramAccounts</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>account_config</strong> (<a class="reference internal" href="#solders.rpc.config.RpcAccountInfoConfig" title="solders.rpc.config.RpcAccountInfoConfig"><em>RpcAccountInfoConfig</em></a>) – Account info config.</p></li>
+<li><p><strong>filters</strong> (<em>Optional</em><em>[</em><em>Sequence</em><em>[</em><em>int</em><em> | </em><a class="reference internal" href="filter.html#solders.rpc.filter.Memcmp" title="solders.rpc.filter.Memcmp"><em>Memcmp</em></a><em>]</em><em>]</em>) – Filter results using various filter objects; account must meet all filter criteria to be included in results.</p></li>
+<li><p><strong>with_context</strong> (<em>Optional</em><em>[</em><em>bool</em><em>]</em>) – Wrap the result in an RpcResponse JSON object.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcProgramAccountsConfig.account_config">
+<span class="sig-name descname"><span class="pre">account_config</span></span><a class="headerlink" href="#solders.rpc.config.RpcProgramAccountsConfig.account_config" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcProgramAccountsConfig.default">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">default</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcProgramAccountsConfig.default" title="Permalink to this definition"></a></dt>
+<dd><p>Create a new default instance of this class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The default instance.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#solders.rpc.config.RpcEpochConfig" title="solders.rpc.config.RpcEpochConfig">RpcEpochConfig</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcProgramAccountsConfig.filters">
+<span class="sig-name descname"><span class="pre">filters</span></span><a class="headerlink" href="#solders.rpc.config.RpcProgramAccountsConfig.filters" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcProgramAccountsConfig.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcProgramAccountsConfig.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcProgramAccountsConfig.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcProgramAccountsConfig.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcProgramAccountsConfig.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcProgramAccountsConfig.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcProgramAccountsConfig.with_context">
+<span class="sig-name descname"><span class="pre">with_context</span></span><a class="headerlink" href="#solders.rpc.config.RpcProgramAccountsConfig.with_context" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcTransactionLogsFilter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RpcTransactionLogsFilter</span></span><a class="headerlink" href="#solders.rpc.config.RpcTransactionLogsFilter" title="Permalink to this definition"></a></dt>
+<dd><p>Fieldless filters for <code class="docutils literal notranslate"><span class="pre">logsSubscribe</span></code>.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcTransactionLogsFilter.All">
+<span class="sig-name descname"><span class="pre">All</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">RpcTransactionLogsFilter.All</span></em><a class="headerlink" href="#solders.rpc.config.RpcTransactionLogsFilter.All" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcTransactionLogsFilter.AllWithVotes">
+<span class="sig-name descname"><span class="pre">AllWithVotes</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">RpcTransactionLogsFilter.AllWithVotes</span></em><a class="headerlink" href="#solders.rpc.config.RpcTransactionLogsFilter.AllWithVotes" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcTransactionLogsFilterMentions">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RpcTransactionLogsFilterMentions</span></span><a class="headerlink" href="#solders.rpc.config.RpcTransactionLogsFilterMentions" title="Permalink to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">mentions</span></code> filter for <code class="docutils literal notranslate"><span class="pre">logsSubscribe</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pubkey</strong> (<a class="reference internal" href="../pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a>) – Subscribe to all transactions that mention the provided Pubkey.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcTransactionLogsFilterMentions.pubkey">
+<span class="sig-name descname"><span class="pre">pubkey</span></span><a class="headerlink" href="#solders.rpc.config.RpcTransactionLogsFilterMentions.pubkey" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcTransactionLogsConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RpcTransactionLogsConfig</span></span><a class="headerlink" href="#solders.rpc.config.RpcTransactionLogsConfig" title="Permalink to this definition"></a></dt>
+<dd><p>Configuration object for <code class="docutils literal notranslate"><span class="pre">logsSubscribe</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>commitment</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../commitment_config.html#solders.commitment_config.CommitmentLevel" title="solders.commitment_config.CommitmentLevel"><em>CommitmentLevel</em></a><em>]</em>) – Bank state to query.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcTransactionLogsConfig.commitment">
+<span class="sig-name descname"><span class="pre">commitment</span></span><a class="headerlink" href="#solders.rpc.config.RpcTransactionLogsConfig.commitment" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcTransactionLogsConfig.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcTransactionLogsConfig.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcTransactionLogsConfig.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcTransactionLogsConfig.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcTransactionLogsConfig.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcTransactionLogsConfig.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcTokenAccountsFilterMint">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RpcTokenAccountsFilterMint</span></span><a class="headerlink" href="#solders.rpc.config.RpcTokenAccountsFilterMint" title="Permalink to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">mint</span></code> filter for <code class="docutils literal notranslate"><span class="pre">getTokenAccountsBy*</span></code> methods.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mint</strong> (<a class="reference internal" href="../pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a>) – Pubkey of the specific token Mint to limit accounts to.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcTokenAccountsFilterMint.mint">
+<span class="sig-name descname"><span class="pre">mint</span></span><a class="headerlink" href="#solders.rpc.config.RpcTokenAccountsFilterMint.mint" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcTokenAccountsFilterProgramId">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RpcTokenAccountsFilterProgramId</span></span><a class="headerlink" href="#solders.rpc.config.RpcTokenAccountsFilterProgramId" title="Permalink to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">programId</span></code> filter for <code class="docutils literal notranslate"><span class="pre">getTokenAccountsBy*</span></code> methods.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>program_id</strong> (<a class="reference internal" href="../pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a>) – Pubkey of the Token program that owns the accounts.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcTokenAccountsFilterProgramId.program_id">
+<span class="sig-name descname"><span class="pre">program_id</span></span><a class="headerlink" href="#solders.rpc.config.RpcTokenAccountsFilterProgramId.program_id" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSignatureSubscribeConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RpcSignatureSubscribeConfig</span></span><a class="headerlink" href="#solders.rpc.config.RpcSignatureSubscribeConfig" title="Permalink to this definition"></a></dt>
+<dd><p>Configuration object for <code class="docutils literal notranslate"><span class="pre">signatureSubscribe</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>commitment</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../commitment_config.html#solders.commitment_config.CommitmentLevel" title="solders.commitment_config.CommitmentLevel"><em>CommitmentLevel</em></a><em>]</em>) – Bank state to query.</p></li>
+<li><p><strong>enable_received_notification</strong> (<em>Optional</em><em>[</em><em>bool</em><em>]</em>) – Enable received notification.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSignatureSubscribeConfig.commitment">
+<span class="sig-name descname"><span class="pre">commitment</span></span><a class="headerlink" href="#solders.rpc.config.RpcSignatureSubscribeConfig.commitment" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSignatureSubscribeConfig.default">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">default</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcSignatureSubscribeConfig.default" title="Permalink to this definition"></a></dt>
+<dd><p>Create a new default instance of this class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The default instance.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#solders.rpc.config.RpcSignatureSubscribeConfig" title="solders.rpc.config.RpcSignatureSubscribeConfig">RpcSignatureSubscribeConfig</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSignatureSubscribeConfig.enable_received_notification">
+<span class="sig-name descname"><span class="pre">enable_received_notification</span></span><a class="headerlink" href="#solders.rpc.config.RpcSignatureSubscribeConfig.enable_received_notification" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSignatureSubscribeConfig.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcSignatureSubscribeConfig.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSignatureSubscribeConfig.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcSignatureSubscribeConfig.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSignatureSubscribeConfig.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcSignatureSubscribeConfig.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcBlockSubscribeFilter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RpcBlockSubscribeFilter</span></span><a class="headerlink" href="#solders.rpc.config.RpcBlockSubscribeFilter" title="Permalink to this definition"></a></dt>
+<dd><p>Filter for <code class="docutils literal notranslate"><span class="pre">blockSubscribe</span></code>.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcBlockSubscribeFilter.All">
+<span class="sig-name descname"><span class="pre">All</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">RpcBlockSubscribeFilter.All</span></em><a class="headerlink" href="#solders.rpc.config.RpcBlockSubscribeFilter.All" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcBlockSubscribeFilterMentions">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RpcBlockSubscribeFilterMentions</span></span><a class="headerlink" href="#solders.rpc.config.RpcBlockSubscribeFilterMentions" title="Permalink to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">mentions</span></code> filter for <code class="docutils literal notranslate"><span class="pre">blockSubscribe</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pubkey</strong> (<a class="reference internal" href="../pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a>) – Return only transactions that mention the provided pubkey.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcBlockSubscribeFilterMentions.pubkey">
+<span class="sig-name descname"><span class="pre">pubkey</span></span><a class="headerlink" href="#solders.rpc.config.RpcBlockSubscribeFilterMentions.pubkey" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcBlockSubscribeConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RpcBlockSubscribeConfig</span></span><a class="headerlink" href="#solders.rpc.config.RpcBlockSubscribeConfig" title="Permalink to this definition"></a></dt>
+<dd><p>Configuration object for <code class="docutils literal notranslate"><span class="pre">blockSubscribe</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>commitment</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../commitment_config.html#solders.commitment_config.CommitmentLevel" title="solders.commitment_config.CommitmentLevel"><em>CommitmentLevel</em></a><em>]</em>) – Bank state to query.</p></li>
+<li><p><strong>encoding</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../transaction_status.html#solders.transaction_status.UiTransactionEncoding" title="solders.transaction_status.UiTransactionEncoding"><em>UiTransactionEncoding</em></a><em>]</em>) – Encoding used for the transaction data.</p></li>
+<li><p><strong>transaction_details</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../transaction_status.html#solders.transaction_status.TransactionDetails" title="solders.transaction_status.TransactionDetails"><em>TransactionDetails</em></a><em>]</em>) – Level of transaction detail to return.</p></li>
+<li><p><strong>show_rewards</strong> (<em>Optional</em><em>[</em><em>bool</em><em>]</em>) – Whether to populate the <code class="docutils literal notranslate"><span class="pre">rewards</span></code> array.</p></li>
+<li><p><strong>max_supported_transaction_version</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – Set the max transaction version to return in responses.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcBlockSubscribeConfig.commitment">
+<span class="sig-name descname"><span class="pre">commitment</span></span><a class="headerlink" href="#solders.rpc.config.RpcBlockSubscribeConfig.commitment" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcBlockSubscribeConfig.default">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">default</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcBlockSubscribeConfig.default" title="Permalink to this definition"></a></dt>
+<dd><p>Create a new default instance of this class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The default instance.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#solders.rpc.config.RpcBlockSubscribeConfig" title="solders.rpc.config.RpcBlockSubscribeConfig">RpcBlockSubscribeConfig</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcBlockSubscribeConfig.encoding">
+<span class="sig-name descname"><span class="pre">encoding</span></span><a class="headerlink" href="#solders.rpc.config.RpcBlockSubscribeConfig.encoding" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcBlockSubscribeConfig.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcBlockSubscribeConfig.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcBlockSubscribeConfig.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcBlockSubscribeConfig.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcBlockSubscribeConfig.max_supported_transaction_version">
+<span class="sig-name descname"><span class="pre">max_supported_transaction_version</span></span><a class="headerlink" href="#solders.rpc.config.RpcBlockSubscribeConfig.max_supported_transaction_version" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcBlockSubscribeConfig.show_rewards">
+<span class="sig-name descname"><span class="pre">show_rewards</span></span><a class="headerlink" href="#solders.rpc.config.RpcBlockSubscribeConfig.show_rewards" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcBlockSubscribeConfig.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcBlockSubscribeConfig.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcBlockSubscribeConfig.transaction_details">
+<span class="sig-name descname"><span class="pre">transaction_details</span></span><a class="headerlink" href="#solders.rpc.config.RpcBlockSubscribeConfig.transaction_details" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSignaturesForAddressConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RpcSignaturesForAddressConfig</span></span><a class="headerlink" href="#solders.rpc.config.RpcSignaturesForAddressConfig" title="Permalink to this definition"></a></dt>
+<dd><p>Configuration object for <code class="docutils literal notranslate"><span class="pre">getSignaturesForAddress</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>before</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../signature.html#solders.signature.Signature" title="solders.signature.Signature"><em>Signature</em></a><em>]</em>) – Start searching backwards from this transaction signature.</p></li>
+<li><p><strong>until</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../signature.html#solders.signature.Signature" title="solders.signature.Signature"><em>Signature</em></a><em>]</em>) – Search until this transaction signature.</p></li>
+<li><p><strong>limit</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – Maximum transaction signatures to return (between 1 and 1,000, default: 1,000).</p></li>
+<li><p><strong>commitment</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../commitment_config.html#solders.commitment_config.CommitmentLevel" title="solders.commitment_config.CommitmentLevel"><em>CommitmentLevel</em></a><em>]</em>) – Bank state to query.</p></li>
+<li><p><strong>min_context_slot</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – The minimum slot that the request can be evaluated at.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSignaturesForAddressConfig.before">
+<span class="sig-name descname"><span class="pre">before</span></span><a class="headerlink" href="#solders.rpc.config.RpcSignaturesForAddressConfig.before" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSignaturesForAddressConfig.commitment">
+<span class="sig-name descname"><span class="pre">commitment</span></span><a class="headerlink" href="#solders.rpc.config.RpcSignaturesForAddressConfig.commitment" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSignaturesForAddressConfig.default">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">default</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcSignaturesForAddressConfig.default" title="Permalink to this definition"></a></dt>
+<dd><p>Create a new default instance of this class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The default instance.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#solders.rpc.config.RpcSignaturesForAddressConfig" title="solders.rpc.config.RpcSignaturesForAddressConfig">RpcSignaturesForAddressConfig</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSignaturesForAddressConfig.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcSignaturesForAddressConfig.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSignaturesForAddressConfig.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcSignaturesForAddressConfig.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSignaturesForAddressConfig.limit">
+<span class="sig-name descname"><span class="pre">limit</span></span><a class="headerlink" href="#solders.rpc.config.RpcSignaturesForAddressConfig.limit" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSignaturesForAddressConfig.min_context_slot">
+<span class="sig-name descname"><span class="pre">min_context_slot</span></span><a class="headerlink" href="#solders.rpc.config.RpcSignaturesForAddressConfig.min_context_slot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSignaturesForAddressConfig.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcSignaturesForAddressConfig.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcSignaturesForAddressConfig.until">
+<span class="sig-name descname"><span class="pre">until</span></span><a class="headerlink" href="#solders.rpc.config.RpcSignaturesForAddressConfig.until" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcBlockConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RpcBlockConfig</span></span><a class="headerlink" href="#solders.rpc.config.RpcBlockConfig" title="Permalink to this definition"></a></dt>
+<dd><p>Configuration object for <code class="docutils literal notranslate"><span class="pre">getBlock</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>encoding</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../transaction_status.html#solders.transaction_status.UiTransactionEncoding" title="solders.transaction_status.UiTransactionEncoding"><em>UiTransactionEncoding</em></a><em>]</em>) – Encoding used for the transaction data.</p></li>
+<li><p><strong>transaction_details</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../transaction_status.html#solders.transaction_status.TransactionDetails" title="solders.transaction_status.TransactionDetails"><em>TransactionDetails</em></a><em>]</em>) – Level of transaction detail to return.</p></li>
+<li><p><strong>rewards</strong> (<em>Optional</em><em>[</em><em>bool</em><em>]</em>) – Whether to populate the <code class="docutils literal notranslate"><span class="pre">rewards</span></code> array.</p></li>
+<li><p><strong>commitment</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../commitment_config.html#solders.commitment_config.CommitmentLevel" title="solders.commitment_config.CommitmentLevel"><em>CommitmentLevel</em></a><em>]</em>) – Bank state to query.</p></li>
+<li><p><strong>max_supported_transaction_version</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – Set the max transaction version to return in responses.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcBlockConfig.commitment">
+<span class="sig-name descname"><span class="pre">commitment</span></span><a class="headerlink" href="#solders.rpc.config.RpcBlockConfig.commitment" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcBlockConfig.default">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">default</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcBlockConfig.default" title="Permalink to this definition"></a></dt>
+<dd><p>Create a new default instance of this class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The default instance.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#solders.rpc.config.RpcBlockConfig" title="solders.rpc.config.RpcBlockConfig">RpcBlockConfig</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcBlockConfig.encoding">
+<span class="sig-name descname"><span class="pre">encoding</span></span><a class="headerlink" href="#solders.rpc.config.RpcBlockConfig.encoding" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcBlockConfig.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcBlockConfig.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcBlockConfig.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcBlockConfig.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcBlockConfig.max_supported_transaction_version">
+<span class="sig-name descname"><span class="pre">max_supported_transaction_version</span></span><a class="headerlink" href="#solders.rpc.config.RpcBlockConfig.max_supported_transaction_version" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcBlockConfig.rewards">
+<span class="sig-name descname"><span class="pre">rewards</span></span><a class="headerlink" href="#solders.rpc.config.RpcBlockConfig.rewards" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcBlockConfig.rewards_only">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rewards_only</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcBlockConfig.rewards_only" title="Permalink to this definition"></a></dt>
+<dd><p>Create a new instance for only showing rewards.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcBlockConfig.rewards_with_commitment">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rewards_with_commitment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">commitment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcBlockConfig.rewards_with_commitment" title="Permalink to this definition"></a></dt>
+<dd><p>Create a new instance for only showing rewards, with a specified commitment level.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcBlockConfig.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcBlockConfig.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcBlockConfig.transaction_details">
+<span class="sig-name descname"><span class="pre">transaction_details</span></span><a class="headerlink" href="#solders.rpc.config.RpcBlockConfig.transaction_details" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcTransactionConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RpcTransactionConfig</span></span><a class="headerlink" href="#solders.rpc.config.RpcTransactionConfig" title="Permalink to this definition"></a></dt>
+<dd><p>Configuration object for <code class="docutils literal notranslate"><span class="pre">getTransaction</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>encoding</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../transaction_status.html#solders.transaction_status.UiTransactionEncoding" title="solders.transaction_status.UiTransactionEncoding"><em>UiTransactionEncoding</em></a><em>]</em>) – Encoding used for the transaction data.</p></li>
+<li><p><strong>commitment</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../commitment_config.html#solders.commitment_config.CommitmentLevel" title="solders.commitment_config.CommitmentLevel"><em>CommitmentLevel</em></a><em>]</em>) – Bank state to query.</p></li>
+<li><p><strong>max_supported_transaction_version</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – Set the max transaction version to return in responses.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcTransactionConfig.commitment">
+<span class="sig-name descname"><span class="pre">commitment</span></span><a class="headerlink" href="#solders.rpc.config.RpcTransactionConfig.commitment" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcTransactionConfig.default">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">default</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcTransactionConfig.default" title="Permalink to this definition"></a></dt>
+<dd><p>Create a new default instance of this class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The default instance.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#solders.rpc.config.RpcTransactionConfig" title="solders.rpc.config.RpcTransactionConfig">RpcTransactionConfig</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcTransactionConfig.encoding">
+<span class="sig-name descname"><span class="pre">encoding</span></span><a class="headerlink" href="#solders.rpc.config.RpcTransactionConfig.encoding" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcTransactionConfig.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcTransactionConfig.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcTransactionConfig.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcTransactionConfig.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcTransactionConfig.max_supported_transaction_version">
+<span class="sig-name descname"><span class="pre">max_supported_transaction_version</span></span><a class="headerlink" href="#solders.rpc.config.RpcTransactionConfig.max_supported_transaction_version" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcTransactionConfig.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcTransactionConfig.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcContextConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RpcContextConfig</span></span><a class="headerlink" href="#solders.rpc.config.RpcContextConfig" title="Permalink to this definition"></a></dt>
+<dd><p>General context configuration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>commitment</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../commitment_config.html#solders.commitment_config.CommitmentLevel" title="solders.commitment_config.CommitmentLevel"><em>CommitmentLevel</em></a><em>]</em>) – Bank state to query.</p></li>
+<li><p><strong>min_context_slot</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – The minimum slot that the request can be evaluated at.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcContextConfig.commitment">
+<span class="sig-name descname"><span class="pre">commitment</span></span><a class="headerlink" href="#solders.rpc.config.RpcContextConfig.commitment" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcContextConfig.default">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">default</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcContextConfig.default" title="Permalink to this definition"></a></dt>
+<dd><p>Create a new default instance of this class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The default instance.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#solders.rpc.config.RpcContextConfig" title="solders.rpc.config.RpcContextConfig">RpcContextConfig</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcContextConfig.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcContextConfig.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcContextConfig.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcContextConfig.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcContextConfig.min_context_slot">
+<span class="sig-name descname"><span class="pre">min_context_slot</span></span><a class="headerlink" href="#solders.rpc.config.RpcContextConfig.min_context_slot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.config.RpcContextConfig.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.config.RpcContextConfig.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="RPC" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="errors.html" class="btn btn-neutral float-right" title="Errors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Kevin Heavey.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
