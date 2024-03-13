@@ -244,10 +244,9 @@ jobs:
         uses: messense/maturin-action@v1
         with:
           target: aarch64
-          manylinux: auto
+          manylinux: '2_28'
           args: --release --no-default-features --features ring --out dist
           maturin-version: ${{ env.maturin_version }}
-          docker-options: '-e CFLAGS_aarch64_unknown_linux_gnu="-D__ARM_ARCH=8"'
       - name: Upload wheels
         uses: actions/upload-artifact@v2
         with:
