@@ -5,6 +5,7 @@
 ### Changed
 
 - Use pyo3 20.2 [(#81)](https://github.com/kevinheavey/solders/pull/81).
+- Add back RPC modules on linux aarch64 [(#87)](https://github.com/kevinheavey/solders/pull/87)
 
 ## [0.20.0] - 2024-02-12
 
