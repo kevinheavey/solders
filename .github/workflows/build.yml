@@ -244,8 +244,8 @@ jobs:
         uses: messense/maturin-action@v1
         with:
           target: aarch64
-          manylinux: auto
-          args: --release --no-default-features --out dist
+          manylinux: '2_28'
+          args: --release --no-default-features -F ring --out dist
           maturin-version: ${{ env.maturin_version }}
       - name: Upload wheels
         uses: actions/upload-artifact@v2
