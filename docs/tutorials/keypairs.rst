@@ -18,6 +18,19 @@ Often you need to generate a new keypair on the fly:
    keypair = Keypair()
 
 ---------------------------------
+Converting a keypair to raw bytes
+---------------------------------
+
+To get the raw bytes of a keypair object you just call
+``bytes(keypair)``:
+
+.. testcode::
+
+   from solders.keypair import Keypair
+   keypair = Keypair()
+   raw = bytes(keypair)
+
+---------------------------------
 Restoring a keypair from a secret
 ---------------------------------
 
@@ -46,6 +59,8 @@ you can use ``Keypair.from_bytes``:
    :options: -ELLIPSIS, +NORMALIZE_WHITESPACE
 
    Created Keypair with public key: 24PNhTaNtomHhoy3fTRaMhAFCRj4uHqhZEEoWrKDbR5p
+
+This is the inverse operation to ``bytes(keypair)``.
 
 If the secret is in base58 format, you can use ``Keypair.from_base58_string``:
 
