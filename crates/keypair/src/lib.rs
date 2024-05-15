@@ -1,5 +1,5 @@
 use derive_more::{From, Into};
-use pyo3::{prelude::*, types::PyBytes};
+use pyo3::{exceptions::PyValueError, prelude::*, types::PyBytes};
 use serde::{Deserialize, Serialize};
 use solana_sdk::{
     derivation_path::DerivationPath,
@@ -120,8 +120,11 @@ impl Keypair {
     ///     >>> assert kp == Keypair.from_bytes(raw_bytes)
     ///     >>> assert str(kp) == base58_str
     ///     
-    pub fn from_base58_string(s: &str) -> Self {
-        KeypairOriginal::from_base58_string(s).into()
+    pub fn from_base58_string(s: &str) -> PyResult<Self> {
+        let decoded = solana_sdk::bs58::decode(s)
+            .into_vec()
+            .map_err(|e| PyErr::new::<PyValueError, _>(format!("{:?}", e)))?;
+        Self::py_from_bytes_general(&decoded)
     }
     /// Gets this ``Keypair``'s secret key.
     ///
