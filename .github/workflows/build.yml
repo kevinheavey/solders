@@ -8,7 +8,7 @@ on:
 
 env:
   name: solders
-  python_version: "3.7"
+  python_version: "3.8"
   CARGO_INCREMENTAL: 0
   RUSTFLAGS: "-D warnings"
   maturin_version: "0.14.10"
