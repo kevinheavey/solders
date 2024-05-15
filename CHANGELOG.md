@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.21.1] - Unreleased
+
+- Avoid panic in `Keypair.from_base58_string` [(#93)](https://github.com/kevinheavey/solders/pull/93).
+
 ## [0.21.0] - 2024-03-13
 
 ### Changed

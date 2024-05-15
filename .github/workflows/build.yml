@@ -8,14 +8,14 @@ on:
 
 env:
   name: solders
-  python_version: "3.7"
+  python_version: "3.8"
   CARGO_INCREMENTAL: 0
   RUSTFLAGS: "-D warnings"
   maturin_version: "0.14.10"
 
 jobs:
   macos_x86_64:
-    runs-on: macos-latest
+    runs-on: macos-13
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -41,7 +41,7 @@ jobs:
           pytest
 
   macos_universal2:
-    runs-on: macos-latest
+    runs-on: macos-13
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
