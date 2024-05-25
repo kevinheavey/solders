@@ -18,7 +18,7 @@ Sending SOL
 Here we construct a transaction with one instruction - it sends SOL from one
 wallet to another via the System Program:
 
-.. testcode::
+.. code-block:: python
 
    from solders.hash import Hash
    from solders.keypair import Keypair
@@ -53,7 +53,7 @@ One solution is for Alice to create a transaction containing her signature and a
 the ``NullSigner`` class. She then serializes this transaction and sends it to Bob, who deserializes it
 and replaces the dummy signature with his own signature:
 
-.. testcode::
+.. code-block:: python
 
    from solders.hash import Hash
    from solders.instruction import AccountMeta, Instruction
