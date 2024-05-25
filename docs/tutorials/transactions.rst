@@ -18,7 +18,7 @@ Sending SOL
 Here we construct a transaction with one instruction - it sends SOL from one
 wallet to another via the System Program:
 
-.. code-block:: python
+.. testcode::
 
    from solders.hash import Hash
    from solders.keypair import Keypair
@@ -43,7 +43,7 @@ wallet to another via the System Program:
    tx = VersionedTransaction(msg, [sender])
 
 ---------------
-Partial Signing
+Partial signing
 ---------------
 
 Suppose you have a transaction that both Alice and Bob need to sign, and Bob doesn't want to give
@@ -53,7 +53,7 @@ One solution is for Alice to create a transaction containing her signature and a
 the ``NullSigner`` class. She then serializes this transaction and sends it to Bob, who deserializes it
 and replaces the dummy signature with his own signature:
 
-.. code-block:: python
+.. testcode::
 
    from solders.hash import Hash
    from solders.instruction import AccountMeta, Instruction
