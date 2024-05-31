@@ -33,7 +33,7 @@ wallet to another via the System Program:
            from_pubkey=sender.pubkey(), to_pubkey=receiver.pubkey(), lamports=1_000_000
        )
    )
-   blockhash = Hash.default()  # replace with a real blockhash using getLatestBlockhash
+   blockhash = Hash.default()  # replace with a real blockhash using get_latest_blockhash
    msg = MessageV0.try_compile(
        payer=sender.pubkey(),
        instructions=[ix],
@@ -46,10 +46,10 @@ wallet to another via the System Program:
 Partial signing
 ---------------
 
-Suppose have a transaction that both Alice and Bob need to sign, and Bob doesn't want to give
+Suppose you have a transaction that both Alice and Bob need to sign, and Bob doesn't want to give
 Alice his keypair because last time he did that all his apes got stolen.
 
-One solution is for Alice to create transaction containing her signature and a dummy signature using
+One solution is for Alice to create a transaction containing her signature and a dummy signature using
 the ``NullSigner`` class. She then serializes this transaction and sends it to Bob, who deserializes it
 and replaces the dummy signature with his own signature:
 
