@@ -14,286 +14,323 @@ env:
   maturin_version: "0.14.10"
 
 jobs:
-  macos_x86_64:
-    runs-on: macos-13
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: ${{ env.python_version }}
-          architecture: x64
-      - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          profile: minimal
-          default: true
-      - name: Build wheels
-        uses: messense/maturin-action@v1
-        with:
-          target: x86_64
-          args: --release --out dist
-          maturin-version: ${{ env.maturin_version }}
-      - name: Install built wheel
-        run: |
-          pip install pytest pytest-asyncio based58 pybip39 mnemonic typing-extensions jsonalias
-          pip install ${{ env.name }} --no-index --no-dependencies --find-links dist --force-reinstall
-          pytest
+  # macos_x86_64:
+  #   runs-on: macos-13
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-python@v2
+  #       with:
+  #         python-version: ${{ env.python_version }}
+  #         architecture: x64
+  #     - name: Install Rust toolchain
+  #       uses: actions-rs/toolchain@v1
+  #       with:
+  #         toolchain: nightly
+  #         profile: minimal
+  #         default: true
+  #     - name: Build wheels
+  #       uses: messense/maturin-action@v1
+  #       with:
+  #         target: x86_64
+  #         args: --release --out dist
+  #         maturin-version: ${{ env.maturin_version }}
+  #     - name: Install built wheel
+  #       run: |
+  #         pip install pytest pytest-asyncio based58 pybip39 mnemonic typing-extensions jsonalias
+  #         pip install ${{ env.name }} --no-index --no-dependencies --find-links dist --force-reinstall
+  #         pytest
 
-  macos_universal2:
-    runs-on: macos-13
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: ${{ env.python_version }}
-          architecture: x64
-      - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          profile: minimal
-          default: true
-      - name: Build wheels
-        uses: messense/maturin-action@v1
-        with:
-          args: --release --universal2 --out dist
-          maturin-version: ${{ env.maturin_version }}
-      - name: Install built wheel
-        run: |
-          pip install pytest pytest-asyncio based58 pybip39 mnemonic typing-extensions jsonalias
-          pip install ${{ env.name }} --no-index --no-dependencies --find-links dist --force-reinstall
-          pytest
-      - name: Upload wheels
-        uses: actions/upload-artifact@v2
-        with:
-          name: wheels
-          path: dist
+  # macos_universal2:
+  #   runs-on: macos-13
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-python@v2
+  #       with:
+  #         python-version: ${{ env.python_version }}
+  #         architecture: x64
+  #     - name: Install Rust toolchain
+  #       uses: actions-rs/toolchain@v1
+  #       with:
+  #         toolchain: nightly
+  #         profile: minimal
+  #         default: true
+  #     - name: Build wheels
+  #       uses: messense/maturin-action@v1
+  #       with:
+  #         args: --release --universal2 --out dist
+  #         maturin-version: ${{ env.maturin_version }}
+  #     - name: Install built wheel
+  #       run: |
+  #         pip install pytest pytest-asyncio based58 pybip39 mnemonic typing-extensions jsonalias
+  #         pip install ${{ env.name }} --no-index --no-dependencies --find-links dist --force-reinstall
+  #         pytest
+  #     - name: Upload wheels
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: wheels
+  #         path: dist
 
-  windows:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: ${{ env.python_version }}
-          architecture: x64
-      - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          profile: minimal
-          default: true
-      - name: Build wheels
-        uses: messense/maturin-action@v1
-        with:
-          target: x64
-          args: --release --no-default-features -F ring --out dist
-          maturin-version: ${{ env.maturin_version }}
-      - name: Install built wheel
-        run: |
-          python -m pip install pytest pytest-asyncio based58 pybip39 mnemonic typing-extensions jsonalias
-          python -m pip install ${{ env.name }} --no-index --no-dependencies --find-links dist --force-reinstall
-          python -m pytest --ignore=tests/bankrun
-      - name: Upload wheels
-        uses: actions/upload-artifact@v2
-        with:
-          name: wheels
-          path: dist
+  # windows:
+  #   runs-on: windows-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-python@v2
+  #       with:
+  #         python-version: ${{ env.python_version }}
+  #         architecture: x64
+  #     - name: Install Rust toolchain
+  #       uses: actions-rs/toolchain@v1
+  #       with:
+  #         toolchain: nightly
+  #         profile: minimal
+  #         default: true
+  #     - name: Build wheels
+  #       uses: messense/maturin-action@v1
+  #       with:
+  #         target: x64
+  #         args: --release --no-default-features -F ring --out dist
+  #         maturin-version: ${{ env.maturin_version }}
+  #     - name: Install built wheel
+  #       run: |
+  #         python -m pip install pytest pytest-asyncio based58 pybip39 mnemonic typing-extensions jsonalias
+  #         python -m pip install ${{ env.name }} --no-index --no-dependencies --find-links dist --force-reinstall
+  #         python -m pytest --ignore=tests/bankrun
+  #     - name: Upload wheels
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: wheels
+  #         path: dist
 
-  linux-x86_64:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: ${{ env.python_version }}
-          architecture: x64
-      - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          profile: minimal
-          default: true
-      - name: Build Wheels
-        uses: messense/maturin-action@v1
-        with:
-          target: x86_64
-          manylinux: auto
-          args: --release --out dist
-          maturin-version: ${{ env.maturin_version }}
-      - name: Install built wheel
-        if: matrix.target == 'x86_64'
-        run: |
-          pip install pytest pytest-asyncio based58 pybip39 mnemonic typing-extensions jsonalias
-          pip install ${{ env.name }} --no-index --no-dependencies --find-links dist --force-reinstall
-          pytest
-      - name: Upload wheels
-        uses: actions/upload-artifact@v2
-        with:
-          name: wheels
-          path: dist
+  # linux-x86_64:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-python@v2
+  #       with:
+  #         python-version: ${{ env.python_version }}
+  #         architecture: x64
+  #     - name: Install Rust toolchain
+  #       uses: actions-rs/toolchain@v1
+  #       with:
+  #         toolchain: nightly
+  #         profile: minimal
+  #         default: true
+  #     - name: Build Wheels
+  #       uses: messense/maturin-action@v1
+  #       with:
+  #         target: x86_64
+  #         manylinux: auto
+  #         args: --release --out dist
+  #         maturin-version: ${{ env.maturin_version }}
+  #     - name: Install built wheel
+  #       if: matrix.target == 'x86_64'
+  #       run: |
+  #         pip install pytest pytest-asyncio based58 pybip39 mnemonic typing-extensions jsonalias
+  #         pip install ${{ env.name }} --no-index --no-dependencies --find-links dist --force-reinstall
+  #         pytest
+  #     - name: Upload wheels
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: wheels
+  #         path: dist
 
-  linux-i686:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: ${{ env.python_version }}
-          architecture: x64
-      - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          profile: minimal
-          default: true
-      - name: Build Wheels
-        uses: messense/maturin-action@v1
-        with:
-          target: i686
-          manylinux: auto
-          args: --release --no-default-features -F ring --out dist
-          maturin-version: ${{ env.maturin_version }}
-      - name: Upload wheels
-        uses: actions/upload-artifact@v2
-        with:
-          name: wheels
-          path: dist
+  # linux-i686:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-python@v2
+  #       with:
+  #         python-version: ${{ env.python_version }}
+  #         architecture: x64
+  #     - name: Install Rust toolchain
+  #       uses: actions-rs/toolchain@v1
+  #       with:
+  #         toolchain: nightly
+  #         profile: minimal
+  #         default: true
+  #     - name: Build Wheels
+  #       uses: messense/maturin-action@v1
+  #       with:
+  #         target: i686
+  #         manylinux: auto
+  #         args: --release --no-default-features -F ring --out dist
+  #         maturin-version: ${{ env.maturin_version }}
+  #     - name: Upload wheels
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: wheels
+  #         path: dist
 
-  musllinux-x86_64:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: ${{ env.python_version }}
-          architecture: x64
-      - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          profile: minimal
-          default: true
-      - name: Build wheels
-        uses: messense/maturin-action@v1
-        with:
-          target: x86_64-unknown-linux-musl
-          manylinux: musllinux_1_2
-          args: --release --out dist
-          maturin-version: ${{ env.maturin_version }}
-      - name: Install built wheel
-        uses: addnab/docker-run-action@v3
-        with:
-          image: alpine:latest
-          options: -v ${{ github.workspace }}:/io -w /io
-          run: |
-            apk add py3-pip
-            pip3 install -U pip pytest pytest-asyncio based58 pybip39 mnemonic typing-extensions jsonalias --break-system-packages
-            pip3 install ${{ env.name }} --find-links /io/dist/ --force-reinstall --no-index --no-dependencies --break-system-packages
-            python3 -m pytest
-      - name: Upload wheels
-        uses: actions/upload-artifact@v2
-        with:
-          name: wheels
-          path: dist
+  # musllinux-x86_64:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-python@v2
+  #       with:
+  #         python-version: ${{ env.python_version }}
+  #         architecture: x64
+  #     - name: Install Rust toolchain
+  #       uses: actions-rs/toolchain@v1
+  #       with:
+  #         toolchain: nightly
+  #         profile: minimal
+  #         default: true
+  #     - name: Build wheels
+  #       uses: messense/maturin-action@v1
+  #       with:
+  #         target: x86_64-unknown-linux-musl
+  #         manylinux: musllinux_1_2
+  #         args: --release --out dist
+  #         maturin-version: ${{ env.maturin_version }}
+  #     - name: Install built wheel
+  #       uses: addnab/docker-run-action@v3
+  #       with:
+  #         image: alpine:latest
+  #         options: -v ${{ github.workspace }}:/io -w /io
+  #         run: |
+  #           apk add py3-pip
+  #           pip3 install -U pip pytest pytest-asyncio based58 pybip39 mnemonic typing-extensions jsonalias --break-system-packages
+  #           pip3 install ${{ env.name }} --find-links /io/dist/ --force-reinstall --no-index --no-dependencies --break-system-packages
+  #           python3 -m pytest
+  #     - name: Upload wheels
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: wheels
+  #         path: dist
 
-  musllinux-i686:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: ${{ env.python_version }}
-          architecture: x64
-      - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          profile: minimal
-          default: true
-      - name: Build wheels
-        uses: messense/maturin-action@v1
-        with:
-          target: i686-unknown-linux-musl
-          manylinux: musllinux_1_2
-          args: --release --no-default-features -F ring --out dist
-          maturin-version: ${{ env.maturin_version }}
-      - name: Upload wheels
-        uses: actions/upload-artifact@v2
-        with:
-          name: wheels
-          path: dist
+  # musllinux-i686:
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     fail-fast: false
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-python@v2
+  #       with:
+  #         python-version: ${{ env.python_version }}
+  #         architecture: x64
+  #     - name: Install Rust toolchain
+  #       uses: actions-rs/toolchain@v1
+  #       with:
+  #         toolchain: nightly
+  #         profile: minimal
+  #         default: true
+  #     - name: Build wheels
+  #       uses: messense/maturin-action@v1
+  #       with:
+  #         target: i686-unknown-linux-musl
+  #         manylinux: musllinux_1_2
+  #         args: --release --no-default-features -F ring --out dist
+  #         maturin-version: ${{ env.maturin_version }}
+  #     - name: Upload wheels
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: wheels
+  #         path: dist
 
-  linux-aarch64:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: ${{ env.python_version }}
-      - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          profile: minimal
-          default: true
-      - name: Build Wheels
-        uses: messense/maturin-action@v1
-        with:
-          target: aarch64
-          manylinux: '2_28'
-          args: --release --no-default-features -F ring --out dist
-          maturin-version: ${{ env.maturin_version }}
-      - name: Upload wheels
-        uses: actions/upload-artifact@v2
-        with:
-          name: wheels
-          path: dist
+    musllinux-aarch64:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v2
+        - uses: actions/setup-python@v2
+          with:
+            python-version: ${{ env.python_version }}
+            architecture: x64
+        - name: Install Rust toolchain
+          uses: actions-rs/toolchain@v1
+          with:
+            toolchain: nightly
+            profile: minimal
+            default: true
+        - name: Build wheels
+          uses: messense/maturin-action@v1
+          with:
+            target: aarch64-unknown-linux-musl
+            manylinux: musllinux_1_2
+            args: --release --no-default-features -F ring --out dist
+            maturin-version: ${{ env.maturin_version }}
+        - name: Install built wheel
+          uses: addnab/docker-run-action@v3
+          with:
+            image: alpine:latest
+            options: -v ${{ github.workspace }}:/io -w /io
+            run: |
+              apk add py3-pip
+              pip3 install -U pip pytest pytest-asyncio based58 pybip39 mnemonic typing-extensions jsonalias --break-system-packages
+              pip3 install ${{ env.name }} --find-links /io/dist/ --force-reinstall --no-index --no-dependencies --break-system-packages
+              python3 -m pytest
+        - name: Upload wheels
+          uses: actions/upload-artifact@v2
+          with:
+            name: wheels
+            path: dist
 
-  linux-armv7:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: ${{ env.python_version }}
-      - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          profile: minimal
-          default: true
-      - name: Build Wheels
-        uses: messense/maturin-action@v1
-        with:
-          target: armv7
-          manylinux: auto
-          args: --release --no-default-features -F ring --out dist
-          maturin-version: ${{ env.maturin_version }}
-      - name: Upload wheels
-        uses: actions/upload-artifact@v2
-        with:
-          name: wheels
-          path: dist
+  # linux-aarch64:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-python@v2
+  #       with:
+  #         python-version: ${{ env.python_version }}
+  #     - name: Install Rust toolchain
+  #       uses: actions-rs/toolchain@v1
+  #       with:
+  #         toolchain: nightly
+  #         profile: minimal
+  #         default: true
+  #     - name: Build Wheels
+  #       uses: messense/maturin-action@v1
+  #       with:
+  #         target: aarch64
+  #         manylinux: '2_28'
+  #         args: --release --no-default-features -F ring --out dist
+  #         maturin-version: ${{ env.maturin_version }}
+  #     - name: Upload wheels
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: wheels
+  #         path: dist
 
-  sdist:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version:
-      - name: Build sdist
-        uses: messense/maturin-action@v1
-        with:
-          command: sdist
-          args: --out dist
-          maturin-version: ${{ env.maturin_version }}
-      - name: Upload sdist
-        uses: actions/upload-artifact@v2
-        with:
-          name: wheels
-          path: dist
+  # linux-armv7:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-python@v2
+  #       with:
+  #         python-version: ${{ env.python_version }}
+  #     - name: Install Rust toolchain
+  #       uses: actions-rs/toolchain@v1
+  #       with:
+  #         toolchain: nightly
+  #         profile: minimal
+  #         default: true
+  #     - name: Build Wheels
+  #       uses: messense/maturin-action@v1
+  #       with:
+  #         target: armv7
+  #         manylinux: auto
+  #         args: --release --no-default-features -F ring --out dist
+  #         maturin-version: ${{ env.maturin_version }}
+  #     - name: Upload wheels
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: wheels
+  #         path: dist
+
+  # sdist:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-python@v2
+  #       with:
+  #         python-version:
+  #     - name: Build sdist
+  #       uses: messense/maturin-action@v1
+  #       with:
+  #         command: sdist
+  #         args: --out dist
+  #         maturin-version: ${{ env.maturin_version }}
+  #     - name: Upload sdist
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: wheels
+  #         path: dist
