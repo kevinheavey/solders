@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SPL Token State &mdash; solders 0.21.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Transaction Status" href="../transaction_status.html" />
+    <link rel="prev" title="SPL Associated Token" href="associated.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            solders
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Solders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../account.html">Account</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../account_decoder.html">Account Decoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../address_lookup_table_account.html">Address Lookup Table Account</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bankrun.html">Bankrun</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../commitment_config.html">Commitment Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compute_budget.html">Compute Budget</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../epoch_schedule.html">Epoch Schedule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../errors.html">Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../hash.html">Hash</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../instruction.html">Instruction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../keypair.html">Keypair</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../message.html">Message</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../null_signer.html">Null Signer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../presigner.html">Presigner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pubkey.html">Pubkey</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../rpc/index.html">RPC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../signature.html">Signature</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../system_program.html">System Program</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sysvar.html">Sysvar</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">SPL Token</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="associated.html">SPL Associated Token</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">SPL Token State</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#solders.token.state.Mint"><code class="docutils literal notranslate"><span class="pre">Mint</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.token.state.TokenAccountState"><code class="docutils literal notranslate"><span class="pre">TokenAccountState</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.token.state.TokenAccount"><code class="docutils literal notranslate"><span class="pre">TokenAccount</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.token.state.Multisig"><code class="docutils literal notranslate"><span class="pre">Multisig</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../transaction_status.html">Transaction Status</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../transaction.html">Transaction</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">solders</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="index.html">SPL Token</a></li>
+      <li class="breadcrumb-item active">SPL Token State</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/kevinheavey/solders/blob/main/docs/api_reference/token/state.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-solders.token.state">
+<span id="spl-token-state"></span><h1>SPL Token State<a class="headerlink" href="#module-solders.token.state" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.token.state.Mint">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Mint</span></span><a class="headerlink" href="#solders.token.state.Mint" title="Permalink to this definition"></a></dt>
+<dd><p>A token mint.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mint_authority</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a><em>]</em>) – Optional authority used to mint new tokens.
+The mint authority may only be provided during mint creation.
+If no mint authority is present then the mint has a fixed supply and no
+further tokens may be minted.</p></li>
+<li><p><strong>supply</strong> (<em>int</em>) – Total supply of tokens.</p></li>
+<li><p><strong>decimals</strong> (<em>int</em>) – Number of base 10 digits to the right of the decimal place.</p></li>
+<li><p><strong>is_initialized</strong> (<em>bool</em>) – Is <code class="docutils literal notranslate"><span class="pre">True</span></code> if this structure has been initialized.</p></li>
+<li><p><strong>freeze_authority</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a><em>]</em>) – Optional authority to freeze token accounts.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.token.state.Mint.decimals">
+<span class="sig-name descname"><span class="pre">decimals</span></span><a class="headerlink" href="#solders.token.state.Mint.decimals" title="Permalink to this definition"></a></dt>
+<dd><p>Number of base 10 digits to the right of the decimal place.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.token.state.Mint.default">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">default</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.token.state.Mint.default" title="Permalink to this definition"></a></dt>
+<dd><p>Create a new default mint.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The default mint.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#solders.token.state.Mint" title="solders.token.state.Mint">Mint</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.token.state.Mint.freeze_authority">
+<span class="sig-name descname"><span class="pre">freeze_authority</span></span><a class="headerlink" href="#solders.token.state.Mint.freeze_authority" title="Permalink to this definition"></a></dt>
+<dd><p>Optional authority to freeze token accounts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[<a class="reference internal" href="../pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey">Pubkey</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.token.state.Mint.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.token.state.Mint.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.token.state.Mint.is_initialized">
+<span class="sig-name descname"><span class="pre">is_initialized</span></span><a class="headerlink" href="#solders.token.state.Mint.is_initialized" title="Permalink to this definition"></a></dt>
+<dd><p>Is <code class="docutils literal notranslate"><span class="pre">True</span></code> if this structure has been initialized.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.token.state.Mint.mint_authority">
+<span class="sig-name descname"><span class="pre">mint_authority</span></span><a class="headerlink" href="#solders.token.state.Mint.mint_authority" title="Permalink to this definition"></a></dt>
+<dd><p>Optional authority used to mint new tokens.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[<a class="reference internal" href="../pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey">Pubkey</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.token.state.Mint.supply">
+<span class="sig-name descname"><span class="pre">supply</span></span><a class="headerlink" href="#solders.token.state.Mint.supply" title="Permalink to this definition"></a></dt>
+<dd><p>Total supply of tokens.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.token.state.TokenAccountState">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TokenAccountState</span></span><a class="headerlink" href="#solders.token.state.TokenAccountState" title="Permalink to this definition"></a></dt>
+<dd><p>Token account state.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.token.state.TokenAccountState.Frozen">
+<span class="sig-name descname"><span class="pre">Frozen</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">TokenAccountState.Frozen</span></em><a class="headerlink" href="#solders.token.state.TokenAccountState.Frozen" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.token.state.TokenAccountState.Initialized">
+<span class="sig-name descname"><span class="pre">Initialized</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">TokenAccountState.Initialized</span></em><a class="headerlink" href="#solders.token.state.TokenAccountState.Initialized" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.token.state.TokenAccountState.Uninitialized">
+<span class="sig-name descname"><span class="pre">Uninitialized</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">TokenAccountState.Uninitialized</span></em><a class="headerlink" href="#solders.token.state.TokenAccountState.Uninitialized" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.token.state.TokenAccount">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TokenAccount</span></span><a class="headerlink" href="#solders.token.state.TokenAccount" title="Permalink to this definition"></a></dt>
+<dd><p>A user token account.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mint</strong> (<a class="reference internal" href="../pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a>) – The mint associated with this account</p></li>
+<li><p><strong>owner</strong> (<a class="reference internal" href="../pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a>) – The owner of this account.</p></li>
+<li><p><strong>amount</strong> (<em>int</em>) – The amount of tokens this account holds.</p></li>
+<li><p><strong>delegate</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a><em>]</em>) – If <code class="docutils literal notranslate"><span class="pre">delegate</span></code> is not <code class="docutils literal notranslate"><span class="pre">None</span></code> then
+<code class="docutils literal notranslate"><span class="pre">delegated_amount</span></code> represents the amount authorized by the delegate.</p></li>
+<li><p><strong>state</strong> (<a class="reference internal" href="#solders.token.state.TokenAccountState" title="solders.token.state.TokenAccountState"><em>TokenAccountState</em></a>) – The account’s state.</p></li>
+<li><p><strong>is_native</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – If is_native is not <code class="docutils literal notranslate"><span class="pre">None</span></code>,
+this is a native token, and the value logs the rent-exempt reserve.
+An Account is required to be rent-exempt, so the value is used by
+the Processor to ensure that wrapped SOL accounts do not
+drop below this threshold.</p></li>
+<li><p><strong>delegated_amount</strong> (<em>int</em>) – The amount delegated.</p></li>
+<li><p><strong>close_authority</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a><em>]</em>) – Optional authority to close the account.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.token.state.TokenAccount.amount">
+<span class="sig-name descname"><span class="pre">amount</span></span><a class="headerlink" href="#solders.token.state.TokenAccount.amount" title="Permalink to this definition"></a></dt>
+<dd><p>The amount of tokens this account holds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.token.state.TokenAccount.close_authority">
+<span class="sig-name descname"><span class="pre">close_authority</span></span><a class="headerlink" href="#solders.token.state.TokenAccount.close_authority" title="Permalink to this definition"></a></dt>
+<dd><p>Optional authority to close the account.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[<a class="reference internal" href="../pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey">Pubkey</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.token.state.TokenAccount.default">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">default</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.token.state.TokenAccount.default" title="Permalink to this definition"></a></dt>
+<dd><p>Create a new default token account.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The default token account.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#solders.token.state.TokenAccount" title="solders.token.state.TokenAccount">TokenAccount</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.token.state.TokenAccount.delegate">
+<span class="sig-name descname"><span class="pre">delegate</span></span><a class="headerlink" href="#solders.token.state.TokenAccount.delegate" title="Permalink to this definition"></a></dt>
+<dd><p>If not <code class="docutils literal notranslate"><span class="pre">None</span></code> then <code class="docutils literal notranslate"><span class="pre">delegated_amount</span></code> represents the amount authorized by the delegate.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[<a class="reference internal" href="../pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey">Pubkey</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.token.state.TokenAccount.delegated_amount">
+<span class="sig-name descname"><span class="pre">delegated_amount</span></span><a class="headerlink" href="#solders.token.state.TokenAccount.delegated_amount" title="Permalink to this definition"></a></dt>
+<dd><p>The amount delegated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.token.state.TokenAccount.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.token.state.TokenAccount.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.token.state.TokenAccount.is_native">
+<span class="sig-name descname"><span class="pre">is_native</span></span><a class="headerlink" href="#solders.token.state.TokenAccount.is_native" title="Permalink to this definition"></a></dt>
+<dd><p>If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, this is a native token.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.token.state.TokenAccount.mint">
+<span class="sig-name descname"><span class="pre">mint</span></span><a class="headerlink" href="#solders.token.state.TokenAccount.mint" title="Permalink to this definition"></a></dt>
+<dd><p>The mint associated with this account</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey">Pubkey</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.token.state.TokenAccount.owner">
+<span class="sig-name descname"><span class="pre">owner</span></span><a class="headerlink" href="#solders.token.state.TokenAccount.owner" title="Permalink to this definition"></a></dt>
+<dd><p>The owner of this account.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey">Pubkey</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.token.state.TokenAccount.state">
+<span class="sig-name descname"><span class="pre">state</span></span><a class="headerlink" href="#solders.token.state.TokenAccount.state" title="Permalink to this definition"></a></dt>
+<dd><p>The account’s state</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#solders.token.state.TokenAccountState" title="solders.token.state.TokenAccountState">TokenAccountState</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.token.state.Multisig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Multisig</span></span><a class="headerlink" href="#solders.token.state.Multisig" title="Permalink to this definition"></a></dt>
+<dd><p>A user token account.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> (<em>int</em>) – The number of signers required.</p></li>
+<li><p><strong>n</strong> (<em>int</em>) – The number of valid signers.</p></li>
+<li><p><strong>is_initialized</strong> (<em>bool</em>) – Is <code class="docutils literal notranslate"><span class="pre">True</span></code> if this structure has been initialized.</p></li>
+<li><p><strong>signers</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="../pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a><em>]</em>) – Signer public keys.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.token.state.Multisig.default">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">default</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.token.state.Multisig.default" title="Permalink to this definition"></a></dt>
+<dd><p>Create a new default multisig.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The default multisig.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#solders.token.state.Multisig" title="solders.token.state.Multisig">Multisig</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.token.state.Multisig.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.token.state.Multisig.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.token.state.Multisig.is_initialized">
+<span class="sig-name descname"><span class="pre">is_initialized</span></span><a class="headerlink" href="#solders.token.state.Multisig.is_initialized" title="Permalink to this definition"></a></dt>
+<dd><p>Is <code class="docutils literal notranslate"><span class="pre">True</span></code> if this structure has been initialized.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.token.state.Multisig.m">
+<span class="sig-name descname"><span class="pre">m</span></span><a class="headerlink" href="#solders.token.state.Multisig.m" title="Permalink to this definition"></a></dt>
+<dd><p>The number of signers required.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.token.state.Multisig.n">
+<span class="sig-name descname"><span class="pre">n</span></span><a class="headerlink" href="#solders.token.state.Multisig.n" title="Permalink to this definition"></a></dt>
+<dd><p>The number of valid signers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.token.state.Multisig.signers">
+<span class="sig-name descname"><span class="pre">signers</span></span><a class="headerlink" href="#solders.token.state.Multisig.signers" title="Permalink to this definition"></a></dt>
+<dd><p>Signer public keys.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="../pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey">Pubkey</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="associated.html" class="btn btn-neutral float-left" title="SPL Associated Token" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../transaction_status.html" class="btn btn-neutral float-right" title="Transaction Status" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Kevin Heavey.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

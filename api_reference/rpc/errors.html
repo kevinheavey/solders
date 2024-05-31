@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Errors &mdash; solders 0.21.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Filter" href="filter.html" />
+    <link rel="prev" title="Config" href="config.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            solders
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Solders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../account.html">Account</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../account_decoder.html">Account Decoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../address_lookup_table_account.html">Address Lookup Table Account</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bankrun.html">Bankrun</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../commitment_config.html">Commitment Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compute_budget.html">Compute Budget</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../epoch_schedule.html">Epoch Schedule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../errors.html">Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../hash.html">Hash</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../instruction.html">Instruction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../keypair.html">Keypair</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../message.html">Message</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../null_signer.html">Null Signer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../presigner.html">Presigner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pubkey.html">Pubkey</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">RPC</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="config.html">Config</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Errors</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.errors.RpcCustomErrorFieldless"><code class="docutils literal notranslate"><span class="pre">RpcCustomErrorFieldless</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.errors.BlockCleanedUp"><code class="docutils literal notranslate"><span class="pre">BlockCleanedUp</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.errors.SendTransactionPreflightFailure"><code class="docutils literal notranslate"><span class="pre">SendTransactionPreflightFailure</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.errors.BlockNotAvailable"><code class="docutils literal notranslate"><span class="pre">BlockNotAvailable</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.errors.BlockCleanedUpMessage"><code class="docutils literal notranslate"><span class="pre">BlockCleanedUpMessage</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.errors.SendTransactionPreflightFailureMessage"><code class="docutils literal notranslate"><span class="pre">SendTransactionPreflightFailureMessage</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.errors.BlockNotAvailableMessage"><code class="docutils literal notranslate"><span class="pre">BlockNotAvailableMessage</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.errors.NodeUnhealthy"><code class="docutils literal notranslate"><span class="pre">NodeUnhealthy</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.errors.NodeUnhealthyMessage"><code class="docutils literal notranslate"><span class="pre">NodeUnhealthyMessage</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.errors.TransactionPrecompileVerificationFailure"><code class="docutils literal notranslate"><span class="pre">TransactionPrecompileVerificationFailure</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.errors.SlotSkipped"><code class="docutils literal notranslate"><span class="pre">SlotSkipped</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.errors.LongTermStorageSlotSkipped"><code class="docutils literal notranslate"><span class="pre">LongTermStorageSlotSkipped</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.errors.KeyExcludedFromSecondaryIndex"><code class="docutils literal notranslate"><span class="pre">KeyExcludedFromSecondaryIndex</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.errors.TransactionPrecompileVerificationFailureMessage"><code class="docutils literal notranslate"><span class="pre">TransactionPrecompileVerificationFailureMessage</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.errors.SlotSkippedMessage"><code class="docutils literal notranslate"><span class="pre">SlotSkippedMessage</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.errors.LongTermStorageSlotSkippedMessage"><code class="docutils literal notranslate"><span class="pre">LongTermStorageSlotSkippedMessage</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.errors.KeyExcludedFromSecondaryIndexMessage"><code class="docutils literal notranslate"><span class="pre">KeyExcludedFromSecondaryIndexMessage</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.errors.ScanError"><code class="docutils literal notranslate"><span class="pre">ScanError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.errors.BlockStatusNotAvailableYet"><code class="docutils literal notranslate"><span class="pre">BlockStatusNotAvailableYet</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.errors.ScanErrorMessage"><code class="docutils literal notranslate"><span class="pre">ScanErrorMessage</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.errors.BlockStatusNotAvailableYetMessage"><code class="docutils literal notranslate"><span class="pre">BlockStatusNotAvailableYetMessage</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.errors.MinContextSlotNotReached"><code class="docutils literal notranslate"><span class="pre">MinContextSlotNotReached</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.errors.MinContextSlotNotReachedMessage"><code class="docutils literal notranslate"><span class="pre">MinContextSlotNotReachedMessage</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.errors.UnsupportedTransactionVersion"><code class="docutils literal notranslate"><span class="pre">UnsupportedTransactionVersion</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.errors.UnsupportedTransactionVersionMessage"><code class="docutils literal notranslate"><span class="pre">UnsupportedTransactionVersionMessage</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.errors.ParseErrorMessage"><code class="docutils literal notranslate"><span class="pre">ParseErrorMessage</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.errors.InvalidRequestMessage"><code class="docutils literal notranslate"><span class="pre">InvalidRequestMessage</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.errors.MethodNotFoundMessage"><code class="docutils literal notranslate"><span class="pre">MethodNotFoundMessage</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.errors.InvalidParamsMessage"><code class="docutils literal notranslate"><span class="pre">InvalidParamsMessage</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.errors.InternalErrorMessage"><code class="docutils literal notranslate"><span class="pre">InternalErrorMessage</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="filter.html">Filter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="requests.html">Requests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="responses.html">Responses</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../signature.html">Signature</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../system_program.html">System Program</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sysvar.html">Sysvar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../token/index.html">SPL Token</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../transaction_status.html">Transaction Status</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../transaction.html">Transaction</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">solders</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="index.html">RPC</a></li>
+      <li class="breadcrumb-item active">Errors</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/kevinheavey/solders/blob/main/docs/api_reference/rpc/errors.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-solders.rpc.errors">
+<span id="errors"></span><h1>Errors<a class="headerlink" href="#module-solders.rpc.errors" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.errors.RpcCustomErrorFieldless">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RpcCustomErrorFieldless</span></span><a class="headerlink" href="#solders.rpc.errors.RpcCustomErrorFieldless" title="Permalink to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.errors.RpcCustomErrorFieldless.NoSnapshot">
+<span class="sig-name descname"><span class="pre">NoSnapshot</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">RpcCustomErrorFieldless.NoSnapshot</span></em><a class="headerlink" href="#solders.rpc.errors.RpcCustomErrorFieldless.NoSnapshot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.errors.RpcCustomErrorFieldless.TransactionHistoryNotAvailable">
+<span class="sig-name descname"><span class="pre">TransactionHistoryNotAvailable</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">RpcCustomErrorFieldless.TransactionHistoryNotAvailable</span></em><a class="headerlink" href="#solders.rpc.errors.RpcCustomErrorFieldless.TransactionHistoryNotAvailable" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.errors.RpcCustomErrorFieldless.TransactionSignatureLenMismatch">
+<span class="sig-name descname"><span class="pre">TransactionSignatureLenMismatch</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">RpcCustomErrorFieldless.TransactionSignatureLenMismatch</span></em><a class="headerlink" href="#solders.rpc.errors.RpcCustomErrorFieldless.TransactionSignatureLenMismatch" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.errors.RpcCustomErrorFieldless.TransactionSignatureVerificationFailure">
+<span class="sig-name descname"><span class="pre">TransactionSignatureVerificationFailure</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">RpcCustomErrorFieldless.TransactionSignatureVerificationFailure</span></em><a class="headerlink" href="#solders.rpc.errors.RpcCustomErrorFieldless.TransactionSignatureVerificationFailure" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.errors.BlockCleanedUp">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BlockCleanedUp</span></span><a class="headerlink" href="#solders.rpc.errors.BlockCleanedUp" title="Permalink to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.errors.BlockCleanedUp.first_available_block">
+<span class="sig-name descname"><span class="pre">first_available_block</span></span><a class="headerlink" href="#solders.rpc.errors.BlockCleanedUp.first_available_block" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.BlockCleanedUp.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.BlockCleanedUp.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.BlockCleanedUp.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.BlockCleanedUp.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.errors.BlockCleanedUp.slot">
+<span class="sig-name descname"><span class="pre">slot</span></span><a class="headerlink" href="#solders.rpc.errors.BlockCleanedUp.slot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.BlockCleanedUp.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.BlockCleanedUp.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.errors.SendTransactionPreflightFailure">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SendTransactionPreflightFailure</span></span><a class="headerlink" href="#solders.rpc.errors.SendTransactionPreflightFailure" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.SendTransactionPreflightFailure.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.SendTransactionPreflightFailure.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.SendTransactionPreflightFailure.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.SendTransactionPreflightFailure.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.errors.SendTransactionPreflightFailure.message">
+<span class="sig-name descname"><span class="pre">message</span></span><a class="headerlink" href="#solders.rpc.errors.SendTransactionPreflightFailure.message" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.errors.SendTransactionPreflightFailure.result">
+<span class="sig-name descname"><span class="pre">result</span></span><a class="headerlink" href="#solders.rpc.errors.SendTransactionPreflightFailure.result" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.SendTransactionPreflightFailure.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.SendTransactionPreflightFailure.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.errors.BlockNotAvailable">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BlockNotAvailable</span></span><a class="headerlink" href="#solders.rpc.errors.BlockNotAvailable" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.BlockNotAvailable.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.BlockNotAvailable.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.BlockNotAvailable.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.BlockNotAvailable.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.errors.BlockNotAvailable.slot">
+<span class="sig-name descname"><span class="pre">slot</span></span><a class="headerlink" href="#solders.rpc.errors.BlockNotAvailable.slot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.BlockNotAvailable.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.BlockNotAvailable.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.errors.BlockCleanedUpMessage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BlockCleanedUpMessage</span></span><a class="headerlink" href="#solders.rpc.errors.BlockCleanedUpMessage" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.BlockCleanedUpMessage.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.BlockCleanedUpMessage.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.BlockCleanedUpMessage.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.BlockCleanedUpMessage.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.errors.BlockCleanedUpMessage.message">
+<span class="sig-name descname"><span class="pre">message</span></span><a class="headerlink" href="#solders.rpc.errors.BlockCleanedUpMessage.message" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.BlockCleanedUpMessage.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.BlockCleanedUpMessage.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.errors.SendTransactionPreflightFailureMessage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SendTransactionPreflightFailureMessage</span></span><a class="headerlink" href="#solders.rpc.errors.SendTransactionPreflightFailureMessage" title="Permalink to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.errors.SendTransactionPreflightFailureMessage.data">
+<span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#solders.rpc.errors.SendTransactionPreflightFailureMessage.data" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.SendTransactionPreflightFailureMessage.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.SendTransactionPreflightFailureMessage.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.SendTransactionPreflightFailureMessage.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.SendTransactionPreflightFailureMessage.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.errors.SendTransactionPreflightFailureMessage.message">
+<span class="sig-name descname"><span class="pre">message</span></span><a class="headerlink" href="#solders.rpc.errors.SendTransactionPreflightFailureMessage.message" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.SendTransactionPreflightFailureMessage.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.SendTransactionPreflightFailureMessage.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.errors.BlockNotAvailableMessage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BlockNotAvailableMessage</span></span><a class="headerlink" href="#solders.rpc.errors.BlockNotAvailableMessage" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.BlockNotAvailableMessage.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.BlockNotAvailableMessage.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.BlockNotAvailableMessage.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.BlockNotAvailableMessage.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.errors.BlockNotAvailableMessage.message">
+<span class="sig-name descname"><span class="pre">message</span></span><a class="headerlink" href="#solders.rpc.errors.BlockNotAvailableMessage.message" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.BlockNotAvailableMessage.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.BlockNotAvailableMessage.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.errors.NodeUnhealthy">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">NodeUnhealthy</span></span><a class="headerlink" href="#solders.rpc.errors.NodeUnhealthy" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.NodeUnhealthy.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.NodeUnhealthy.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.NodeUnhealthy.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.NodeUnhealthy.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.errors.NodeUnhealthy.num_slots_behind">
+<span class="sig-name descname"><span class="pre">num_slots_behind</span></span><a class="headerlink" href="#solders.rpc.errors.NodeUnhealthy.num_slots_behind" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.NodeUnhealthy.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.NodeUnhealthy.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.errors.NodeUnhealthyMessage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">NodeUnhealthyMessage</span></span><a class="headerlink" href="#solders.rpc.errors.NodeUnhealthyMessage" title="Permalink to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.errors.NodeUnhealthyMessage.data">
+<span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#solders.rpc.errors.NodeUnhealthyMessage.data" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.NodeUnhealthyMessage.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.NodeUnhealthyMessage.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.NodeUnhealthyMessage.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.NodeUnhealthyMessage.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.errors.NodeUnhealthyMessage.message">
+<span class="sig-name descname"><span class="pre">message</span></span><a class="headerlink" href="#solders.rpc.errors.NodeUnhealthyMessage.message" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.NodeUnhealthyMessage.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.NodeUnhealthyMessage.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.errors.TransactionPrecompileVerificationFailure">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TransactionPrecompileVerificationFailure</span></span><a class="headerlink" href="#solders.rpc.errors.TransactionPrecompileVerificationFailure" title="Permalink to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.errors.TransactionPrecompileVerificationFailure.error">
+<span class="sig-name descname"><span class="pre">error</span></span><a class="headerlink" href="#solders.rpc.errors.TransactionPrecompileVerificationFailure.error" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.TransactionPrecompileVerificationFailure.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.TransactionPrecompileVerificationFailure.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.TransactionPrecompileVerificationFailure.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.TransactionPrecompileVerificationFailure.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.TransactionPrecompileVerificationFailure.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.TransactionPrecompileVerificationFailure.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.errors.SlotSkipped">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SlotSkipped</span></span><a class="headerlink" href="#solders.rpc.errors.SlotSkipped" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.SlotSkipped.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.SlotSkipped.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.SlotSkipped.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.SlotSkipped.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.errors.SlotSkipped.slot">
+<span class="sig-name descname"><span class="pre">slot</span></span><a class="headerlink" href="#solders.rpc.errors.SlotSkipped.slot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.SlotSkipped.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.SlotSkipped.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.errors.LongTermStorageSlotSkipped">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LongTermStorageSlotSkipped</span></span><a class="headerlink" href="#solders.rpc.errors.LongTermStorageSlotSkipped" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.LongTermStorageSlotSkipped.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.LongTermStorageSlotSkipped.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.LongTermStorageSlotSkipped.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.LongTermStorageSlotSkipped.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.errors.LongTermStorageSlotSkipped.slot">
+<span class="sig-name descname"><span class="pre">slot</span></span><a class="headerlink" href="#solders.rpc.errors.LongTermStorageSlotSkipped.slot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.LongTermStorageSlotSkipped.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.LongTermStorageSlotSkipped.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.errors.KeyExcludedFromSecondaryIndex">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">KeyExcludedFromSecondaryIndex</span></span><a class="headerlink" href="#solders.rpc.errors.KeyExcludedFromSecondaryIndex" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.KeyExcludedFromSecondaryIndex.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.KeyExcludedFromSecondaryIndex.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.KeyExcludedFromSecondaryIndex.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.KeyExcludedFromSecondaryIndex.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.errors.KeyExcludedFromSecondaryIndex.index_key">
+<span class="sig-name descname"><span class="pre">index_key</span></span><a class="headerlink" href="#solders.rpc.errors.KeyExcludedFromSecondaryIndex.index_key" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.KeyExcludedFromSecondaryIndex.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.KeyExcludedFromSecondaryIndex.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.errors.TransactionPrecompileVerificationFailureMessage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TransactionPrecompileVerificationFailureMessage</span></span><a class="headerlink" href="#solders.rpc.errors.TransactionPrecompileVerificationFailureMessage" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.TransactionPrecompileVerificationFailureMessage.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.TransactionPrecompileVerificationFailureMessage.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.TransactionPrecompileVerificationFailureMessage.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.TransactionPrecompileVerificationFailureMessage.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.errors.TransactionPrecompileVerificationFailureMessage.message">
+<span class="sig-name descname"><span class="pre">message</span></span><a class="headerlink" href="#solders.rpc.errors.TransactionPrecompileVerificationFailureMessage.message" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.TransactionPrecompileVerificationFailureMessage.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.TransactionPrecompileVerificationFailureMessage.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.errors.SlotSkippedMessage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SlotSkippedMessage</span></span><a class="headerlink" href="#solders.rpc.errors.SlotSkippedMessage" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.SlotSkippedMessage.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.SlotSkippedMessage.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.SlotSkippedMessage.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.SlotSkippedMessage.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.errors.SlotSkippedMessage.message">
+<span class="sig-name descname"><span class="pre">message</span></span><a class="headerlink" href="#solders.rpc.errors.SlotSkippedMessage.message" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.SlotSkippedMessage.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.SlotSkippedMessage.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.errors.LongTermStorageSlotSkippedMessage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LongTermStorageSlotSkippedMessage</span></span><a class="headerlink" href="#solders.rpc.errors.LongTermStorageSlotSkippedMessage" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.LongTermStorageSlotSkippedMessage.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.LongTermStorageSlotSkippedMessage.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.LongTermStorageSlotSkippedMessage.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.LongTermStorageSlotSkippedMessage.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.errors.LongTermStorageSlotSkippedMessage.message">
+<span class="sig-name descname"><span class="pre">message</span></span><a class="headerlink" href="#solders.rpc.errors.LongTermStorageSlotSkippedMessage.message" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.LongTermStorageSlotSkippedMessage.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.LongTermStorageSlotSkippedMessage.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.errors.KeyExcludedFromSecondaryIndexMessage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">KeyExcludedFromSecondaryIndexMessage</span></span><a class="headerlink" href="#solders.rpc.errors.KeyExcludedFromSecondaryIndexMessage" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.KeyExcludedFromSecondaryIndexMessage.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.KeyExcludedFromSecondaryIndexMessage.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.KeyExcludedFromSecondaryIndexMessage.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.KeyExcludedFromSecondaryIndexMessage.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.errors.KeyExcludedFromSecondaryIndexMessage.message">
+<span class="sig-name descname"><span class="pre">message</span></span><a class="headerlink" href="#solders.rpc.errors.KeyExcludedFromSecondaryIndexMessage.message" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.KeyExcludedFromSecondaryIndexMessage.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.KeyExcludedFromSecondaryIndexMessage.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.errors.ScanError">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ScanError</span></span><a class="headerlink" href="#solders.rpc.errors.ScanError" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.ScanError.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.ScanError.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.ScanError.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.ScanError.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.errors.ScanError.message">
+<span class="sig-name descname"><span class="pre">message</span></span><a class="headerlink" href="#solders.rpc.errors.ScanError.message" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.ScanError.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.ScanError.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.errors.BlockStatusNotAvailableYet">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BlockStatusNotAvailableYet</span></span><a class="headerlink" href="#solders.rpc.errors.BlockStatusNotAvailableYet" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.BlockStatusNotAvailableYet.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.BlockStatusNotAvailableYet.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.BlockStatusNotAvailableYet.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.BlockStatusNotAvailableYet.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.errors.BlockStatusNotAvailableYet.slot">
+<span class="sig-name descname"><span class="pre">slot</span></span><a class="headerlink" href="#solders.rpc.errors.BlockStatusNotAvailableYet.slot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.BlockStatusNotAvailableYet.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.BlockStatusNotAvailableYet.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.errors.ScanErrorMessage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ScanErrorMessage</span></span><a class="headerlink" href="#solders.rpc.errors.ScanErrorMessage" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.ScanErrorMessage.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.ScanErrorMessage.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.ScanErrorMessage.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.ScanErrorMessage.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.errors.ScanErrorMessage.message">
+<span class="sig-name descname"><span class="pre">message</span></span><a class="headerlink" href="#solders.rpc.errors.ScanErrorMessage.message" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.ScanErrorMessage.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.ScanErrorMessage.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.errors.BlockStatusNotAvailableYetMessage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BlockStatusNotAvailableYetMessage</span></span><a class="headerlink" href="#solders.rpc.errors.BlockStatusNotAvailableYetMessage" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.BlockStatusNotAvailableYetMessage.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.BlockStatusNotAvailableYetMessage.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.BlockStatusNotAvailableYetMessage.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.BlockStatusNotAvailableYetMessage.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.errors.BlockStatusNotAvailableYetMessage.message">
+<span class="sig-name descname"><span class="pre">message</span></span><a class="headerlink" href="#solders.rpc.errors.BlockStatusNotAvailableYetMessage.message" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.BlockStatusNotAvailableYetMessage.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.BlockStatusNotAvailableYetMessage.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.errors.MinContextSlotNotReached">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MinContextSlotNotReached</span></span><a class="headerlink" href="#solders.rpc.errors.MinContextSlotNotReached" title="Permalink to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.errors.MinContextSlotNotReached.context_slot">
+<span class="sig-name descname"><span class="pre">context_slot</span></span><a class="headerlink" href="#solders.rpc.errors.MinContextSlotNotReached.context_slot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.MinContextSlotNotReached.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.MinContextSlotNotReached.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.MinContextSlotNotReached.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.MinContextSlotNotReached.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.MinContextSlotNotReached.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.MinContextSlotNotReached.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.errors.MinContextSlotNotReachedMessage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MinContextSlotNotReachedMessage</span></span><a class="headerlink" href="#solders.rpc.errors.MinContextSlotNotReachedMessage" title="Permalink to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.errors.MinContextSlotNotReachedMessage.data">
+<span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#solders.rpc.errors.MinContextSlotNotReachedMessage.data" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.MinContextSlotNotReachedMessage.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.MinContextSlotNotReachedMessage.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.MinContextSlotNotReachedMessage.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.MinContextSlotNotReachedMessage.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.errors.MinContextSlotNotReachedMessage.message">
+<span class="sig-name descname"><span class="pre">message</span></span><a class="headerlink" href="#solders.rpc.errors.MinContextSlotNotReachedMessage.message" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.MinContextSlotNotReachedMessage.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.MinContextSlotNotReachedMessage.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.errors.UnsupportedTransactionVersion">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">UnsupportedTransactionVersion</span></span><a class="headerlink" href="#solders.rpc.errors.UnsupportedTransactionVersion" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.UnsupportedTransactionVersion.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.UnsupportedTransactionVersion.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.UnsupportedTransactionVersion.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.UnsupportedTransactionVersion.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.UnsupportedTransactionVersion.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.UnsupportedTransactionVersion.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.errors.UnsupportedTransactionVersion.value">
+<span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#solders.rpc.errors.UnsupportedTransactionVersion.value" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.errors.UnsupportedTransactionVersionMessage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">UnsupportedTransactionVersionMessage</span></span><a class="headerlink" href="#solders.rpc.errors.UnsupportedTransactionVersionMessage" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.UnsupportedTransactionVersionMessage.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.UnsupportedTransactionVersionMessage.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.UnsupportedTransactionVersionMessage.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.UnsupportedTransactionVersionMessage.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.errors.UnsupportedTransactionVersionMessage.message">
+<span class="sig-name descname"><span class="pre">message</span></span><a class="headerlink" href="#solders.rpc.errors.UnsupportedTransactionVersionMessage.message" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.UnsupportedTransactionVersionMessage.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.UnsupportedTransactionVersionMessage.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.errors.ParseErrorMessage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ParseErrorMessage</span></span><a class="headerlink" href="#solders.rpc.errors.ParseErrorMessage" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.ParseErrorMessage.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.ParseErrorMessage.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.ParseErrorMessage.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.ParseErrorMessage.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.errors.ParseErrorMessage.message">
+<span class="sig-name descname"><span class="pre">message</span></span><a class="headerlink" href="#solders.rpc.errors.ParseErrorMessage.message" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.ParseErrorMessage.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.ParseErrorMessage.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.errors.InvalidRequestMessage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">InvalidRequestMessage</span></span><a class="headerlink" href="#solders.rpc.errors.InvalidRequestMessage" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.InvalidRequestMessage.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.InvalidRequestMessage.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.InvalidRequestMessage.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.InvalidRequestMessage.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.errors.InvalidRequestMessage.message">
+<span class="sig-name descname"><span class="pre">message</span></span><a class="headerlink" href="#solders.rpc.errors.InvalidRequestMessage.message" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.InvalidRequestMessage.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.InvalidRequestMessage.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.errors.MethodNotFoundMessage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MethodNotFoundMessage</span></span><a class="headerlink" href="#solders.rpc.errors.MethodNotFoundMessage" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.MethodNotFoundMessage.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.MethodNotFoundMessage.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.MethodNotFoundMessage.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.MethodNotFoundMessage.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.errors.MethodNotFoundMessage.message">
+<span class="sig-name descname"><span class="pre">message</span></span><a class="headerlink" href="#solders.rpc.errors.MethodNotFoundMessage.message" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.MethodNotFoundMessage.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.MethodNotFoundMessage.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.errors.InvalidParamsMessage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">InvalidParamsMessage</span></span><a class="headerlink" href="#solders.rpc.errors.InvalidParamsMessage" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.InvalidParamsMessage.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.InvalidParamsMessage.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.InvalidParamsMessage.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.InvalidParamsMessage.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.errors.InvalidParamsMessage.message">
+<span class="sig-name descname"><span class="pre">message</span></span><a class="headerlink" href="#solders.rpc.errors.InvalidParamsMessage.message" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.InvalidParamsMessage.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.InvalidParamsMessage.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.errors.InternalErrorMessage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">InternalErrorMessage</span></span><a class="headerlink" href="#solders.rpc.errors.InternalErrorMessage" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.InternalErrorMessage.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.InternalErrorMessage.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.InternalErrorMessage.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.InternalErrorMessage.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.errors.InternalErrorMessage.message">
+<span class="sig-name descname"><span class="pre">message</span></span><a class="headerlink" href="#solders.rpc.errors.InternalErrorMessage.message" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.errors.InternalErrorMessage.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.errors.InternalErrorMessage.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="config.html" class="btn btn-neutral float-left" title="Config" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="filter.html" class="btn btn-neutral float-right" title="Filter" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Kevin Heavey.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pubkeys &mdash; solders 0.21.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Transactions" href="transactions.html" />
+    <link rel="prev" title="Keypairs" href="keypairs.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            solders
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Solders</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="keypairs.html">Keypairs</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Pubkeys</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#checking-if-an-address-has-a-private-key">Checking if an address has a private key</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#generating-pdas">Generating PDAs</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="transactions.html">Transactions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rpc.html">RPC helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bankrun.html">Bankrun</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">solders</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Tutorials</a></li>
+      <li class="breadcrumb-item active">Pubkeys</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/kevinheavey/solders/blob/main/docs/tutorials/pubkeys.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pubkeys">
+<h1>Pubkeys<a class="headerlink" href="#pubkeys" title="Permalink to this heading"></a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">Pubkey</span></code> class is used for both actual public keys,
+and addresses that are off the ed25519 curve (e.g. program-derived addresses).</p>
+<section id="checking-if-an-address-has-a-private-key">
+<h2>Checking if an address has a private key<a class="headerlink" href="#checking-if-an-address-has-a-private-key" title="Permalink to this heading"></a></h2>
+<p>Program-derived addresses (PDAs) do not lie on the ed25519 curve and thus do not have
+private keys.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">solders.pubkey</span> <span class="kn">import</span> <span class="n">Pubkey</span>
+
+<span class="c1"># Note that Keypair() will always give a public key that is valid for users</span>
+<span class="n">key</span> <span class="o">=</span> <span class="n">Pubkey</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="s1">&#39;5oNDL3swdJJF1g9DzJiZ4ynHXgszjAEpUkxVYejchzrY&#39;</span><span class="p">)</span> <span class="c1"># Valid public key</span>
+<span class="k">assert</span> <span class="n">key</span><span class="o">.</span><span class="n">is_on_curve</span><span class="p">()</span> <span class="c1"># Lies on the ed25519 curve and is suitable for users</span>
+
+<span class="n">off_curve_address</span> <span class="o">=</span> <span class="n">Pubkey</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="s1">&#39;4BJXYkfvg37zEmBbsacZjeQDpTNx91KppxFJxRqrz48e&#39;</span><span class="p">)</span> <span class="c1"># Valid public key</span>
+<span class="k">assert</span> <span class="ow">not</span> <span class="n">off_curve_address</span><span class="o">.</span><span class="n">is_on_curve</span><span class="p">()</span> <span class="c1"># Not on the ed25519 curve, therefore not suitable for users</span>
+</pre></div>
+</div>
+</section>
+<section id="generating-pdas">
+<h2>Generating PDAs<a class="headerlink" href="#generating-pdas" title="Permalink to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">find_program_address</span></code> static method takes an array of seed bytes and tries
+adding a “bump” byte until it finds an off-curve address (i.e. a PDA):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">solders.pubkey</span> <span class="kn">import</span> <span class="n">Pubkey</span>
+
+<span class="n">program_id</span> <span class="o">=</span> <span class="n">Pubkey</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="s2">&quot;G1DCNUQTSGHehwdLCAmRyAG8hf51eCHrLNUqkgGKYASj&quot;</span><span class="p">)</span>
+<span class="n">pda</span><span class="p">,</span> <span class="n">bump</span> <span class="o">=</span> <span class="n">Pubkey</span><span class="o">.</span><span class="n">find_program_address</span><span class="p">([</span><span class="sa">b</span><span class="s2">&quot;test&quot;</span><span class="p">],</span> <span class="n">program_id</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;bump: </span><span class="si">{</span><span class="n">bump</span><span class="si">}</span><span class="s2">; pda: </span><span class="si">{</span><span class="n">pda</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>bump: 253; pda: AfEjen5hHkTkEqy2yfyPhDQWq7dc7zbWU2aJmB3h8brU
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="keypairs.html" class="btn btn-neutral float-left" title="Keypairs" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="transactions.html" class="btn btn-neutral float-right" title="Transactions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Kevin Heavey.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Solders &mdash; solders 0.21.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Tutorials" href="tutorials/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            solders
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Solders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_reference/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">solders</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Solders</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/kevinheavey/solders/blob/main/docs/index.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div align="center">
+    <img src="https://raw.githubusercontent.com/kevinheavey/solders/main/docs/logo.jpeg" width="50%" height="50%">
+</div>
+<hr class="docutils" />
+<p><a class="reference external" href="https://badge.fury.io/py/solders"><img alt="PyPI version" src="https://badge.fury.io/py/solders.svg" /></a>
+<a class="reference external" href="https://github.com/kevinheavey/solders/blob/main/LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg" /></a></p>
+<section id="solders">
+<h1>Solders<a class="headerlink" href="#solders" title="Permalink to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">solders</span></code> is a high-performance Python toolkit for Solana, written in Rust. It provides robust solutions to the following problems:</p>
+<ul class="simple">
+<li><p>Core SDK stuff: keypairs, pubkeys, signing and serializing transactions - that sort of thing.</p></li>
+<li><p>RPC stuff: building requests and parsing responses (no networking stuff - if you want help with that,
+<a class="reference external" href="https://michaelhly.github.io/solana-py/rpc/async_api/">solana-py</a> is your friend).</p></li>
+<li><p>Integration testing stuff: the <code class="docutils literal notranslate"><span class="pre">solders.bankrun</span></code> module is an alternative to <code class="docutils literal notranslate"><span class="pre">solana-test-validator</span></code> that’s much more convenient and <strong>much</strong> faster. It’s based on <a class="reference external" href="https://crates.io/crates/solana-program-test">solana-program-test</a> if you know that is.</p></li>
+</ul>
+<section id="what-about-solana-py">
+<h2>What about solana-py?<a class="headerlink" href="#what-about-solana-py" title="Permalink to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">solders</span></code> and <code class="docutils literal notranslate"><span class="pre">solana-py</span></code> are good friends. <code class="docutils literal notranslate"><span class="pre">solana-py</span></code> uses <code class="docutils literal notranslate"><span class="pre">solders</span></code> under the hood extensively in its
+core API and RPC API. The main differences are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">solders</span></code> doesn’t have functions to actually interact with the RPC server (though <code class="docutils literal notranslate"><span class="pre">solana-py</span></code> does use the RPC code from <code class="docutils literal notranslate"><span class="pre">solders</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">solders</span></code> doesn’t provide SPL Token and SPL Memo clients.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">solana-py</span></code> may not have support for all the RPC requests and responses provided by <code class="docutils literal notranslate"><span class="pre">solders</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">solana-py</span></code> doesn’t have anything like the <code class="docutils literal notranslate"><span class="pre">bankrun</span></code> testing kit.</p></li>
+</ul>
+<p>Since <code class="docutils literal notranslate"><span class="pre">solana-py</span></code> uses <code class="docutils literal notranslate"><span class="pre">solders</span></code> under the hood and they don’t duplicate each other’s features, you should just use whichever library you need.</p>
+</section>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">solders</span>
+</pre></div>
+</div>
+<p>Note: Requires Python &gt;= 3.7.</p>
+</section>
+<section id="example-usage">
+<h2>Example Usage<a class="headerlink" href="#example-usage" title="Permalink to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.message</span> <span class="kn">import</span> <span class="n">Message</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.keypair</span> <span class="kn">import</span> <span class="n">Keypair</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.instruction</span> <span class="kn">import</span> <span class="n">Instruction</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.hash</span> <span class="kn">import</span> <span class="n">Hash</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.transaction</span> <span class="kn">import</span> <span class="n">Transaction</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.pubkey</span> <span class="kn">import</span> <span class="n">Pubkey</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">program_id</span> <span class="o">=</span> <span class="n">Pubkey</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arbitrary_instruction_data</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">([</span><span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">accounts</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">instruction</span> <span class="o">=</span> <span class="n">Instruction</span><span class="p">(</span><span class="n">program_id</span><span class="p">,</span> <span class="n">arbitrary_instruction_data</span><span class="p">,</span> <span class="n">accounts</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">payer</span> <span class="o">=</span> <span class="n">Keypair</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">message</span> <span class="o">=</span> <span class="n">Message</span><span class="p">([</span><span class="n">instruction</span><span class="p">],</span> <span class="n">payer</span><span class="o">.</span><span class="n">pubkey</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">blockhash</span> <span class="o">=</span> <span class="n">Hash</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>  <span class="c1"># replace with a real blockhash</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tx</span> <span class="o">=</span> <span class="n">Transaction</span><span class="p">([</span><span class="n">payer</span><span class="p">],</span> <span class="n">message</span><span class="p">,</span> <span class="n">blockhash</span><span class="p">)</span>
+
+</pre></div>
+</div>
+</section>
+<section id="development">
+<h2>Development<a class="headerlink" href="#development" title="Permalink to this heading"></a></h2>
+<section id="setup">
+<h3>Setup<a class="headerlink" href="#setup" title="Permalink to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p>Install <a class="reference external" href="https://python-poetry.org/">poetry</a></p></li>
+<li><p>Install dev dependencies:</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">poetry</span> <span class="n">install</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>Activate the poetry shell:</p></li>
+</ol>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>shell
+</pre></div>
+</div>
+</section>
+<section id="testing">
+<h3>Testing<a class="headerlink" href="#testing" title="Permalink to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">maturin</span> <span class="pre">develop</span></code> to compile the Rust code.</p></li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">fmt</span></code>, <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">lint</span></code>, and <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">test</span></code>.</p></li>
+</ol>
+</section>
+</section>
+</section>
+<div class="toctree-wrapper compound">
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Solders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_reference/index.html">API Reference</a></li>
+</ul>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tutorials/index.html" class="btn btn-neutral float-right" title="Tutorials" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Kevin Heavey.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

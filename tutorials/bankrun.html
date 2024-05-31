@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bankrun &mdash; solders 0.21.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="API Reference" href="../api_reference/index.html" />
+    <link rel="prev" title="RPC helpers" href="rpc.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            solders
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Solders</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="keypairs.html">Keypairs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pubkeys.html">Pubkeys</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transactions.html">Transactions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rpc.html">RPC helpers</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Bankrun</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#minimal-example">Minimal example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#deploying-programs">Deploying programs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#anchor-integration">Anchor integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#time-travel">Time travel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#writing-arbitrary-accounts">Writing arbitrary accounts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#other-features">Other features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#when-should-i-use-solana-test-validator">When should I use <code class="docutils literal notranslate"><span class="pre">solana-test-validator</span></code>?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#supported-platforms">Supported platforms</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">solders</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Tutorials</a></li>
+      <li class="breadcrumb-item active">Bankrun</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/kevinheavey/solders/blob/main/docs/tutorials/bankrun.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="bankrun">
+<h1>Bankrun<a class="headerlink" href="#bankrun" title="Permalink to this heading"></a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">bankrun</span></code> module offers a quick and powerful yet lightweight solution for testing Solana programs.
+While people often use <code class="docutils literal notranslate"><span class="pre">solana-test-validator</span></code> for this,
+<code class="docutils literal notranslate"><span class="pre">bankrun</span></code> is orders of magnitude faster and far more convenient.
+You don’t have to
+take care of an external process and you can start as many <code class="docutils literal notranslate"><span class="pre">bankrun</span></code>
+instances as you like without worrying about ports in use or hogging your machines resources.</p>
+<p>You can also do things that are not possible with <code class="docutils literal notranslate"><span class="pre">solana-test-validator</span></code>,
+such as jumping back and forth in time or dynamically setting account data.</p>
+<p>If you’ve used <a class="reference external" href="https://crates.io/crates/solana-program-test">solana-program-test</a>
+you’ll be familiar with <code class="docutils literal notranslate"><span class="pre">bankrun</span></code>, since that’s what it uses under the hood.</p>
+<p>For those unfamiliar, <code class="docutils literal notranslate"><span class="pre">bankrun</span></code> and <code class="docutils literal notranslate"><span class="pre">solana-program-test</span></code> work by spinning up a lightweight
+<code class="docutils literal notranslate"><span class="pre">BanksServer</span></code> that’s like an RPC but much faster, and creating a <code class="docutils literal notranslate"><span class="pre">BanksClient</span></code> to talk to the
+server. This author thought <code class="docutils literal notranslate"><span class="pre">solana-program-test</span></code> was a boring name, so he chose <code class="docutils literal notranslate"><span class="pre">bankrun</span></code> instead
+(you’re running Solana <a class="reference external" href="https://github.com/solana-labs/solana/blob/master/runtime/src/bank.rs">Banks</a>).</p>
+<section id="minimal-example">
+<h2>Minimal example<a class="headerlink" href="#minimal-example" title="Permalink to this heading"></a></h2>
+<p>This example just transfers lamports from Alice to Bob without loading
+any programs of our own. Note: you’ll need <code class="docutils literal notranslate"><span class="pre">pytest-asyncio</span></code> installed in
+the environment, since the test function is async.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pytest</span> <span class="kn">import</span> <span class="n">mark</span>
+<span class="kn">from</span> <span class="nn">solders.bankrun</span> <span class="kn">import</span> <span class="n">start</span>
+<span class="kn">from</span> <span class="nn">solders.message</span> <span class="kn">import</span> <span class="n">Message</span>
+<span class="kn">from</span> <span class="nn">solders.pubkey</span> <span class="kn">import</span> <span class="n">Pubkey</span>
+<span class="kn">from</span> <span class="nn">solders.system_program</span> <span class="kn">import</span> <span class="n">transfer</span>
+<span class="kn">from</span> <span class="nn">solders.transaction</span> <span class="kn">import</span> <span class="n">VersionedTransaction</span>
+
+
+<span class="nd">@mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_transfer</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="k">await</span> <span class="n">start</span><span class="p">()</span>
+    <span class="n">receiver</span> <span class="o">=</span> <span class="n">Pubkey</span><span class="o">.</span><span class="n">new_unique</span><span class="p">()</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">banks_client</span>
+    <span class="n">payer</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">payer</span>
+    <span class="n">blockhash</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">last_blockhash</span>
+    <span class="n">transfer_lamports</span> <span class="o">=</span> <span class="mi">1_000_000</span>
+    <span class="n">ixs</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">transfer</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;from_pubkey&quot;</span><span class="p">:</span> <span class="n">context</span><span class="o">.</span><span class="n">payer</span><span class="o">.</span><span class="n">pubkey</span><span class="p">(),</span>
+                <span class="s2">&quot;to_pubkey&quot;</span><span class="p">:</span> <span class="n">receiver</span><span class="p">,</span>
+                <span class="s2">&quot;lamports&quot;</span><span class="p">:</span> <span class="n">transfer_lamports</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+    <span class="p">]</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="n">Message</span><span class="o">.</span><span class="n">new_with_blockhash</span><span class="p">(</span><span class="n">ixs</span><span class="p">,</span> <span class="n">payer</span><span class="o">.</span><span class="n">pubkey</span><span class="p">(),</span> <span class="n">blockhash</span><span class="p">)</span>
+    <span class="n">tx</span> <span class="o">=</span> <span class="n">VersionedTransaction</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="p">[</span><span class="n">payer</span><span class="p">])</span>
+    <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">process_transaction</span><span class="p">(</span><span class="n">tx</span><span class="p">)</span>
+    <span class="n">balance_after</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get_balance</span><span class="p">(</span><span class="n">receiver</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">balance_after</span> <span class="o">==</span> <span class="n">transfer_lamports</span>
+</pre></div>
+</div>
+<p>Some things to note here:</p>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">context</span></code> object contains a <code class="docutils literal notranslate"><span class="pre">banks_client</span></code> to talk to the <code class="docutils literal notranslate"><span class="pre">BanksServer</span></code>,
+a <code class="docutils literal notranslate"><span class="pre">payer</span></code> keypair that has been funded with a bunch of SOL, and a <code class="docutils literal notranslate"><span class="pre">last_blockhash</span></code>
+that we can use in our transactions.</p></li>
+<li><p>We haven’t loaded any specific programs, but by default we have access to
+the System Program, the SPL token programs and the SPL memo program.</p></li>
+</ul>
+</section>
+<section id="deploying-programs">
+<h2>Deploying programs<a class="headerlink" href="#deploying-programs" title="Permalink to this heading"></a></h2>
+<p>Most of the time we want to do more than just mess around with token transfers -
+we want to test our own programs. <code class="docutils literal notranslate"><span class="pre">solana-program-test</span></code> is a bit fussy about
+how this is done.</p>
+<p>Firstly, the program’s <code class="docutils literal notranslate"><span class="pre">.so</span></code> file must be present in one of the following directories:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">./tests/fixtures</span></code> (just create this directory if it doesn’t exist)</p></li>
+<li><p>The current working directory</p></li>
+<li><p>A directory you define in the <code class="docutils literal notranslate"><span class="pre">BPF_OUT_DIR</span></code> or <code class="docutils literal notranslate"><span class="pre">SBF_OUT_DIR</span></code> environment variables.</p></li>
+</ul>
+<p>(If you’re not aware, the <code class="docutils literal notranslate"><span class="pre">.so</span></code> file is created when you run <code class="docutils literal notranslate"><span class="pre">anchor</span> <span class="pre">build</span></code> or <code class="docutils literal notranslate"><span class="pre">cargo</span> <span class="pre">build-sbf</span></code>
+and can be found in <code class="docutils literal notranslate"><span class="pre">target/deploy</span></code>).</p>
+<p>Now to add the program to our tests we use the <code class="docutils literal notranslate"><span class="pre">programs</span></code> parameter in the <code class="docutils literal notranslate"><span class="pre">start</span></code> function.
+The program name used in this parameter must match the filename without the <code class="docutils literal notranslate"><span class="pre">.so</span></code> extension.</p>
+<p>Here’s an example using a <a class="reference external" href="https://github.com/solana-labs/solana-program-library/tree/bd216c8103cd8eb9f5f32e742973e7afb52f3b81/examples/rust/logging">simple program</a>
+from the Solana monorepo that just does some logging:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pytest</span> <span class="kn">import</span> <span class="n">mark</span>
+<span class="kn">from</span> <span class="nn">solders.bankrun</span> <span class="kn">import</span> <span class="n">start</span>
+<span class="kn">from</span> <span class="nn">solders.instruction</span> <span class="kn">import</span> <span class="n">AccountMeta</span><span class="p">,</span> <span class="n">Instruction</span>
+<span class="kn">from</span> <span class="nn">solders.message</span> <span class="kn">import</span> <span class="n">Message</span>
+<span class="kn">from</span> <span class="nn">solders.pubkey</span> <span class="kn">import</span> <span class="n">Pubkey</span>
+<span class="kn">from</span> <span class="nn">solders.transaction</span> <span class="kn">import</span> <span class="n">VersionedTransaction</span>
+
+
+<span class="nd">@mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_logging</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">program_id</span> <span class="o">=</span> <span class="n">Pubkey</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="s2">&quot;Logging111111111111111111111111111111111111&quot;</span><span class="p">)</span>
+    <span class="n">ix</span> <span class="o">=</span> <span class="n">Instruction</span><span class="p">(</span>
+        <span class="n">program_id</span><span class="p">,</span>
+        <span class="nb">bytes</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">]),</span>
+        <span class="p">[</span><span class="n">AccountMeta</span><span class="p">(</span><span class="n">Pubkey</span><span class="o">.</span><span class="n">new_unique</span><span class="p">(),</span> <span class="n">is_signer</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">is_writable</span><span class="o">=</span><span class="kc">True</span><span class="p">)],</span>
+    <span class="p">)</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="k">await</span> <span class="n">start</span><span class="p">(</span><span class="n">programs</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;spl_example_logging&quot;</span><span class="p">,</span> <span class="n">program_id</span><span class="p">)])</span>
+    <span class="n">payer</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">payer</span>
+    <span class="n">blockhash</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">last_blockhash</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">banks_client</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="n">Message</span><span class="o">.</span><span class="n">new_with_blockhash</span><span class="p">([</span><span class="n">ix</span><span class="p">],</span> <span class="n">payer</span><span class="o">.</span><span class="n">pubkey</span><span class="p">(),</span> <span class="n">blockhash</span><span class="p">)</span>
+    <span class="n">tx</span> <span class="o">=</span> <span class="n">VersionedTransaction</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="p">[</span><span class="n">payer</span><span class="p">])</span>
+    <span class="c1"># let&#39;s sim it first</span>
+    <span class="n">sim_res</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">simulate_transaction</span><span class="p">(</span><span class="n">tx</span><span class="p">)</span>
+    <span class="n">meta</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">process_transaction</span><span class="p">(</span><span class="n">tx</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">sim_res</span><span class="o">.</span><span class="n">meta</span> <span class="o">==</span> <span class="n">meta</span>
+    <span class="k">assert</span> <span class="n">meta</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="k">assert</span> <span class="n">meta</span><span class="o">.</span><span class="n">log_messages</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Program log: static string&quot;</span>
+    <span class="k">assert</span> <span class="p">(</span>
+        <span class="n">meta</span><span class="o">.</span><span class="n">compute_units_consumed</span> <span class="o">&lt;</span> <span class="mi">10_000</span>
+    <span class="p">)</span>  <span class="c1"># not being precise here in case it changes</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">.so</span></code> file must be named <code class="docutils literal notranslate"><span class="pre">spl_example_logging.so</span></code>, since <code class="docutils literal notranslate"><span class="pre">spl_example_logging</span></code> is
+the name we used in the <code class="docutils literal notranslate"><span class="pre">programs</span></code> parameter.</p>
+</section>
+<section id="anchor-integration">
+<h2>Anchor integration<a class="headerlink" href="#anchor-integration" title="Permalink to this heading"></a></h2>
+<p>If you have an Anchor workspace, <code class="docutils literal notranslate"><span class="pre">bankrun</span></code> can make some extra assumptions that make it more
+convenient to get started. Just use <code class="docutils literal notranslate"><span class="pre">start_anchor</span></code> and give it the path to the project root
+(the folder containing the <code class="docutils literal notranslate"><span class="pre">Anchor.toml</span></code> file). The programs in the workspace will be automatically
+deployed to the test environment.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">from</span> <span class="nn">pytest</span> <span class="kn">import</span> <span class="n">mark</span>
+<span class="kn">from</span> <span class="nn">solders.bankrun</span> <span class="kn">import</span> <span class="n">start_anchor</span>
+<span class="kn">from</span> <span class="nn">solders.pubkey</span> <span class="kn">import</span> <span class="n">Pubkey</span>
+
+
+<span class="nd">@mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_anchor</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">ctx</span> <span class="o">=</span> <span class="k">await</span> <span class="n">start_anchor</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;tests/bankrun/anchor-example&quot;</span><span class="p">))</span>
+    <span class="n">program_id</span> <span class="o">=</span> <span class="n">Pubkey</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="s2">&quot;Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS&quot;</span><span class="p">)</span>
+    <span class="n">executable_account</span> <span class="o">=</span> <span class="k">await</span> <span class="n">ctx</span><span class="o">.</span><span class="n">banks_client</span><span class="o">.</span><span class="n">get_account</span><span class="p">(</span><span class="n">program_id</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">executable_account</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="k">assert</span> <span class="n">executable_account</span><span class="o">.</span><span class="n">executable</span>
+</pre></div>
+</div>
+</section>
+<section id="time-travel">
+<h2>Time travel<a class="headerlink" href="#time-travel" title="Permalink to this heading"></a></h2>
+<p>Many programs rely on the <code class="docutils literal notranslate"><span class="pre">Clock</span></code> sysvar: for example, a mint that doesn’t become available until after
+a certain time. With <code class="docutils literal notranslate"><span class="pre">bankrun</span></code> you can dynamically overwrite the <code class="docutils literal notranslate"><span class="pre">Clock</span></code> sysvar using <code class="docutils literal notranslate"><span class="pre">context.set_clock()</span></code>.
+Here’s an example using a program that panics if <code class="docutils literal notranslate"><span class="pre">clock.unix_timestamp</span></code> is greater than 100
+(which is on January 1st 1970):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pytest</span> <span class="kn">import</span> <span class="n">mark</span><span class="p">,</span> <span class="n">raises</span>
+<span class="kn">from</span> <span class="nn">solders.bankrun</span> <span class="kn">import</span> <span class="n">start</span>
+<span class="kn">from</span> <span class="nn">solders.clock</span> <span class="kn">import</span> <span class="n">Clock</span>
+<span class="kn">from</span> <span class="nn">solders.instruction</span> <span class="kn">import</span> <span class="n">Instruction</span>
+<span class="kn">from</span> <span class="nn">solders.message</span> <span class="kn">import</span> <span class="n">Message</span>
+<span class="kn">from</span> <span class="nn">solders.pubkey</span> <span class="kn">import</span> <span class="n">Pubkey</span>
+<span class="kn">from</span> <span class="nn">solders.transaction</span> <span class="kn">import</span> <span class="n">TransactionError</span><span class="p">,</span> <span class="n">VersionedTransaction</span>
+
+
+<span class="nd">@mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_set_clock</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">program_id</span> <span class="o">=</span> <span class="n">Pubkey</span><span class="o">.</span><span class="n">new_unique</span><span class="p">()</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="k">await</span> <span class="n">start</span><span class="p">(</span><span class="n">programs</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;solders_clock_example&quot;</span><span class="p">,</span> <span class="n">program_id</span><span class="p">)])</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">banks_client</span>
+    <span class="n">payer</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">payer</span>
+    <span class="n">blockhash</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">last_blockhash</span>
+    <span class="n">ixs</span> <span class="o">=</span> <span class="p">[</span><span class="n">Instruction</span><span class="p">(</span><span class="n">program_id</span><span class="o">=</span><span class="n">program_id</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">accounts</span><span class="o">=</span><span class="p">[])]</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="n">Message</span><span class="o">.</span><span class="n">new_with_blockhash</span><span class="p">(</span><span class="n">ixs</span><span class="p">,</span> <span class="n">payer</span><span class="o">.</span><span class="n">pubkey</span><span class="p">(),</span> <span class="n">blockhash</span><span class="p">)</span>
+    <span class="n">tx</span> <span class="o">=</span> <span class="n">VersionedTransaction</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="p">[</span><span class="n">payer</span><span class="p">])</span>
+    <span class="c1"># this will fail because it&#39;s not January 1970 anymore</span>
+    <span class="k">with</span> <span class="n">raises</span><span class="p">(</span><span class="n">TransactionError</span><span class="p">):</span>
+        <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">process_transaction</span><span class="p">(</span><span class="n">tx</span><span class="p">)</span>
+    <span class="c1"># so let&#39;s turn back time</span>
+    <span class="n">current_clock</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get_clock</span><span class="p">()</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">set_clock</span><span class="p">(</span>
+        <span class="n">Clock</span><span class="p">(</span>
+            <span class="n">slot</span><span class="o">=</span><span class="n">current_clock</span><span class="o">.</span><span class="n">slot</span><span class="p">,</span>
+            <span class="n">epoch_start_timestamp</span><span class="o">=</span><span class="n">current_clock</span><span class="o">.</span><span class="n">epoch_start_timestamp</span><span class="p">,</span>
+            <span class="n">epoch</span><span class="o">=</span><span class="n">current_clock</span><span class="o">.</span><span class="n">epoch</span><span class="p">,</span>
+            <span class="n">leader_schedule_epoch</span><span class="o">=</span><span class="n">current_clock</span><span class="o">.</span><span class="n">leader_schedule_epoch</span><span class="p">,</span>
+            <span class="n">unix_timestamp</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">ixs2</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">Instruction</span><span class="p">(</span>
+            <span class="n">program_id</span><span class="o">=</span><span class="n">program_id</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="sa">b</span><span class="s2">&quot;foobar&quot;</span><span class="p">,</span>  <span class="c1"># unused, this is just to dedup the transaction</span>
+            <span class="n">accounts</span><span class="o">=</span><span class="p">[],</span>
+        <span class="p">)</span>
+    <span class="p">]</span>
+    <span class="n">msg2</span> <span class="o">=</span> <span class="n">Message</span><span class="o">.</span><span class="n">new_with_blockhash</span><span class="p">(</span><span class="n">ixs2</span><span class="p">,</span> <span class="n">payer</span><span class="o">.</span><span class="n">pubkey</span><span class="p">(),</span> <span class="n">blockhash</span><span class="p">)</span>
+    <span class="n">tx2</span> <span class="o">=</span> <span class="n">VersionedTransaction</span><span class="p">(</span><span class="n">msg2</span><span class="p">,</span> <span class="p">[</span><span class="n">payer</span><span class="p">])</span>
+    <span class="c1"># now the transaction goes through</span>
+    <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">process_transaction</span><span class="p">(</span><span class="n">tx2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>See also: <code class="docutils literal notranslate"><span class="pre">context.warp_to_slot()</span></code>, which lets you jump to a future slot.</p>
+</section>
+<section id="writing-arbitrary-accounts">
+<h2>Writing arbitrary accounts<a class="headerlink" href="#writing-arbitrary-accounts" title="Permalink to this heading"></a></h2>
+<p>Bankrun lets you write any account data you want, regardless of
+whether the account state would even be possible.</p>
+<p>Here’s an example where we give an account a bunch of USDC,
+even though we don’t have the USDC mint keypair. This is
+convenient for testing because it means we don’t have to
+work with fake USDC in our tests:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pytest</span> <span class="kn">import</span> <span class="n">mark</span>
+<span class="kn">from</span> <span class="nn">solders.account</span> <span class="kn">import</span> <span class="n">Account</span>
+<span class="kn">from</span> <span class="nn">solders.bankrun</span> <span class="kn">import</span> <span class="n">start</span>
+<span class="kn">from</span> <span class="nn">solders.pubkey</span> <span class="kn">import</span> <span class="n">Pubkey</span>
+<span class="kn">from</span> <span class="nn">solders.token</span> <span class="kn">import</span> <span class="n">ID</span> <span class="k">as</span> <span class="n">TOKEN_PROGRAM_ID</span>
+<span class="kn">from</span> <span class="nn">solders.token.associated</span> <span class="kn">import</span> <span class="n">get_associated_token_address</span>
+<span class="kn">from</span> <span class="nn">solders.token.state</span> <span class="kn">import</span> <span class="n">TokenAccount</span><span class="p">,</span> <span class="n">TokenAccountState</span>
+
+
+<span class="nd">@mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_infinite_usdc_mint</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">owner</span> <span class="o">=</span> <span class="n">Pubkey</span><span class="o">.</span><span class="n">new_unique</span><span class="p">()</span>
+    <span class="n">usdc_mint</span> <span class="o">=</span> <span class="n">Pubkey</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="s2">&quot;EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v&quot;</span><span class="p">)</span>
+    <span class="n">ata</span> <span class="o">=</span> <span class="n">get_associated_token_address</span><span class="p">(</span><span class="n">owner</span><span class="p">,</span> <span class="n">usdc_mint</span><span class="p">)</span>
+    <span class="n">usdc_to_own</span> <span class="o">=</span> <span class="mi">1_000_000_000_000</span>
+    <span class="n">token_acc</span> <span class="o">=</span> <span class="n">TokenAccount</span><span class="p">(</span>
+        <span class="n">mint</span><span class="o">=</span><span class="n">usdc_mint</span><span class="p">,</span>
+        <span class="n">owner</span><span class="o">=</span><span class="n">owner</span><span class="p">,</span>
+        <span class="n">amount</span><span class="o">=</span><span class="n">usdc_to_own</span><span class="p">,</span>
+        <span class="n">delegate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">state</span><span class="o">=</span><span class="n">TokenAccountState</span><span class="o">.</span><span class="n">Initialized</span><span class="p">,</span>
+        <span class="n">is_native</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">delegated_amount</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">close_authority</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="k">await</span> <span class="n">start</span><span class="p">(</span>
+        <span class="n">accounts</span><span class="o">=</span><span class="p">[</span>
+            <span class="p">(</span>
+                <span class="n">ata</span><span class="p">,</span>
+                <span class="n">Account</span><span class="p">(</span>
+                    <span class="n">lamports</span><span class="o">=</span><span class="mi">1_000_000_000</span><span class="p">,</span>
+                    <span class="n">data</span><span class="o">=</span><span class="nb">bytes</span><span class="p">(</span><span class="n">token_acc</span><span class="p">),</span>
+                    <span class="n">owner</span><span class="o">=</span><span class="n">TOKEN_PROGRAM_ID</span><span class="p">,</span>
+                    <span class="n">executable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">banks_client</span>
+    <span class="n">raw_account</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get_account</span><span class="p">(</span><span class="n">ata</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">raw_account</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="n">raw_account_data</span> <span class="o">=</span> <span class="n">raw_account</span><span class="o">.</span><span class="n">data</span>
+    <span class="k">assert</span> <span class="n">TokenAccount</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">raw_account_data</span><span class="p">)</span><span class="o">.</span><span class="n">amount</span> <span class="o">==</span> <span class="n">usdc_to_own</span>
+</pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>If you want to set account data <em>after</em> calling <code class="docutils literal notranslate"><span class="pre">bankrun.start()</span></code>,
+you can use <code class="docutils literal notranslate"><span class="pre">context.set_account()</span></code>.</p>
+</div>
+</section>
+<section id="other-features">
+<h2>Other features<a class="headerlink" href="#other-features" title="Permalink to this heading"></a></h2>
+<p>Other things you can do with <code class="docutils literal notranslate"><span class="pre">bankrun</span></code> include:</p>
+<ul class="simple">
+<li><p>Changing the max compute units with the <code class="docutils literal notranslate"><span class="pre">compute_max_units</span></code> parameter.</p></li>
+<li><p>Changing the transaction account lock limit with the <code class="docutils literal notranslate"><span class="pre">transaction_account_lock_limit</span></code> parameter.</p></li>
+</ul>
+</section>
+<section id="when-should-i-use-solana-test-validator">
+<h2>When should I use <code class="docutils literal notranslate"><span class="pre">solana-test-validator</span></code>?<a class="headerlink" href="#when-should-i-use-solana-test-validator" title="Permalink to this heading"></a></h2>
+<p>While <code class="docutils literal notranslate"><span class="pre">bankrun</span></code> is faster and more convenient, it is also less like a real RPC node.
+So <code class="docutils literal notranslate"><span class="pre">solana-test-validator</span></code> is still useful when you need to call RPC methods that <code class="docutils literal notranslate"><span class="pre">BanksServer</span></code>
+doesn’t support, or when you want to test something that depends on real-life validator behaviour
+rather than just testing your program and client code.</p>
+<p>In general though I would recommend using <code class="docutils literal notranslate"><span class="pre">bankrun</span></code> wherever possible, as it will make your life
+much easier.</p>
+</section>
+<section id="supported-platforms">
+<h2>Supported platforms<a class="headerlink" href="#supported-platforms" title="Permalink to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">bankrun</span></code> is not included on <code class="docutils literal notranslate"><span class="pre">windows</span></code> and <code class="docutils literal notranslate"><span class="pre">musllinux-i686</span></code> targets, but otherwise
+should run everywhere that <code class="docutils literal notranslate"><span class="pre">solders</span></code> runs.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="rpc.html" class="btn btn-neutral float-left" title="RPC helpers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../api_reference/index.html" class="btn btn-neutral float-right" title="API Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Kevin Heavey.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

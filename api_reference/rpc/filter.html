@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Filter &mdash; solders 0.21.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Requests" href="requests.html" />
+    <link rel="prev" title="Errors" href="errors.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            solders
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Solders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../account.html">Account</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../account_decoder.html">Account Decoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../address_lookup_table_account.html">Address Lookup Table Account</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bankrun.html">Bankrun</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../commitment_config.html">Commitment Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compute_budget.html">Compute Budget</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../epoch_schedule.html">Epoch Schedule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../errors.html">Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../hash.html">Hash</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../instruction.html">Instruction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../keypair.html">Keypair</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../message.html">Message</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../null_signer.html">Null Signer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../presigner.html">Presigner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pubkey.html">Pubkey</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">RPC</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="config.html">Config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="errors.html">Errors</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Filter</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.filter.MemcmpEncoding"><code class="docutils literal notranslate"><span class="pre">MemcmpEncoding</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.filter.Memcmp"><code class="docutils literal notranslate"><span class="pre">Memcmp</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.rpc.filter.RpcFilterTypeFieldless"><code class="docutils literal notranslate"><span class="pre">RpcFilterTypeFieldless</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="requests.html">Requests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="responses.html">Responses</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../signature.html">Signature</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../system_program.html">System Program</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sysvar.html">Sysvar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../token/index.html">SPL Token</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../transaction_status.html">Transaction Status</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../transaction.html">Transaction</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">solders</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="index.html">RPC</a></li>
+      <li class="breadcrumb-item active">Filter</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/kevinheavey/solders/blob/main/docs/api_reference/rpc/filter.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-solders.rpc.filter">
+<span id="filter"></span><h1>Filter<a class="headerlink" href="#module-solders.rpc.filter" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.filter.MemcmpEncoding">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MemcmpEncoding</span></span><a class="headerlink" href="#solders.rpc.filter.MemcmpEncoding" title="Permalink to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.filter.MemcmpEncoding.Binary">
+<span class="sig-name descname"><span class="pre">Binary</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">MemcmpEncoding.Binary</span></em><a class="headerlink" href="#solders.rpc.filter.MemcmpEncoding.Binary" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.filter.Memcmp">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Memcmp</span></span><a class="headerlink" href="#solders.rpc.filter.Memcmp" title="Permalink to this definition"></a></dt>
+<dd><p>Compares a provided series of bytes with program account data at a particular offset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>offset</strong> (<em>int</em>) – Data offset to begin match.</p></li>
+<li><p><strong>bytes</strong> (<em>str</em><em> | </em><em>Sequnce</em><em>[</em><em>int</em><em>]</em>) – Bytes, encoded with specified encoding, or default Binary</p></li>
+<li><p><strong>encoding</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="#solders.rpc.filter.MemcmpEncoding" title="solders.rpc.filter.MemcmpEncoding"><em>MemcmpEncoding</em></a><em>]</em>) – Optional encoding specification.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.filter.Memcmp.bytes_">
+<span class="sig-name descname"><span class="pre">bytes_</span></span><a class="headerlink" href="#solders.rpc.filter.Memcmp.bytes_" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.filter.Memcmp.encoding">
+<span class="sig-name descname"><span class="pre">encoding</span></span><a class="headerlink" href="#solders.rpc.filter.Memcmp.encoding" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.filter.Memcmp.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.filter.Memcmp.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.filter.Memcmp.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.filter.Memcmp.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.filter.Memcmp.offset">
+<span class="sig-name descname"><span class="pre">offset</span></span><a class="headerlink" href="#solders.rpc.filter.Memcmp.offset" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.rpc.filter.Memcmp.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.rpc.filter.Memcmp.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.rpc.filter.RpcFilterTypeFieldless">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RpcFilterTypeFieldless</span></span><a class="headerlink" href="#solders.rpc.filter.RpcFilterTypeFieldless" title="Permalink to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="solders.rpc.filter.RpcFilterTypeFieldless.TokenAccountState">
+<span class="sig-name descname"><span class="pre">TokenAccountState</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">RpcFilterTypeFieldless.TokenAccountState</span></em><a class="headerlink" href="#solders.rpc.filter.RpcFilterTypeFieldless.TokenAccountState" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="errors.html" class="btn btn-neutral float-left" title="Errors" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="requests.html" class="btn btn-neutral float-right" title="Requests" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Kevin Heavey.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Message &mdash; solders 0.21.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Null Signer" href="null_signer.html" />
+    <link rel="prev" title="Keypair" href="keypair.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            solders
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Solders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="account.html">Account</a></li>
+<li class="toctree-l2"><a class="reference internal" href="account_decoder.html">Account Decoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="address_lookup_table_account.html">Address Lookup Table Account</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bankrun.html">Bankrun</a></li>
+<li class="toctree-l2"><a class="reference internal" href="commitment_config.html">Commitment Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compute_budget.html">Compute Budget</a></li>
+<li class="toctree-l2"><a class="reference internal" href="epoch_schedule.html">Epoch Schedule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="errors.html">Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hash.html">Hash</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instruction.html">Instruction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="keypair.html">Keypair</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Message</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#solders.message.Message"><code class="docutils literal notranslate"><span class="pre">Message</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.Message.account_keys"><code class="docutils literal notranslate"><span class="pre">Message.account_keys</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.Message.compile_instruction"><code class="docutils literal notranslate"><span class="pre">Message.compile_instruction()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.Message.default"><code class="docutils literal notranslate"><span class="pre">Message.default()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.Message.from_bytes"><code class="docutils literal notranslate"><span class="pre">Message.from_bytes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.Message.from_json"><code class="docutils literal notranslate"><span class="pre">Message.from_json()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.Message.has_duplicates"><code class="docutils literal notranslate"><span class="pre">Message.has_duplicates()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.Message.hash"><code class="docutils literal notranslate"><span class="pre">Message.hash()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.Message.hash_raw_message"><code class="docutils literal notranslate"><span class="pre">Message.hash_raw_message()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.Message.header"><code class="docutils literal notranslate"><span class="pre">Message.header</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.Message.instructions"><code class="docutils literal notranslate"><span class="pre">Message.instructions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.Message.is_key_called_as_program"><code class="docutils literal notranslate"><span class="pre">Message.is_key_called_as_program()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.Message.is_key_passed_to_program"><code class="docutils literal notranslate"><span class="pre">Message.is_key_passed_to_program()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.Message.is_non_loader_key"><code class="docutils literal notranslate"><span class="pre">Message.is_non_loader_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.Message.is_signer"><code class="docutils literal notranslate"><span class="pre">Message.is_signer()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.Message.is_upgradeable_loader_present"><code class="docutils literal notranslate"><span class="pre">Message.is_upgradeable_loader_present()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.Message.is_writable"><code class="docutils literal notranslate"><span class="pre">Message.is_writable()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.Message.maybe_executable"><code class="docutils literal notranslate"><span class="pre">Message.maybe_executable()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.Message.new_with_blockhash"><code class="docutils literal notranslate"><span class="pre">Message.new_with_blockhash()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.Message.new_with_compiled_instructions"><code class="docutils literal notranslate"><span class="pre">Message.new_with_compiled_instructions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.Message.new_with_nonce"><code class="docutils literal notranslate"><span class="pre">Message.new_with_nonce()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.Message.program_id"><code class="docutils literal notranslate"><span class="pre">Message.program_id()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.Message.program_ids"><code class="docutils literal notranslate"><span class="pre">Message.program_ids()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.Message.program_index"><code class="docutils literal notranslate"><span class="pre">Message.program_index()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.Message.program_position"><code class="docutils literal notranslate"><span class="pre">Message.program_position()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.Message.recent_blockhash"><code class="docutils literal notranslate"><span class="pre">Message.recent_blockhash</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.Message.signer_keys"><code class="docutils literal notranslate"><span class="pre">Message.signer_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.Message.to_json"><code class="docutils literal notranslate"><span class="pre">Message.to_json()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.message.MessageHeader"><code class="docutils literal notranslate"><span class="pre">MessageHeader</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.MessageHeader.LENGTH"><code class="docutils literal notranslate"><span class="pre">MessageHeader.LENGTH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.MessageHeader.default"><code class="docutils literal notranslate"><span class="pre">MessageHeader.default()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.MessageHeader.from_bytes"><code class="docutils literal notranslate"><span class="pre">MessageHeader.from_bytes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.MessageHeader.from_json"><code class="docutils literal notranslate"><span class="pre">MessageHeader.from_json()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.MessageHeader.num_readonly_signed_accounts"><code class="docutils literal notranslate"><span class="pre">MessageHeader.num_readonly_signed_accounts</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.MessageHeader.num_readonly_unsigned_accounts"><code class="docutils literal notranslate"><span class="pre">MessageHeader.num_readonly_unsigned_accounts</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.MessageHeader.num_required_signatures"><code class="docutils literal notranslate"><span class="pre">MessageHeader.num_required_signatures</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.MessageHeader.to_json"><code class="docutils literal notranslate"><span class="pre">MessageHeader.to_json()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.message.MessageV0"><code class="docutils literal notranslate"><span class="pre">MessageV0</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.MessageV0.account_keys"><code class="docutils literal notranslate"><span class="pre">MessageV0.account_keys</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.MessageV0.address_table_lookups"><code class="docutils literal notranslate"><span class="pre">MessageV0.address_table_lookups</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.MessageV0.default"><code class="docutils literal notranslate"><span class="pre">MessageV0.default()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.MessageV0.from_bytes"><code class="docutils literal notranslate"><span class="pre">MessageV0.from_bytes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.MessageV0.from_json"><code class="docutils literal notranslate"><span class="pre">MessageV0.from_json()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.MessageV0.hash"><code class="docutils literal notranslate"><span class="pre">MessageV0.hash()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.MessageV0.hash_raw_message"><code class="docutils literal notranslate"><span class="pre">MessageV0.hash_raw_message()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.MessageV0.header"><code class="docutils literal notranslate"><span class="pre">MessageV0.header</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.MessageV0.instructions"><code class="docutils literal notranslate"><span class="pre">MessageV0.instructions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.MessageV0.is_key_called_as_program"><code class="docutils literal notranslate"><span class="pre">MessageV0.is_key_called_as_program()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.MessageV0.is_maybe_writable"><code class="docutils literal notranslate"><span class="pre">MessageV0.is_maybe_writable()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.MessageV0.is_non_loader_key"><code class="docutils literal notranslate"><span class="pre">MessageV0.is_non_loader_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.MessageV0.is_signer"><code class="docutils literal notranslate"><span class="pre">MessageV0.is_signer()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.MessageV0.recent_blockhash"><code class="docutils literal notranslate"><span class="pre">MessageV0.recent_blockhash</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.MessageV0.sanitize"><code class="docutils literal notranslate"><span class="pre">MessageV0.sanitize()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.MessageV0.to_json"><code class="docutils literal notranslate"><span class="pre">MessageV0.to_json()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.MessageV0.try_compile"><code class="docutils literal notranslate"><span class="pre">MessageV0.try_compile()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.message.MessageAddressTableLookup"><code class="docutils literal notranslate"><span class="pre">MessageAddressTableLookup</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.MessageAddressTableLookup.account_key"><code class="docutils literal notranslate"><span class="pre">MessageAddressTableLookup.account_key</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.MessageAddressTableLookup.from_bytes"><code class="docutils literal notranslate"><span class="pre">MessageAddressTableLookup.from_bytes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.MessageAddressTableLookup.from_json"><code class="docutils literal notranslate"><span class="pre">MessageAddressTableLookup.from_json()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.MessageAddressTableLookup.readonly_indexes"><code class="docutils literal notranslate"><span class="pre">MessageAddressTableLookup.readonly_indexes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.MessageAddressTableLookup.to_json"><code class="docutils literal notranslate"><span class="pre">MessageAddressTableLookup.to_json()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.message.MessageAddressTableLookup.writable_indexes"><code class="docutils literal notranslate"><span class="pre">MessageAddressTableLookup.writable_indexes</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.message.to_bytes_versioned"><code class="docutils literal notranslate"><span class="pre">to_bytes_versioned()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.message.from_bytes_versioned"><code class="docutils literal notranslate"><span class="pre">from_bytes_versioned()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="null_signer.html">Null Signer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="presigner.html">Presigner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pubkey.html">Pubkey</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rpc/index.html">RPC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="signature.html">Signature</a></li>
+<li class="toctree-l2"><a class="reference internal" href="system_program.html">System Program</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sysvar.html">Sysvar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="token/index.html">SPL Token</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transaction_status.html">Transaction Status</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transaction.html">Transaction</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">solders</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API Reference</a></li>
+      <li class="breadcrumb-item active">Message</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/kevinheavey/solders/blob/main/docs/api_reference/message.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-solders.message">
+<span id="message"></span><h1>Message<a class="headerlink" href="#module-solders.message" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.message.Message">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Message</span></span><a class="headerlink" href="#solders.message.Message" title="Permalink to this definition"></a></dt>
+<dd><p>A Solana transaction message.</p>
+<p>Some constructors accept an optional <cite>payer</cite>, the account responsible for
+paying the cost of executing a transaction. In most cases, callers should
+specify the payer explicitly in these constructors. In some cases though,
+the caller is not <em>required</em> to specify the payer, but is still allowed to:
+in the <code class="docutils literal notranslate"><span class="pre">Message</span></code> object, the first account is always the fee-payer, so if
+the caller has knowledge that the first account of the constructed
+transaction’s <code class="docutils literal notranslate"><span class="pre">Message</span></code> is both a signer and the expected fee-payer, then
+redundantly specifying the fee-payer is not strictly required.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instructions</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><em>Instruction</em></a><em>]</em>) – The instructions to include in the message.</p></li>
+<li><p><strong>payer</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a><em>]</em>) – The fee payer. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.message</span> <span class="kn">import</span> <span class="n">Message</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.keypair</span> <span class="kn">import</span> <span class="n">Keypair</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.instruction</span> <span class="kn">import</span> <span class="n">Instruction</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.hash</span> <span class="kn">import</span> <span class="n">Hash</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.transaction</span> <span class="kn">import</span> <span class="n">Transaction</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.pubkey</span> <span class="kn">import</span> <span class="n">Pubkey</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">program_id</span> <span class="o">=</span> <span class="n">Pubkey</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arbitrary_instruction_data</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">([</span><span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">accounts</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">instruction</span> <span class="o">=</span> <span class="n">Instruction</span><span class="p">(</span><span class="n">program_id</span><span class="p">,</span> <span class="n">arbitrary_instruction_data</span><span class="p">,</span> <span class="n">accounts</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">payer</span> <span class="o">=</span> <span class="n">Keypair</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">message</span> <span class="o">=</span> <span class="n">Message</span><span class="p">([</span><span class="n">instruction</span><span class="p">],</span> <span class="n">payer</span><span class="o">.</span><span class="n">pubkey</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">blockhash</span> <span class="o">=</span> <span class="n">Hash</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>  <span class="c1"># replace with a real blockhash</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tx</span> <span class="o">=</span> <span class="n">Transaction</span><span class="p">([</span><span class="n">payer</span><span class="p">],</span> <span class="n">message</span><span class="p">,</span> <span class="n">blockhash</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.message.Message.account_keys">
+<span class="sig-name descname"><span class="pre">account_keys</span></span><a class="headerlink" href="#solders.message.Message.account_keys" title="Permalink to this definition"></a></dt>
+<dd><p>All the account keys used by this transaction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[<a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey">Pubkey</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.Message.compile_instruction">
+<span class="sig-name descname"><span class="pre">compile_instruction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ix</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.Message.compile_instruction" title="Permalink to this definition"></a></dt>
+<dd><p>Convert an <code class="xref py py-class docutils literal notranslate"><span class="pre">Instruction</span></code> into a <a class="reference internal" href="instruction.html#solders.instruction.CompiledInstruction" title="solders.instruction.CompiledInstruction"><code class="xref py py-class docutils literal notranslate"><span class="pre">CompiledInstruction</span></code></a> using <code class="docutils literal notranslate"><span class="pre">self.account_keys</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The compiled instruction.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="instruction.html#solders.instruction.CompiledInstruction" title="solders.instruction.CompiledInstruction">CompiledInstruction</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.Message.default">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">default</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.Message.default" title="Permalink to this definition"></a></dt>
+<dd><p>Create a new default <code class="docutils literal notranslate"><span class="pre">Message</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>default <code class="docutils literal notranslate"><span class="pre">Message</span></code>.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#solders.message.Message" title="solders.message.Message">Message</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.Message.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.Message.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize a serialized <code class="docutils literal notranslate"><span class="pre">Message</span></code> object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – The serialized <code class="docutils literal notranslate"><span class="pre">Message</span></code>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The deserialized <code class="docutils literal notranslate"><span class="pre">Message</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#solders.message.Message" title="solders.message.Message">Message</a></p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.pubkey</span> <span class="kn">import</span> <span class="n">Pubkey</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.instruction</span> <span class="kn">import</span> <span class="n">AccountMeta</span><span class="p">,</span> <span class="n">Instruction</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.message</span> <span class="kn">import</span> <span class="n">Message</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">from_pubkey</span> <span class="o">=</span> <span class="n">Pubkey</span><span class="o">.</span><span class="n">new_unique</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">to_pubkey</span> <span class="o">=</span> <span class="n">Pubkey</span><span class="o">.</span><span class="n">new_unique</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">program_id</span> <span class="o">=</span> <span class="n">Pubkey</span><span class="o">.</span><span class="n">new_unique</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">instruction_data</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">([</span><span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">accounts</span> <span class="o">=</span> <span class="p">[</span><span class="n">AccountMeta</span><span class="p">(</span><span class="n">from_pubkey</span><span class="p">,</span> <span class="n">is_signer</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">is_writable</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">AccountMeta</span><span class="p">(</span><span class="n">to_pubkey</span><span class="p">,</span> <span class="n">is_signer</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">is_writable</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">instruction</span> <span class="o">=</span> <span class="n">Instruction</span><span class="p">(</span><span class="n">program_id</span><span class="p">,</span> <span class="n">instruction_data</span><span class="p">,</span> <span class="n">accounts</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">message</span> <span class="o">=</span> <span class="n">Message</span><span class="p">([</span><span class="n">instruction</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">serialized</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">Message</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">serialized</span><span class="p">)</span> <span class="o">==</span> <span class="n">message</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.Message.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.Message.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.Message.has_duplicates">
+<span class="sig-name descname"><span class="pre">has_duplicates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.Message.has_duplicates" title="Permalink to this definition"></a></dt>
+<dd><p>Check if <code class="docutils literal notranslate"><span class="pre">account_keys</span></code> has any duplicate keys.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if there are duplicates.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.Message.hash">
+<span class="sig-name descname"><span class="pre">hash</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.Message.hash" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the blake3 hash of this transaction’s message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The blake3 hash.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="hash.html#solders.hash.Hash" title="solders.hash.Hash">Hash</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.Message.hash_raw_message">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">hash_raw_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message_bytes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.Message.hash_raw_message" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the blake3 hash of a raw transaction message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The blake3 hash.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="hash.html#solders.hash.Hash" title="solders.hash.Hash">Hash</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.message.Message.header">
+<span class="sig-name descname"><span class="pre">header</span></span><a class="headerlink" href="#solders.message.Message.header" title="Permalink to this definition"></a></dt>
+<dd><p>The message header, identifying signed and read-only <code class="docutils literal notranslate"><span class="pre">account_keys</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#solders.message.MessageHeader" title="solders.message.MessageHeader">MessageHeader</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.message.Message.instructions">
+<span class="sig-name descname"><span class="pre">instructions</span></span><a class="headerlink" href="#solders.message.Message.instructions" title="Permalink to this definition"></a></dt>
+<dd><p>Programs that will be executed in sequence
+and committed in one atomic transaction if all succeed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[<a class="reference internal" href="instruction.html#solders.instruction.CompiledInstruction" title="solders.instruction.CompiledInstruction">CompiledInstruction</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.Message.is_key_called_as_program">
+<span class="sig-name descname"><span class="pre">is_key_called_as_program</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.Message.is_key_called_as_program" title="Permalink to this definition"></a></dt>
+<dd><p>Check if the <code class="docutils literal notranslate"><span class="pre">program_id_index</span></code> of any of the message’s instructions matches <code class="docutils literal notranslate"><span class="pre">key_index</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key_index</strong> (<em>int</em>) – The index to check.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The result of the check.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.Message.is_key_passed_to_program">
+<span class="sig-name descname"><span class="pre">is_key_passed_to_program</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.Message.is_key_passed_to_program" title="Permalink to this definition"></a></dt>
+<dd><p>Check if <code class="docutils literal notranslate"><span class="pre">key_index</span></code> is contained in the accounts of
+any of the message’s instructions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key_index</strong> (<em>int</em>) – The index to check.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the key is passed to the program.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.Message.is_non_loader_key">
+<span class="sig-name descname"><span class="pre">is_non_loader_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.Message.is_non_loader_key" title="Permalink to this definition"></a></dt>
+<dd><p>Check if the key is passed to the program OR if the key is not called as program.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key_index</strong> (<em>int</em>) – The index to check.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The result of the check.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.Message.is_signer">
+<span class="sig-name descname"><span class="pre">is_signer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.Message.is_signer" title="Permalink to this definition"></a></dt>
+<dd><p>See <a class="reference external" href="https://docs.rs/solana-sdk/latest/solana_sdk/message/legacy/struct.Message.html#method.is_signer">https://docs.rs/solana-sdk/latest/solana_sdk/message/legacy/struct.Message.html#method.is_signer</a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.Message.is_upgradeable_loader_present">
+<span class="sig-name descname"><span class="pre">is_upgradeable_loader_present</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.Message.is_upgradeable_loader_present" title="Permalink to this definition"></a></dt>
+<dd><p>See <a class="reference external" href="https://docs.rs/solana-sdk/latest/solana_sdk/message/legacy/struct.Message.html#method.is_upgradeable_loader_present">https://docs.rs/solana-sdk/latest/solana_sdk/message/legacy/struct.Message.html#method.is_upgradeable_loader_present</a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.Message.is_writable">
+<span class="sig-name descname"><span class="pre">is_writable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.Message.is_writable" title="Permalink to this definition"></a></dt>
+<dd><p>See <a class="reference external" href="https://docs.rs/solana-sdk/latest/solana_sdk/message/legacy/struct.Message.html#method.is_writable">https://docs.rs/solana-sdk/latest/solana_sdk/message/legacy/struct.Message.html#method.is_writable</a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.Message.maybe_executable">
+<span class="sig-name descname"><span class="pre">maybe_executable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.Message.maybe_executable" title="Permalink to this definition"></a></dt>
+<dd><p>See <a class="reference external" href="https://docs.rs/solana-sdk/latest/solana_sdk/message/legacy/struct.Message.html#method.maybe_executable">https://docs.rs/solana-sdk/latest/solana_sdk/message/legacy/struct.Message.html#method.maybe_executable</a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.Message.new_with_blockhash">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">new_with_blockhash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instructions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">payer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blockhash</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.Message.new_with_blockhash" title="Permalink to this definition"></a></dt>
+<dd><p>Create a new message while setting the blockhash.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instructions</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><em>Instruction</em></a><em>]</em>) – The instructions to include in the message.</p></li>
+<li><p><strong>payer</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a><em>]</em>) – The fee payer. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>blockhash</strong> (<a class="reference internal" href="hash.html#solders.hash.Hash" title="solders.hash.Hash"><em>Hash</em></a>) – a recent blockhash.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The message object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#solders.message.Message" title="solders.message.Message">Message</a></p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.message</span> <span class="kn">import</span> <span class="n">Message</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.keypair</span> <span class="kn">import</span> <span class="n">Keypair</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.pubkey</span> <span class="kn">import</span> <span class="n">Pubkey</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.instruction</span> <span class="kn">import</span> <span class="n">Instruction</span><span class="p">,</span> <span class="n">AccountMeta</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.hash</span> <span class="kn">import</span> <span class="n">Hash</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.transaction</span> <span class="kn">import</span> <span class="n">Transaction</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">program_id</span> <span class="o">=</span> <span class="n">Pubkey</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">blockhash</span> <span class="o">=</span> <span class="n">Hash</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>  <span class="c1"># replace with a real blockhash</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arbitrary_instruction_data</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">([</span><span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">accounts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">AccountMeta</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">instruction</span> <span class="o">=</span> <span class="n">Instruction</span><span class="p">(</span><span class="n">program_id</span><span class="p">,</span> <span class="n">arbitrary_instruction_data</span><span class="p">,</span> <span class="n">accounts</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">payer</span> <span class="o">=</span> <span class="n">Keypair</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">message</span> <span class="o">=</span> <span class="n">Message</span><span class="o">.</span><span class="n">new_with_blockhash</span><span class="p">([</span><span class="n">instruction</span><span class="p">],</span> <span class="n">payer</span><span class="o">.</span><span class="n">pubkey</span><span class="p">(),</span> <span class="n">blockhash</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tx</span> <span class="o">=</span> <span class="n">Transaction</span><span class="o">.</span><span class="n">new_unsigned</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tx</span><span class="o">.</span><span class="n">sign</span><span class="p">([</span><span class="n">payer</span><span class="p">],</span> <span class="n">tx</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">recent_blockhash</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.Message.new_with_compiled_instructions">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">new_with_compiled_instructions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_required_signatures</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_readonly_signed_accounts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_readonly_unsigned_accounts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">account_keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recent_blockhash</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instructions</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.Message.new_with_compiled_instructions" title="Permalink to this definition"></a></dt>
+<dd><p>Create a new message by specifying all the fields required for the message, including the <a class="reference internal" href="#solders.message.MessageHeader" title="solders.message.MessageHeader"><code class="xref py py-class docutils literal notranslate"><span class="pre">MessageHeader</span></code></a> fields.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_required_signatures</strong> (<em>int</em>) – The number of signatures required for this message
+to be considered valid. The signers of those signatures must match the
+first <code class="docutils literal notranslate"><span class="pre">num_required_signatures</span></code> of <a class="reference internal" href="#solders.message.Message.account_keys" title="solders.message.Message.account_keys"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Message.account_keys</span></code></a>.</p></li>
+<li><p><strong>num_readonly_signed_accounts</strong> (<em>int</em>) – The last <code class="docutils literal notranslate"><span class="pre">num_readonly_signed_accounts</span></code> of
+the signed keys are read-only accounts.</p></li>
+<li><p><strong>num_readonly_unsigned_accounts</strong> (<em>int</em>) – The last <code class="docutils literal notranslate"><span class="pre">num_readonly_unsigned_accounts</span></code>
+of the unsigned keys are read-only accounts.</p></li>
+<li><p><strong>account_keys</strong> (<em>list</em><em>[</em><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a><em>]</em>) – All the account keys used by this transaction.</p></li>
+<li><p><strong>recent_blockhash</strong> (<a class="reference internal" href="hash.html#solders.hash.Hash" title="solders.hash.Hash"><em>Hash</em></a>) – The id of a recent ledger entry.</p></li>
+<li><p><strong>instructions</strong> (<em>list</em><em>[</em><a class="reference internal" href="instruction.html#solders.instruction.CompiledInstruction" title="solders.instruction.CompiledInstruction"><em>CompiledInstruction</em></a><em>]</em>) – Programs that will be executed in sequence
+and committed in one atomic transaction if all succeed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The message object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#solders.message.Message" title="solders.message.Message">Message</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.Message.new_with_nonce">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">new_with_nonce</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instructions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">payer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nonce_account_pubkey</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nonce_authority_pubkey</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.Message.new_with_nonce" title="Permalink to this definition"></a></dt>
+<dd><p>Create a new message for a <a class="reference external" href="https://docs.solana.com/implemented-proposals/durable-tx-nonces">nonced transaction</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instructions</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><em>Instruction</em></a><em>]</em>) – The instructions to include in the message.</p></li>
+<li><p><strong>payer</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a><em>]</em>) – The fee payer. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>nonce_account_pubkey</strong> (<a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a>) – The nonce account pubkey.</p></li>
+<li><p><strong>nonce_authority_pubkey</strong> (<a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a>) – The nonce account authority (for advance and close).</p></li>
+</ul>
+</dd>
+</dl>
+<p>In this type of transaction, the blockhash is replaced with a <em>durable
+transaction nonce</em>, allowing for extended time to pass between the
+transaction’s signing and submission to the blockchain.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.message</span> <span class="kn">import</span> <span class="n">Message</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.keypair</span> <span class="kn">import</span> <span class="n">Keypair</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.pubkey</span> <span class="kn">import</span> <span class="n">Pubkey</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.instruction</span> <span class="kn">import</span> <span class="n">Instruction</span><span class="p">,</span> <span class="n">AccountMeta</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.hash</span> <span class="kn">import</span> <span class="n">Hash</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.transaction</span> <span class="kn">import</span> <span class="n">Transaction</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">program_id</span> <span class="o">=</span> <span class="n">Pubkey</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">blockhash</span> <span class="o">=</span> <span class="n">Hash</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>  <span class="c1"># replace with a real blockhash</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arbitrary_instruction_data</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">([</span><span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">accounts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">AccountMeta</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">instruction</span> <span class="o">=</span> <span class="n">Instruction</span><span class="p">(</span><span class="n">program_id</span><span class="p">,</span> <span class="n">arbitrary_instruction_data</span><span class="p">,</span> <span class="n">accounts</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">payer</span> <span class="o">=</span> <span class="n">Keypair</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nonce_account</span> <span class="o">=</span> <span class="n">Pubkey</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>  <span class="c1"># replace with a real nonce account</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">message</span> <span class="o">=</span> <span class="n">Message</span><span class="o">.</span><span class="n">new_with_nonce</span><span class="p">([</span><span class="n">instruction</span><span class="p">],</span> <span class="n">payer</span><span class="o">.</span><span class="n">pubkey</span><span class="p">(),</span> <span class="n">nonce_account</span><span class="p">,</span> <span class="n">payer</span><span class="o">.</span><span class="n">pubkey</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># This transaction will need to be signed later, using the blockhash stored in the nonce account.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tx</span> <span class="o">=</span> <span class="n">Transaction</span><span class="o">.</span><span class="n">new_unsigned</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.Message.program_id">
+<span class="sig-name descname"><span class="pre">program_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instruction_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.Message.program_id" title="Permalink to this definition"></a></dt>
+<dd><p>Return the program ID of an instruction at a particular index in the message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>instruction_index</strong> (<em>int</em>) – The position of the instruction in the
+message’s list of instructions.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The program ID.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey">Pubkey</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.Message.program_ids">
+<span class="sig-name descname"><span class="pre">program_ids</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.Message.program_ids" title="Permalink to this definition"></a></dt>
+<dd><p>Return the program ID of each instruction in the message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The program IDs.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[<a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey">Pubkey</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.Message.program_index">
+<span class="sig-name descname"><span class="pre">program_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instruction_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.Message.program_index" title="Permalink to this definition"></a></dt>
+<dd><p>Return the <code class="docutils literal notranslate"><span class="pre">program_id_index</span></code> of the instruction at <code class="docutils literal notranslate"><span class="pre">instruction_index</span></code> in the message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>instruction_index</strong> (<em>int</em>) – The position of the instruction in the
+message’s list of instructions.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The program ID index.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.Message.program_position">
+<span class="sig-name descname"><span class="pre">program_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.Message.program_position" title="Permalink to this definition"></a></dt>
+<dd><p>See <a class="reference external" href="https://docs.rs/solana-sdk/latest/solana_sdk/message/legacy/struct.Message.html#method.program_position">https://docs.rs/solana-sdk/latest/solana_sdk/message/legacy/struct.Message.html#method.program_position</a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.message.Message.recent_blockhash">
+<span class="sig-name descname"><span class="pre">recent_blockhash</span></span><a class="headerlink" href="#solders.message.Message.recent_blockhash" title="Permalink to this definition"></a></dt>
+<dd><p>The id of a recent ledger entry.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="hash.html#solders.hash.Hash" title="solders.hash.Hash">Hash</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.Message.signer_keys">
+<span class="sig-name descname"><span class="pre">signer_keys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.Message.signer_keys" title="Permalink to this definition"></a></dt>
+<dd><p>See <a class="reference external" href="https://docs.rs/solana-sdk/latest/solana_sdk/message/legacy/struct.Message.html#method.signer_keys">https://docs.rs/solana-sdk/latest/solana_sdk/message/legacy/struct.Message.html#method.signer_keys</a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.Message.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.Message.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.message.MessageHeader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MessageHeader</span></span><a class="headerlink" href="#solders.message.MessageHeader" title="Permalink to this definition"></a></dt>
+<dd><p>Describes the organization of a <a class="reference internal" href="#solders.message.Message" title="solders.message.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>’s account keys.</p>
+<p>Every <a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><code class="xref py py-class docutils literal notranslate"><span class="pre">Instruction</span></code></a> specifies which accounts it may reference, or
+otherwise requires specific permissions of. Those specifications are:
+whether the account is read-only, or read-write; and whether the account
+must have signed the transaction containing the instruction.</p>
+<p>Whereas an individual <code class="docutils literal notranslate"><span class="pre">Instruction</span></code> contains a list of all accounts they may
+access, along with their required permissions, a <code class="docutils literal notranslate"><span class="pre">Message</span></code> contains a
+single shared flat list of <em>all</em> accounts required by <em>all</em> instructions in
+a transaction. When building a <code class="docutils literal notranslate"><span class="pre">Message</span></code>, this flat list is created and
+each <code class="docutils literal notranslate"><span class="pre">Instruction</span></code> is converted to <a class="reference internal" href="instruction.html#solders.instruction.CompiledInstruction" title="solders.instruction.CompiledInstruction"><code class="xref py py-class docutils literal notranslate"><span class="pre">CompiledInstruction</span></code></a>. Each
+<code class="docutils literal notranslate"><span class="pre">CompiledInstruction</span></code> then references by index the accounts they require in
+the single shared account list.</p>
+<p>The shared account list is ordered by the permissions required of the accounts:</p>
+<ul class="simple">
+<li><p>accounts that are writable and signers</p></li>
+<li><p>accounts that are read-only and signers</p></li>
+<li><p>accounts that are writable and not signers</p></li>
+<li><p>accounts that are read-only and not signers</p></li>
+</ul>
+<p>Given this ordering, the fields of <code class="docutils literal notranslate"><span class="pre">MessageHeader</span></code> describe which accounts
+in a transaction require which permissions.</p>
+<p>When multiple transactions access the same read-only accounts, the runtime
+may process them in parallel, in a single
+<a class="reference external" href="https://docs.solana.com/cluster/synchronization">PoH</a> entry.
+Transactions that access the same read-write accounts are processed sequentially.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_required_signatures</strong> (<em>int</em>) – The number of signatures required for this message
+to be considered valid. The signers of those signatures must match the
+first <code class="docutils literal notranslate"><span class="pre">num_required_signatures</span></code> of <a class="reference internal" href="#solders.message.Message.account_keys" title="solders.message.Message.account_keys"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Message.account_keys</span></code></a>.</p></li>
+<li><p><strong>num_readonly_signed_accounts</strong> (<em>int</em>) – The last <code class="docutils literal notranslate"><span class="pre">num_readonly_signed_accounts</span></code> of
+the signed keys are read-only accounts.</p></li>
+<li><p><strong>num_readonly_unsigned_accounts</strong> (<em>int</em>) – The last <code class="docutils literal notranslate"><span class="pre">num_readonly_unsigned_accounts</span></code>
+of the unsigned keys are read-only accounts.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.message.MessageHeader.LENGTH">
+<span class="sig-name descname"><span class="pre">LENGTH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#solders.message.MessageHeader.LENGTH" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.MessageHeader.default">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">default</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.MessageHeader.default" title="Permalink to this definition"></a></dt>
+<dd><p>Create a new default <code class="docutils literal notranslate"><span class="pre">MessageHeader</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>default <code class="docutils literal notranslate"><span class="pre">MessageHeader</span></code>.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#solders.message.MessageHeader" title="solders.message.MessageHeader">MessageHeader</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.MessageHeader.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.MessageHeader.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize a serialized <code class="docutils literal notranslate"><span class="pre">MessageHeader</span></code> object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – The serialized <code class="docutils literal notranslate"><span class="pre">MessageHeader</span></code>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The deserialized <code class="docutils literal notranslate"><span class="pre">MessageHeader</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#solders.message.MessageHeader" title="solders.message.MessageHeader">MessageHeader</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.MessageHeader.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.MessageHeader.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.message.MessageHeader.num_readonly_signed_accounts">
+<span class="sig-name descname"><span class="pre">num_readonly_signed_accounts</span></span><a class="headerlink" href="#solders.message.MessageHeader.num_readonly_signed_accounts" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.message.MessageHeader.num_readonly_unsigned_accounts">
+<span class="sig-name descname"><span class="pre">num_readonly_unsigned_accounts</span></span><a class="headerlink" href="#solders.message.MessageHeader.num_readonly_unsigned_accounts" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.message.MessageHeader.num_required_signatures">
+<span class="sig-name descname"><span class="pre">num_required_signatures</span></span><a class="headerlink" href="#solders.message.MessageHeader.num_required_signatures" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.MessageHeader.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.MessageHeader.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.message.MessageV0">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MessageV0</span></span><a class="headerlink" href="#solders.message.MessageV0" title="Permalink to this definition"></a></dt>
+<dd><p>A Solana transaction message (v0).</p>
+<p>This message format supports succinct account loading with
+on-chain address lookup tables</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>header</strong> (<a class="reference internal" href="#solders.message.MessageHeader" title="solders.message.MessageHeader"><em>MessageHeader</em></a>) – The message header, identifying signed and read-only <cite>account_keys</cite>.
+Header values only describe static <cite>account_keys</cite>, they do not describe
+any additional account keys loaded via address table lookups.</p></li>
+<li><p><strong>account_keys</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a><em>]</em>) – List of accounts loaded by this transaction.</p></li>
+<li><p><strong>recent_blockhash</strong> (<a class="reference internal" href="hash.html#solders.hash.Hash" title="solders.hash.Hash"><em>Hash</em></a>) – Hash of a recent block.</p></li>
+<li><p><strong>instructions</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><em>Instruction</em></a><em>]</em>) – The instructions to include in the message.</p></li>
+<li><p><strong>address_table_lookups</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="#solders.message.MessageAddressTableLookup" title="solders.message.MessageAddressTableLookup"><em>MessageAddressTableLookup</em></a><em>]</em>) – List of address table lookups used to load additional accounts
+for this transaction.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.message</span> <span class="kn">import</span> <span class="n">MessageV0</span><span class="p">,</span> <span class="n">MessageHeader</span><span class="p">,</span> <span class="n">MessageAddressTableLookup</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.instruction</span> <span class="kn">import</span> <span class="n">CompiledInstruction</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.hash</span> <span class="kn">import</span> <span class="n">Hash</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.pubkey</span> <span class="kn">import</span> <span class="n">Pubkey</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">program_id</span> <span class="o">=</span> <span class="n">Pubkey</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arbitrary_instruction_data</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">([</span><span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">accounts</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">instructions</span><span class="o">=</span><span class="p">[</span><span class="n">CompiledInstruction</span><span class="p">(</span><span class="n">program_id_index</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">accounts</span><span class="o">=</span><span class="nb">bytes</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]),</span> <span class="n">data</span><span class="o">=</span><span class="nb">bytes</span><span class="p">([]))]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">account_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">Pubkey</span><span class="o">.</span><span class="n">new_unique</span><span class="p">()]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">header</span> <span class="o">=</span> <span class="n">MessageHeader</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lookups</span> <span class="o">=</span> <span class="p">[</span><span class="n">MessageAddressTableLookup</span><span class="p">(</span><span class="n">Pubkey</span><span class="o">.</span><span class="n">new_unique</span><span class="p">(),</span> <span class="nb">bytes</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]),</span> <span class="nb">bytes</span><span class="p">([</span><span class="mi">0</span><span class="p">]))]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">blockhash</span> <span class="o">=</span> <span class="n">Hash</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>  <span class="c1"># replace with a real blockhash</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">message</span> <span class="o">=</span> <span class="n">MessageV0</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">account_keys</span><span class="p">,</span> <span class="n">blockhash</span><span class="p">,</span> <span class="n">instructions</span><span class="p">,</span> <span class="n">lookups</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.message.MessageV0.account_keys">
+<span class="sig-name descname"><span class="pre">account_keys</span></span><a class="headerlink" href="#solders.message.MessageV0.account_keys" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.message.MessageV0.address_table_lookups">
+<span class="sig-name descname"><span class="pre">address_table_lookups</span></span><a class="headerlink" href="#solders.message.MessageV0.address_table_lookups" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.MessageV0.default">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">default</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.MessageV0.default" title="Permalink to this definition"></a></dt>
+<dd><p>Create a new default <code class="docutils literal notranslate"><span class="pre">MessageV0</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>default <code class="docutils literal notranslate"><span class="pre">MessageV0</span></code>.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#solders.message.MessageV0" title="solders.message.MessageV0">MessageV0</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.MessageV0.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.MessageV0.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.MessageV0.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.MessageV0.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.MessageV0.hash">
+<span class="sig-name descname"><span class="pre">hash</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.MessageV0.hash" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the blake3 hash of this transaction’s message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The blake3 hash.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="hash.html#solders.hash.Hash" title="solders.hash.Hash">Hash</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.MessageV0.hash_raw_message">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">hash_raw_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message_bytes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.MessageV0.hash_raw_message" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the blake3 hash of a raw transaction message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The blake3 hash.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="hash.html#solders.hash.Hash" title="solders.hash.Hash">Hash</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.message.MessageV0.header">
+<span class="sig-name descname"><span class="pre">header</span></span><a class="headerlink" href="#solders.message.MessageV0.header" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.message.MessageV0.instructions">
+<span class="sig-name descname"><span class="pre">instructions</span></span><a class="headerlink" href="#solders.message.MessageV0.instructions" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.MessageV0.is_key_called_as_program">
+<span class="sig-name descname"><span class="pre">is_key_called_as_program</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.MessageV0.is_key_called_as_program" title="Permalink to this definition"></a></dt>
+<dd><p>Returns true if the account at the specified index is called as a program by an instruction</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.MessageV0.is_maybe_writable">
+<span class="sig-name descname"><span class="pre">is_maybe_writable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.MessageV0.is_maybe_writable" title="Permalink to this definition"></a></dt>
+<dd><p>Returns true if the account at the specified index was requested as writable.
+Before loading addresses, we can’t demote write locks for dynamically loaded
+addresses so this should not be used by the runtime.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.MessageV0.is_non_loader_key">
+<span class="sig-name descname"><span class="pre">is_non_loader_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.MessageV0.is_non_loader_key" title="Permalink to this definition"></a></dt>
+<dd><p>Returns true if the account at the specified index is not invoked as a
+program or, if invoked, is passed to a program.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.MessageV0.is_signer">
+<span class="sig-name descname"><span class="pre">is_signer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.MessageV0.is_signer" title="Permalink to this definition"></a></dt>
+<dd><p>Returns true if the account at the specified index signed this
+message.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.message.MessageV0.recent_blockhash">
+<span class="sig-name descname"><span class="pre">recent_blockhash</span></span><a class="headerlink" href="#solders.message.MessageV0.recent_blockhash" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.MessageV0.sanitize">
+<span class="sig-name descname"><span class="pre">sanitize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.MessageV0.sanitize" title="Permalink to this definition"></a></dt>
+<dd><p>Sanitize message fields and compiled instruction indexes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.MessageV0.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.MessageV0.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.MessageV0.try_compile">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">try_compile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">payer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instructions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">address_lookup_table_accounts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recent_blockhash</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.MessageV0.try_compile" title="Permalink to this definition"></a></dt>
+<dd><p>Create a signable transaction message from a <code class="docutils literal notranslate"><span class="pre">payer</span></code> public key, <code class="docutils literal notranslate"><span class="pre">recent_blockhash</span></code>,
+list of <code class="docutils literal notranslate"><span class="pre">instructions</span></code>, and a list of <code class="docutils literal notranslate"><span class="pre">address_lookup_table_accounts</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>payer</strong> (<a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a>) – The fee payer.</p></li>
+<li><p><strong>instructions</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><em>Instruction</em></a><em>]</em>) – The instructions to include in the message.</p></li>
+<li><p><strong>address_table_lookups</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="#solders.message.MessageAddressTableLookup" title="solders.message.MessageAddressTableLookup"><em>MessageAddressTableLookup</em></a><em>]</em>) – List of address table lookups used to load additional accounts
+for this transaction.</p></li>
+<li><p><strong>recent_blockhash</strong> (<a class="reference internal" href="hash.html#solders.hash.Hash" title="solders.hash.Hash"><em>Hash</em></a>) – Hash of a recent block.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.pubkey</span> <span class="kn">import</span> <span class="n">Pubkey</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.instruction</span> <span class="kn">import</span> <span class="n">Instruction</span><span class="p">,</span> <span class="n">AccountMeta</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.message</span> <span class="kn">import</span> <span class="n">Message</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.address_lookup_table_account</span> <span class="kn">import</span> <span class="n">AddressLookupTableAccount</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.hash</span> <span class="kn">import</span> <span class="n">Hash</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">Pubkey</span><span class="o">.</span><span class="n">new_unique</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">payer</span> <span class="o">=</span> <span class="n">keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">program_id</span> <span class="o">=</span> <span class="n">keys</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ix_accounts</span> <span class="o">=</span> <span class="p">[</span><span class="n">AccountMeta</span><span class="p">(</span><span class="n">keys</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span> <span class="n">AccountMeta</span><span class="p">(</span><span class="n">keys</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span> <span class="n">AccountMeta</span><span class="p">(</span><span class="n">keys</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span><span class="n">AccountMeta</span><span class="p">(</span><span class="n">keys</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span><span class="n">AccountMeta</span><span class="p">(</span><span class="n">keys</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">),]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">instructions</span> <span class="o">=</span> <span class="p">[</span><span class="n">Instruction</span><span class="p">(</span><span class="n">program_id</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">([]),</span> <span class="n">ix_accounts</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lookup_acc0</span> <span class="o">=</span> <span class="n">AddressLookupTableAccount</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">Pubkey</span><span class="o">.</span><span class="n">new_unique</span><span class="p">(),</span> <span class="n">addresses</span><span class="o">=</span><span class="p">[</span><span class="n">keys</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">keys</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">keys</span><span class="p">[</span><span class="mi">6</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lookup_acc1</span> <span class="o">=</span> <span class="n">AddressLookupTableAccount</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">Pubkey</span><span class="o">.</span><span class="n">new_unique</span><span class="p">(),</span> <span class="n">addresses</span><span class="o">=</span><span class="p">[])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lookup_accs</span> <span class="o">=</span> <span class="p">[</span><span class="n">lookup_acc0</span><span class="p">,</span> <span class="n">lookup_acc1</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">recent_blockhash</span> <span class="o">=</span> <span class="n">Hash</span><span class="o">.</span><span class="n">new_unique</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">msg</span> <span class="o">=</span> <span class="n">MessageV0</span><span class="o">.</span><span class="n">try_compile</span><span class="p">(</span><span class="n">payer</span><span class="p">,</span> <span class="n">instructions</span><span class="p">,</span> <span class="n">lookup_accs</span><span class="p">,</span> <span class="n">recent_blockhash</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.message.MessageAddressTableLookup">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MessageAddressTableLookup</span></span><a class="headerlink" href="#solders.message.MessageAddressTableLookup" title="Permalink to this definition"></a></dt>
+<dd><p>Address table lookups describe an on-chain address lookup table to use
+for loading more readonly and writable accounts in a single tx.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>account_key</strong> (<a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a>) – Address lookup table account key.</p></li>
+<li><p><strong>writable_indexes</strong> (<em>bytes</em>) – List of u8 indexes used to load writable account addresses, represented as bytes.</p></li>
+<li><p><strong>readonly_indexes</strong> (<em>bytes</em>) – List of u8 indexes used to load readonly account addresses, represented as bytes.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.message.MessageAddressTableLookup.account_key">
+<span class="sig-name descname"><span class="pre">account_key</span></span><a class="headerlink" href="#solders.message.MessageAddressTableLookup.account_key" title="Permalink to this definition"></a></dt>
+<dd><p>Address lookup table account key.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey">Pubkey</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.MessageAddressTableLookup.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.MessageAddressTableLookup.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.MessageAddressTableLookup.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.MessageAddressTableLookup.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.message.MessageAddressTableLookup.readonly_indexes">
+<span class="sig-name descname"><span class="pre">readonly_indexes</span></span><a class="headerlink" href="#solders.message.MessageAddressTableLookup.readonly_indexes" title="Permalink to this definition"></a></dt>
+<dd><p>List of u8 indexes used to load readonly account addresses, represented as bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bytes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.message.MessageAddressTableLookup.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.MessageAddressTableLookup.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.message.MessageAddressTableLookup.writable_indexes">
+<span class="sig-name descname"><span class="pre">writable_indexes</span></span><a class="headerlink" href="#solders.message.MessageAddressTableLookup.writable_indexes" title="Permalink to this definition"></a></dt>
+<dd><p>List of u8 indexes used to load writable account addresses, represented as bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bytes</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.message.to_bytes_versioned">
+<span class="sig-name descname"><span class="pre">to_bytes_versioned</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.to_bytes_versioned" title="Permalink to this definition"></a></dt>
+<dd><p>Serialize a versioned message, with a leading byte indicating whether or not it’s a legacy message.</p>
+<p>If you want to serialize without the leading byte, use <cite>bytes(msg)</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>VersionedMessage</em>) – The message to serialize.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the serialized message.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bytes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.message.from_bytes_versioned">
+<span class="sig-name descname"><span class="pre">from_bytes_versioned</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.message.from_bytes_versioned" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize a versioned message, where the first byte indicates whether or not it’s a legacy message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>raw</strong> (<em>bytes</em>) – The serialized message.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the deserialized message.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>VersionedMessage</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="keypair.html" class="btn btn-neutral float-left" title="Keypair" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="null_signer.html" class="btn btn-neutral float-right" title="Null Signer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Kevin Heavey.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
