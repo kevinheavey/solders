@@ -40,10 +40,12 @@ def test_str() -> None:
     assert str(kp) == expected
     assert Keypair.from_base58_string(expected) == kp
 
+
 def test_bad_str() -> None:
     raw = "foo"
     with raises(ValueError):
         Keypair.from_base58_string(raw)
+
 
 def test_sign_message() -> None:
     seed = bytes([1] * 32)
