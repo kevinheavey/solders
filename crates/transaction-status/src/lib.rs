@@ -106,6 +106,11 @@ impl UiCompiledInstruction {
     pub fn data(&self) -> String {
         self.0.data.clone()
     }
+
+    #[getter]
+    pub fn stack_height(&self) -> Option<u32> {
+        self.0.stack_height
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]

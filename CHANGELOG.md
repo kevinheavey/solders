@@ -2,7 +2,10 @@
 
 ## [0.21.1] - Unreleased
 
+### Fixed
+
 - Avoid panic in `Keypair.from_base58_string` [(#93)](https://github.com/kevinheavey/solders/pull/93).
+- Add missing `stack_height` getter [(#103)](https://github.com/kevinheavey/solders/pull/103).
 
 ## [0.21.0] - 2024-03-13
 
