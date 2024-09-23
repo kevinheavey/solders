@@ -147,7 +147,7 @@ impl Pubkey {
     ///
     pub fn create_program_address(seeds: Vec<&[u8]>, program_id: &Self) -> Self {
         PubkeyOriginal::create_program_address(&seeds, &program_id.0)
-            .expect("Failed to create program address. This is extremely unlikely.")
+            .expect("Failed to create program address. Is the bump valid?")
             .into()
     }
 
