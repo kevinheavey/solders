@@ -65,7 +65,7 @@ jobs:
           pip install ${{ env.name }} --no-index --no-dependencies --find-links dist --force-reinstall
           pytest
       - name: Upload wheels
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: wheels
           path: dist
@@ -96,13 +96,18 @@ jobs:
           python -m pip install ${{ env.name }} --no-index --no-dependencies --find-links dist --force-reinstall
           python -m pytest --ignore=tests/bankrun
       - name: Upload wheels
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: wheels
           path: dist
 
   linux-x86_64:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [x86_64]
+        # target: [x86_64, i686]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -129,7 +134,7 @@ jobs:
           pip install ${{ env.name }} --no-index --no-dependencies --find-links dist --force-reinstall
           pytest
       - name: Upload wheels
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: wheels
           path: dist
@@ -193,7 +198,7 @@ jobs:
             pip3 install ${{ env.name }} --find-links /io/dist/ --force-reinstall --no-index --no-dependencies --break-system-packages
             python3 -m pytest
       - name: Upload wheels
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: wheels
           path: dist
@@ -222,7 +227,7 @@ jobs:
           args: --release --no-default-features -F ring --out dist
           maturin-version: ${{ env.maturin_version }}
       - name: Upload wheels
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: wheels
           path: dist
@@ -248,7 +253,7 @@ jobs:
           args: --release --no-default-features -F ring --out dist
           maturin-version: ${{ env.maturin_version }}
       - name: Upload wheels
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: wheels
           path: dist
@@ -274,7 +279,7 @@ jobs:
           args: --release --no-default-features -F ring --out dist
           maturin-version: ${{ env.maturin_version }}
       - name: Upload wheels
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: wheels
           path: dist
@@ -293,7 +298,7 @@ jobs:
           args: --out dist
           maturin-version: ${{ env.maturin_version }}
       - name: Upload sdist
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: wheels
           path: dist
