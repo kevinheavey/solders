@@ -64,7 +64,7 @@ jobs:
           pip install ${{ env.name }} --no-index --no-dependencies --find-links dist --force-reinstall
           pytest
       - name: Upload wheels
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: wheels
           path: dist
@@ -95,7 +95,7 @@ jobs:
           python -m pip install ${{ env.name }} --no-index --no-dependencies --find-links dist --force-reinstall
           python -m pytest --ignore=tests/test_bankrun.py
       - name: Upload wheels
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: wheels
           path: dist
@@ -132,7 +132,7 @@ jobs:
           pip install ${{ env.name }} --no-index --no-dependencies --find-links dist --force-reinstall
           pytest
       - name: Upload wheels
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: wheels
           path: dist
@@ -169,7 +169,7 @@ jobs:
             pip3 install ${{ env.name }} --find-links /io/dist/ --force-reinstall --no-index --no-dependencies
             python3 -m pytest
       - name: Upload wheels
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: wheels
           path: dist
@@ -198,7 +198,7 @@ jobs:
           args: --release --no-default-features --out dist
           maturin-version: ${{ env.maturin_version }}
       - name: Upload wheels
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: wheels
           path: dist
@@ -228,7 +228,7 @@ jobs:
           args: --release --out dist
           maturin-version: ${{ env.maturin_version }}
       - name: Upload wheels
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: wheels
           path: dist
@@ -258,7 +258,7 @@ jobs:
           args: --release --no-default-features --out dist
           maturin-version: ${{ env.maturin_version }}
       - name: Upload wheels
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: wheels
           path: dist
@@ -277,7 +277,7 @@ jobs:
           args: --out dist
           maturin-version: ${{ env.maturin_version }}
       - name: Upload sdist
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: wheels
           path: dist
