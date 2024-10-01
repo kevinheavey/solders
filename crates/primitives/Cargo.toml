@@ -1,14 +1,15 @@
+
 [package]
 name = "solders-primitives"
-version = "0.14.4"
-edition = "2021"
+version = { workspace = true }
+edition = { workspace = true }
 include = ["/src"]
-description = "Core types for the Solders project."
-license = "MIT"
-repository = "https://github.com/kevinheavey/solders"
+license = { workspace = true }
+repository = { workspace = true }
+description = "Solders primitives crate."
 
 [dependencies]
-pyo3 = { workspace = true }
+pyo3 = { workspace = true, features = ["macros"] }
 solders-traits-core = { workspace = true }
 solders-macros = { workspace = true }
 solana-program = { workspace = true }

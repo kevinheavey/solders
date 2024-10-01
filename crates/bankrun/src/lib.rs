@@ -1,38 +1,37 @@
+use std::{path::PathBuf, str::FromStr};
+
 use derive_more::{From, Into};
-use pyo3::prelude::*;
-use serde::{Deserialize, Serialize};
-use solana_banks_client::{
-    BanksClientError as BanksClientErrorOriginal, TransactionStatus as TransactionStatusBanks,
+use pyo3::{
+    exceptions::{PyFileNotFoundError, PyValueError},
+    prelude::*,
 };
-use solana_banks_interface::{
-    BanksTransactionResultWithMetadata, BanksTransactionResultWithSimulation,
-    TransactionConfirmationStatus as TransactionConfirmationStatusBanks, TransactionMetadata,
-};
+use solana_banks_client::BanksClientError as BanksClientErrorOriginal;
 use solders_account::Account;
+use solders_banks_interface::{
+    transaction_status_from_banks, BanksTransactionMeta, BanksTransactionResultWithMeta,
+};
 use solders_commitment_config::CommitmentLevel;
 use solders_hash::Hash as SolderHash;
 use solders_keypair::Keypair;
-use solders_macros::{common_methods, richcmp_eq_only};
 use solders_message::Message;
 use solders_primitives::{clock::Clock, rent::Rent};
 use solders_pubkey::Pubkey;
 use solders_signature::Signature;
 use solders_traits::{to_py_err, BanksClientError};
-use solders_traits_core::{to_py_value_err, transaction_status_boilerplate};
-use solders_transaction::VersionedTransaction;
-use solders_transaction_error::TransactionErrorType;
-use solders_transaction_status::{
-    TransactionConfirmationStatus, TransactionReturnData, TransactionStatus,
-};
+use solders_traits_core::to_py_value_err;
+use solders_transaction::{Transaction, VersionedTransaction};
 use tarpc::context::current;
+use toml::Table;
 use {
     solana_program_test::{
         BanksClient as BanksClientOriginal, ProgramTest,
         ProgramTestContext as ProgramTestContextOriginal,
     },
     solana_sdk::{
-        account::AccountSharedData, clock::Clock as ClockOriginal,
-        commitment_config::CommitmentLevel as CommitmentLevelOriginal, slot_history::Slot,
+        account::{Account as AccountOriginal, AccountSharedData},
+        clock::Clock as ClockOriginal,
+        commitment_config::CommitmentLevel as CommitmentLevelOriginal,
+        slot_history::Slot,
     },
 };
 
@@ -42,135 +41,10 @@ macro_rules! async_res {
     };
 }
 
-macro_rules! res_to_py_obj {
-    ($fut:expr) => {{
-        let res = async_res!($fut);
-        let pyobj: PyResult<PyObject> = Python::with_gil(|py| res.map(|x| x.into_py(py)));
-        pyobj
-    }};
-}
-
-fn confirmation_status_from_banks(
-    s: TransactionConfirmationStatusBanks,
-) -> TransactionConfirmationStatus {
-    match s {
-        TransactionConfirmationStatusBanks::Processed => TransactionConfirmationStatus::Processed,
-        TransactionConfirmationStatusBanks::Confirmed => TransactionConfirmationStatus::Confirmed,
-        TransactionConfirmationStatusBanks::Finalized => TransactionConfirmationStatus::Finalized,
-    }
-}
-
-fn transaction_status_from_banks(t: TransactionStatusBanks) -> TransactionStatus {
-    TransactionStatus::new(
-        t.slot,
-        t.confirmations,
-        None,
-        t.err.map(Into::into),
-        t.confirmation_status.map(confirmation_status_from_banks),
-    )
-}
-
-/// Transaction metadata.
-#[pyclass(module = "solders.bankrun", subclass)]
-#[derive(From, Into, Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
-pub struct BanksTransactionMeta(pub TransactionMetadata);
-
-transaction_status_boilerplate!(BanksTransactionMeta);
-
-#[richcmp_eq_only]
-#[common_methods]
-#[pymethods]
-impl BanksTransactionMeta {
-    #[new]
-    pub fn new(
-        log_messages: Vec<String>,
-        compute_units_consumed: u64,
-        return_data: Option<TransactionReturnData>,
-    ) -> Self {
-        TransactionMetadata {
-            log_messages,
-            compute_units_consumed,
-            return_data: return_data.map(Into::into),
-        }
-        .into()
-    }
-
-    /// List[str]: The log messages written during transaction execution.
-    #[getter]
-    pub fn log_messages(&self) -> Vec<String> {
-        self.0.log_messages.clone()
-    }
-
-    /// Optional[TransactionReturnData]: The transaction return data, if present.
-    #[getter]
-    pub fn return_data(&self) -> Option<TransactionReturnData> {
-        self.0.return_data.clone().map(Into::into)
-    }
-
-    /// int: The number of compute units consumed by the transaction.
-    #[getter]
-    pub fn compute_units_consumed(&self) -> u64 {
-        self.0.compute_units_consumed
-    }
-}
-
-/// A transaction result.
-///
-/// Contains transaction metadata, and the transaction error, if there is one.
-///
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
-#[pyclass(module = "solders.bankrun", subclass)]
-pub struct BanksTransactionResultWithMeta(BanksTransactionResultWithMetadata);
-
-transaction_status_boilerplate!(BanksTransactionResultWithMeta);
-
-#[richcmp_eq_only]
-#[common_methods]
-#[pymethods]
-impl BanksTransactionResultWithMeta {
-    #[new]
-    pub fn new(result: Option<TransactionErrorType>, meta: Option<BanksTransactionMeta>) -> Self {
-        BanksTransactionResultWithMetadata {
-            result: match result {
-                None => Ok(()),
-                Some(e) => Err(e.into()),
-            },
-            metadata: meta.map(Into::into),
-        }
-        .into()
-    }
-
-    /// Optional[TransactionErrorType]: The transaction error info, if the transaction failed.
-    #[getter]
-    pub fn result(&self) -> Option<TransactionErrorType> {
-        match self.0.result.clone() {
-            Ok(()) => None,
-            Err(x) => Some(TransactionErrorType::from(x)),
-        }
-    }
-
-    /// Optional[BanksTransactionMeta]: The transaction metadata.
-    #[getter]
-    pub fn meta(&self) -> Option<BanksTransactionMeta> {
-        self.0.metadata.clone().map(Into::into)
-    }
-}
-
-impl From<BanksTransactionResultWithSimulation> for BanksTransactionResultWithMeta {
-    fn from(r: BanksTransactionResultWithSimulation) -> Self {
-        BanksTransactionResultWithMetadata {
-            result: match r.result {
-                None => Ok(()),
-                Some(x) => x,
-            },
-            metadata: r.simulation_details.map(|d| TransactionMetadata {
-                log_messages: d.logs,
-                compute_units_consumed: d.units_consumed,
-                return_data: d.return_data,
-            }),
-        }
-        .into()
-    }
+#[derive(FromPyObject, Clone, PartialEq, Eq, Debug)]
+pub enum TransactionType {
+    Legacy(Transaction),
+    Versioned(VersionedTransaction),
 }
 
 /// A client for the ledger state, from the perspective of an arbitrary validator.
@@ -186,94 +60,57 @@ impl BanksClient {
     /// Send a transaction and return immediately.
     ///
     /// Args:
-    ///     transaction (VersionedTransaction): The transaction to send.
+    ///     transaction (Transaction | VersionedTransaction): The transaction to send.
     ///
     pub fn send_transaction<'p>(
         &'p mut self,
         py: Python<'p>,
-        transaction: VersionedTransaction,
+        transaction: TransactionType,
     ) -> PyResult<&'p PyAny> {
-        let tx_inner = transaction.0;
         let mut underlying = self.0.clone();
         pyo3_asyncio::tokio::future_into_py(py, async move {
-            res_to_py_obj!(underlying.send_transaction(tx_inner))
-        })
-    }
-
-    /// Send a transaction and wait until the transaction has been finalized or rejected.
-    ///
-    /// Args:
-    ///     transaction (VersionedTransaction): The transaction to send.
-    ///     commitment (Optional[CommitmentLevel]): The commitment to use.
-    ///
-    pub fn process_transaction<'p>(
-        &'p mut self,
-        py: Python<'p>,
-        transaction: VersionedTransaction,
-        commitment: Option<CommitmentLevel>,
-    ) -> PyResult<&'p PyAny> {
-        let tx_inner = transaction.0.into_legacy_transaction().unwrap();
-        let commitment_inner = CommitmentLevelOriginal::from(commitment.unwrap_or_default());
-        let mut underlying = self.0.clone();
-        pyo3_asyncio::tokio::future_into_py(py, async move {
-            let res = underlying
-                .process_transaction_with_commitment(tx_inner, commitment_inner)
-                .await
-                .map_err(to_py_err);
-            let pyobj: PyResult<PyObject> = Python::with_gil(|py| res.map(|x| x.into_py(py)));
+            let res = match transaction {
+                TransactionType::Legacy(t) => underlying.send_transaction(t.0).await,
+                TransactionType::Versioned(t) => underlying.send_transaction(t.0).await,
+            };
+            let pyobj: PyResult<PyObject> =
+                Python::with_gil(|py| res.map_err(to_py_err).map(|x| x.into_py(py)));
             pyobj
         })
     }
 
-    /// Send a transaction and return any preflight (sanitization or simulation) errors, or return
-    /// after the transaction has been rejected or reached the given level of commitment.
+    /// Process a transaction and return the transaction metadata, raising any errors.
     ///
     /// Args:
-    ///     transaction (VersionedTransaction): The transaction to send.
-    ///     commitment (Optional[CommitmentLevel]): The commitment to use.
-    ///
-    pub fn process_transaction_with_preflight<'p>(
-        &'p mut self,
-        py: Python<'p>,
-        transaction: VersionedTransaction,
-        commitment: Option<CommitmentLevel>,
-    ) -> PyResult<&'p PyAny> {
-        let tx_inner = transaction.0.into_legacy_transaction().unwrap();
-        let commitment_inner = CommitmentLevelOriginal::from(commitment.unwrap_or_default());
-        let mut underlying = self.0.clone();
-        pyo3_asyncio::tokio::future_into_py(py, async move {
-            let res = underlying
-                .process_transaction_with_preflight_and_commitment(tx_inner, commitment_inner)
-                .await
-                .map_err(to_py_err);
-            let pyobj: PyResult<PyObject> = Python::with_gil(|py| res.map(|x| x.into_py(py)));
-            pyobj
-        })
-    }
-
-    /// Process a transaction and return the result with metadata.
-    ///
-    /// Args:
-    ///     transaction (VersionedTransaction): The transaction to send.
+    ///     transaction (Transaction | VersionedTransaction): The transaction to send.
     ///
     /// Returns:
     ///     BanksTransactionResultWithMeta: The transaction result and metadata.
     ///
-    pub fn process_transaction_with_metadata<'p>(
+    pub fn process_transaction<'p>(
         &'p mut self,
         py: Python<'p>,
-        transaction: VersionedTransaction,
+        transaction: TransactionType,
     ) -> PyResult<&'p PyAny> {
-        let tx_inner = transaction.0.into_legacy_transaction().unwrap();
         let mut underlying = self.0.clone();
         pyo3_asyncio::tokio::future_into_py(py, async move {
-            let res = underlying
-                .process_transaction_with_metadata(tx_inner)
-                .await
-                .map_err(to_py_err);
-            let pyobj: PyResult<PyObject> = Python::with_gil(|py| {
-                res.map(|x| BanksTransactionResultWithMeta::from(x).into_py(py))
-            });
+            let awaited = match transaction {
+                TransactionType::Legacy(t) => {
+                    underlying.process_transaction_with_metadata(t.0).await
+                }
+                TransactionType::Versioned(t) => {
+                    underlying.process_transaction_with_metadata(t.0).await
+                }
+            };
+            let res = awaited.map_err(to_py_err);
+            let meta = match res {
+                Ok(r) => match r.result {
+                    Err(e) => Err(to_py_err(e)),
+                    Ok(()) => Ok(BanksTransactionMeta::from(r.metadata.unwrap())),
+                },
+                Err(e) => Err(e),
+            };
+            let pyobj: PyResult<PyObject> = Python::with_gil(|py| meta.map(|x| x.into_py(py)));
             pyobj
         })
     }
@@ -281,7 +118,7 @@ impl BanksClient {
     /// Simulate a transaction at the given commitment level.
     ///
     /// Args:
-    ///     transaction (VersionedTransaction): The transaction to simulate.
+    ///     transaction (Transaction | VersionedTransaction): The transaction to simulate.
     ///     commitment (Optional[CommitmentLevel]): The commitment level to use.
     ///
     /// Returns:
@@ -290,17 +127,25 @@ impl BanksClient {
     pub fn simulate_transaction<'p>(
         &'p mut self,
         py: Python<'p>,
-        transaction: VersionedTransaction,
+        transaction: TransactionType,
         commitment: Option<CommitmentLevel>,
     ) -> PyResult<&'p PyAny> {
-        let tx_inner = transaction.0.into_legacy_transaction().unwrap();
         let commitment_inner = CommitmentLevelOriginal::from(commitment.unwrap_or_default());
         let mut underlying = self.0.clone();
         pyo3_asyncio::tokio::future_into_py(py, async move {
-            let res = underlying
-                .simulate_transaction_with_commitment(tx_inner, commitment_inner)
-                .await
-                .map_err(to_py_err);
+            let awaited = match transaction {
+                TransactionType::Legacy(t) => {
+                    underlying
+                        .simulate_transaction_with_commitment(t.0, commitment_inner)
+                        .await
+                }
+                TransactionType::Versioned(t) => {
+                    underlying
+                        .simulate_transaction_with_commitment(t.0, commitment_inner)
+                        .await
+                }
+            };
+            let res = awaited.map_err(to_py_err);
             let pyobj: PyResult<PyObject> = Python::with_gil(|py| {
                 res.map(|x| BanksTransactionResultWithMeta::from(x).into_py(py))
             });
@@ -476,6 +321,7 @@ impl BanksClient {
     /// corresponding to the given commitment level.
     ///
     /// Args:
+    ///     address (Pubkey): The account to look up.
     ///     commitment (Optional[CommitmentLevel]): The commitment level to use.
     ///
     /// Returns:
@@ -551,8 +397,8 @@ impl BanksClient {
         pyo3_asyncio::tokio::future_into_py(py, async move {
             let res = async_res!(underlying.get_fee_for_message_with_commitment_and_context(
                 current(),
+                message_inner,
                 commitment_inner,
-                message_inner
             ));
             let pyobj: PyResult<Option<PyObject>> =
                 Python::with_gil(|py| res.map(|x| x.map(|num| num.into_py(py))));
@@ -562,18 +408,15 @@ impl BanksClient {
 }
 
 fn new_bankrun(
-    programs: Option<Vec<(&str, Pubkey)>>,
+    programs: Vec<(&str, Pubkey)>,
     compute_max_units: Option<u64>,
     transaction_account_lock_limit: Option<usize>,
-    use_bpf_jit: Option<bool>,
-    accounts: Option<Vec<(Pubkey, Account)>>,
+    accounts: Vec<(Pubkey, Account)>,
 ) -> ProgramTest {
     let mut pt = ProgramTest::default();
     pt.prefer_bpf(true);
-    if let Some(progs) = programs {
-        for prog in progs {
-            pt.add_program(prog.0, prog.1.into(), None);
-        }
+    for prog in programs {
+        pt.add_program(prog.0, prog.1.into(), None);
     }
     if let Some(cmu) = compute_max_units {
         pt.set_compute_max_units(cmu);
@@ -581,13 +424,8 @@ fn new_bankrun(
     if let Some(lock_lim) = transaction_account_lock_limit {
         pt.set_transaction_account_lock_limit(lock_lim);
     }
-    if let Some(use_jit) = use_bpf_jit {
-        pt.use_bpf_jit(use_jit);
-    }
-    if let Some(accs) = accounts {
-        for acc in accs {
-            pt.add_account(acc.0.into(), acc.1.into());
-        }
+    for acc in accounts {
+        pt.add_account(acc.0.into(), acc.1.into());
     }
     pt
 }
@@ -605,8 +443,7 @@ fn new_bankrun(
 ///         what data to write to the given addresses.
 ///     compute_max_units (Optional[int]): Override the default compute unit limit for a transaction.
 ///     transaction_account_lock_limit (Optional[int]): Override the default transaction account lock limit.
-///     use_bpf_jit (Optional[bool]): Execute the program with JIT if true, interpreted if false.
-
+///
 ///
 /// Returns:
 ///     ProgramTestContext: a container for stuff you'll need to send transactions and interact with the test environment.
@@ -618,14 +455,80 @@ pub fn start<'p>(
     accounts: Option<Vec<(Pubkey, Account)>>,
     compute_max_units: Option<u64>,
     transaction_account_lock_limit: Option<usize>,
-    use_bpf_jit: Option<bool>,
 ) -> PyResult<&'p PyAny> {
+    let pt = new_bankrun(
+        programs.unwrap_or_default(),
+        compute_max_units,
+        transaction_account_lock_limit,
+        accounts.unwrap_or_default(),
+    );
+    pyo3_asyncio::tokio::future_into_py(py, async move {
+        let inner = pt.start_with_context().await;
+        let res: PyResult<PyObject> =
+            Python::with_gil(|py| Ok(ProgramTestContext(inner).into_py(py)));
+        res
+    })
+}
+
+/// Start a bankrun in an Anchor workspace, with all the workspace programs deployed.
+///
+/// This will spin up a BanksServer and a BanksClient,
+/// deploy programs and add accounts as instructed.
+///
+/// Args:
+///     path (pathlib.Path): Path to root of the Anchor project.
+///     extra_programs (Optional[Sequence[Tuple[str, Pubkey]]]): A sequence of (program_name, program_id) tuples
+///         indicating extra programs to deploy alongside the Anchor workspace programs. See the main bankrun docs for more explanation
+///         on how to add programs.
+///     accounts (Optional[Sequence[Tuple[Pubkey, Account]]]): A sequence of (address, account_object) tuples, indicating
+///         what data to write to the given addresses.
+///     compute_max_units (Optional[int]): Override the default compute unit limit for a transaction.
+///     transaction_account_lock_limit (Optional[int]): Override the default transaction account lock limit.
+///
+/// Returns:
+///     ProgramTestContext: a container for stuff you'll need to send transactions and interact with the test environment.
+///     
+#[pyfunction]
+pub fn start_anchor<'p>(
+    py: Python<'p>,
+    path: PathBuf,
+    extra_programs: Option<Vec<(&str, Pubkey)>>,
+    accounts: Option<Vec<(Pubkey, Account)>>,
+    compute_max_units: Option<u64>,
+    transaction_account_lock_limit: Option<usize>,
+) -> PyResult<&'p PyAny> {
+    let mut programs = extra_programs.unwrap_or_default();
+    let mut anchor_toml_path = path.clone();
+    let mut sbf_out_dir = path;
+    sbf_out_dir.push("target/deploy");
+    anchor_toml_path.push("Anchor.toml");
+    let toml_str = std::fs::read_to_string(anchor_toml_path)
+        .map_err(|e| PyFileNotFoundError::new_err(e.to_string()))?;
+    let parsed_toml = Table::from_str(&toml_str).unwrap();
+    let toml_programs_raw = parsed_toml
+        .get("programs")
+        .and_then(|x| x.get("localnet"))
+        .ok_or_else(|| PyValueError::new_err("`programs.localnet` not found in Anchor.toml"))?;
+    let toml_programs_parsed = toml_programs_raw
+        .as_table()
+        .ok_or_else(|| PyValueError::new_err("Failed to parse `programs.localnet` table."))?;
+    for (key, val) in toml_programs_parsed {
+        let pubkey_with_quotes = val.to_string();
+        let pubkey_str = &pubkey_with_quotes[1..pubkey_with_quotes.len() - 1];
+        let pk = Pubkey::new_from_str(pubkey_str).map_err(|_| {
+            PyValueError::new_err(format!(
+                "Invalid pubkey in `programs.localnet` table. {}",
+                val
+            ))
+        })?;
+        programs.push((key, pk));
+    }
+    std::env::set_var("SBF_OUT_DIR", sbf_out_dir);
     let pt = new_bankrun(
         programs,
         compute_max_units,
         transaction_account_lock_limit,
-        use_bpf_jit,
-        accounts,
+        accounts.unwrap_or_default(),
     );
     pyo3_asyncio::tokio::future_into_py(py, async move {
         let inner = pt.start_with_context().await;
@@ -689,8 +592,10 @@ impl ProgramTestContext {
     ///     account (Account): The account object to write.
     ///
     pub fn set_account(&mut self, address: &Pubkey, account: Account) {
-        self.0
-            .set_account(address.as_ref(), &AccountSharedData::from(account.0));
+        self.0.set_account(
+            address.as_ref(),
+            &AccountSharedData::from(AccountOriginal::from(account)),
+        );
     }
 
     /// Overwrite the clock sysvar.
@@ -731,5 +636,6 @@ pub fn create_bankrun_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<BanksTransactionResultWithMeta>()?;
     m.add_class::<BanksTransactionMeta>()?;
     m.add_function(wrap_pyfunction!(start, m)?)?;
+    m.add_function(wrap_pyfunction!(start_anchor, m)?)?;
     Ok(m)
 }

@@ -1,32 +1,32 @@
+
 [package]
 name = "solders-bankrun"
-version = "0.14.4"
-edition = "2021"
+version = { workspace = true }
+edition = { workspace = true }
 include = ["/src"]
-license = "MIT"
-repository = "https://github.com/kevinheavey/solders"
+license = { workspace = true }
+repository = { workspace = true }
+description = "Solders bankrun crate."
 
 [dependencies]
-pyo3 = { workspace = true }
-serde = { workspace = true }
+pyo3 = { workspace = true, features = ["macros"] }
 derive_more = { workspace = true }
+solders-banks-interface = { workspace = true }
 solders-macros = { workspace = true }
 solders-hash = { workspace = true }
 solders-primitives = { workspace = true }
 solders-commitment-config = { workspace = true }
+solders-message = { workspace = true }
 solders-pubkey = { workspace = true }
 solders-traits = { workspace = true, features = ["banks-client"]}
 solders-traits-core = { workspace = true }
 solders-account = { workspace = true }
 solders-keypair = { workspace = true }
 solders-transaction = { workspace = true }
-solders-transaction-error = { workspace = true }
-solders-message = { workspace = true }
 solders-signature = { workspace = true }
-solders-transaction-status = { workspace = true }
 solana-sdk = { workspace = true }
 solana-program-test = { workspace = true }
 solana-banks-client = { workspace = true }
-solana-banks-interface = { version = "1.15.2" }
 tarpc = { version = "0.29.0" }
-pyo3-asyncio = { version = "0.18.0", features = ["tokio-runtime"] }
+toml = "0.7.3"
+pyo3-asyncio = { version = "0.20.0", features = ["tokio-runtime"] }

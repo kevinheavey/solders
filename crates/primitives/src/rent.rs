@@ -115,7 +115,7 @@ impl Rent {
         self.0.due_amount(data_len, years_elapsed)
     }
 
-    /// Creates a `Rent` that charges no lamports.
+    /// Creates a ``Rent`` that charges no lamports.
     ///
     /// This is used for testing.
     ///
@@ -124,7 +124,7 @@ impl Rent {
         RentOriginal::free().into()
     }
 
-    /// Creates a `Rent` that is scaled based on the number of slots in an epoch.
+    /// Creates a ``Rent`` that is scaled based on the number of slots in an epoch.
     ///
     /// This is used for testing.
     #[staticmethod]

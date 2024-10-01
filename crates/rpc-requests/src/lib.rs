@@ -8,7 +8,6 @@ use solders_hash::Hash as SolderHash;
 use solders_macros::{common_methods, richcmp_eq_only, rpc_id_getter, EnumIntoPy};
 use solders_message::VersionedMessage;
 use solders_pubkey::Pubkey;
-use solders_rpc_version::V2;
 use solders_signature::Signature;
 use solders_traits::to_py_err;
 use solders_traits_core::{
@@ -16,15 +15,16 @@ use solders_traits_core::{
 };
 use solders_transaction::{Transaction, VersionedTransaction};
 
-use solders_rpc_config::{
-    RpcAccountInfoConfig, RpcBlockConfig, RpcBlockProductionConfig, RpcBlockSubscribeConfig,
+use solders_rpc_account_info_config::RpcAccountInfoConfig;
+use solders_rpc_config_no_filter::{
+    RpcBlockConfig, RpcBlockProductionConfig, RpcBlockSubscribeConfig,
     RpcBlockSubscribeFilterWrapper, RpcContextConfig, RpcEpochConfig, RpcGetVoteAccountsConfig,
-    RpcLargestAccountsFilter, RpcLeaderScheduleConfig, RpcProgramAccountsConfig,
-    RpcRequestAirdropConfig, RpcSendTransactionConfig, RpcSignatureStatusConfig,
-    RpcSignatureSubscribeConfig, RpcSignaturesForAddressConfig, RpcSimulateTransactionConfig,
+    RpcLargestAccountsFilter, RpcLeaderScheduleConfig, RpcSignatureSubscribeConfig,
     RpcSupplyConfig, RpcTokenAccountsFilterWrapper, RpcTransactionConfig, RpcTransactionLogsConfig,
     TransactionLogsFilterWrapper,
 };
+use solders_rpc_program_accounts_config::RpcProgramAccountsConfig;
+use solders_rpc_request_airdrop_config::RpcRequestAirdropConfig;
 use solders_rpc_request_params::{
     BlockSubscribeParams, GetAccountInfoParams, GetBalanceParams, GetBlockParams,
     GetInflationRewardParams, GetLargestAccountsParams, GetLeaderScheduleParams,
@@ -35,8 +35,12 @@ use solders_rpc_request_params::{
 };
 use solders_rpc_request_params_no_config::{
     GetBlocksParams, GetFeeForMessageParams, GetMinimumBalanceForRentExemptionParams,
-    PubkeyAndCommitmentParams, UnsubscribeParams,
+    PubkeyAndCommitmentParams, RequestBase, UnsubscribeParams,
 };
+use solders_rpc_send_transaction_config::RpcSendTransactionConfig;
+use solders_rpc_sig_status_config::RpcSignatureStatusConfig;
+use solders_rpc_sigs_for_address_config::RpcSignaturesForAddressConfig;
+use solders_rpc_sim_transaction_config::RpcSimulateTransactionConfig;
 
 macro_rules! rpc_impl_display {
     ($ident:ident) => {
@@ -170,21 +174,6 @@ unsubscribe_def!(SlotUnsubscribe);
 unsubscribe_def!(SlotsUpdatesUnsubscribe);
 unsubscribe_def!(RootUnsubscribe);
 unsubscribe_def!(VoteUnsubscribe);
-
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
-struct RequestBase {
-    jsonrpc: V2,
-    id: u64,
-}
-
-impl RequestBase {
-    fn new(id: Option<u64>) -> Self {
-        Self {
-            jsonrpc: V2::TwoPointOh,
-            id: id.unwrap_or(0),
-        }
-    }
-}
 
 /// A ``getAccountInfo`` request.
 ///
@@ -2297,7 +2286,7 @@ request_boilerplate!(SendRawTransaction);
 ///      >>> commitment = CommitmentLevel.Confirmed
 ///      >>> config = RpcSimulateTransactionConfig(commitment=commitment, accounts=accounts_config)
 ///      >>> SimulateLegacyTransaction(tx, config).to_json()
-///      '{"method":"simulateTransaction","jsonrpc":"2.0","id":0,"params":["AaVkKDb3UlpidO/ucBnOcmS+1dY8ZAC4vHxTxiccV8zPBlupuozppRjwrILZJaoKggAcVSD1XlAKstDVEPFOVgwBAAECiojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEAA2FiYw==",{"sigVerify":false,"replaceRecentBlockhash":false,"commitment":"confirmed","encoding":"base64","accounts":{"encoding":"base64+zstd","addresses":["11111111111111111111111111111111"]},"minContextSlot":null}]}'
+///      '{"method":"simulateTransaction","jsonrpc":"2.0","id":0,"params":["AaVkKDb3UlpidO/ucBnOcmS+1dY8ZAC4vHxTxiccV8zPBlupuozppRjwrILZJaoKggAcVSD1XlAKstDVEPFOVgwBAAECiojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEAA2FiYw==",{"sigVerify":false,"replaceRecentBlockhash":false,"commitment":"confirmed","encoding":"base64","accounts":{"encoding":"base64+zstd","addresses":["11111111111111111111111111111111"]},"minContextSlot":null,"innerInstructions":false}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
@@ -2366,7 +2355,7 @@ request_boilerplate!(SimulateLegacyTransaction);
 ///      >>> commitment = CommitmentLevel.Confirmed
 ///      >>> config = RpcSimulateTransactionConfig(commitment=commitment, accounts=accounts_config)
 ///      >>> SimulateVersionedTransaction(tx, config).to_json()
-///      '{"method":"simulateTransaction","jsonrpc":"2.0","id":0,"params":["AAEAAQKKiOPddAnxlf1S2y08ul1yymcJvx2UEhvzdIgBtA9vXAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAQADYWJj",{"sigVerify":false,"replaceRecentBlockhash":false,"commitment":"confirmed","encoding":"base64","accounts":{"encoding":"base64+zstd","addresses":["11111111111111111111111111111111"]},"minContextSlot":null}]}'
+///      '{"method":"simulateTransaction","jsonrpc":"2.0","id":0,"params":["AAEAAQKKiOPddAnxlf1S2y08ul1yymcJvx2UEhvzdIgBtA9vXAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAQADYWJj",{"sigVerify":false,"replaceRecentBlockhash":false,"commitment":"confirmed","encoding":"base64","accounts":{"encoding":"base64+zstd","addresses":["11111111111111111111111111111111"]},"minContextSlot":null,"innerInstructions":false}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
@@ -2819,9 +2808,7 @@ pub fn batch_to_json(reqs: Vec<Body>) -> String {
 ///     }]
 ///
 #[pyfunction]
-pub fn batch_from_json(raw: &str) -> PyResult<Vec<PyObject>> {
-    let gil = Python::acquire_gil();
-    let py = gil.python();
+pub fn batch_from_json(py: Python<'_>, raw: &str) -> PyResult<Vec<PyObject>> {
     let deser: Vec<Body> = serde_json::from_str(raw).unwrap();
     Ok(deser.into_iter().map(|x| x.into_py(py)).collect())
 }

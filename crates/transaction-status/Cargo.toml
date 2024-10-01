@@ -1,13 +1,15 @@
+
 [package]
 name = "solders-transaction-status"
-version = "0.14.4"
-edition = "2021"
+version = { workspace = true }
+edition = { workspace = true }
 include = ["/src"]
-license = "MIT"
-repository = "https://github.com/kevinheavey/solders"
+license = { workspace = true }
+repository = { workspace = true }
+description = "Solders transaction status crate."
 
 [dependencies]
-pyo3 = { workspace = true }
+pyo3 = { workspace = true, features = ["macros"] }
 solana-sdk = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
@@ -19,11 +21,15 @@ solders-macros = { workspace = true }
 base64 = { workspace = true }
 bs58 = { workspace = true }
 solders-traits-core = { workspace = true }
+solana-account-decoder = { workspace = true }
 solders-account-decoder = { workspace = true }
 solders-hash = { workspace = true }
 solders-message = { workspace = true }
 solders-transaction = { workspace = true }
+solana-transaction-status = { workspace = true }
 solders-transaction-error = { workspace = true }
+solders-transaction-confirmation-status = { workspace = true }
+solders-transaction-return-data = { workspace = true }
 solders-transaction-status-enums = { workspace = true }
-solders-commitment-config ={ workspace = true }
-bincode ={ workspace = true }
+solders-transaction-status-struct = { workspace = true }
+bincode = { workspace = true }

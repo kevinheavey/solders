@@ -1,4 +1,5 @@
-from typing import List, Optional, Sequence, Tuple
+from pathlib import Path
+from typing import List, Optional, Sequence, Tuple, Union
 
 from solders.account import Account
 from solders.clock import Clock
@@ -9,7 +10,7 @@ from solders.message import Message
 from solders.pubkey import Pubkey
 from solders.rent import Rent
 from solders.signature import Signature
-from solders.transaction import VersionedTransaction
+from solders.transaction import Transaction, VersionedTransaction
 from solders.transaction_status import (
     TransactionErrorType,
     TransactionReturnData,
@@ -19,7 +20,7 @@ from solders.transaction_status import (
 class BanksClient:
     async def get_account(
         self, address: Pubkey, commitment: Optional[CommitmentLevel] = None
-    ) -> Account: ...
+    ) -> Optional[Account]: ...
     async def get_balance(
         self,
         address: Pubkey,
@@ -47,21 +48,14 @@ class BanksClient:
     ) -> List[Optional[Signature]]: ...
     async def process_transaction(
         self,
-        transaction: VersionedTransaction,
-        commitment: Optional[CommitmentLevel] = None,
+        transaction: Union[Transaction, VersionedTransaction],
+    ) -> BanksTransactionMeta: ...
+    async def send_transaction(
+        self, transaction: Union[Transaction, VersionedTransaction]
     ) -> None: ...
-    async def process_transaction_with_metadata(
-        self, Transaction: VersionedTransaction
-    ) -> BanksTransactionResultWithMeta: ...
-    async def process_transaction_with_preflight(
-        self,
-        transaction: VersionedTransaction,
-        commitment: Optional[CommitmentLevel] = None,
-    ) -> None: ...
-    async def send_transaction(self, transaction: VersionedTransaction) -> None: ...
     async def simulate_transaction(
         self,
-        transaction: VersionedTransaction,
+        transaction: Union[Transaction, VersionedTransaction],
         commitment: Optional[CommitmentLevel] = None,
     ) -> BanksTransactionResultWithMeta: ...
 
@@ -132,5 +126,11 @@ async def start(
     accounts: Optional[Sequence[Tuple[Pubkey, Account]]] = None,
     compute_max_units: Optional[int] = None,
     transaction_account_lock_limit: Optional[int] = None,
-    use_bpf_jit: Optional[bool] = None,
+) -> ProgramTestContext: ...
+async def start_anchor(
+    path: Path,
+    extra_programs: Optional[Sequence[Tuple[str, Pubkey]]] = None,
+    accounts: Optional[Sequence[Tuple[Pubkey, Account]]] = None,
+    compute_max_units: Optional[int] = None,
+    transaction_account_lock_limit: Optional[int] = None,
 ) -> ProgramTestContext: ...

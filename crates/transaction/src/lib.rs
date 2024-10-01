@@ -114,8 +114,8 @@ impl VersionedTransaction {
     }
 
     /// Sanity checks the Transaction properties.
-    pub fn sanitize(&self, require_static_program_ids: bool) -> PyResult<()> {
-        handle_py_err(self.0.sanitize(require_static_program_ids))
+    pub fn sanitize(&self) -> PyResult<()> {
+        handle_py_err(self.0.sanitize())
     }
 
     /// Returns the version of the transaction.
@@ -215,7 +215,7 @@ impl VersionedTransaction {
 ///     >>> blockhash = Hash.default()  # replace with a real blockhash
 ///     >>> tx = Transaction([payer], message, blockhash)
 ///
-pub struct Transaction(TransactionOriginal);
+pub struct Transaction(pub TransactionOriginal);
 
 #[richcmp_eq_only]
 #[common_methods]
@@ -342,6 +342,7 @@ impl Transaction {
     ///     >>> blockhash = Hash.default()  # replace with a real blockhash
     ///     >>> tx = Transaction.new_signed_with_payer([instruction], payer.pubkey(), [payer], blockhash);
     ///
+    #[pyo3(signature = (instructions, payer, signing_keypairs, recent_blockhash))]
     pub fn new_signed_with_payer(
         instructions: Vec<Instruction>,
         payer: Option<Pubkey>,

@@ -1,13 +1,15 @@
+
 [package]
 name = "solders-account-decoder"
-version = "0.14.4"
-edition = "2021"
+version = { workspace = true }
+edition = { workspace = true }
 include = ["/src"]
-license = "MIT"
-repository = "https://github.com/kevinheavey/solders"
+license = { workspace = true }
+repository = { workspace = true }
+description = "Solders account decoder crate."
 
 [dependencies]
-pyo3 = { workspace = true }
+pyo3 = { workspace = true, features = ["macros"] }
 solana-sdk = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
@@ -18,3 +20,4 @@ zstd = "0.11.2"
 base64 = { workspace = true }
 bs58 = { workspace = true }
 solders-traits-core = { workspace = true }
+solana-account-decoder = { workspace = true }

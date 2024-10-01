@@ -2,9 +2,19 @@ import pickle
 from operator import ge, gt, le, lt
 from typing import Any, Callable
 
+import mnemonic
 from pybip39 import Mnemonic, Seed
 from pytest import mark, raises
 from solders.keypair import Keypair
+
+
+def test_from_seed_and_derivation_path() -> None:
+    mnemo = mnemonic.Mnemonic("english")
+    seed = mnemo.to_seed(
+        "pill tomorrow foster begin walnut borrow virtual kick shift mutual shoe scatter"
+    )
+    pubkey = Keypair.from_seed_and_derivation_path(seed, "m/44'/501'/0'/0'").pubkey()
+    assert str(pubkey) == "5F86TNSTre3CYwZd1wELsGQGhqG2HkN3d8zxhbyBSnzm"
 
 
 def test_from_bytes() -> None:
@@ -23,12 +33,18 @@ def test_to_bytes_array() -> None:
 
 def test_str() -> None:
     expected = (
-        "2AXDGYSE4f2sz7tvMMzyHvUfcoJmxudvdhBcmiUSo6ij"
-        "wfYmfZYsKRxboQMPh3R4kUhXRVdtSXFXMheka4Rc4P2"
+        "2AXDGYSE4f2sz7tvMMzyHvUfcoJmxudvdhBcmiUSo6iu"
+        "CXagjUCKEQF21awZnUGxmwD4m9vGXuC3qieHXJQHAcT"
     )
-    kp = Keypair.from_bytes([1] * 64)
+    kp = Keypair.from_seed([1] * 32)
     assert str(kp) == expected
     assert Keypair.from_base58_string(expected) == kp
+
+
+def test_bad_str() -> None:
+    raw = "foo"
+    with raises(ValueError):
+        Keypair.from_base58_string(raw)
 
 
 def test_sign_message() -> None:

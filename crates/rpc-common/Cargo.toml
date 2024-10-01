@@ -1,20 +1,25 @@
+
 [package]
 name = "solders-rpc-common"
-version = "0.14.4"
-edition = "2021"
+version = { workspace = true }
+edition = { workspace = true }
 include = ["/src"]
-license = "MIT"
-repository = "https://github.com/kevinheavey/solders"
+license = { workspace = true }
+repository = { workspace = true }
+description = "Solders RPC common crate."
 
 [dependencies]
-pyo3 = { workspace = true }
+pyo3 = { workspace = true, features = ["macros"] }
 serde = { workspace = true }
 derive_more = { workspace = true }
 solders-macros = { workspace = true }
 solders-traits-core = { workspace = true }
-solders-account-decoder = { workspace = true }
+solana-account-decoder = { workspace = true }
+solana-transaction-status = { workspace = true }
+solana-rpc-client-api = { workspace = true }
 solders-account = { workspace = true }
 solders-rpc-response-data-boilerplate = { workspace = true }
-solders-transaction-status = { workspace = true }
+solders-transaction-return-data = { workspace = true }
 solders-transaction-error = { workspace = true }
+solders-transaction-status = { workspace = true }
 serde_with = { workspace = true }

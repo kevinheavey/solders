@@ -766,8 +766,8 @@ impl MessageV0 {
     }
 
     /// Sanitize message fields and compiled instruction indexes.
-    pub fn sanitize(&self, reject_dynamic_program_ids: bool) -> PyResult<()> {
-        handle_py_err(self.0.sanitize(reject_dynamic_program_ids))
+    pub fn sanitize(&self) -> PyResult<()> {
+        handle_py_err(self.0.sanitize())
     }
 
     /// Returns true if the account at the specified index is called as a program by an instruction

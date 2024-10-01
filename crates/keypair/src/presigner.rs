@@ -41,7 +41,7 @@ impl Presigner {
     ///     >>> from solders.keypair import Keypair
     ///     >>> from solders.pubkey import Pubkey
     ///     >>> seed_bytes = bytes([0] * 32)
-    ///     >>> pubkey_bytes = bytes([1] * 32)
+    ///     >>> pubkey_bytes = b";j'\xbc\xce\xb6\xa4-b\xa3\xa8\xd0*o\rse2\x15w\x1d\xe2C\xa6:\xc0H\xa1\x8bY\xda)"
     ///     >>> kp = Keypair.from_bytes(seed_bytes + pubkey_bytes)
     ///     >>> assert kp.pubkey() == Pubkey(pubkey_bytes)
     ///

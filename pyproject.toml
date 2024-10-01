@@ -1,36 +1,37 @@
 [tool.poetry]
 name = "solders"
-version = "0.14.4"
+version = "0.21.0"
 description = "Python bindings for Solana Rust tools"
 authors = ["kevinheavey <kevinheavey123@gmail.com>"]
 license = "Apache"
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.8"
 
 [tool.poetry.group.dev.dependencies]
-sphinx = "4.5.0"
-sphinx-rtd-theme = "1.0.0"
-maturin = "0.14.10"
+sphinx = "6.2.1"
+sphinx-rtd-theme = "1.2.0"
+maturin = "1.3.2"
 pybip39 = "0.1.0"
 based58 = "0.1.1"
 bumpversion = "0.6.0"
 "jsonalias" = "0.1.1"
-ruff = "0.0.226"
-black = "22.12.0"
+ruff = "0.1.6"
+mnemonic = "0.20"
 mypy = "0.991"
 pytest = "7.2.1"
 pytest-asyncio = "^0.20.3"
+myst-parser = "^1.0.0"
 
 [build-system]
-requires = ["maturin>=0.13.2,<0.14"]
+requires = ["maturin>=1.3.2,<1.4"]
 build-backend = "maturin"
 
 
 [project]
 name = "solders"
-version = "0.14.4"
-description = "Python binding to the Solana Rust SDK"
+version = "0.21.0"
+description = "Python bindings for Solana Rust tools"
 authors = [ {name = "kevinheavey", email = "kevinheavey123@gmail.com"} ]
 license = {file = "LICENSE"} # relative to the package/ directory
 requires-python = ">=3.7"
@@ -54,10 +55,9 @@ python-source = "python"
 reportMissingModuleSource = false
 
 [tool.ruff]
-line-length = 120
-
+line-length = 88
 select = ["A", "B", "D", "E", "F", "I", "ARG", "BLE", "C4", "SIM", "PLC", "PLE", "PLR", "PLW", "RUF"]
-ignore = ["D203"]
+ignore = ["D203", "PLR0913"]
 
 # Exclude a variety of commonly ignored directories.
 exclude = [

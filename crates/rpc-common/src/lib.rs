@@ -1,41 +1,22 @@
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
-use serde_with::{serde_as, FromInto, TryFromInto};
+use serde_with::serde_as;
 
+use solana_account_decoder::UiAccount;
+use solana_rpc_client_api::response::RpcSimulateTransactionResult as RpcSimulateTransactionResultOriginal;
+use solana_transaction_status::UiInnerInstructions as UiInnerInstructionsOriginal;
 use solders_account::Account;
-use solders_account_decoder::tmp_account_decoder::UiAccount;
 use solders_macros::{common_methods, richcmp_eq_only};
 use solders_rpc_response_data_boilerplate::response_data_boilerplate;
 use solders_transaction_error::TransactionErrorType;
-use solders_transaction_status::{
-    tmp_transaction_status::UiTransactionReturnData, TransactionReturnData,
-};
+use solders_transaction_return_data::TransactionReturnData;
+use solders_transaction_status::UiInnerInstructions;
 
-// the one in solana_client doesn't derive Eq
-// TODO: latest does
 #[serde_as]
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 #[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct RpcSimulateTransactionResult {
-    #[serde(default)]
-    #[pyo3(get)]
-    pub err: Option<TransactionErrorType>,
-    #[serde(default)]
-    #[pyo3(get)]
-    pub logs: Option<Vec<String>>,
-    #[serde_as(as = "Option<Vec<Option<TryFromInto<UiAccount>>>>")]
-    #[serde(default)]
-    #[pyo3(get)]
-    pub accounts: Option<Vec<Option<Account>>>,
-    #[serde(default)]
-    #[pyo3(get)]
-    pub units_consumed: Option<u64>,
-    #[serde_as(as = "Option<FromInto<UiTransactionReturnData>>")]
-    #[serde(default)]
-    #[pyo3(get)]
-    pub return_data: Option<TransactionReturnData>,
-}
+pub struct RpcSimulateTransactionResult(RpcSimulateTransactionResultOriginal);
 
 response_data_boilerplate!(RpcSimulateTransactionResult);
 
@@ -50,13 +31,51 @@ impl RpcSimulateTransactionResult {
         accounts: Option<Vec<Option<Account>>>,
         units_consumed: Option<u64>,
         return_data: Option<TransactionReturnData>,
+        inner_instructions: Option<Vec<UiInnerInstructions>>,
     ) -> Self {
-        Self {
-            err,
+        let accounts_underlying: Option<Vec<Option<UiAccount>>> = accounts.map(|accs| {
+            accs.into_iter()
+                .map(|maybe_acc| maybe_acc.map(UiAccount::from))
+                .collect()
+        });
+        let inner_instructions_underlying: Option<Vec<UiInnerInstructionsOriginal>> =
+            inner_instructions.map(|ixns| ixns.into_iter().map(Into::into).collect());
+        Self(RpcSimulateTransactionResultOriginal {
+            err: err.map(Into::into),
             logs,
-            accounts,
+            accounts: accounts_underlying,
             units_consumed,
-            return_data,
-        }
+            return_data: return_data.map(Into::into),
+            inner_instructions: inner_instructions_underlying,
+        })
+    }
+
+    #[getter]
+    pub fn err(&self) -> Option<TransactionErrorType> {
+        self.0.err.clone().map(Into::into)
+    }
+
+    #[getter]
+    pub fn logs(&self) -> Option<Vec<String>> {
+        self.0.logs.clone()
+    }
+
+    #[getter]
+    pub fn accounts(&self) -> Option<Vec<Option<Account>>> {
+        self.0.accounts.clone().map(|accs| {
+            accs.into_iter()
+                .map(|maybe_acc| maybe_acc.map(|acc| Account::try_from(acc).unwrap()))
+                .collect()
+        })
+    }
+
+    #[getter]
+    pub fn units_consumed(&self) -> Option<u64> {
+        self.0.units_consumed
+    }
+
+    #[getter]
+    pub fn return_data(&self) -> Option<TransactionReturnData> {
+        self.0.return_data.clone().map(Into::into)
     }
 }

@@ -1,17 +1,19 @@
+
 [package]
 name = "solders-address-lookup-table-account"
-version = "0.14.4"
-edition = "2021"
+version = { workspace = true }
+edition = { workspace = true }
 include = ["/src"]
-description = "Core types for the Solders project."
-license = "MIT"
-repository = "https://github.com/kevinheavey/solders"
+license = { workspace = true }
+repository = { workspace = true }
+description = "Solders address lookup table account crate."
 
 [dependencies]
-pyo3 = { workspace = true }
+pyo3 = { workspace = true, features = ["macros"] }
 solders-traits-core = { workspace = true }
 solders-macros = { workspace = true }
 solana-program = { workspace = true }
 serde = { workspace = true }
 derive_more = { workspace = true }
 solders-pubkey = { workspace = true }
+solders-hash = { workspace = true }

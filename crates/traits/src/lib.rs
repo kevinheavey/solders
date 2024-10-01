@@ -1,10 +1,5 @@
 use bincode::ErrorKind;
-use pyo3::{
-    create_exception,
-    exceptions::{PyException, PyTypeError},
-    prelude::*,
-    pyclass::CompareOp,
-};
+use pyo3::{create_exception, exceptions::PyException, prelude::*, pyclass::CompareOp};
 #[cfg(feature = "banks-client")]
 use solana_banks_client::BanksClientError as BanksClientErrorOriginal;
 use solana_sdk::{
@@ -17,6 +12,7 @@ use solana_sdk::{
     signer::{Signer as SignerTrait, SignerError as SignerErrorOriginal},
     transaction::TransactionError as TransactionErrorOriginal,
 };
+use solders_traits_core::richcmp_type_error;
 pub struct PyErrWrapper(pub PyErr);
 
 impl From<PyErrWrapper> for PyErr {
@@ -168,11 +164,6 @@ impl From<BanksClientErrorOriginal> for PyErrWrapper {
     }
 }
 
-fn richcmp_type_error(op: &str) -> PyErr {
-    let msg = format!("{op} not supported.");
-    PyTypeError::new_err(msg)
-}
-
 pub trait ToSignerOriginal {
     fn to_inner(&self) -> Box<dyn SignerTrait>;
 }
@@ -212,7 +203,7 @@ pub trait RichcmpSigner: SignerTraitWrapper {
 #[macro_export]
 macro_rules! impl_signer_hash {
     ($ident:ident) => {
-        #[allow(clippy::derive_hash_xor_eq)]
+        #[allow(clippy::derived_hash_with_manual_eq)]
         impl std::hash::Hash for $ident {
             fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
                 $crate::SignerTraitWrapper::pubkey(self).hash(state);

@@ -1,21 +1,22 @@
+
 [package]
 name = "solders-rpc-config"
-version = "0.14.4"
-edition = "2021"
+version = { workspace = true }
+edition = { workspace = true }
 include = ["/src"]
-license = "MIT"
-repository = "https://github.com/kevinheavey/solders"
+license = { workspace = true }
+repository = { workspace = true }
+description = "Solders RPC config crate."
 
 [dependencies]
-pyo3 = { workspace = true }
-serde = { workspace = true }
-solders-macros = { workspace = true }
-solders-traits-core = { workspace = true }
-solders-account-decoder = { workspace = true }
-solders-pubkey = { workspace = true }
-solders-hash = { workspace = true }
-solders-signature = { workspace = true }
-solders-transaction-status-enums = { workspace = true }
-solders-rpc-filter = { workspace = true }
-solders-commitment-config = { workspace = true }
-solana-sdk = { workspace = true }
+pyo3 = { workspace = true, features = ["macros"] }
+solders-rpc-config-no-filter = { workspace = true }
+solders-rpc-program-accounts-config = { workspace = true }
+solders-rpc-account-info-config = { workspace = true }
+solders-rpc-request-airdrop-config = { workspace = true }
+solders-rpc-send-transaction-config = { workspace = true }
+solders-rpc-sig-status-config = { workspace = true }
+solders-rpc-sigs-for-address-config = { workspace = true }
+solders-rpc-sim-transaction-config = { workspace = true }
+solders-rpc-simulate-tx-accounts-config = { workspace = true }
+solders-rpc-config-no-rpc-api = { workspace = true }

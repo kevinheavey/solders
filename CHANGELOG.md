@@ -1,20 +1,110 @@
 # Changelog
 
+## [0.21.1] - Unreleased
+
+### Fixed
+
+- Avoid panic in `Keypair.from_base58_string` [(#93)](https://github.com/kevinheavey/solders/pull/93).
+- Add missing `stack_height` getter [(#103)](https://github.com/kevinheavey/solders/pull/103).
+
+## [0.21.0] - 2024-03-13
+
+### Changed
+
+- Use pyo3 20.2 [(#81)](https://github.com/kevinheavey/solders/pull/81).
+- Add back RPC modules on linux aarch64 [(#87)](https://github.com/kevinheavey/solders/pull/87)
+
+## [0.20.0] - 2024-02-12
+
+### Added
+
+- Add address lookup table instructions and state [(#79)](https://github.com/kevinheavey/solders/pull/79)
+
+### Changed
+
+- Upgrade to Solana 1.18.1 [(#80)](https://github.com/kevinheavey/solders/pull/80). This also takes out the `ring` dependency (and all crates that use it) for linux-aarch64 builds.
+
+## [0.19.0] - 2024-01-01
+
+### Added
+
+- Add `Keypair.from_seed_and_derivation_path` [(#75)](https://github.com/kevinheavey/solders/pull/75)
+- Add Token Program ID (`solders.token.ID`)
+
+### Fixed
+
+- Fix (de)serialization of Account `owner` field [(#70)](https://github.com/kevinheavey/solders/pull/70)
+
+### Changed
+
+- Use PyO3 v0.19.2 [(#64)](https://github.com/kevinheavey/solders/pull/64)
+- Upgrade to Solana 1.17.12 [(#71)](https://github.com/kevinheavey/solders/pull/71)
+
+## [0.18.1] - 2023-06-03
+
+### Changed
+
+- Accept `Transaction | VersionedTransaction` in bankrun transaction methods [(#62)](https://github.com/kevinheavey/solders/pull/62)
+
+## [0.18.0] - 2023-06-02
+
+### Changed
+
+- Use solana 1.16.0 [(#61)](https://github.com/kevinheavey/solders/pull/61)
+- Rename `process_transaction_with_metadata` to just `process_transaction`.
+  Remove `process_transaction_with_preflight` and the old `process_transaction`
+  which had too many footguns. The new `process_transaction` uses the Rust
+  `process_transaction_with_metadata` under the hood. [(#60)](https://github.com/kevinheavey/solders/pull/60)
+
+### Fixed
+
+- Remove `.string()` from `pubkey.pyi` as the method no longer exists [(#57)](https://github.com/kevinheavey/solders/pull/57)
+- Fix `pre_token_balances` getter [(#59)](https://github.com/kevinheavey/solders/pull/59)
+
+## [0.17.0] - 2023-05-11
+
+### Added
+
+Added partial support for the SPL Token Program [(#53)](https://github.com/kevinheavey/solders/pull/53)
+
+## [0.16.0] - 2023-05-10
+
+### Added
+
+Added `bankrun.start_anchor()`
+
+### Fixed
+
+Fix type hint for `BanksClient.get_account`
+
+## [0.15.1] - 2023-05-05
+
+### Fixed
+
+Fix type hint for `BanksClient.get_account`
+
+## [0.15.0] - 2023-05-05
+
+### Added
+
+- Added `solders.bankrun` [(#47)](https://github.com/kevinheavey/solders/pull/47)
+- Added `solders.compute_budget`
+
 ## [0.14.4] - 2023-02-22
 
 ### Added
 
-Added `solders.message.to_bytes_versioned` and `from_bytes_versioned` to serialize versioned messages including the extra leading byte [(#45](https://github.com/kevinheavey/solders/pull/45)
+Added `solders.message.to_bytes_versioned` and `from_bytes_versioned` to serialize versioned messages including the extra leading byte [(#45)](https://github.com/kevinheavey/solders/pull/45)
 
 ### Fixed
 
-`transaction.Legacy` no longer implicitly casts to int when checking equality. This was breaking tx version checking when tx version was returned as `Legacy | int` [(#44)](https://github.com/kevinheavey/solders/pull/44
+`transaction.Legacy` no longer implicitly casts to int when checking equality. This was breaking tx version checking when tx version was returned as `Legacy | int` [(#44)](https://github.com/kevinheavey/solders/pull/44)
 
 ## [0.14.3] - 2023-01-28
 
 ### Fixed 
 
-Fix `MessageV0` JSON serialization [(#42)](https://github.com/kevinheavey/solders/pull/42
+Fix `MessageV0` JSON serialization [(#42)](https://github.com/kevinheavey/solders/pull/42)
 
 ## [0.14.2] - 2023-01-24
 
@@ -26,30 +116,30 @@ Fix `MessageV0` JSON serialization [(#42)](https://github.com/kevinheavey/solder
 
 ### Changed
 
-- Use crates.io for the `pyo3` and `pythonize` dependencies [(#38)](https://github.com/kevinheavey/solders/pull/38
+- Use crates.io for the `pyo3` and `pythonize` dependencies [(#38)](https://github.com/kevinheavey/solders/pull/38)
 
 ## [0.14.0] - 2023-01-11
 
 ### Added
 
-- Add `SimulateVersionedTransaction` [(#37)](https://github.com/kevinheavey/solders/pull/37
-- Support `VersionedMessage` in `GetFeeForMessage` [(#37)](https://github.com/kevinheavey/solders/pull/37
+- Add `SimulateVersionedTransaction` [(#37)](https://github.com/kevinheavey/solders/pull/37)
+- Support `VersionedMessage` in `GetFeeForMessage` [(#37)](https://github.com/kevinheavey/solders/pull/37)
 
 ## [0.13.0] - 2023-01-11
 
 ### Changed
 
-Rename `SendTransaction` to `SendLegacyTransaction` [(#36)](https://github.com/kevinheavey/solders/pull/36
+Rename `SendTransaction` to `SendLegacyTransaction` [(#36)](https://github.com/kevinheavey/solders/pull/36)
 
 ### Added
 
-Add `SendVersionedTransaction` [(#36)](https://github.com/kevinheavey/solders/pull/36
+Add `SendVersionedTransaction` [(#36)](https://github.com/kevinheavey/solders/pull/36)
 
 ## [0.12.0] - 2023-01-10
 
 ### Added
 
-- Add `SendRawTransaction` [(#35)](https://github.com/kevinheavey/solders/pull/35
+- Add `SendRawTransaction` [(#35)](https://github.com/kevinheavey/solders/pull/35)
 
 ## [0.11.0] - 2023-01-10
 

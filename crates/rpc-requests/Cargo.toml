@@ -1,13 +1,15 @@
+
 [package]
 name = "solders-rpc-requests"
-version = "0.14.4"
-edition = "2021"
+version = { workspace = true }
+edition = { workspace = true }
 include = ["/src"]
-license = "MIT"
-repository = "https://github.com/kevinheavey/solders"
+license = { workspace = true }
+repository = { workspace = true }
+description = "Solders RPC requests crate."
 
 [dependencies]
-pyo3 = { workspace = true }
+pyo3 = { workspace = true, features = ["macros"] }
 serde = { workspace = true }
 serde_with = { workspace = true }
 serde_json = { workspace = true }
@@ -16,7 +18,14 @@ solders-macros = { workspace = true }
 solders-traits-core = { workspace = true }
 solders-traits = { workspace = true }
 solders-commitment-config = { workspace = true }
-solders-rpc-config = { workspace = true }
+solders-rpc-config-no-filter = { workspace = true }
+solders-rpc-account-info-config = { workspace = true }
+solders-rpc-program-accounts-config = { workspace = true }
+solders-rpc-request-airdrop-config = { workspace = true }
+solders-rpc-send-transaction-config = { workspace = true }
+solders-rpc-sig-status-config = { workspace = true }
+solders-rpc-sigs-for-address-config = { workspace = true }
+solders-rpc-sim-transaction-config = { workspace = true }
 solders-rpc-request-params = { workspace = true }
 solders-rpc-request-params-no-config = { workspace = true }
 solders-rpc-version = { workspace = true }

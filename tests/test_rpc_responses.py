@@ -7,6 +7,7 @@ from jsonalias import Json
 from pytest import mark, raises
 from solders.account import Account, AccountJSON
 from solders.account_decoder import ParsedAccount, UiTokenAmount
+from solders.epoch_info import EpochInfo
 from solders.epoch_schedule import EpochSchedule
 from solders.errors import SerdeJSONError
 from solders.hash import Hash
@@ -24,7 +25,6 @@ from solders.rpc.responses import (
     AccountNotificationResult,
     BlockNotification,
     BlockNotificationResult,
-    EpochInfo,
     GetAccountInfoJsonParsedResp,
     GetAccountInfoMaybeJsonParsedResp,
     GetAccountInfoResp,
@@ -91,6 +91,7 @@ from solders.rpc.responses import (
     RequestAirdropResp,
     RootNotification,
     RpcAccountBalance,
+    RpcBlockCommitment,
     RpcBlockhash,
     RpcBlockProduction,
     RpcBlockProductionRange,
@@ -144,6 +145,7 @@ from solders.transaction_status import (
     TransactionConfirmationStatus,
     TransactionErrorInstructionError,
     TransactionStatus,
+    UiAccountsList,
     UiCompiledInstruction,
     UiLoadedAddresses,
     UiParsedMessage,
@@ -197,6 +199,20 @@ def test_get_account_info() -> None:
     parsed2 = GetAccountInfoMaybeJsonParsedResp.from_json(raw)
     assert isinstance(parsed2, GetAccountInfoMaybeJsonParsedResp)
     assert parsed.value == parsed2.value
+
+
+def test_get_account_info_base64_zstd() -> None:
+    raw_base64 = '{"jsonrpc":"2.0","result":{"context":{"apiVersion":"1.16.21","slot":239322946},"value":{"data":["AQAAABzjWe1aAS4E+hQrnHUaHF6Hz9CgFhuchf/TG3jN/Nj2NjtW5UDjEQAGAQEAAAAqnl7btTwEZ5CY/3sSZRcUQ0/AjFYqmjuGEQXmctQicw==","base64"],"executable":false,"lamports":225456886647,"owner":"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA","rentEpoch":361,"space":82}},"id":0}'
+    raw_base64_zstd = '{"jsonrpc":"2.0","result":{"context":{"apiVersion":"1.16.21","slot":239322949},"value":{"data":["KLUv/QBYkQIAAQAAABzjWe1aAS4E+hQrnHUaHF6Hz9CgFhuchf/TG3jN/Nj2NjtW5UDjEQAGAQEAAAAqnl7btTwEZ5CY/3sSZRcUQ0/AjFYqmjuGEQXmctQicw==","base64+zstd"],"executable":false,"lamports":225456886647,"owner":"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA","rentEpoch":361,"space":82}},"id":0}'
+    parsed_base64 = GetAccountInfoResp.from_json(raw_base64)
+    parsed_base64_zstd = GetAccountInfoResp.from_json(raw_base64_zstd)
+    assert isinstance(parsed_base64, GetAccountInfoResp)
+    assert isinstance(parsed_base64_zstd, GetAccountInfoResp)
+    parsed_base64_value = parsed_base64.value
+    parsed_base64_zstd_value = parsed_base64_zstd.value
+    assert parsed_base64_value is not None
+    assert parsed_base64_zstd_value is not None
+    assert parsed_base64_value.data == parsed_base64_zstd_value.data
 
 
 def test_get_account_info_null() -> None:
@@ -324,41 +340,43 @@ def test_get_block_commitment() -> None:
 }"""
     parsed = GetBlockCommitmentResp.from_json(raw)
     expected = GetBlockCommitmentResp(
-        [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            10,
-            32,
-        ],
-        42,
+        RpcBlockCommitment(
+            42,
+            [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                10,
+                32,
+            ],
+        )
     )
     assert parsed == expected
 
@@ -443,6 +461,7 @@ def test_get_block(path: str) -> None:
         ),
     ]
     encoded_tx = tx.transaction
+    assert not isinstance(encoded_tx, UiAccountsList)
     msg = encoded_tx.message
     assert msg.recent_blockhash == Hash.from_string(
         "BeSgJqfSEkmtQ6S42d2Y7qUXdfLSaXeS9DHQYqw1MLxe"
@@ -1187,6 +1206,23 @@ def test_get_program_accounts_without_context() -> None:
     )
 
 
+def test_keyed_account_from_json() -> None:
+    raw = """{
+    "pubkey": "7wZpAKYM1uygtosoF42V4a5tVLsrzpSN6Uedaxc6vGrQ",
+    "account": {
+        "lamports": 16258560,
+        "data": "error: data too large for bs58 encoding",
+        "owner": "675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8",
+        "executable": false,
+        "rentEpoch": 0,
+        "space": 2208
+    }
+}
+    """
+    with raises(ValueError, match="Cannot decode JsonParsed here"):
+        RpcKeyedAccount.from_json(raw)
+
+
 def test_get_program_accounts_without_context_json_parsed() -> None:
     raw = """{
     "jsonrpc": "2.0",
@@ -1896,6 +1932,7 @@ def test_get_transaction(path: str) -> None:
         rewards=[],
         loaded_addresses=UiLoadedAddresses([], []),
         return_data=None,
+        compute_units_consumed=None,
     )
     version = tx.version
     assert meta == expected_meta
@@ -1922,6 +1959,7 @@ def test_get_transaction(path: str) -> None:
         ),
     ]
     encoded_tx = tx.transaction
+    assert not isinstance(encoded_tx, UiAccountsList)
     msg = encoded_tx.message
     assert msg.recent_blockhash == Hash.from_string(
         "2NiTTzGXE7kW66iwM4FaoB7xMidgzMXZkh7k4AeagnW8"

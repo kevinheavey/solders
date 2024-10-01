@@ -1,11 +1,15 @@
 use derive_more::{From, Into};
-use pyo3::{prelude::*, types::PyBytes};
+use pyo3::{exceptions::PyValueError, prelude::*, types::PyBytes};
 use serde::{Deserialize, Serialize};
-use solana_sdk::signer::{
-    keypair::{
-        keypair_from_seed, keypair_from_seed_phrase_and_passphrase, Keypair as KeypairOriginal,
+use solana_sdk::{
+    derivation_path::DerivationPath,
+    signature::keypair_from_seed_and_derivation_path,
+    signer::{
+        keypair::{
+            keypair_from_seed, keypair_from_seed_phrase_and_passphrase, Keypair as KeypairOriginal,
+        },
+        Signer as SignerTrait,
     },
-    Signer as SignerTrait,
 };
 use solders_macros::{common_methods, pyhash, richcmp_signer};
 use solders_pubkey::Pubkey;
@@ -92,7 +96,7 @@ impl Keypair {
     ///
     /// Example:
     ///      >>> from solders.keypair import Keypair
-    ///      >>> raw_bytes = bytes([1] * 64)
+    ///      >>> raw_bytes = b'\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x8a\x88\xe3\xddt\t\xf1\x95\xfdR\xdb-<\xba]r\xcag\t\xbf\x1d\x94\x12\x1b\xf3t\x88\x01\xb4\x0fo\\'
     ///      >>> assert Keypair.from_bytes(raw_bytes).to_bytes_array() == list(raw_bytes)
     ///
     pub fn to_bytes_array(&self) -> [u8; Self::LENGTH] {
@@ -110,14 +114,17 @@ impl Keypair {
     ///
     /// Example:
     ///     >>> from solders.keypair import Keypair
-    ///     >>> raw_bytes = bytes([0] * 64)
-    ///     >>> base58_str = "1" * 64
+    ///     >>> raw_bytes = b'\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x8a\x88\xe3\xddt\t\xf1\x95\xfdR\xdb-<\xba]r\xcag\t\xbf\x1d\x94\x12\x1b\xf3t\x88\x01\xb4\x0fo\\'
+    ///     >>> base58_str = "2AXDGYSE4f2sz7tvMMzyHvUfcoJmxudvdhBcmiUSo6iuCXagjUCKEQF21awZnUGxmwD4m9vGXuC3qieHXJQHAcT"
     ///     >>> kp = Keypair.from_base58_string(base58_str)
     ///     >>> assert kp == Keypair.from_bytes(raw_bytes)
     ///     >>> assert str(kp) == base58_str
     ///     
-    pub fn from_base58_string(s: &str) -> Self {
-        KeypairOriginal::from_base58_string(s).into()
+    pub fn from_base58_string(s: &str) -> PyResult<Self> {
+        let decoded = solana_sdk::bs58::decode(s)
+            .into_vec()
+            .map_err(|e| PyErr::new::<PyValueError, _>(format!("{:?}", e)))?;
+        Self::py_from_bytes_general(&decoded)
     }
     /// Gets this ``Keypair``'s secret key.
     ///
@@ -143,7 +150,7 @@ impl Keypair {
     ///     >>> from solders.keypair import Keypair
     ///     >>> from solders.pubkey import Pubkey
     ///     >>> seed_bytes = bytes([0] * 32)
-    ///     >>> pubkey_bytes = bytes([1] * 32)
+    ///     >>> pubkey_bytes = b";j'\xbc\xce\xb6\xa4-b\xa3\xa8\xd0*o\rse2\x15w\x1d\xe2C\xa6:\xc0H\xa1\x8bY\xda)"
     ///     >>> kp = Keypair.from_bytes(seed_bytes + pubkey_bytes)
     ///     >>> assert kp.pubkey() == Pubkey(pubkey_bytes)
     ///
@@ -191,6 +198,30 @@ impl Keypair {
     ///
     pub fn from_seed(seed: [u8; 32]) -> PyResult<Self> {
         handle_py_value_err(keypair_from_seed(&seed))
+    }
+
+    #[staticmethod]
+    /// Generate a keypair from a 32-byte seed and derivation path..
+    ///
+    /// Args:
+    ///     seed (bytes): 32-byte seed.
+    ///     dpath (str): derivation path.
+    /// Returns:
+    ///     Keypair: The generated keypair.
+    ///
+    /// Example:
+    ///     >>> from solders.keypair import Keypair
+    ///     >>> from solders.pubkey import Pubkey
+    ///     >>> seed_bytes = bytes([0] * 64)
+    ///     >>> account_index = 0
+    ///     >>> derivation_path = f"m/44'/501'/0'/{account_index}'"
+    ///     >>> from_seed = Keypair.from_seed_and_derivation_path(seed_bytes, derivation_path)
+    ///
+    pub fn from_seed_and_derivation_path(seed: [u8; 64], dpath: &str) -> PyResult<Self> {
+        handle_py_value_err(keypair_from_seed_and_derivation_path(
+            &seed,
+            Some(DerivationPath::from_absolute_path_str(dpath).unwrap()),
+        ))
     }
 
     #[staticmethod]
