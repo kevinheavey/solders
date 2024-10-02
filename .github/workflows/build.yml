@@ -106,8 +106,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [x86_64]
-        # target: [x86_64, i686]
+        target: [x86_64, i686]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
