@@ -272,6 +272,7 @@ pub enum RPCError {
     MethodNotFoundMessage(MethodNotFoundMessage),
     InvalidParamsMessage(InvalidParamsMessage),
     InternalErrorMessage(InternalErrorMessage),
+    Unrecognized(i64),
 }
 
 impl RPCError {
@@ -297,6 +298,7 @@ impl RPCError {
             Self::MethodNotFoundMessage(x) => serde_json::to_string(x).unwrap(),
             Self::InvalidParamsMessage(x) => serde_json::to_string(x).unwrap(),
             Self::InternalErrorMessage(x) => serde_json::to_string(x).unwrap(),
+            Self::Unrecognized(num) => serde_json::to_string(num).unwrap(),
         }
     }
 
@@ -395,6 +397,7 @@ impl<'de> serde::Deserialize<'de> for RPCError {
                 Some(-32603) => {
                     Self::InternalErrorMessage(InternalErrorMessage::deserialize(value).unwrap())
                 }
+                Some(num) => Self::Unrecognized(num),
                 type_ => panic!("unsupported type {type_:?}"),
             },
         )
@@ -429,6 +432,7 @@ impl Serialize for RPCError {
             MethodNotFoundMessage(&'a MethodNotFoundMessage),
             InvalidParamsMessage(&'a InvalidParamsMessage),
             InternalErrorMessage(&'a InternalErrorMessage),
+            Unrecognized(i64),
         }
 
         #[derive(Serialize)]
@@ -527,6 +531,10 @@ impl Serialize for RPCError {
             RPCError::InternalErrorMessage(x) => RPCErrorWithCode {
                 t: -32603,
                 err: RPCError_::InternalErrorMessage(x),
+            },
+            RPCError::Unrecognized(num) => RPCErrorWithCode {
+                t: *num,
+                err: RPCError_::Unrecognized(*num),
             },
         };
         msg.serialize(serializer)
@@ -1776,7 +1784,7 @@ macro_rules ! pyunion_resp {
                 match parser {
                     stringify!($err_variant) => {let parsed = $err_variant::py_from_json(raw)?; let as_enum = Self::RPCError(parsed); Ok(as_enum)},
                     $(stringify!($variant) => {let parsed = $variant::py_from_json(raw)?; let as_enum = match parsed {Resp::Error {error, ..} => Self::RPCError(error), Resp::Result {result, ..} => Self::$variant(result)};Ok(as_enum)},)+
-                    _ => Err(PyValueError::new_err(format!("Unrecognised parser: {}", parser)))
+                    _ => Err(PyValueError::new_err(format!("Unrecognized parser: {}", parser)))
                 }
             }
         }
