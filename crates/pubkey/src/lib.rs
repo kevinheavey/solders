@@ -136,6 +136,9 @@ impl Pubkey {
     /// Returns:
     ///     Pubkey: The derived program address.
     ///
+    /// Raises:
+    ///     PubkeyError: if the resulting address is invalid.
+    ///
     /// Example:
     ///
     ///     >>> from solders.pubkey import Pubkey
@@ -145,10 +148,11 @@ impl Pubkey {
     ///         3gF2KMe9KiC6FNVBmfg9i267aMPvK37FewCip4eGBFcT,
     ///     )
     ///
-    pub fn create_program_address(seeds: Vec<&[u8]>, program_id: &Self) -> Self {
-        PubkeyOriginal::create_program_address(&seeds, &program_id.0)
-            .expect("Failed to create program address. This is extremely unlikely.")
-            .into()
+    pub fn create_program_address(seeds: Vec<&[u8]>, program_id: &Self) -> PyResult<Self> {
+        handle_py_err(PubkeyOriginal::create_program_address(
+            &seeds,
+            &program_id.0,
+        ))
     }
 
     #[staticmethod]
