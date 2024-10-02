@@ -136,6 +136,9 @@ impl Pubkey {
     /// Returns:
     ///     Pubkey: The derived program address.
     ///
+    /// Raises:
+    ///     PubkeyError: if the resulting address is invalid.
+    ///
     /// Example:
     ///
     ///     >>> from solders.pubkey import Pubkey
