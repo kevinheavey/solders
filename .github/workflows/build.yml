@@ -106,8 +106,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [x86_64]
-        # target: [x86_64, i686]
+        target: [x86_64, i686]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -161,7 +160,7 @@ jobs:
           args: --release --no-default-features -F ring --out dist
           maturin-version: ${{ env.maturin_version }}
       - name: Upload wheels
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: wheels
           path: dist
