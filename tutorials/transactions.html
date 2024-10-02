@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Transactions &mdash; solders 0.21.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="RPC helpers" href="rpc.html" />
+    <link rel="prev" title="Pubkeys" href="pubkeys.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            solders
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Solders</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="keypairs.html">Keypairs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pubkeys.html">Pubkeys</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Transactions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#sending-sol">Sending SOL</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#partial-signing">Partial signing</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="rpc.html">RPC helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bankrun.html">Bankrun</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">solders</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Tutorials</a></li>
+      <li class="breadcrumb-item active">Transactions</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/kevinheavey/solders/blob/main/docs/tutorials/transactions.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="transactions">
+<h1>Transactions<a class="headerlink" href="#transactions" title="Permalink to this heading"></a></h1>
+<p>Solana has two kinds of transactions: “legacy” transactions represented by
+the <code class="docutils literal notranslate"><span class="pre">Transaction</span></code> class and versioned transactions represented by the
+<code class="docutils literal notranslate"><span class="pre">VersionedTransaction</span></code> class. These examples will focus on
+versioned transactions which are what you should use if you have a choice.</p>
+<p>These examples do not demonstrate sending transactions or fetching the latest blockhash,
+which you can do with the <code class="docutils literal notranslate"><span class="pre">send_transaction</span></code> and <code class="docutils literal notranslate"><span class="pre">get_latest_blockhash</span></code> methods in
+solana-py.</p>
+<section id="sending-sol">
+<h2>Sending SOL<a class="headerlink" href="#sending-sol" title="Permalink to this heading"></a></h2>
+<p>Here we construct a transaction with one instruction - it sends SOL from one
+wallet to another via the System Program:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">solders.hash</span> <span class="kn">import</span> <span class="n">Hash</span>
+<span class="kn">from</span> <span class="nn">solders.keypair</span> <span class="kn">import</span> <span class="n">Keypair</span>
+<span class="kn">from</span> <span class="nn">solders.message</span> <span class="kn">import</span> <span class="n">MessageV0</span>
+<span class="kn">from</span> <span class="nn">solders.system_program</span> <span class="kn">import</span> <span class="n">TransferParams</span><span class="p">,</span> <span class="n">transfer</span>
+<span class="kn">from</span> <span class="nn">solders.transaction</span> <span class="kn">import</span> <span class="n">VersionedTransaction</span>
+
+<span class="n">sender</span> <span class="o">=</span> <span class="n">Keypair</span><span class="p">()</span>  <span class="c1"># let&#39;s pretend this account actually has SOL to send</span>
+<span class="n">receiver</span> <span class="o">=</span> <span class="n">Keypair</span><span class="p">()</span>
+<span class="n">ix</span> <span class="o">=</span> <span class="n">transfer</span><span class="p">(</span>
+    <span class="n">TransferParams</span><span class="p">(</span>
+        <span class="n">from_pubkey</span><span class="o">=</span><span class="n">sender</span><span class="o">.</span><span class="n">pubkey</span><span class="p">(),</span> <span class="n">to_pubkey</span><span class="o">=</span><span class="n">receiver</span><span class="o">.</span><span class="n">pubkey</span><span class="p">(),</span> <span class="n">lamports</span><span class="o">=</span><span class="mi">1_000_000</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+<span class="n">blockhash</span> <span class="o">=</span> <span class="n">Hash</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>  <span class="c1"># replace with a real blockhash using get_latest_blockhash</span>
+<span class="n">msg</span> <span class="o">=</span> <span class="n">MessageV0</span><span class="o">.</span><span class="n">try_compile</span><span class="p">(</span>
+    <span class="n">payer</span><span class="o">=</span><span class="n">sender</span><span class="o">.</span><span class="n">pubkey</span><span class="p">(),</span>
+    <span class="n">instructions</span><span class="o">=</span><span class="p">[</span><span class="n">ix</span><span class="p">],</span>
+    <span class="n">address_lookup_table_accounts</span><span class="o">=</span><span class="p">[],</span>
+    <span class="n">recent_blockhash</span><span class="o">=</span><span class="n">blockhash</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">tx</span> <span class="o">=</span> <span class="n">VersionedTransaction</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="p">[</span><span class="n">sender</span><span class="p">])</span>
+</pre></div>
+</div>
+</section>
+<section id="partial-signing">
+<h2>Partial signing<a class="headerlink" href="#partial-signing" title="Permalink to this heading"></a></h2>
+<p>Suppose you have a transaction that both Alice and Bob need to sign, and Bob doesn’t want to give
+Alice his keypair because last time he did that all his apes got stolen.</p>
+<p>One solution is for Alice to create a transaction containing her signature and a dummy signature using
+the <code class="docutils literal notranslate"><span class="pre">NullSigner</span></code> class. She then serializes this transaction and sends it to Bob, who deserializes it
+and replaces the dummy signature with his own signature:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">solders.hash</span> <span class="kn">import</span> <span class="n">Hash</span>
+<span class="kn">from</span> <span class="nn">solders.instruction</span> <span class="kn">import</span> <span class="n">AccountMeta</span><span class="p">,</span> <span class="n">Instruction</span>
+<span class="kn">from</span> <span class="nn">solders.keypair</span> <span class="kn">import</span> <span class="n">Keypair</span>
+<span class="kn">from</span> <span class="nn">solders.message</span> <span class="kn">import</span> <span class="n">MessageV0</span><span class="p">,</span> <span class="n">to_bytes_versioned</span>
+<span class="kn">from</span> <span class="nn">solders.null_signer</span> <span class="kn">import</span> <span class="n">NullSigner</span>
+<span class="kn">from</span> <span class="nn">solders.pubkey</span> <span class="kn">import</span> <span class="n">Pubkey</span>
+<span class="kn">from</span> <span class="nn">solders.transaction</span> <span class="kn">import</span> <span class="n">VersionedTransaction</span>
+
+<span class="n">keypair0</span> <span class="o">=</span> <span class="n">Keypair</span><span class="p">()</span>
+<span class="n">keypair1</span> <span class="o">=</span> <span class="n">Keypair</span><span class="p">()</span>
+<span class="n">ix</span> <span class="o">=</span> <span class="n">Instruction</span><span class="p">(</span>
+    <span class="n">Pubkey</span><span class="o">.</span><span class="n">new_unique</span><span class="p">(),</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">AccountMeta</span><span class="p">(</span><span class="n">keypair1</span><span class="o">.</span><span class="n">pubkey</span><span class="p">(),</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">)]</span>
+<span class="p">)</span>
+<span class="n">message</span> <span class="o">=</span> <span class="n">MessageV0</span><span class="o">.</span><span class="n">try_compile</span><span class="p">(</span><span class="n">keypair0</span><span class="o">.</span><span class="n">pubkey</span><span class="p">(),</span> <span class="p">[</span><span class="n">ix</span><span class="p">],</span> <span class="p">[],</span> <span class="n">Hash</span><span class="o">.</span><span class="n">default</span><span class="p">())</span>
+<span class="c1"># sign with a real signer and a null signer</span>
+<span class="n">signers</span> <span class="o">=</span> <span class="p">(</span><span class="n">keypair0</span><span class="p">,</span> <span class="n">NullSigner</span><span class="p">(</span><span class="n">keypair1</span><span class="o">.</span><span class="n">pubkey</span><span class="p">()))</span>
+<span class="n">partially_signed</span> <span class="o">=</span> <span class="n">VersionedTransaction</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">signers</span><span class="p">)</span>
+<span class="n">serialized</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">partially_signed</span><span class="p">)</span>
+<span class="n">deserialized</span> <span class="o">=</span> <span class="n">VersionedTransaction</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">serialized</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">deserialized</span> <span class="o">==</span> <span class="n">partially_signed</span>
+<span class="n">deserialized_message</span> <span class="o">=</span> <span class="n">deserialized</span><span class="o">.</span><span class="n">message</span>
+<span class="c1"># find the null signer in the deserialized transaction</span>
+<span class="n">keypair1_sig_index</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
+    <span class="n">i</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">deserialized_message</span><span class="o">.</span><span class="n">account_keys</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="n">keypair1</span><span class="o">.</span><span class="n">pubkey</span><span class="p">()</span>
+<span class="p">)</span>
+<span class="n">sigs</span> <span class="o">=</span> <span class="n">deserialized</span><span class="o">.</span><span class="n">signatures</span>
+<span class="c1"># replace the null signature with a real signature</span>
+<span class="n">sigs</span><span class="p">[</span><span class="n">keypair1_sig_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">keypair1</span><span class="o">.</span><span class="n">sign_message</span><span class="p">(</span>
+    <span class="n">to_bytes_versioned</span><span class="p">(</span><span class="n">deserialized_message</span><span class="p">)</span>
+<span class="p">)</span>
+<span class="n">deserialized</span><span class="o">.</span><span class="n">signatures</span> <span class="o">=</span> <span class="n">sigs</span>
+<span class="n">fully_signed</span> <span class="o">=</span> <span class="n">VersionedTransaction</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="p">[</span><span class="n">keypair0</span><span class="p">,</span> <span class="n">keypair1</span><span class="p">])</span>
+<span class="k">assert</span> <span class="n">deserialized</span><span class="o">.</span><span class="n">signatures</span> <span class="o">==</span> <span class="n">fully_signed</span><span class="o">.</span><span class="n">signatures</span>
+<span class="k">assert</span> <span class="n">deserialized</span> <span class="o">==</span> <span class="n">fully_signed</span>
+<span class="k">assert</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">deserialized</span><span class="p">)</span> <span class="o">==</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">fully_signed</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pubkeys.html" class="btn btn-neutral float-left" title="Pubkeys" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="rpc.html" class="btn btn-neutral float-right" title="RPC helpers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Kevin Heavey.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

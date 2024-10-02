@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Transaction &mdash; solders 0.21.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Transaction Status" href="transaction_status.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            solders
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Solders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="account.html">Account</a></li>
+<li class="toctree-l2"><a class="reference internal" href="account_decoder.html">Account Decoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="address_lookup_table_account.html">Address Lookup Table Account</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bankrun.html">Bankrun</a></li>
+<li class="toctree-l2"><a class="reference internal" href="commitment_config.html">Commitment Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compute_budget.html">Compute Budget</a></li>
+<li class="toctree-l2"><a class="reference internal" href="epoch_schedule.html">Epoch Schedule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="errors.html">Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hash.html">Hash</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instruction.html">Instruction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="keypair.html">Keypair</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message.html">Message</a></li>
+<li class="toctree-l2"><a class="reference internal" href="null_signer.html">Null Signer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="presigner.html">Presigner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pubkey.html">Pubkey</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rpc/index.html">RPC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="signature.html">Signature</a></li>
+<li class="toctree-l2"><a class="reference internal" href="system_program.html">System Program</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sysvar.html">Sysvar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="token/index.html">SPL Token</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transaction_status.html">Transaction Status</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Transaction</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#solders.transaction.Transaction"><code class="docutils literal notranslate"><span class="pre">Transaction</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction.Transaction.data"><code class="docutils literal notranslate"><span class="pre">Transaction.data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction.Transaction.default"><code class="docutils literal notranslate"><span class="pre">Transaction.default()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction.Transaction.from_bytes"><code class="docutils literal notranslate"><span class="pre">Transaction.from_bytes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction.Transaction.from_json"><code class="docutils literal notranslate"><span class="pre">Transaction.from_json()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction.Transaction.get_nonce_pubkey_from_instruction"><code class="docutils literal notranslate"><span class="pre">Transaction.get_nonce_pubkey_from_instruction()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction.Transaction.get_signing_keypair_positions"><code class="docutils literal notranslate"><span class="pre">Transaction.get_signing_keypair_positions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction.Transaction.is_signed"><code class="docutils literal notranslate"><span class="pre">Transaction.is_signed()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction.Transaction.key"><code class="docutils literal notranslate"><span class="pre">Transaction.key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction.Transaction.message"><code class="docutils literal notranslate"><span class="pre">Transaction.message</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction.Transaction.message_data"><code class="docutils literal notranslate"><span class="pre">Transaction.message_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction.Transaction.new_signed_with_payer"><code class="docutils literal notranslate"><span class="pre">Transaction.new_signed_with_payer()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction.Transaction.new_unsigned"><code class="docutils literal notranslate"><span class="pre">Transaction.new_unsigned()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction.Transaction.new_with_compiled_instructions"><code class="docutils literal notranslate"><span class="pre">Transaction.new_with_compiled_instructions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction.Transaction.new_with_payer"><code class="docutils literal notranslate"><span class="pre">Transaction.new_with_payer()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction.Transaction.partial_sign"><code class="docutils literal notranslate"><span class="pre">Transaction.partial_sign()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction.Transaction.populate"><code class="docutils literal notranslate"><span class="pre">Transaction.populate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction.Transaction.replace_signatures"><code class="docutils literal notranslate"><span class="pre">Transaction.replace_signatures()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction.Transaction.sanitize"><code class="docutils literal notranslate"><span class="pre">Transaction.sanitize()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction.Transaction.sign"><code class="docutils literal notranslate"><span class="pre">Transaction.sign()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction.Transaction.signatures"><code class="docutils literal notranslate"><span class="pre">Transaction.signatures</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction.Transaction.signer_key"><code class="docutils literal notranslate"><span class="pre">Transaction.signer_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction.Transaction.to_json"><code class="docutils literal notranslate"><span class="pre">Transaction.to_json()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction.Transaction.uses_durable_nonce"><code class="docutils literal notranslate"><span class="pre">Transaction.uses_durable_nonce()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction.Transaction.verify"><code class="docutils literal notranslate"><span class="pre">Transaction.verify()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction.Transaction.verify_and_hash_message"><code class="docutils literal notranslate"><span class="pre">Transaction.verify_and_hash_message()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction.Transaction.verify_with_results"><code class="docutils literal notranslate"><span class="pre">Transaction.verify_with_results()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.transaction.VersionedTransaction"><code class="docutils literal notranslate"><span class="pre">VersionedTransaction</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction.VersionedTransaction.default"><code class="docutils literal notranslate"><span class="pre">VersionedTransaction.default()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction.VersionedTransaction.from_bytes"><code class="docutils literal notranslate"><span class="pre">VersionedTransaction.from_bytes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction.VersionedTransaction.from_json"><code class="docutils literal notranslate"><span class="pre">VersionedTransaction.from_json()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction.VersionedTransaction.from_legacy"><code class="docutils literal notranslate"><span class="pre">VersionedTransaction.from_legacy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction.VersionedTransaction.into_legacy_transaction"><code class="docutils literal notranslate"><span class="pre">VersionedTransaction.into_legacy_transaction()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction.VersionedTransaction.message"><code class="docutils literal notranslate"><span class="pre">VersionedTransaction.message</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction.VersionedTransaction.populate"><code class="docutils literal notranslate"><span class="pre">VersionedTransaction.populate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction.VersionedTransaction.sanitize"><code class="docutils literal notranslate"><span class="pre">VersionedTransaction.sanitize()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction.VersionedTransaction.signatures"><code class="docutils literal notranslate"><span class="pre">VersionedTransaction.signatures</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction.VersionedTransaction.to_json"><code class="docutils literal notranslate"><span class="pre">VersionedTransaction.to_json()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction.VersionedTransaction.uses_durable_nonce"><code class="docutils literal notranslate"><span class="pre">VersionedTransaction.uses_durable_nonce()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction.VersionedTransaction.verify_and_hash_message"><code class="docutils literal notranslate"><span class="pre">VersionedTransaction.verify_and_hash_message()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction.VersionedTransaction.verify_with_results"><code class="docutils literal notranslate"><span class="pre">VersionedTransaction.verify_with_results()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction.VersionedTransaction.version"><code class="docutils literal notranslate"><span class="pre">VersionedTransaction.version()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.transaction.Legacy"><code class="docutils literal notranslate"><span class="pre">Legacy</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction.Legacy.Legacy"><code class="docutils literal notranslate"><span class="pre">Legacy.Legacy</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.transaction.SanitizeError"><code class="docutils literal notranslate"><span class="pre">SanitizeError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.transaction.TransactionError"><code class="docutils literal notranslate"><span class="pre">TransactionError</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">solders</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API Reference</a></li>
+      <li class="breadcrumb-item active">Transaction</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/kevinheavey/solders/blob/main/docs/api_reference/transaction.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-solders.transaction">
+<span id="transaction"></span><h1>Transaction<a class="headerlink" href="#module-solders.transaction" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.transaction.Transaction">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Transaction</span></span><a class="headerlink" href="#solders.transaction.Transaction" title="Permalink to this definition"></a></dt>
+<dd><p>An atomically-commited sequence of instructions.</p>
+<p>While <a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><code class="xref py py-class docutils literal notranslate"><span class="pre">Instruction</span></code></a>s are the basic unit of computation in Solana,
+they are submitted by clients in <a class="reference internal" href="#solders.transaction.Transaction" title="solders.transaction.Transaction"><code class="xref py py-class docutils literal notranslate"><span class="pre">Transaction</span></code></a>s containing one or
+more instructions, and signed by one or more signers.</p>
+<p>See the <a class="reference external" href="https://docs.rs/solana-sdk/latest/solana_sdk/transaction/index.html">Rust module documentation</a> for more details about transactions.</p>
+<p>Some constructors accept an optional <code class="docutils literal notranslate"><span class="pre">payer</span></code>, the account responsible for
+paying the cost of executing a transaction. In most cases, callers should
+specify the payer explicitly in these constructors. In some cases though,
+the caller is not <em>required</em> to specify the payer, but is still allowed to:
+in the <a class="reference internal" href="message.html#solders.message.Message" title="solders.message.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a> object, the first account is always the fee-payer, so
+if the caller has knowledge that the first account of the constructed
+transaction’s <code class="docutils literal notranslate"><span class="pre">Message</span></code> is both a signer and the expected fee-payer, then
+redundantly specifying the fee-payer is not strictly required.</p>
+<p>The main <code class="docutils literal notranslate"><span class="pre">Transaction()</span></code> constructor creates a fully-signed transaction from a <code class="docutils literal notranslate"><span class="pre">Message</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>from_keypairs</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="keypair.html#solders.keypair.Keypair" title="solders.keypair.Keypair"><em>Keypair</em></a><em> | </em><a class="reference internal" href="presigner.html#solders.presigner.Presigner" title="solders.presigner.Presigner"><em>Presigner</em></a><em>]</em>) – The keypairs that are to sign the transaction.</p></li>
+<li><p><strong>message</strong> (<a class="reference internal" href="message.html#solders.message.Message" title="solders.message.Message"><em>Message</em></a>) – The message to sign.</p></li>
+<li><p><strong>recent_blockhash</strong> (<a class="reference internal" href="hash.html#solders.hash.Hash" title="solders.hash.Hash"><em>Hash</em></a>) – The id of a recent ledger entry.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.message</span> <span class="kn">import</span> <span class="n">Message</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.keypair</span> <span class="kn">import</span> <span class="n">Keypair</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.instruction</span> <span class="kn">import</span> <span class="n">Instruction</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.hash</span> <span class="kn">import</span> <span class="n">Hash</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.transaction</span> <span class="kn">import</span> <span class="n">Transaction</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.pubkey</span> <span class="kn">import</span> <span class="n">Pubkey</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">program_id</span> <span class="o">=</span> <span class="n">Pubkey</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arbitrary_instruction_data</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">([</span><span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">accounts</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">instruction</span> <span class="o">=</span> <span class="n">Instruction</span><span class="p">(</span><span class="n">program_id</span><span class="p">,</span> <span class="n">arbitrary_instruction_data</span><span class="p">,</span> <span class="n">accounts</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">payer</span> <span class="o">=</span> <span class="n">Keypair</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">message</span> <span class="o">=</span> <span class="n">Message</span><span class="p">([</span><span class="n">instruction</span><span class="p">],</span> <span class="n">payer</span><span class="o">.</span><span class="n">pubkey</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">blockhash</span> <span class="o">=</span> <span class="n">Hash</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>  <span class="c1"># replace with a real blockhash</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tx</span> <span class="o">=</span> <span class="n">Transaction</span><span class="p">([</span><span class="n">payer</span><span class="p">],</span> <span class="n">message</span><span class="p">,</span> <span class="n">blockhash</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction.Transaction.data">
+<span class="sig-name descname"><span class="pre">data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instruction_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction.Transaction.data" title="Permalink to this definition"></a></dt>
+<dd><p>Get the data for an instruction at the given index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>instruction_index</strong> (<em>int</em>) – index into the <code class="docutils literal notranslate"><span class="pre">instructions</span></code> vector of the transaction’s <code class="docutils literal notranslate"><span class="pre">message</span></code>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The instruction data.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bytes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction.Transaction.default">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">default</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction.Transaction.default" title="Permalink to this definition"></a></dt>
+<dd><p>Return a new default transaction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The default transaction.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#solders.transaction.Transaction" title="solders.transaction.Transaction">Transaction</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction.Transaction.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction.Transaction.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize a serialized <code class="docutils literal notranslate"><span class="pre">Transaction</span></code> object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized <code class="docutils literal notranslate"><span class="pre">Transaction</span></code>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the deserialized <code class="docutils literal notranslate"><span class="pre">Transaction</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#solders.transaction.Transaction" title="solders.transaction.Transaction">Transaction</a></p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.transaction</span> <span class="kn">import</span> <span class="n">Transaction</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tx</span> <span class="o">=</span> <span class="n">Transaction</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">Transaction</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">tx</span><span class="p">))</span> <span class="o">==</span> <span class="n">tx</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction.Transaction.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction.Transaction.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction.Transaction.get_nonce_pubkey_from_instruction">
+<span class="sig-name descname"><span class="pre">get_nonce_pubkey_from_instruction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ix</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction.Transaction.get_nonce_pubkey_from_instruction" title="Permalink to this definition"></a></dt>
+<dd><p>Deprecated in the Solana Rust SDK, expose here only for testing.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction.Transaction.get_signing_keypair_positions">
+<span class="sig-name descname"><span class="pre">get_signing_keypair_positions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pubkeys</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction.Transaction.get_signing_keypair_positions" title="Permalink to this definition"></a></dt>
+<dd><p>Get the positions of the pubkeys in account_keys associated with signing keypairs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pubkeys</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a><em>]</em>) – The pubkeys to find.</p></li>
+<li><p><strong>Returns</strong> – list[Optional[int]]: The pubkey positions.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction.Transaction.is_signed">
+<span class="sig-name descname"><span class="pre">is_signed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction.Transaction.is_signed" title="Permalink to this definition"></a></dt>
+<dd><p>Check if the transaction has been signed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the transaction has been signed.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction.Transaction.key">
+<span class="sig-name descname"><span class="pre">key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instruction_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accounts_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction.Transaction.key" title="Permalink to this definition"></a></dt>
+<dd><p>Get the <a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pubkey</span></code></a> of an account required by one of the instructions in
+the transaction.</p>
+<p>Returns <code class="docutils literal notranslate"><span class="pre">None</span></code> if <cite>instruction_index</cite> is greater than or equal to the
+number of instructions in the transaction; or if <cite>accounts_index</cite> is
+greater than or equal to the number of accounts in the instruction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instruction_index</strong> (<em>int</em>) – index into the <code class="docutils literal notranslate"><span class="pre">instructions</span></code> vector of the transaction’s <code class="docutils literal notranslate"><span class="pre">message</span></code>.</p></li>
+<li><p><strong>account_index</strong> (<em>int</em>) – index into the <code class="docutils literal notranslate"><span class="pre">acounts</span></code> list of the message’s <code class="docutils literal notranslate"><span class="pre">compiled_instructions</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The account key.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[<a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey">Pubkey</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.transaction.Transaction.message">
+<span class="sig-name descname"><span class="pre">message</span></span><a class="headerlink" href="#solders.transaction.Transaction.message" title="Permalink to this definition"></a></dt>
+<dd><p>The message to sign.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="message.html#solders.message.Message" title="solders.message.Message">Message</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction.Transaction.message_data">
+<span class="sig-name descname"><span class="pre">message_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction.Transaction.message_data" title="Permalink to this definition"></a></dt>
+<dd><p>Return the serialized message data to sign.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The serialized message data.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bytes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction.Transaction.new_signed_with_payer">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">new_signed_with_payer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instructions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">payer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signing_keypairs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recent_blockhash</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction.Transaction.new_signed_with_payer" title="Permalink to this definition"></a></dt>
+<dd><p>Create a fully-signed transaction from a list of <a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><code class="xref py py-class docutils literal notranslate"><span class="pre">Instruction</span></code></a>s.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instructions</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><em>Instruction</em></a><em>]</em>) – The instructions to include in the transaction message.</p></li>
+<li><p><strong>payer</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a><em>]</em><em>, </em><em>optional</em>) – The transaction fee payer.</p></li>
+<li><p><strong>signing_keypairs</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="keypair.html#solders.keypair.Keypair" title="solders.keypair.Keypair"><em>Keypair</em></a><em> | </em><a class="reference internal" href="presigner.html#solders.presigner.Presigner" title="solders.presigner.Presigner"><em>Presigner</em></a><em>]</em>) – The keypairs that will sign the transaction.</p></li>
+<li><p><strong>recent_blockhash</strong> (<a class="reference internal" href="hash.html#solders.hash.Hash" title="solders.hash.Hash"><em>Hash</em></a>) – The id of a recent ledger entry.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The signed transaction.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#solders.transaction.Transaction" title="solders.transaction.Transaction">Transaction</a></p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.keypair</span> <span class="kn">import</span> <span class="n">Keypair</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.instruction</span> <span class="kn">import</span> <span class="n">Instruction</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.transaction</span> <span class="kn">import</span> <span class="n">Transaction</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.pubkey</span> <span class="kn">import</span> <span class="n">Pubkey</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">program_id</span> <span class="o">=</span> <span class="n">Pubkey</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arbitrary_instruction_data</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">([</span><span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">accounts</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">instruction</span> <span class="o">=</span> <span class="n">Instruction</span><span class="p">(</span><span class="n">program_id</span><span class="p">,</span> <span class="n">arbitrary_instruction_data</span><span class="p">,</span> <span class="n">accounts</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">payer</span> <span class="o">=</span> <span class="n">Keypair</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">blockhash</span> <span class="o">=</span> <span class="n">Hash</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>  <span class="c1"># replace with a real blockhash</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tx</span> <span class="o">=</span> <span class="n">Transaction</span><span class="o">.</span><span class="n">new_signed_with_payer</span><span class="p">([</span><span class="n">instruction</span><span class="p">],</span> <span class="n">payer</span><span class="o">.</span><span class="n">pubkey</span><span class="p">(),</span> <span class="p">[</span><span class="n">payer</span><span class="p">],</span> <span class="n">blockhash</span><span class="p">);</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction.Transaction.new_unsigned">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">new_unsigned</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction.Transaction.new_unsigned" title="Permalink to this definition"></a></dt>
+<dd><p>Create an unsigned transaction from a <a class="reference internal" href="message.html#solders.message.Message" title="solders.message.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>message</strong> (<a class="reference internal" href="message.html#solders.message.Message" title="solders.message.Message"><em>Message</em></a>) – The transaction’s message.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The unsigned transaction.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#solders.transaction.Transaction" title="solders.transaction.Transaction">Transaction</a></p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.message</span> <span class="kn">import</span> <span class="n">Message</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.keypair</span> <span class="kn">import</span> <span class="n">Keypair</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.pubkey</span> <span class="kn">import</span> <span class="n">Pubkey</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.instruction</span> <span class="kn">import</span> <span class="n">Instruction</span><span class="p">,</span> <span class="n">AccountMeta</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.hash</span> <span class="kn">import</span> <span class="n">Hash</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.transaction</span> <span class="kn">import</span> <span class="n">Transaction</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">program_id</span> <span class="o">=</span> <span class="n">Pubkey</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">blockhash</span> <span class="o">=</span> <span class="n">Hash</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>  <span class="c1"># replace with a real blockhash</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arbitrary_instruction_data</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">([</span><span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">accounts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">AccountMeta</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">instruction</span> <span class="o">=</span> <span class="n">Instruction</span><span class="p">(</span><span class="n">program_id</span><span class="p">,</span> <span class="n">arbitrary_instruction_data</span><span class="p">,</span> <span class="n">accounts</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">payer</span> <span class="o">=</span> <span class="n">Keypair</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">message</span> <span class="o">=</span> <span class="n">Message</span><span class="o">.</span><span class="n">new_with_blockhash</span><span class="p">([</span><span class="n">instruction</span><span class="p">],</span> <span class="n">payer</span><span class="o">.</span><span class="n">pubkey</span><span class="p">(),</span> <span class="n">blockhash</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tx</span> <span class="o">=</span> <span class="n">Transaction</span><span class="o">.</span><span class="n">new_unsigned</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tx</span><span class="o">.</span><span class="n">sign</span><span class="p">([</span><span class="n">payer</span><span class="p">],</span> <span class="n">tx</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">recent_blockhash</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction.Transaction.new_with_compiled_instructions">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">new_with_compiled_instructions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">from_keypairs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recent_blockhash</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">program_ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instructions</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction.Transaction.new_with_compiled_instructions" title="Permalink to this definition"></a></dt>
+<dd><p>Create a fully-signed transaction from pre-compiled instructions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>from_keypairs</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="keypair.html#solders.keypair.Keypair" title="solders.keypair.Keypair"><em>Keypair</em></a><em> | </em><a class="reference internal" href="presigner.html#solders.presigner.Presigner" title="solders.presigner.Presigner"><em>Presigner</em></a><em>]</em>) – The keys used to sign the transaction.</p></li>
+<li><p><strong>keys</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a><em>]</em>) – The keys for the transaction.  These are the program state
+instances or lamport recipient keys.</p></li>
+<li><p><strong>recent_blockhash</strong> (<a class="reference internal" href="hash.html#solders.hash.Hash" title="solders.hash.Hash"><em>Hash</em></a>) – The PoH hash.</p></li>
+<li><p><strong>program_ids</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a><em>]</em>) – The keys that identify programs used in the <cite>instruction</cite> vector.</p></li>
+<li><p><strong>instructions</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><em>Instruction</em></a><em>]</em>) – Instructions that will be executed atomically.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The signed transaction.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#solders.transaction.Transaction" title="solders.transaction.Transaction">Transaction</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction.Transaction.new_with_payer">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">new_with_payer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instructions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">payer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction.Transaction.new_with_payer" title="Permalink to this definition"></a></dt>
+<dd><p>Create an unsigned transaction from a list of <a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><code class="xref py py-class docutils literal notranslate"><span class="pre">Instruction</span></code></a>s.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instructions</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><em>Instruction</em></a><em>]</em>) – The instructions to include in the transaction message.</p></li>
+<li><p><strong>payer</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a><em>]</em><em>, </em><em>optional</em>) – The transaction fee payer. Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The unsigned transaction.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#solders.transaction.Transaction" title="solders.transaction.Transaction">Transaction</a></p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.keypair</span> <span class="kn">import</span> <span class="n">Keypair</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.instruction</span> <span class="kn">import</span> <span class="n">Instruction</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.transaction</span> <span class="kn">import</span> <span class="n">Transaction</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.pubkey</span> <span class="kn">import</span> <span class="n">Pubkey</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">program_id</span> <span class="o">=</span> <span class="n">Pubkey</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arbitrary_instruction_data</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">([</span><span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">accounts</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">instruction</span> <span class="o">=</span> <span class="n">Instruction</span><span class="p">(</span><span class="n">program_id</span><span class="p">,</span> <span class="n">arbitrary_instruction_data</span><span class="p">,</span> <span class="n">accounts</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">payer</span> <span class="o">=</span> <span class="n">Keypair</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tx</span> <span class="o">=</span> <span class="n">Transaction</span><span class="o">.</span><span class="n">new_with_payer</span><span class="p">([</span><span class="n">instruction</span><span class="p">],</span> <span class="n">payer</span><span class="o">.</span><span class="n">pubkey</span><span class="p">())</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction.Transaction.partial_sign">
+<span class="sig-name descname"><span class="pre">partial_sign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keypairs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recent_blockhash</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction.Transaction.partial_sign" title="Permalink to this definition"></a></dt>
+<dd><p>Sign the transaction with a subset of required keys, returning any errors.</p>
+<p>Unlike <a class="reference internal" href="#solders.transaction.Transaction.sign" title="solders.transaction.Transaction.sign"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Transaction.sign()</span></code></a>, this method does not require all
+keypairs to be provided, allowing a transaction to be signed in multiple
+steps.</p>
+<p>It is permitted to sign a transaction with the same keypair multiple
+times.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">recent_blockhash</span></code> is different than recorded in the transaction message’s
+<code class="docutils literal notranslate"><span class="pre">recent_blockhash</span></code> field, then the message’s <code class="docutils literal notranslate"><span class="pre">recent_blockhash</span></code> will be updated
+to the provided <code class="docutils literal notranslate"><span class="pre">recent_blockhash</span></code>, and any prior signatures will be cleared.</p>
+<p><strong>Errors:</strong></p>
+<p>Signing will fail if</p>
+<ul class="simple">
+<li><p>The transaction’s <a class="reference internal" href="message.html#solders.message.Message" title="solders.message.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a> is malformed such that the number of
+required signatures recorded in its header
+(<code class="docutils literal notranslate"><span class="pre">num_required_signatures</span></code>) is greater than the length of its
+account keys (<code class="docutils literal notranslate"><span class="pre">account_keys</span></code>).</p></li>
+<li><p>Any of the provided signers in <code class="docutils literal notranslate"><span class="pre">keypairs</span></code> is not a required signer of
+the message.</p></li>
+<li><p>Any of the signers is a <a class="reference internal" href="presigner.html#solders.presigner.Presigner" title="solders.presigner.Presigner"><code class="xref py py-class docutils literal notranslate"><span class="pre">Presigner</span></code></a>, and its provided signature is
+incorrect.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>keypairs</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="keypair.html#solders.keypair.Keypair" title="solders.keypair.Keypair"><em>Keypair</em></a><em> | </em><a class="reference internal" href="presigner.html#solders.presigner.Presigner" title="solders.presigner.Presigner"><em>Presigner</em></a><em>]</em>) – The signers for the transaction.</p></li>
+<li><p><strong>recent_blockhash</strong> (<a class="reference internal" href="hash.html#solders.hash.Hash" title="solders.hash.Hash"><em>Hash</em></a>) – The id of a recent ledger entry.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction.Transaction.populate">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">populate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signatures</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction.Transaction.populate" title="Permalink to this definition"></a></dt>
+<dd><p>Create a fully-signed transaction from a message and its signatures.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>message</strong> (<a class="reference internal" href="message.html#solders.message.Message" title="solders.message.Message"><em>Message</em></a>) – The transaction message.</p></li>
+<li><p><strong>signatures</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="signature.html#solders.signature.Signature" title="solders.signature.Signature"><em>Signature</em></a><em>]</em>) – The message’s signatures.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The signed transaction.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="message.html#solders.message.Message" title="solders.message.Message">Message</a></p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.keypair</span> <span class="kn">import</span> <span class="n">Keypair</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.instruction</span> <span class="kn">import</span> <span class="n">Instruction</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.transaction</span> <span class="kn">import</span> <span class="n">Transaction</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.pubkey</span> <span class="kn">import</span> <span class="n">Pubkey</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">program_id</span> <span class="o">=</span> <span class="n">Pubkey</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arbitrary_instruction_data</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">([</span><span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">accounts</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">instruction</span> <span class="o">=</span> <span class="n">Instruction</span><span class="p">(</span><span class="n">program_id</span><span class="p">,</span> <span class="n">arbitrary_instruction_data</span><span class="p">,</span> <span class="n">accounts</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">payer</span> <span class="o">=</span> <span class="n">Keypair</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">blockhash</span> <span class="o">=</span> <span class="n">Hash</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>  <span class="c1"># replace with a real blockhash</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tx</span> <span class="o">=</span> <span class="n">Transaction</span><span class="o">.</span><span class="n">new_signed_with_payer</span><span class="p">([</span><span class="n">instruction</span><span class="p">],</span> <span class="n">payer</span><span class="o">.</span><span class="n">pubkey</span><span class="p">(),</span> <span class="p">[</span><span class="n">payer</span><span class="p">],</span> <span class="n">blockhash</span><span class="p">);</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">tx</span> <span class="o">==</span> <span class="n">Transaction</span><span class="o">.</span><span class="n">populate</span><span class="p">(</span><span class="n">tx</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">tx</span><span class="o">.</span><span class="n">signatures</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction.Transaction.replace_signatures">
+<span class="sig-name descname"><span class="pre">replace_signatures</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signers</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction.Transaction.replace_signatures" title="Permalink to this definition"></a></dt>
+<dd><p>Replace all the signatures and pubkeys.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>signers</strong> (<em>Sequence</em><em>[</em><em>Tuple</em><em>[</em><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a><em>, </em><a class="reference internal" href="signature.html#solders.signature.Signature" title="solders.signature.Signature"><em>Signature</em></a><em>]</em><em>]</em>) – The replacement pubkeys and signatures.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction.Transaction.sanitize">
+<span class="sig-name descname"><span class="pre">sanitize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction.Transaction.sanitize" title="Permalink to this definition"></a></dt>
+<dd><p>Sanity checks the Transaction properties.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction.Transaction.sign">
+<span class="sig-name descname"><span class="pre">sign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keypairs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recent_blockhash</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction.Transaction.sign" title="Permalink to this definition"></a></dt>
+<dd><p>Sign the transaction, returning any errors.</p>
+<p>This method fully signs a transaction with all required signers, which
+must be present in the <code class="docutils literal notranslate"><span class="pre">keypairs</span></code> list. To sign with only some of the
+required signers, use <a class="reference internal" href="#solders.transaction.Transaction.partial_sign" title="solders.transaction.Transaction.partial_sign"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Transaction.partial_sign()</span></code></a>.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">recent_blockhash</span></code> is different than recorded in the transaction message’s
+<code class="docutils literal notranslate"><span class="pre">recent_blockhash</span></code>] field, then the message’s <code class="docutils literal notranslate"><span class="pre">recent_blockhash</span></code> will be updated
+to the provided <code class="docutils literal notranslate"><span class="pre">recent_blockhash</span></code>, and any prior signatures will be cleared.</p>
+<p><strong>Errors:</strong></p>
+<p>Signing will fail if some required signers are not provided in
+<code class="docutils literal notranslate"><span class="pre">keypairs</span></code>; or, if the transaction has previously been partially signed,
+some of the remaining required signers are not provided in <code class="docutils literal notranslate"><span class="pre">keypairs</span></code>.
+In other words, the transaction must be fully signed as a result of
+calling this function.</p>
+<p>Signing will fail for any of the reasons described in the documentation
+for <a class="reference internal" href="#solders.transaction.Transaction.partial_sign" title="solders.transaction.Transaction.partial_sign"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Transaction.partial_sign()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>keypairs</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="keypair.html#solders.keypair.Keypair" title="solders.keypair.Keypair"><em>Keypair</em></a><em> | </em><a class="reference internal" href="presigner.html#solders.presigner.Presigner" title="solders.presigner.Presigner"><em>Presigner</em></a><em>]</em>) – The signers for the transaction.</p></li>
+<li><p><strong>recent_blockhash</strong> (<a class="reference internal" href="hash.html#solders.hash.Hash" title="solders.hash.Hash"><em>Hash</em></a>) – The id of a recent ledger entry.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.transaction.Transaction.signatures">
+<span class="sig-name descname"><span class="pre">signatures</span></span><a class="headerlink" href="#solders.transaction.Transaction.signatures" title="Permalink to this definition"></a></dt>
+<dd><p>A set of signatures of a serialized <a class="reference internal" href="message.html#solders.message.Message" title="solders.message.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>,
+signed by the first keys of the message’s <a class="reference internal" href="message.html#solders.message.Message.account_keys" title="solders.message.Message.account_keys"><code class="xref py py-attr docutils literal notranslate"><span class="pre">account_keys</span></code></a>,
+where the number of signatures is equal to <code class="docutils literal notranslate"><span class="pre">num_required_signatures</span></code> of the <cite>Message</cite>’s
+<a class="reference internal" href="message.html#solders.message.MessageHeader" title="solders.message.MessageHeader"><code class="xref py py-class docutils literal notranslate"><span class="pre">MessageHeader</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[<a class="reference internal" href="signature.html#solders.signature.Signature" title="solders.signature.Signature">Signature</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction.Transaction.signer_key">
+<span class="sig-name descname"><span class="pre">signer_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instruction_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accounts_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction.Transaction.signer_key" title="Permalink to this definition"></a></dt>
+<dd><p>Get the <a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pubkey</span></code></a> of a signing account required by one of the
+instructions in the transaction.</p>
+<p>The transaction does not need to be signed for this function to return a
+signing account’s pubkey.</p>
+<p>Returns <code class="docutils literal notranslate"><span class="pre">None</span></code> if the indexed account is not required to sign the
+transaction. Returns <code class="docutils literal notranslate"><span class="pre">None</span></code> if the [<cite>signatures</cite>] field does not contain
+enough elements to hold a signature for the indexed account (this should
+only be possible if <cite>Transaction</cite> has been manually constructed).</p>
+<p>Returns <cite>None</cite> if <cite>instruction_index</cite> is greater than or equal to the
+number of instructions in the transaction; or if <cite>accounts_index</cite> is
+greater than or equal to the number of accounts in the instruction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instruction_index</strong> (<em>int</em>) – index into the <code class="docutils literal notranslate"><span class="pre">instructions</span></code> vector of the transaction’s <code class="docutils literal notranslate"><span class="pre">message</span></code>.</p></li>
+<li><p><strong>account_index</strong> (<em>int</em>) – index into the <code class="docutils literal notranslate"><span class="pre">acounts</span></code> list of the message’s <code class="docutils literal notranslate"><span class="pre">compiled_instructions</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The account key.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[<a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey">Pubkey</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction.Transaction.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction.Transaction.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction.Transaction.uses_durable_nonce">
+<span class="sig-name descname"><span class="pre">uses_durable_nonce</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction.Transaction.uses_durable_nonce" title="Permalink to this definition"></a></dt>
+<dd><p>See <a class="reference external" href="https://docs.rs/solana-sdk/latest/solana_sdk/transaction/fn.uses_durable_nonce.html">https://docs.rs/solana-sdk/latest/solana_sdk/transaction/fn.uses_durable_nonce.html</a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction.Transaction.verify">
+<span class="sig-name descname"><span class="pre">verify</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction.Transaction.verify" title="Permalink to this definition"></a></dt>
+<dd><p>Verifies that all signers have signed the message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#solders.transaction.TransactionError" title="solders.transaction.TransactionError"><strong>TransactionError</strong></a> – if the check fails.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction.Transaction.verify_and_hash_message">
+<span class="sig-name descname"><span class="pre">verify_and_hash_message</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction.Transaction.verify_and_hash_message" title="Permalink to this definition"></a></dt>
+<dd><p>Verify the transaction and hash its message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The blake3 hash of the message.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="hash.html#solders.hash.Hash" title="solders.hash.Hash">Hash</a></p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#solders.transaction.TransactionError" title="solders.transaction.TransactionError"><strong>TransactionError</strong></a> – if the check fails.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction.Transaction.verify_with_results">
+<span class="sig-name descname"><span class="pre">verify_with_results</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction.Transaction.verify_with_results" title="Permalink to this definition"></a></dt>
+<dd><p>Verifies that all signers have signed the message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>a list with the length of required signatures, where each element is either <code class="docutils literal notranslate"><span class="pre">True</span></code> if that signer has signed, or <code class="docutils literal notranslate"><span class="pre">False</span></code> if not.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[bool]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.transaction.VersionedTransaction">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">VersionedTransaction</span></span><a class="headerlink" href="#solders.transaction.VersionedTransaction" title="Permalink to this definition"></a></dt>
+<dd><p>An atomic transaction</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method signs a versioned message to
+create a signed transaction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>message</strong> (<a class="reference internal" href="message.html#solders.message.Message" title="solders.message.Message"><em>Message</em></a><em> | </em><a class="reference internal" href="message.html#solders.message.MessageV0" title="solders.message.MessageV0"><em>MessageV0</em></a>) – The message to sign.</p></li>
+<li><p><strong>keypairs</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="keypair.html#solders.keypair.Keypair" title="solders.keypair.Keypair"><em>Keypair</em></a><em> | </em><a class="reference internal" href="presigner.html#solders.presigner.Presigner" title="solders.presigner.Presigner"><em>Presigner</em></a><em>]</em>) – The keypairs that are to sign the transaction.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction.VersionedTransaction.default">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">default</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction.VersionedTransaction.default" title="Permalink to this definition"></a></dt>
+<dd><p>Return a new default transaction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The default transaction.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#solders.transaction.VersionedTransaction" title="solders.transaction.VersionedTransaction">VersionedTransaction</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction.VersionedTransaction.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction.VersionedTransaction.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction.VersionedTransaction.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction.VersionedTransaction.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction.VersionedTransaction.from_legacy">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_legacy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction.VersionedTransaction.from_legacy" title="Permalink to this definition"></a></dt>
+<dd><p>Convert a legacy transaction to a VersionedTransaction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The versioned tx.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#solders.transaction.VersionedTransaction" title="solders.transaction.VersionedTransaction">VersionedTransaction</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction.VersionedTransaction.into_legacy_transaction">
+<span class="sig-name descname"><span class="pre">into_legacy_transaction</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction.VersionedTransaction.into_legacy_transaction" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a legacy transaction if the transaction message is legacy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The legacy transaction.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Optional[<a class="reference internal" href="#solders.transaction.Transaction" title="solders.transaction.Transaction">Transaction</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.transaction.VersionedTransaction.message">
+<span class="sig-name descname"><span class="pre">message</span></span><a class="headerlink" href="#solders.transaction.VersionedTransaction.message" title="Permalink to this definition"></a></dt>
+<dd><p>The transaction message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="message.html#solders.message.Message" title="solders.message.Message">Message</a> | <a class="reference internal" href="message.html#solders.message.MessageV0" title="solders.message.MessageV0">MessageV0</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction.VersionedTransaction.populate">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">populate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signatures</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction.VersionedTransaction.populate" title="Permalink to this definition"></a></dt>
+<dd><p>Create a fully-signed transaction from a message and its signatures.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>message</strong> (<a class="reference internal" href="message.html#solders.message.Message" title="solders.message.Message"><em>Message</em></a><em> | </em><a class="reference internal" href="message.html#solders.message.MessageV0" title="solders.message.MessageV0"><em>MessageV0</em></a>) – The transaction message.</p></li>
+<li><p><strong>signatures</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="signature.html#solders.signature.Signature" title="solders.signature.Signature"><em>Signature</em></a><em>]</em>) – The message’s signatures.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The signed transaction.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#solders.transaction.Transaction" title="solders.transaction.Transaction">Transaction</a></p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.pubkey</span> <span class="kn">import</span> <span class="n">Pubkey</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.instruction</span> <span class="kn">import</span> <span class="n">Instruction</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.message</span> <span class="kn">import</span> <span class="n">MessageV0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.hash</span> <span class="kn">import</span> <span class="n">Hash</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.keypair</span> <span class="kn">import</span> <span class="n">Keypair</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.transaction</span> <span class="kn">import</span> <span class="n">VersionedTransaction</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">payer</span> <span class="o">=</span> <span class="n">Keypair</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">program_id</span> <span class="o">=</span> <span class="n">Pubkey</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">instructions</span> <span class="o">=</span> <span class="p">[</span><span class="n">Instruction</span><span class="p">(</span><span class="n">program_id</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">([]),</span> <span class="p">[])]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">recent_blockhash</span> <span class="o">=</span> <span class="n">Hash</span><span class="o">.</span><span class="n">new_unique</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">message</span> <span class="o">=</span> <span class="n">MessageV0</span><span class="o">.</span><span class="n">try_compile</span><span class="p">(</span><span class="n">payer</span><span class="o">.</span><span class="n">pubkey</span><span class="p">(),</span> <span class="n">instructions</span><span class="p">,</span> <span class="p">[],</span> <span class="n">recent_blockhash</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tx</span> <span class="o">=</span> <span class="n">VersionedTransaction</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="p">[</span><span class="n">payer</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">VersionedTransaction</span><span class="o">.</span><span class="n">populate</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">tx</span><span class="o">.</span><span class="n">signatures</span><span class="p">)</span> <span class="o">==</span> <span class="n">tx</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction.VersionedTransaction.sanitize">
+<span class="sig-name descname"><span class="pre">sanitize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction.VersionedTransaction.sanitize" title="Permalink to this definition"></a></dt>
+<dd><p>Sanity checks the Transaction properties.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.transaction.VersionedTransaction.signatures">
+<span class="sig-name descname"><span class="pre">signatures</span></span><a class="headerlink" href="#solders.transaction.VersionedTransaction.signatures" title="Permalink to this definition"></a></dt>
+<dd><p>The transaction signatures.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="signature.html#solders.signature.Signature" title="solders.signature.Signature">Signature</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction.VersionedTransaction.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction.VersionedTransaction.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction.VersionedTransaction.uses_durable_nonce">
+<span class="sig-name descname"><span class="pre">uses_durable_nonce</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction.VersionedTransaction.uses_durable_nonce" title="Permalink to this definition"></a></dt>
+<dd><p>Returns true if transaction begins with a valid advance nonce instruction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction.VersionedTransaction.verify_and_hash_message">
+<span class="sig-name descname"><span class="pre">verify_and_hash_message</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction.VersionedTransaction.verify_and_hash_message" title="Permalink to this definition"></a></dt>
+<dd><p>Verify the transaction and hash its message</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction.VersionedTransaction.verify_with_results">
+<span class="sig-name descname"><span class="pre">verify_with_results</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction.VersionedTransaction.verify_with_results" title="Permalink to this definition"></a></dt>
+<dd><p>Verify the transaction and return a list of verification results</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction.VersionedTransaction.version">
+<span class="sig-name descname"><span class="pre">version</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction.VersionedTransaction.version" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the version of the transaction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Transaction version.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#solders.transaction.Legacy" title="solders.transaction.Legacy">Legacy</a> | int</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.transaction.Legacy">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Legacy</span></span><a class="headerlink" href="#solders.transaction.Legacy" title="Permalink to this definition"></a></dt>
+<dd><p>Transaction version type that serializes to the string “legacy”</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.transaction.Legacy.Legacy">
+<span class="sig-name descname"><span class="pre">Legacy</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Legacy.Legacy</span></em><a class="headerlink" href="#solders.transaction.Legacy.Legacy" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="solders.transaction.SanitizeError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SanitizeError</span></span><a class="headerlink" href="#solders.transaction.SanitizeError" title="Permalink to this definition"></a></dt>
+<dd><p>Raised when an error is encountered during transaction sanitization.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="solders.transaction.TransactionError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TransactionError</span></span><a class="headerlink" href="#solders.transaction.TransactionError" title="Permalink to this definition"></a></dt>
+<dd><p>Umbrella error for the <code class="docutils literal notranslate"><span class="pre">Transaction</span></code> object.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="transaction_status.html" class="btn btn-neutral float-left" title="Transaction Status" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Kevin Heavey.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Keypairs &mdash; solders 0.21.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Pubkeys" href="pubkeys.html" />
+    <link rel="prev" title="Tutorials" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            solders
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Solders</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tutorials</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Keypairs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#generating-a-new-keypair">Generating a new keypair</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#converting-a-keypair-to-raw-bytes">Converting a keypair to raw bytes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#restoring-a-keypair-from-a-secret">Restoring a keypair from a secret</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#verifying-a-keypair">Verifying a keypair</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#restoring-a-keypair-from-a-mnemonic-seed-phrase">Restoring a keypair from a mnemonic (seed phrase)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#signing-and-verifying-messages">Signing and verifying messages</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pubkeys.html">Pubkeys</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transactions.html">Transactions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rpc.html">RPC helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bankrun.html">Bankrun</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">solders</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Tutorials</a></li>
+      <li class="breadcrumb-item active">Keypairs</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/kevinheavey/solders/blob/main/docs/tutorials/keypairs.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="keypairs">
+<h1>Keypairs<a class="headerlink" href="#keypairs" title="Permalink to this heading"></a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">Keypair</span></code> class is a wrapper around a 64-byte array, where
+the first 32 bytes consist of your secret seed and the latter 32 bytes
+are your pubkey.</p>
+<section id="generating-a-new-keypair">
+<h2>Generating a new keypair<a class="headerlink" href="#generating-a-new-keypair" title="Permalink to this heading"></a></h2>
+<p>Often you need to generate a new keypair on the fly:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">solders.keypair</span> <span class="kn">import</span> <span class="n">Keypair</span>
+<span class="n">keypair</span> <span class="o">=</span> <span class="n">Keypair</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="converting-a-keypair-to-raw-bytes">
+<h2>Converting a keypair to raw bytes<a class="headerlink" href="#converting-a-keypair-to-raw-bytes" title="Permalink to this heading"></a></h2>
+<p>To get the raw bytes of a keypair object you just call
+<code class="docutils literal notranslate"><span class="pre">bytes(keypair)</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">solders.keypair</span> <span class="kn">import</span> <span class="n">Keypair</span>
+<span class="n">keypair</span> <span class="o">=</span> <span class="n">Keypair</span><span class="p">()</span>
+<span class="n">raw</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">keypair</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="restoring-a-keypair-from-a-secret">
+<h2>Restoring a keypair from a secret<a class="headerlink" href="#restoring-a-keypair-from-a-secret" title="Permalink to this heading"></a></h2>
+<p>If you already have the 64-byte secret key,
+you can use <code class="docutils literal notranslate"><span class="pre">Keypair.from_bytes</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">solders.keypair</span> <span class="kn">import</span> <span class="n">Keypair</span>
+
+<span class="n">secret_key</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="mi">174</span><span class="p">,</span> <span class="mi">47</span><span class="p">,</span> <span class="mi">154</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">202</span><span class="p">,</span> <span class="mi">193</span><span class="p">,</span> <span class="mi">206</span><span class="p">,</span> <span class="mi">113</span><span class="p">,</span>
+    <span class="mi">199</span><span class="p">,</span> <span class="mi">190</span><span class="p">,</span> <span class="mi">53</span><span class="p">,</span> <span class="mi">133</span><span class="p">,</span> <span class="mi">169</span><span class="p">,</span> <span class="mi">175</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">56</span><span class="p">,</span>
+    <span class="mi">222</span><span class="p">,</span> <span class="mi">53</span><span class="p">,</span> <span class="mi">138</span><span class="p">,</span> <span class="mi">189</span><span class="p">,</span> <span class="mi">224</span><span class="p">,</span> <span class="mi">216</span><span class="p">,</span> <span class="mi">117</span><span class="p">,</span> <span class="mi">173</span><span class="p">,</span>
+    <span class="mi">10</span><span class="p">,</span> <span class="mi">149</span><span class="p">,</span> <span class="mi">53</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="mi">73</span><span class="p">,</span> <span class="mi">251</span><span class="p">,</span> <span class="mi">237</span><span class="p">,</span> <span class="mi">246</span><span class="p">,</span>
+    <span class="mi">15</span><span class="p">,</span> <span class="mi">185</span><span class="p">,</span> <span class="mi">186</span><span class="p">,</span> <span class="mi">82</span><span class="p">,</span> <span class="mi">177</span><span class="p">,</span> <span class="mi">240</span><span class="p">,</span> <span class="mi">148</span><span class="p">,</span> <span class="mi">69</span><span class="p">,</span>
+    <span class="mi">241</span><span class="p">,</span> <span class="mi">227</span><span class="p">,</span> <span class="mi">167</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">141</span><span class="p">,</span> <span class="mi">89</span><span class="p">,</span> <span class="mi">240</span><span class="p">,</span> <span class="mi">121</span><span class="p">,</span>
+    <span class="mi">121</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">172</span><span class="p">,</span> <span class="mi">247</span><span class="p">,</span> <span class="mi">68</span><span class="p">,</span> <span class="mi">251</span><span class="p">,</span> <span class="mi">226</span><span class="p">,</span> <span class="mi">218</span><span class="p">,</span>
+    <span class="mi">48</span><span class="p">,</span> <span class="mi">63</span><span class="p">,</span> <span class="mi">176</span><span class="p">,</span> <span class="mi">109</span><span class="p">,</span> <span class="mi">168</span><span class="p">,</span> <span class="mi">89</span><span class="p">,</span> <span class="mi">238</span><span class="p">,</span> <span class="mi">135</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">keypair</span> <span class="o">=</span> <span class="n">Keypair</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">secret_key</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created Keypair with public key: </span><span class="si">{</span><span class="n">keypair</span><span class="o">.</span><span class="n">pubkey</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Created Keypair with public key: 24PNhTaNtomHhoy3fTRaMhAFCRj4uHqhZEEoWrKDbR5p
+</pre></div>
+</div>
+<p>This is the inverse operation to <code class="docutils literal notranslate"><span class="pre">bytes(keypair)</span></code>.</p>
+<p>If the secret is in base58 format, you can use <code class="docutils literal notranslate"><span class="pre">Keypair.from_base58_string</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">solders.keypair</span> <span class="kn">import</span> <span class="n">Keypair</span>
+
+<span class="n">b58_string</span> <span class="o">=</span> <span class="s2">&quot;5MaiiCavjCmn9Hs1o3eznqDEhRwxo7pXiAYez7keQUviUkauRiTMD8DrESdrNjN8zd9mTmVhRvBJeg5vhyvgrAhG&quot;</span>
+<span class="n">keypair</span> <span class="o">=</span> <span class="n">Keypair</span><span class="o">.</span><span class="n">from_base58_string</span><span class="p">(</span><span class="n">b58_string</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created Keypair with public key: </span><span class="si">{</span><span class="n">keypair</span><span class="o">.</span><span class="n">pubkey</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Created Keypair with public key: 5pVyoAeURQHNMVU7DmfMHvCDNmTEYXWfEwc136GYhTKG
+</pre></div>
+</div>
+</section>
+<section id="verifying-a-keypair">
+<h2>Verifying a keypair<a class="headerlink" href="#verifying-a-keypair" title="Permalink to this heading"></a></h2>
+<p>If you have a keypair and a pubkey, you can check whether the given pubkey
+comes from that keypair:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">solders.keypair</span> <span class="kn">import</span> <span class="n">Keypair</span>
+<span class="kn">from</span> <span class="nn">solders.pubkey</span> <span class="kn">import</span> <span class="n">Pubkey</span>
+
+<span class="n">public_key</span> <span class="o">=</span> <span class="n">Pubkey</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="s2">&quot;24PNhTaNtomHhoy3fTRaMhAFCRj4uHqhZEEoWrKDbR5p&quot;</span><span class="p">)</span>
+
+<span class="n">keys</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="mi">174</span><span class="p">,</span> <span class="mi">47</span><span class="p">,</span> <span class="mi">154</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">202</span><span class="p">,</span> <span class="mi">193</span><span class="p">,</span> <span class="mi">206</span><span class="p">,</span> <span class="mi">113</span><span class="p">,</span> <span class="mi">199</span><span class="p">,</span> <span class="mi">190</span><span class="p">,</span> <span class="mi">53</span><span class="p">,</span> <span class="mi">133</span><span class="p">,</span> <span class="mi">169</span><span class="p">,</span> <span class="mi">175</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">56</span><span class="p">,</span> <span class="mi">222</span><span class="p">,</span> <span class="mi">53</span><span class="p">,</span> <span class="mi">138</span><span class="p">,</span>
+        <span class="mi">189</span><span class="p">,</span> <span class="mi">224</span><span class="p">,</span> <span class="mi">216</span><span class="p">,</span> <span class="mi">117</span><span class="p">,</span> <span class="mi">173</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">149</span><span class="p">,</span> <span class="mi">53</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="mi">73</span><span class="p">,</span> <span class="mi">251</span><span class="p">,</span> <span class="mi">237</span><span class="p">,</span> <span class="mi">246</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">185</span><span class="p">,</span> <span class="mi">186</span><span class="p">,</span> <span class="mi">82</span><span class="p">,</span> <span class="mi">177</span><span class="p">,</span> <span class="mi">240</span><span class="p">,</span>
+        <span class="mi">148</span><span class="p">,</span> <span class="mi">69</span><span class="p">,</span> <span class="mi">241</span><span class="p">,</span> <span class="mi">227</span><span class="p">,</span> <span class="mi">167</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">141</span><span class="p">,</span> <span class="mi">89</span><span class="p">,</span> <span class="mi">240</span><span class="p">,</span> <span class="mi">121</span><span class="p">,</span> <span class="mi">121</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">172</span><span class="p">,</span> <span class="mi">247</span><span class="p">,</span> <span class="mi">68</span><span class="p">,</span> <span class="mi">251</span><span class="p">,</span> <span class="mi">226</span><span class="p">,</span> <span class="mi">218</span><span class="p">,</span> <span class="mi">48</span><span class="p">,</span>
+        <span class="mi">63</span><span class="p">,</span> <span class="mi">176</span><span class="p">,</span> <span class="mi">109</span><span class="p">,</span> <span class="mi">168</span><span class="p">,</span> <span class="mi">89</span><span class="p">,</span> <span class="mi">238</span><span class="p">,</span> <span class="mi">135</span><span class="p">,</span>
+    <span class="p">]</span>
+<span class="n">keypair</span> <span class="o">=</span> <span class="n">Keypair</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span>
+
+<span class="k">assert</span> <span class="n">keypair</span><span class="o">.</span><span class="n">pubkey</span><span class="p">()</span> <span class="o">==</span> <span class="n">public_key</span>
+</pre></div>
+</div>
+</section>
+<section id="restoring-a-keypair-from-a-mnemonic-seed-phrase">
+<h2>Restoring a keypair from a mnemonic (seed phrase)<a class="headerlink" href="#restoring-a-keypair-from-a-mnemonic-seed-phrase" title="Permalink to this heading"></a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">solders.keypair</span> <span class="kn">import</span> <span class="n">Keypair</span>
+<span class="kn">from</span> <span class="nn">mnemonic</span> <span class="kn">import</span> <span class="n">Mnemonic</span>
+
+<span class="n">mnemo</span> <span class="o">=</span> <span class="n">Mnemonic</span><span class="p">(</span><span class="s2">&quot;english&quot;</span><span class="p">)</span>
+<span class="n">seed</span> <span class="o">=</span> <span class="n">mnemo</span><span class="o">.</span><span class="n">to_seed</span><span class="p">(</span><span class="s2">&quot;pill tomorrow foster begin walnut borrow virtual kick shift mutual shoe scatter&quot;</span><span class="p">)</span>
+<span class="n">keypair</span> <span class="o">=</span> <span class="n">Keypair</span><span class="o">.</span><span class="n">from_seed</span><span class="p">(</span><span class="n">seed</span><span class="p">[:</span><span class="mi">32</span><span class="p">])</span>
+</pre></div>
+</div>
+</section>
+<section id="signing-and-verifying-messages">
+<h2>Signing and verifying messages<a class="headerlink" href="#signing-and-verifying-messages" title="Permalink to this heading"></a></h2>
+<p>The primary function of a keypair is to sign messages and enable verification of the signature.
+Verification of a signature allows the recipient to be sure that the data was signed by the owner of a specific private key.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">solders.keypair</span> <span class="kn">import</span> <span class="n">Keypair</span>
+
+<span class="n">secret_key</span> <span class="o">=</span> <span class="p">[</span>
+      <span class="mi">174</span><span class="p">,</span> <span class="mi">47</span><span class="p">,</span> <span class="mi">154</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">202</span><span class="p">,</span> <span class="mi">193</span><span class="p">,</span> <span class="mi">206</span><span class="p">,</span> <span class="mi">113</span><span class="p">,</span> <span class="mi">199</span><span class="p">,</span> <span class="mi">190</span><span class="p">,</span> <span class="mi">53</span><span class="p">,</span> <span class="mi">133</span><span class="p">,</span> <span class="mi">169</span><span class="p">,</span> <span class="mi">175</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">56</span><span class="p">,</span> <span class="mi">222</span><span class="p">,</span> <span class="mi">53</span><span class="p">,</span> <span class="mi">138</span><span class="p">,</span> <span class="mi">189</span><span class="p">,</span> <span class="mi">224</span><span class="p">,</span> <span class="mi">216</span><span class="p">,</span> <span class="mi">117</span><span class="p">,</span>
+      <span class="mi">173</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">149</span><span class="p">,</span> <span class="mi">53</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="mi">73</span><span class="p">,</span> <span class="mi">251</span><span class="p">,</span> <span class="mi">237</span><span class="p">,</span> <span class="mi">246</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">185</span><span class="p">,</span> <span class="mi">186</span><span class="p">,</span> <span class="mi">82</span><span class="p">,</span> <span class="mi">177</span><span class="p">,</span> <span class="mi">240</span><span class="p">,</span> <span class="mi">148</span><span class="p">,</span> <span class="mi">69</span><span class="p">,</span> <span class="mi">241</span><span class="p">,</span> <span class="mi">227</span><span class="p">,</span> <span class="mi">167</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">141</span><span class="p">,</span> <span class="mi">89</span><span class="p">,</span> <span class="mi">240</span><span class="p">,</span>
+      <span class="mi">121</span><span class="p">,</span> <span class="mi">121</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">172</span><span class="p">,</span> <span class="mi">247</span><span class="p">,</span> <span class="mi">68</span><span class="p">,</span> <span class="mi">251</span><span class="p">,</span> <span class="mi">226</span><span class="p">,</span> <span class="mi">218</span><span class="p">,</span> <span class="mi">48</span><span class="p">,</span> <span class="mi">63</span><span class="p">,</span> <span class="mi">176</span><span class="p">,</span> <span class="mi">109</span><span class="p">,</span> <span class="mi">168</span><span class="p">,</span> <span class="mi">89</span><span class="p">,</span> <span class="mi">238</span><span class="p">,</span> <span class="mi">135</span><span class="p">,</span>
+<span class="p">]</span>
+<span class="n">keypair</span> <span class="o">=</span> <span class="n">Keypair</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">secret_key</span><span class="p">)</span>
+<span class="n">message</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;The quick brown fox jumps over the lazy dog&quot;</span>
+<span class="n">signature</span> <span class="o">=</span> <span class="n">keypair</span><span class="o">.</span><span class="n">sign_message</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">signature</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="n">keypair</span><span class="o">.</span><span class="n">pubkey</span><span class="p">(),</span> <span class="n">message</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Tutorials" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pubkeys.html" class="btn btn-neutral float-right" title="Pubkeys" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Kevin Heavey.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

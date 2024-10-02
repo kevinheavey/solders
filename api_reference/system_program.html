@@ -1,0 +1,1410 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>System Program &mdash; solders 0.21.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Sysvar" href="sysvar.html" />
+    <link rel="prev" title="Signature" href="signature.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            solders
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Solders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="account.html">Account</a></li>
+<li class="toctree-l2"><a class="reference internal" href="account_decoder.html">Account Decoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="address_lookup_table_account.html">Address Lookup Table Account</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bankrun.html">Bankrun</a></li>
+<li class="toctree-l2"><a class="reference internal" href="commitment_config.html">Commitment Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compute_budget.html">Compute Budget</a></li>
+<li class="toctree-l2"><a class="reference internal" href="epoch_schedule.html">Epoch Schedule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="errors.html">Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hash.html">Hash</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instruction.html">Instruction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="keypair.html">Keypair</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message.html">Message</a></li>
+<li class="toctree-l2"><a class="reference internal" href="null_signer.html">Null Signer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="presigner.html">Presigner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pubkey.html">Pubkey</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rpc/index.html">RPC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="signature.html">Signature</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">System Program</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.ID"><code class="docutils literal notranslate"><span class="pre">ID</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.transfer_many"><code class="docutils literal notranslate"><span class="pre">transfer_many()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.create_nonce_account"><code class="docutils literal notranslate"><span class="pre">create_nonce_account()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.create_nonce_account_with_seed"><code class="docutils literal notranslate"><span class="pre">create_nonce_account_with_seed()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.CreateAccountParams"><code class="docutils literal notranslate"><span class="pre">CreateAccountParams</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.CreateAccountParams.from_pubkey"><code class="docutils literal notranslate"><span class="pre">CreateAccountParams.from_pubkey</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.CreateAccountParams.to_pubkey"><code class="docutils literal notranslate"><span class="pre">CreateAccountParams.to_pubkey</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.CreateAccountParams.lamports"><code class="docutils literal notranslate"><span class="pre">CreateAccountParams.lamports</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.CreateAccountParams.space"><code class="docutils literal notranslate"><span class="pre">CreateAccountParams.space</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.CreateAccountParams.owner"><code class="docutils literal notranslate"><span class="pre">CreateAccountParams.owner</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.create_account"><code class="docutils literal notranslate"><span class="pre">create_account()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.decode_create_account"><code class="docutils literal notranslate"><span class="pre">decode_create_account()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.CreateAccountWithSeedParams"><code class="docutils literal notranslate"><span class="pre">CreateAccountWithSeedParams</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.CreateAccountWithSeedParams.from_pubkey"><code class="docutils literal notranslate"><span class="pre">CreateAccountWithSeedParams.from_pubkey</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.CreateAccountWithSeedParams.to_pubkey"><code class="docutils literal notranslate"><span class="pre">CreateAccountWithSeedParams.to_pubkey</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.CreateAccountWithSeedParams.base"><code class="docutils literal notranslate"><span class="pre">CreateAccountWithSeedParams.base</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.CreateAccountWithSeedParams.seed"><code class="docutils literal notranslate"><span class="pre">CreateAccountWithSeedParams.seed</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.CreateAccountWithSeedParams.lamports"><code class="docutils literal notranslate"><span class="pre">CreateAccountWithSeedParams.lamports</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.CreateAccountWithSeedParams.space"><code class="docutils literal notranslate"><span class="pre">CreateAccountWithSeedParams.space</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.CreateAccountWithSeedParams.owner"><code class="docutils literal notranslate"><span class="pre">CreateAccountWithSeedParams.owner</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.create_account_with_seed"><code class="docutils literal notranslate"><span class="pre">create_account_with_seed()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.decode_create_account_with_seed"><code class="docutils literal notranslate"><span class="pre">decode_create_account_with_seed()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.AssignParams"><code class="docutils literal notranslate"><span class="pre">AssignParams</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.AssignParams.pubkey"><code class="docutils literal notranslate"><span class="pre">AssignParams.pubkey</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.AssignParams.owner"><code class="docutils literal notranslate"><span class="pre">AssignParams.owner</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.assign"><code class="docutils literal notranslate"><span class="pre">assign()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.decode_assign"><code class="docutils literal notranslate"><span class="pre">decode_assign()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.AssignWithSeedParams"><code class="docutils literal notranslate"><span class="pre">AssignWithSeedParams</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.AssignWithSeedParams.address"><code class="docutils literal notranslate"><span class="pre">AssignWithSeedParams.address</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.AssignWithSeedParams.base"><code class="docutils literal notranslate"><span class="pre">AssignWithSeedParams.base</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.AssignWithSeedParams.seed"><code class="docutils literal notranslate"><span class="pre">AssignWithSeedParams.seed</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.AssignWithSeedParams.owner"><code class="docutils literal notranslate"><span class="pre">AssignWithSeedParams.owner</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.assign_with_seed"><code class="docutils literal notranslate"><span class="pre">assign_with_seed()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.decode_assign_with_seed"><code class="docutils literal notranslate"><span class="pre">decode_assign_with_seed()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.TransferParams"><code class="docutils literal notranslate"><span class="pre">TransferParams</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.TransferParams.from_pubkey"><code class="docutils literal notranslate"><span class="pre">TransferParams.from_pubkey</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.TransferParams.to_pubkey"><code class="docutils literal notranslate"><span class="pre">TransferParams.to_pubkey</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.TransferParams.lamports"><code class="docutils literal notranslate"><span class="pre">TransferParams.lamports</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.transfer"><code class="docutils literal notranslate"><span class="pre">transfer()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.decode_transfer"><code class="docutils literal notranslate"><span class="pre">decode_transfer()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.TransferWithSeedParams"><code class="docutils literal notranslate"><span class="pre">TransferWithSeedParams</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.TransferWithSeedParams.from_pubkey"><code class="docutils literal notranslate"><span class="pre">TransferWithSeedParams.from_pubkey</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.TransferWithSeedParams.from_base"><code class="docutils literal notranslate"><span class="pre">TransferWithSeedParams.from_base</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.TransferWithSeedParams.from_seed"><code class="docutils literal notranslate"><span class="pre">TransferWithSeedParams.from_seed</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.TransferWithSeedParams.from_owner"><code class="docutils literal notranslate"><span class="pre">TransferWithSeedParams.from_owner</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.TransferWithSeedParams.to_pubkey"><code class="docutils literal notranslate"><span class="pre">TransferWithSeedParams.to_pubkey</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.TransferWithSeedParams.lamports"><code class="docutils literal notranslate"><span class="pre">TransferWithSeedParams.lamports</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.transfer_with_seed"><code class="docutils literal notranslate"><span class="pre">transfer_with_seed()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.decode_transfer_with_seed"><code class="docutils literal notranslate"><span class="pre">decode_transfer_with_seed()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.AllocateParams"><code class="docutils literal notranslate"><span class="pre">AllocateParams</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.AllocateParams.pubkey"><code class="docutils literal notranslate"><span class="pre">AllocateParams.pubkey</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.AllocateParams.space"><code class="docutils literal notranslate"><span class="pre">AllocateParams.space</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.allocate"><code class="docutils literal notranslate"><span class="pre">allocate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.decode_allocate"><code class="docutils literal notranslate"><span class="pre">decode_allocate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.AllocateWithSeedParams"><code class="docutils literal notranslate"><span class="pre">AllocateWithSeedParams</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.AllocateWithSeedParams.address"><code class="docutils literal notranslate"><span class="pre">AllocateWithSeedParams.address</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.AllocateWithSeedParams.base"><code class="docutils literal notranslate"><span class="pre">AllocateWithSeedParams.base</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.AllocateWithSeedParams.seed"><code class="docutils literal notranslate"><span class="pre">AllocateWithSeedParams.seed</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.AllocateWithSeedParams.space"><code class="docutils literal notranslate"><span class="pre">AllocateWithSeedParams.space</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.AllocateWithSeedParams.owner"><code class="docutils literal notranslate"><span class="pre">AllocateWithSeedParams.owner</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.allocate_with_seed"><code class="docutils literal notranslate"><span class="pre">allocate_with_seed()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.decode_allocate_with_seed"><code class="docutils literal notranslate"><span class="pre">decode_allocate_with_seed()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.InitializeNonceAccountParams"><code class="docutils literal notranslate"><span class="pre">InitializeNonceAccountParams</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.InitializeNonceAccountParams.nonce_pubkey"><code class="docutils literal notranslate"><span class="pre">InitializeNonceAccountParams.nonce_pubkey</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.InitializeNonceAccountParams.authority"><code class="docutils literal notranslate"><span class="pre">InitializeNonceAccountParams.authority</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.initialize_nonce_account"><code class="docutils literal notranslate"><span class="pre">initialize_nonce_account()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.decode_initialize_nonce_account"><code class="docutils literal notranslate"><span class="pre">decode_initialize_nonce_account()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.AdvanceNonceAccountParams"><code class="docutils literal notranslate"><span class="pre">AdvanceNonceAccountParams</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.AdvanceNonceAccountParams.nonce_pubkey"><code class="docutils literal notranslate"><span class="pre">AdvanceNonceAccountParams.nonce_pubkey</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.AdvanceNonceAccountParams.authorized_pubkey"><code class="docutils literal notranslate"><span class="pre">AdvanceNonceAccountParams.authorized_pubkey</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.advance_nonce_account"><code class="docutils literal notranslate"><span class="pre">advance_nonce_account()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.decode_advance_nonce_account"><code class="docutils literal notranslate"><span class="pre">decode_advance_nonce_account()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.WithdrawNonceAccountParams"><code class="docutils literal notranslate"><span class="pre">WithdrawNonceAccountParams</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.WithdrawNonceAccountParams.nonce_pubkey"><code class="docutils literal notranslate"><span class="pre">WithdrawNonceAccountParams.nonce_pubkey</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.WithdrawNonceAccountParams.authorized_pubkey"><code class="docutils literal notranslate"><span class="pre">WithdrawNonceAccountParams.authorized_pubkey</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.WithdrawNonceAccountParams.to_pubkey"><code class="docutils literal notranslate"><span class="pre">WithdrawNonceAccountParams.to_pubkey</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.WithdrawNonceAccountParams.lamports"><code class="docutils literal notranslate"><span class="pre">WithdrawNonceAccountParams.lamports</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.withdraw_nonce_account"><code class="docutils literal notranslate"><span class="pre">withdraw_nonce_account()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.decode_withdraw_nonce_account"><code class="docutils literal notranslate"><span class="pre">decode_withdraw_nonce_account()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.AuthorizeNonceAccountParams"><code class="docutils literal notranslate"><span class="pre">AuthorizeNonceAccountParams</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.AuthorizeNonceAccountParams.nonce_pubkey"><code class="docutils literal notranslate"><span class="pre">AuthorizeNonceAccountParams.nonce_pubkey</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.AuthorizeNonceAccountParams.authorized_pubkey"><code class="docutils literal notranslate"><span class="pre">AuthorizeNonceAccountParams.authorized_pubkey</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.AuthorizeNonceAccountParams.new_authority"><code class="docutils literal notranslate"><span class="pre">AuthorizeNonceAccountParams.new_authority</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.authorize_nonce_account"><code class="docutils literal notranslate"><span class="pre">authorize_nonce_account()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.decode_authorize_nonce_account"><code class="docutils literal notranslate"><span class="pre">decode_authorize_nonce_account()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.CloseLookupTableParams"><code class="docutils literal notranslate"><span class="pre">CloseLookupTableParams</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.CloseLookupTableParams.lookup_table_address"><code class="docutils literal notranslate"><span class="pre">CloseLookupTableParams.lookup_table_address</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.CloseLookupTableParams.authority_address"><code class="docutils literal notranslate"><span class="pre">CloseLookupTableParams.authority_address</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.CloseLookupTableParams.recipient_address"><code class="docutils literal notranslate"><span class="pre">CloseLookupTableParams.recipient_address</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.close_lookup_table"><code class="docutils literal notranslate"><span class="pre">close_lookup_table()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.CreateLookupTableParams"><code class="docutils literal notranslate"><span class="pre">CreateLookupTableParams</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.CreateLookupTableParams.authority_address"><code class="docutils literal notranslate"><span class="pre">CreateLookupTableParams.authority_address</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.CreateLookupTableParams.payer_address"><code class="docutils literal notranslate"><span class="pre">CreateLookupTableParams.payer_address</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.CreateLookupTableParams.recent_slot"><code class="docutils literal notranslate"><span class="pre">CreateLookupTableParams.recent_slot</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.create_lookup_table"><code class="docutils literal notranslate"><span class="pre">create_lookup_table()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.CreateLookupTableSignedParams"><code class="docutils literal notranslate"><span class="pre">CreateLookupTableSignedParams</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.CreateLookupTableSignedParams.authority_address"><code class="docutils literal notranslate"><span class="pre">CreateLookupTableSignedParams.authority_address</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.CreateLookupTableSignedParams.payer_address"><code class="docutils literal notranslate"><span class="pre">CreateLookupTableSignedParams.payer_address</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.CreateLookupTableSignedParams.recent_slot"><code class="docutils literal notranslate"><span class="pre">CreateLookupTableSignedParams.recent_slot</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.create_lookup_table_signed"><code class="docutils literal notranslate"><span class="pre">create_lookup_table_signed()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.DeactivateLookupTableParams"><code class="docutils literal notranslate"><span class="pre">DeactivateLookupTableParams</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.DeactivateLookupTableParams.lookup_table_address"><code class="docutils literal notranslate"><span class="pre">DeactivateLookupTableParams.lookup_table_address</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.DeactivateLookupTableParams.authority_address"><code class="docutils literal notranslate"><span class="pre">DeactivateLookupTableParams.authority_address</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.deactivate_lookup_table"><code class="docutils literal notranslate"><span class="pre">deactivate_lookup_table()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.ExtendLookupTableParams"><code class="docutils literal notranslate"><span class="pre">ExtendLookupTableParams</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.ExtendLookupTableParams.payer_address"><code class="docutils literal notranslate"><span class="pre">ExtendLookupTableParams.payer_address</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.ExtendLookupTableParams.lookup_table_address"><code class="docutils literal notranslate"><span class="pre">ExtendLookupTableParams.lookup_table_address</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.ExtendLookupTableParams.authority_address"><code class="docutils literal notranslate"><span class="pre">ExtendLookupTableParams.authority_address</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.ExtendLookupTableParams.new_addresses"><code class="docutils literal notranslate"><span class="pre">ExtendLookupTableParams.new_addresses</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.extend_lookup_table"><code class="docutils literal notranslate"><span class="pre">extend_lookup_table()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.FreezeLookupTableParams"><code class="docutils literal notranslate"><span class="pre">FreezeLookupTableParams</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.FreezeLookupTableParams.lookup_table_address"><code class="docutils literal notranslate"><span class="pre">FreezeLookupTableParams.lookup_table_address</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.system_program.FreezeLookupTableParams.authority_address"><code class="docutils literal notranslate"><span class="pre">FreezeLookupTableParams.authority_address</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.system_program.freeze_lookup_table"><code class="docutils literal notranslate"><span class="pre">freeze_lookup_table()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sysvar.html">Sysvar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="token/index.html">SPL Token</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transaction_status.html">Transaction Status</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transaction.html">Transaction</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">solders</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API Reference</a></li>
+      <li class="breadcrumb-item active">System Program</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/kevinheavey/solders/blob/main/docs/api_reference/system_program.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-solders.system_program">
+<span id="system-program"></span><h1>System Program<a class="headerlink" href="#module-solders.system_program" title="Permalink to this heading"></a></h1>
+<dl class="py data">
+<dt class="sig sig-object py" id="solders.system_program.ID">
+<span class="sig-name descname"><span class="pre">ID</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Final</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Pubkey(</span>&#160;&#160;&#160;&#160; <span class="pre">11111111111111111111111111111111,</span> <span class="pre">)</span></em><a class="headerlink" href="#solders.system_program.ID" title="Permalink to this definition"></a></dt>
+<dd><p>Pubkey that identifies the System program.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.system_program.transfer_many">
+<span class="sig-name descname"><span class="pre">transfer_many</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">from_pubkey</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_lamports</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.system_program.transfer_many" title="Permalink to this definition"></a></dt>
+<dd><p>Create new Transfer instructions to many destinations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>from_pubkey</strong> (<a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a>) – The sender pubkey.</p></li>
+<li><p><strong>to_lamports</strong> (<em>Sequence</em><em>[</em><em>tuple</em><em>[</em><em>int</em><em>, </em><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a><em>]</em><em>]</em>) – The lamports to transfer to each pubkey.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The Transfer instructions.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[<a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction">Instruction</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.system_program.create_nonce_account">
+<span class="sig-name descname"><span class="pre">create_nonce_account</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">from_pubkey</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nonce_pubkey</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">authority</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lamports</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.system_program.create_nonce_account" title="Permalink to this definition"></a></dt>
+<dd><p>Generate instructions to create and initialize a nonce account.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>from_pubkey</strong> (<a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a>) – The account that will transfer
+lamports to the created nonce account.</p></li>
+<li><p><strong>nonce_pubkey</strong> (<a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a>) – Nonce account which will be
+created and initialized.</p></li>
+<li><p><strong>authority</strong> (<a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a>) – Pubkey to set as authority of the
+initialized nonce account.</p></li>
+<li><p><strong>lamports</strong> (<em>int</em>) – Amount of lamports to transfer to
+the created account.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The CreateAccount instruction and the InitializeNonceAccount instruction.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[<a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction">Instruction</a>, <a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction">Instruction</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.system_program.create_nonce_account_with_seed">
+<span class="sig-name descname"><span class="pre">create_nonce_account_with_seed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">from_pubkey</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nonce_pubkey</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">authority</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lamports</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.system_program.create_nonce_account_with_seed" title="Permalink to this definition"></a></dt>
+<dd><p>Generate instructions to create a nonce account with seed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>from_pubkey</strong> (<a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a>) – The account that will transfer
+lamports to the created nonce account.</p></li>
+<li><p><strong>nonce_pubkey</strong> (<a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a>) – Nonce account which will be
+created and initialized. Must be pre-calculated
+with <a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey.create_with_seed" title="solders.pubkey.Pubkey.create_with_seed"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_with_seed()</span></code></a></p></li>
+<li><p><strong>base</strong> (<a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a>) – Base public key to use to derive the
+address of the created account. Must be the same
+as the base key used to create <code class="docutils literal notranslate"><span class="pre">nonce_pubkey</span></code>.</p></li>
+<li><p><strong>seed</strong> (<em>str</em>) – Seed to use to derive the address of the created account.
+Must be the same as the seed used to create <code class="docutils literal notranslate"><span class="pre">nonce_pubkey</span></code>.</p></li>
+<li><p><strong>authority</strong> (<a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><em>Pubkey</em></a>) – Pubkey to set as authority of the
+initialized nonce account.</p></li>
+<li><p><strong>lamports</strong> (<em>int</em>) – Amount of lamports to transfer to
+the created account.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The CreateAccountWithSeed instruction and the InitializeNonceAccount instruction.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[<a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction">Instruction</a>, <a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction">Instruction</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.system_program.CreateAccountParams">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CreateAccountParams</span></span><a class="headerlink" href="#solders.system_program.CreateAccountParams" title="Permalink to this definition"></a></dt>
+<dd><p>Create account system transaction params.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.CreateAccountParams.from_pubkey">
+<span class="sig-name descname"><span class="pre">from_pubkey</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.CreateAccountParams.from_pubkey" title="Permalink to this definition"></a></dt>
+<dd><p>The account that will transfer lamports to the created account.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.CreateAccountParams.to_pubkey">
+<span class="sig-name descname"><span class="pre">to_pubkey</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.CreateAccountParams.to_pubkey" title="Permalink to this definition"></a></dt>
+<dd><p>Pubkey of the created account.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.CreateAccountParams.lamports">
+<span class="sig-name descname"><span class="pre">lamports</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#solders.system_program.CreateAccountParams.lamports" title="Permalink to this definition"></a></dt>
+<dd><p>Amount of lamports to transfer to the created account.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.CreateAccountParams.space">
+<span class="sig-name descname"><span class="pre">space</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#solders.system_program.CreateAccountParams.space" title="Permalink to this definition"></a></dt>
+<dd><p>Amount of space in bytes to allocate to the created account.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.CreateAccountParams.owner">
+<span class="sig-name descname"><span class="pre">owner</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.CreateAccountParams.owner" title="Permalink to this definition"></a></dt>
+<dd><p>Pubkey of the program to assign as the owner of the created account.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.system_program.create_account">
+<span class="sig-name descname"><span class="pre">create_account</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#solders.system_program.CreateAccountParams" title="solders.system_program.CreateAccountParams"><span class="pre">CreateAccountParams</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><span class="pre">Instruction</span></a></span></span><a class="headerlink" href="#solders.system_program.create_account" title="Permalink to this definition"></a></dt>
+<dd><p>Generate an instruction that creates a new account.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>params</strong> – The CreateAccount params.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.pubkey</span> <span class="kn">import</span> <span class="n">Pubkey</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.system_program</span> <span class="kn">import</span> <span class="n">create_account</span><span class="p">,</span> <span class="n">CreateAccountParams</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">from_account</span> <span class="o">=</span> <span class="n">Pubkey</span><span class="o">.</span><span class="n">new_unique</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">new_account</span> <span class="o">=</span> <span class="n">Pubkey</span><span class="o">.</span><span class="n">new_unique</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">program_id</span> <span class="o">=</span> <span class="n">Pubkey</span><span class="o">.</span><span class="n">new_unique</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">instruction</span> <span class="o">=</span> <span class="n">create_account</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">CreateAccountParams</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">from_pubkey</span><span class="o">=</span><span class="n">from_account</span><span class="p">,</span> <span class="n">to_pubkey</span><span class="o">=</span><span class="n">new_account</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">lamports</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">space</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">owner</span><span class="o">=</span><span class="n">program_id</span><span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">instruction</span><span class="p">)</span>
+<span class="go">&lt;class &#39;solders.instruction.Instruction&#39;&gt;</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The instruction to create the account.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction">Instruction</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.system_program.decode_create_account">
+<span class="sig-name descname"><span class="pre">decode_create_account</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instruction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><span class="pre">Instruction</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#solders.system_program.CreateAccountParams" title="solders.system_program.CreateAccountParams"><span class="pre">CreateAccountParams</span></a></span></span><a class="headerlink" href="#solders.system_program.decode_create_account" title="Permalink to this definition"></a></dt>
+<dd><p>Decode a create account instruction and retrieve the instruction params.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>instruction</strong> (<a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><em>Instruction</em></a>) – The CreateAccount instruction.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The params used to create the instruction.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#solders.system_program.CreateAccountParams" title="solders.system_program.CreateAccountParams">CreateAccountParams</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.system_program.CreateAccountWithSeedParams">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CreateAccountWithSeedParams</span></span><a class="headerlink" href="#solders.system_program.CreateAccountWithSeedParams" title="Permalink to this definition"></a></dt>
+<dd><p>Create account with seed system transaction params.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.CreateAccountWithSeedParams.from_pubkey">
+<span class="sig-name descname"><span class="pre">from_pubkey</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.CreateAccountWithSeedParams.from_pubkey" title="Permalink to this definition"></a></dt>
+<dd><p>The account that will transfer lamports to the created account.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.CreateAccountWithSeedParams.to_pubkey">
+<span class="sig-name descname"><span class="pre">to_pubkey</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.CreateAccountWithSeedParams.to_pubkey" title="Permalink to this definition"></a></dt>
+<dd><p>Pubkey of the created account.
+Must be pre-calculated with <a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey.create_with_seed" title="solders.pubkey.Pubkey.create_with_seed"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_with_seed()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.CreateAccountWithSeedParams.base">
+<span class="sig-name descname"><span class="pre">base</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.CreateAccountWithSeedParams.base" title="Permalink to this definition"></a></dt>
+<dd><p>Base public key to use to derive the address of the created account.
+Must be the same as the base key used to create <code class="docutils literal notranslate"><span class="pre">to_pubkey</span></code>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.CreateAccountWithSeedParams.seed">
+<span class="sig-name descname"><span class="pre">seed</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#solders.system_program.CreateAccountWithSeedParams.seed" title="Permalink to this definition"></a></dt>
+<dd><p>Seed to use to derive the address of the created account.
+Must be the same as the seed used to create <code class="docutils literal notranslate"><span class="pre">to_pubkey</span></code>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.CreateAccountWithSeedParams.lamports">
+<span class="sig-name descname"><span class="pre">lamports</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#solders.system_program.CreateAccountWithSeedParams.lamports" title="Permalink to this definition"></a></dt>
+<dd><p>Amount of lamports to transfer to the created account.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.CreateAccountWithSeedParams.space">
+<span class="sig-name descname"><span class="pre">space</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#solders.system_program.CreateAccountWithSeedParams.space" title="Permalink to this definition"></a></dt>
+<dd><p>Amount of space in bytes to allocate to the created account.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.CreateAccountWithSeedParams.owner">
+<span class="sig-name descname"><span class="pre">owner</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.CreateAccountWithSeedParams.owner" title="Permalink to this definition"></a></dt>
+<dd><p>Pubkey of the program to assign as the owner of the created account.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.system_program.create_account_with_seed">
+<span class="sig-name descname"><span class="pre">create_account_with_seed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#solders.system_program.CreateAccountWithSeedParams" title="solders.system_program.CreateAccountWithSeedParams"><span class="pre">CreateAccountWithSeedParams</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><span class="pre">Instruction</span></a></span></span><a class="headerlink" href="#solders.system_program.create_account_with_seed" title="Permalink to this definition"></a></dt>
+<dd><p>Generate an instruction that creates a new account at an address generated with <code class="docutils literal notranslate"><span class="pre">from</span></code>, a seed, and program_id.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>params</strong> (<a class="reference internal" href="#solders.system_program.CreateAccountWithSeedParams" title="solders.system_program.CreateAccountWithSeedParams"><em>CreateAccountWithSeedParams</em></a>) – The CreateAccountWithSeed params.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The instruction to create the account.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction">Instruction</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.system_program.decode_create_account_with_seed">
+<span class="sig-name descname"><span class="pre">decode_create_account_with_seed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instruction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><span class="pre">Instruction</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#solders.system_program.CreateAccountWithSeedParams" title="solders.system_program.CreateAccountWithSeedParams"><span class="pre">CreateAccountWithSeedParams</span></a></span></span><a class="headerlink" href="#solders.system_program.decode_create_account_with_seed" title="Permalink to this definition"></a></dt>
+<dd><p>Decode create account with seed instruction and retrieve the instruction params.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>instruction</strong> (<a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><em>Instruction</em></a>) – The CreateAccountWithSeed instruction.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The params used to create the instruction.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#solders.system_program.CreateAccountWithSeedParams" title="solders.system_program.CreateAccountWithSeedParams">CreateAccountWithSeedParams</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.system_program.AssignParams">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AssignParams</span></span><a class="headerlink" href="#solders.system_program.AssignParams" title="Permalink to this definition"></a></dt>
+<dd><p>Assign system transaction params.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.AssignParams.pubkey">
+<span class="sig-name descname"><span class="pre">pubkey</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.AssignParams.pubkey" title="Permalink to this definition"></a></dt>
+<dd><p>Pubkey of the account which will be assigned a new owner.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.AssignParams.owner">
+<span class="sig-name descname"><span class="pre">owner</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.AssignParams.owner" title="Permalink to this definition"></a></dt>
+<dd><p>Pubkey of the program to assign as the owner.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.system_program.assign">
+<span class="sig-name descname"><span class="pre">assign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#solders.system_program.AssignParams" title="solders.system_program.AssignParams"><span class="pre">AssignParams</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><span class="pre">Instruction</span></a></span></span><a class="headerlink" href="#solders.system_program.assign" title="Permalink to this definition"></a></dt>
+<dd><p>Generate an instruction that assigns an account to a program.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>params</strong> (<a class="reference internal" href="#solders.system_program.AssignParams" title="solders.system_program.AssignParams"><em>AssignParams</em></a>) – The assign params.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The generated instruction.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction">Instruction</a></p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.pubkey</span> <span class="kn">import</span> <span class="n">Pubkey</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.system_program</span> <span class="kn">import</span> <span class="n">assign</span><span class="p">,</span> <span class="n">AssignParams</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">account</span><span class="p">,</span> <span class="n">program_id</span> <span class="o">=</span> <span class="n">Pubkey</span><span class="o">.</span><span class="n">default</span><span class="p">(),</span> <span class="n">Pubkey</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">instruction</span> <span class="o">=</span> <span class="n">assign</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">AssignParams</span><span class="p">(</span><span class="n">pubkey</span><span class="o">=</span><span class="n">account</span><span class="p">,</span> <span class="n">owner</span><span class="o">=</span><span class="n">program_id</span><span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">instruction</span><span class="p">)</span>
+<span class="go">&lt;class &#39;solders.instruction.Instruction&#39;&gt;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.system_program.decode_assign">
+<span class="sig-name descname"><span class="pre">decode_assign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instruction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><span class="pre">Instruction</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#solders.system_program.AssignParams" title="solders.system_program.AssignParams"><span class="pre">AssignParams</span></a></span></span><a class="headerlink" href="#solders.system_program.decode_assign" title="Permalink to this definition"></a></dt>
+<dd><p>Decode an assign instruction and retrieve the instruction params.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>instruction</strong> (<a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><em>Instruction</em></a>) – The Assign instruction.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The params used to create the instruction.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#solders.system_program.AssignParams" title="solders.system_program.AssignParams">AssignParams</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.system_program.AssignWithSeedParams">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AssignWithSeedParams</span></span><a class="headerlink" href="#solders.system_program.AssignWithSeedParams" title="Permalink to this definition"></a></dt>
+<dd><p>Assign account with seed system transaction params.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.AssignWithSeedParams.address">
+<span class="sig-name descname"><span class="pre">address</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.AssignWithSeedParams.address" title="Permalink to this definition"></a></dt>
+<dd><p>Pubkey of the account which will be assigned a new owner.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.AssignWithSeedParams.base">
+<span class="sig-name descname"><span class="pre">base</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.AssignWithSeedParams.base" title="Permalink to this definition"></a></dt>
+<dd><p>Base public key to use to derive the address of the assigned account.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.AssignWithSeedParams.seed">
+<span class="sig-name descname"><span class="pre">seed</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#solders.system_program.AssignWithSeedParams.seed" title="Permalink to this definition"></a></dt>
+<dd><p>Seed to use to derive the address of the assigned account.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.AssignWithSeedParams.owner">
+<span class="sig-name descname"><span class="pre">owner</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.AssignWithSeedParams.owner" title="Permalink to this definition"></a></dt>
+<dd><p>Pubkey of the program to assign as the owner.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.system_program.assign_with_seed">
+<span class="sig-name descname"><span class="pre">assign_with_seed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#solders.system_program.AssignWithSeedParams" title="solders.system_program.AssignWithSeedParams"><span class="pre">AssignWithSeedParams</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><span class="pre">Instruction</span></a></span></span><a class="headerlink" href="#solders.system_program.assign_with_seed" title="Permalink to this definition"></a></dt>
+<dd><p>Generate an instruction that assigns an account to a program.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>params</strong> (<a class="reference internal" href="#solders.system_program.AssignWithSeedParams" title="solders.system_program.AssignWithSeedParams"><em>AssignWithSeedParams</em></a>) – The AssignWithSeed params.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The generated instruction.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction">Instruction</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.system_program.decode_assign_with_seed">
+<span class="sig-name descname"><span class="pre">decode_assign_with_seed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instruction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><span class="pre">Instruction</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#solders.system_program.AssignWithSeedParams" title="solders.system_program.AssignWithSeedParams"><span class="pre">AssignWithSeedParams</span></a></span></span><a class="headerlink" href="#solders.system_program.decode_assign_with_seed" title="Permalink to this definition"></a></dt>
+<dd><p>Decode an assign with seed instruction and retrieve the instruction params.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>instruction</strong> (<a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><em>Instruction</em></a>) – The AssignWithSeed instruction.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The params used to create the instruction.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#solders.system_program.AssignWithSeedParams" title="solders.system_program.AssignWithSeedParams">AssignWithSeedParams</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.system_program.TransferParams">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TransferParams</span></span><a class="headerlink" href="#solders.system_program.TransferParams" title="Permalink to this definition"></a></dt>
+<dd><p>Transfer system transaction params.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.TransferParams.from_pubkey">
+<span class="sig-name descname"><span class="pre">from_pubkey</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.TransferParams.from_pubkey" title="Permalink to this definition"></a></dt>
+<dd><p>Account that will transfer lamports.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.TransferParams.to_pubkey">
+<span class="sig-name descname"><span class="pre">to_pubkey</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.TransferParams.to_pubkey" title="Permalink to this definition"></a></dt>
+<dd><p>Account that will receive transferred lamports.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.TransferParams.lamports">
+<span class="sig-name descname"><span class="pre">lamports</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#solders.system_program.TransferParams.lamports" title="Permalink to this definition"></a></dt>
+<dd><p>Amount of lamports to transfer.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.system_program.transfer">
+<span class="sig-name descname"><span class="pre">transfer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#solders.system_program.TransferParams" title="solders.system_program.TransferParams"><span class="pre">TransferParams</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><span class="pre">Instruction</span></a></span></span><a class="headerlink" href="#solders.system_program.transfer" title="Permalink to this definition"></a></dt>
+<dd><p>Generate an instruction that transfers lamports from one account to another.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>params</strong> – The transfer params.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.pubkey</span> <span class="kn">import</span> <span class="n">Pubkey</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.system_program</span> <span class="kn">import</span> <span class="n">transfer</span><span class="p">,</span> <span class="n">TransferParams</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sender</span><span class="p">,</span> <span class="n">receiver</span> <span class="o">=</span> <span class="n">Pubkey</span><span class="o">.</span><span class="n">default</span><span class="p">(),</span> <span class="n">Pubkey</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">instruction</span> <span class="o">=</span> <span class="n">transfer</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">TransferParams</span><span class="p">(</span><span class="n">from_pubkey</span><span class="o">=</span><span class="n">sender</span><span class="p">,</span> <span class="n">to_pubkey</span><span class="o">=</span><span class="n">receiver</span><span class="p">,</span> <span class="n">lamports</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">instruction</span><span class="p">)</span>
+<span class="go">&lt;class &#39;solders.instruction.Instruction&#39;&gt;</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The transfer instruction.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction">Instruction</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.system_program.decode_transfer">
+<span class="sig-name descname"><span class="pre">decode_transfer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instruction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><span class="pre">Instruction</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#solders.system_program.TransferParams" title="solders.system_program.TransferParams"><span class="pre">TransferParams</span></a></span></span><a class="headerlink" href="#solders.system_program.decode_transfer" title="Permalink to this definition"></a></dt>
+<dd><p>Decode a transfer instruction and retrieve the instruction params.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>instruction</strong> (<a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><em>Instruction</em></a>) – The Transfer instruction.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The params used to create the instruction.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#solders.system_program.TransferParams" title="solders.system_program.TransferParams">TransferParams</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.system_program.TransferWithSeedParams">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TransferWithSeedParams</span></span><a class="headerlink" href="#solders.system_program.TransferWithSeedParams" title="Permalink to this definition"></a></dt>
+<dd><p>Transfer with seed system transaction params.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.TransferWithSeedParams.from_pubkey">
+<span class="sig-name descname"><span class="pre">from_pubkey</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.TransferWithSeedParams.from_pubkey" title="Permalink to this definition"></a></dt>
+<dd><p>Account that will transfer lamports.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.TransferWithSeedParams.from_base">
+<span class="sig-name descname"><span class="pre">from_base</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.TransferWithSeedParams.from_base" title="Permalink to this definition"></a></dt>
+<dd><p>Base public key to use to derive the funding account address.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.TransferWithSeedParams.from_seed">
+<span class="sig-name descname"><span class="pre">from_seed</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#solders.system_program.TransferWithSeedParams.from_seed" title="Permalink to this definition"></a></dt>
+<dd><p>Seed to use to derive the funding account address.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.TransferWithSeedParams.from_owner">
+<span class="sig-name descname"><span class="pre">from_owner</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.TransferWithSeedParams.from_owner" title="Permalink to this definition"></a></dt>
+<dd><p>Program id to use to derive the funding account address.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.TransferWithSeedParams.to_pubkey">
+<span class="sig-name descname"><span class="pre">to_pubkey</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.TransferWithSeedParams.to_pubkey" title="Permalink to this definition"></a></dt>
+<dd><p>Account that will receive transferred lamports.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.TransferWithSeedParams.lamports">
+<span class="sig-name descname"><span class="pre">lamports</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#solders.system_program.TransferWithSeedParams.lamports" title="Permalink to this definition"></a></dt>
+<dd><p>Amount of lamports to transfer.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.system_program.transfer_with_seed">
+<span class="sig-name descname"><span class="pre">transfer_with_seed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#solders.system_program.TransferWithSeedParams" title="solders.system_program.TransferWithSeedParams"><span class="pre">TransferWithSeedParams</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><span class="pre">Instruction</span></a></span></span><a class="headerlink" href="#solders.system_program.transfer_with_seed" title="Permalink to this definition"></a></dt>
+<dd><p>Generate an instruction that transfers lamports from one account to another.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>params</strong> (<a class="reference internal" href="#solders.system_program.TransferWithSeedParams" title="solders.system_program.TransferWithSeedParams"><em>TransferWithSeedParams</em></a>) – The TransferWithSeed params.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The TransferWithSeed instruction.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction">Instruction</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.system_program.decode_transfer_with_seed">
+<span class="sig-name descname"><span class="pre">decode_transfer_with_seed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instruction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><span class="pre">Instruction</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#solders.system_program.TransferWithSeedParams" title="solders.system_program.TransferWithSeedParams"><span class="pre">TransferWithSeedParams</span></a></span></span><a class="headerlink" href="#solders.system_program.decode_transfer_with_seed" title="Permalink to this definition"></a></dt>
+<dd><p>Decode a transfer with seed instruction and retrieve the instruction params.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>instruction</strong> (<a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><em>Instruction</em></a>) – The TransferWithSeed instruction.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The params used to create the instruction.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#solders.system_program.TransferWithSeedParams" title="solders.system_program.TransferWithSeedParams">TransferWithSeedParams</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.system_program.AllocateParams">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AllocateParams</span></span><a class="headerlink" href="#solders.system_program.AllocateParams" title="Permalink to this definition"></a></dt>
+<dd><p>Allocate account system transaction params.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.AllocateParams.pubkey">
+<span class="sig-name descname"><span class="pre">pubkey</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.AllocateParams.pubkey" title="Permalink to this definition"></a></dt>
+<dd><p>Account to allocate.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.AllocateParams.space">
+<span class="sig-name descname"><span class="pre">space</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#solders.system_program.AllocateParams.space" title="Permalink to this definition"></a></dt>
+<dd><p>Amount of space in bytes to allocate.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.system_program.allocate">
+<span class="sig-name descname"><span class="pre">allocate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#solders.system_program.AllocateParams" title="solders.system_program.AllocateParams"><span class="pre">AllocateParams</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><span class="pre">Instruction</span></a></span></span><a class="headerlink" href="#solders.system_program.allocate" title="Permalink to this definition"></a></dt>
+<dd><p>Generate an instruction that allocates space in an account without funding.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>params</strong> (<a class="reference internal" href="#solders.system_program.AllocateParams" title="solders.system_program.AllocateParams"><em>AllocateParams</em></a>) – The allocate params.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The allocate instruction.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction">Instruction</a></p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.pubkey</span> <span class="kn">import</span> <span class="n">Pubkey</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solders.system_program</span> <span class="kn">import</span> <span class="n">allocate</span><span class="p">,</span> <span class="n">AllocateParams</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">allocator</span> <span class="o">=</span> <span class="n">Pubkey</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">instruction</span> <span class="o">=</span> <span class="n">allocate</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">AllocateParams</span><span class="p">(</span><span class="n">pubkey</span><span class="o">=</span><span class="n">allocator</span><span class="p">,</span> <span class="n">space</span><span class="o">=</span><span class="mi">65537</span><span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">instruction</span><span class="p">)</span>
+<span class="go">&lt;class &#39;solders.instruction.Instruction&#39;&gt;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.system_program.decode_allocate">
+<span class="sig-name descname"><span class="pre">decode_allocate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instruction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><span class="pre">Instruction</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#solders.system_program.AllocateParams" title="solders.system_program.AllocateParams"><span class="pre">AllocateParams</span></a></span></span><a class="headerlink" href="#solders.system_program.decode_allocate" title="Permalink to this definition"></a></dt>
+<dd><p>Decode an allocate instruction and retrieve the instruction params.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>instruction</strong> (<a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><em>Instruction</em></a>) – The Allocate instruction.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The params used to create the instruction.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#solders.system_program.AllocateParams" title="solders.system_program.AllocateParams">AllocateParams</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.system_program.AllocateWithSeedParams">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AllocateWithSeedParams</span></span><a class="headerlink" href="#solders.system_program.AllocateWithSeedParams" title="Permalink to this definition"></a></dt>
+<dd><p>Allocate account with seed system transaction params.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.AllocateWithSeedParams.address">
+<span class="sig-name descname"><span class="pre">address</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.AllocateWithSeedParams.address" title="Permalink to this definition"></a></dt>
+<dd><p>Account to allocate.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.AllocateWithSeedParams.base">
+<span class="sig-name descname"><span class="pre">base</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.AllocateWithSeedParams.base" title="Permalink to this definition"></a></dt>
+<dd><p>Base public key to use to derive the address of the allocated account.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.AllocateWithSeedParams.seed">
+<span class="sig-name descname"><span class="pre">seed</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#solders.system_program.AllocateWithSeedParams.seed" title="Permalink to this definition"></a></dt>
+<dd><p>Seed to use to derive the address of the allocated account.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.AllocateWithSeedParams.space">
+<span class="sig-name descname"><span class="pre">space</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#solders.system_program.AllocateWithSeedParams.space" title="Permalink to this definition"></a></dt>
+<dd><p>Amount of space in bytes to allocate.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.AllocateWithSeedParams.owner">
+<span class="sig-name descname"><span class="pre">owner</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.AllocateWithSeedParams.owner" title="Permalink to this definition"></a></dt>
+<dd><p>Pubkey of the program to assign as the owner of the allocated account.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.system_program.allocate_with_seed">
+<span class="sig-name descname"><span class="pre">allocate_with_seed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#solders.system_program.AllocateWithSeedParams" title="solders.system_program.AllocateWithSeedParams"><span class="pre">AllocateWithSeedParams</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><span class="pre">Instruction</span></a></span></span><a class="headerlink" href="#solders.system_program.allocate_with_seed" title="Permalink to this definition"></a></dt>
+<dd><p>Generate an instruction that allocates space in an account without funding.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>params</strong> (<a class="reference internal" href="#solders.system_program.AllocateWithSeedParams" title="solders.system_program.AllocateWithSeedParams"><em>AllocateWithSeedParams</em></a>) – The AllocateWithSeed params.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The AllocateWithSeed instruction.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction">Instruction</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.system_program.decode_allocate_with_seed">
+<span class="sig-name descname"><span class="pre">decode_allocate_with_seed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instruction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><span class="pre">Instruction</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#solders.system_program.AllocateWithSeedParams" title="solders.system_program.AllocateWithSeedParams"><span class="pre">AllocateWithSeedParams</span></a></span></span><a class="headerlink" href="#solders.system_program.decode_allocate_with_seed" title="Permalink to this definition"></a></dt>
+<dd><p>Decode an allocate with seed instruction and retrieve the instruction params.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>instruction</strong> (<a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><em>Instruction</em></a>) – The AllocateWithSeed instruction.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The params used to create the instruction.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#solders.system_program.AllocateWithSeedParams" title="solders.system_program.AllocateWithSeedParams">AllocateWithSeedParams</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.system_program.InitializeNonceAccountParams">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">InitializeNonceAccountParams</span></span><a class="headerlink" href="#solders.system_program.InitializeNonceAccountParams" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize nonce account system instruction params.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.InitializeNonceAccountParams.nonce_pubkey">
+<span class="sig-name descname"><span class="pre">nonce_pubkey</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.InitializeNonceAccountParams.nonce_pubkey" title="Permalink to this definition"></a></dt>
+<dd><p>Nonce account which will be initialized.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.InitializeNonceAccountParams.authority">
+<span class="sig-name descname"><span class="pre">authority</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.InitializeNonceAccountParams.authority" title="Permalink to this definition"></a></dt>
+<dd><p>Pubkey to set as authority of the initialized nonce account.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.system_program.initialize_nonce_account">
+<span class="sig-name descname"><span class="pre">initialize_nonce_account</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#solders.system_program.InitializeNonceAccountParams" title="solders.system_program.InitializeNonceAccountParams"><span class="pre">InitializeNonceAccountParams</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><span class="pre">Instruction</span></a></span></span><a class="headerlink" href="#solders.system_program.initialize_nonce_account" title="Permalink to this definition"></a></dt>
+<dd><p>Generate an instruction to initialize a Nonce account.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>params</strong> (<a class="reference internal" href="#solders.system_program.InitializeNonceAccountParams" title="solders.system_program.InitializeNonceAccountParams"><em>InitializeNonceAccountParams</em></a>) – The InitializeNonceAccount params.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The InitializeNonceAccount instruction.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction">Instruction</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.system_program.decode_initialize_nonce_account">
+<span class="sig-name descname"><span class="pre">decode_initialize_nonce_account</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instruction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><span class="pre">Instruction</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#solders.system_program.InitializeNonceAccountParams" title="solders.system_program.InitializeNonceAccountParams"><span class="pre">InitializeNonceAccountParams</span></a></span></span><a class="headerlink" href="#solders.system_program.decode_initialize_nonce_account" title="Permalink to this definition"></a></dt>
+<dd><p>Decode initialize nonce account instruction and retrieve the instruction params.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>instruction</strong> (<a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><em>Instruction</em></a>) – The InitializeNonceAccount instruction.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The params used to create the instruction.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#solders.system_program.InitializeNonceAccountParams" title="solders.system_program.InitializeNonceAccountParams">InitializeNonceAccountParams</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.system_program.AdvanceNonceAccountParams">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AdvanceNonceAccountParams</span></span><a class="headerlink" href="#solders.system_program.AdvanceNonceAccountParams" title="Permalink to this definition"></a></dt>
+<dd><p>Advance nonce account system instruction params.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.AdvanceNonceAccountParams.nonce_pubkey">
+<span class="sig-name descname"><span class="pre">nonce_pubkey</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.AdvanceNonceAccountParams.nonce_pubkey" title="Permalink to this definition"></a></dt>
+<dd><p>Nonce account.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.AdvanceNonceAccountParams.authorized_pubkey">
+<span class="sig-name descname"><span class="pre">authorized_pubkey</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.AdvanceNonceAccountParams.authorized_pubkey" title="Permalink to this definition"></a></dt>
+<dd><p>Pubkey of the nonce authority.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.system_program.advance_nonce_account">
+<span class="sig-name descname"><span class="pre">advance_nonce_account</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#solders.system_program.AdvanceNonceAccountParams" title="solders.system_program.AdvanceNonceAccountParams"><span class="pre">AdvanceNonceAccountParams</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><span class="pre">Instruction</span></a></span></span><a class="headerlink" href="#solders.system_program.advance_nonce_account" title="Permalink to this definition"></a></dt>
+<dd><p>Generate an instruction to advance the nonce in a Nonce account.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>params</strong> (<a class="reference internal" href="#solders.system_program.AdvanceNonceAccountParams" title="solders.system_program.AdvanceNonceAccountParams"><em>AdvanceNonceAccountParams</em></a>) – The AdvanceNonceAccount params.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The AdvanceNonceAccount instruction.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction">Instruction</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.system_program.decode_advance_nonce_account">
+<span class="sig-name descname"><span class="pre">decode_advance_nonce_account</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instruction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><span class="pre">Instruction</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#solders.system_program.AdvanceNonceAccountParams" title="solders.system_program.AdvanceNonceAccountParams"><span class="pre">AdvanceNonceAccountParams</span></a></span></span><a class="headerlink" href="#solders.system_program.decode_advance_nonce_account" title="Permalink to this definition"></a></dt>
+<dd><p>Decode an advance nonce account instruction and retrieve the instruction params.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>instruction</strong> (<a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><em>Instruction</em></a>) – The AdvanceNonceAccount instruction.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The params used to create the instruction.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#solders.system_program.AdvanceNonceAccountParams" title="solders.system_program.AdvanceNonceAccountParams">AdvanceNonceAccountParams</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.system_program.WithdrawNonceAccountParams">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">WithdrawNonceAccountParams</span></span><a class="headerlink" href="#solders.system_program.WithdrawNonceAccountParams" title="Permalink to this definition"></a></dt>
+<dd><p>Withdraw nonce account system transaction params.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.WithdrawNonceAccountParams.nonce_pubkey">
+<span class="sig-name descname"><span class="pre">nonce_pubkey</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.WithdrawNonceAccountParams.nonce_pubkey" title="Permalink to this definition"></a></dt>
+<dd><p>Nonce account.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.WithdrawNonceAccountParams.authorized_pubkey">
+<span class="sig-name descname"><span class="pre">authorized_pubkey</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.WithdrawNonceAccountParams.authorized_pubkey" title="Permalink to this definition"></a></dt>
+<dd><p>Pubkey of the nonce authority.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.WithdrawNonceAccountParams.to_pubkey">
+<span class="sig-name descname"><span class="pre">to_pubkey</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.WithdrawNonceAccountParams.to_pubkey" title="Permalink to this definition"></a></dt>
+<dd><p>Pubkey of the account which will receive the withdrawn nonce account balance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.WithdrawNonceAccountParams.lamports">
+<span class="sig-name descname"><span class="pre">lamports</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#solders.system_program.WithdrawNonceAccountParams.lamports" title="Permalink to this definition"></a></dt>
+<dd><p>Amount of lamports to withdraw from the nonce account.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.system_program.withdraw_nonce_account">
+<span class="sig-name descname"><span class="pre">withdraw_nonce_account</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#solders.system_program.WithdrawNonceAccountParams" title="solders.system_program.WithdrawNonceAccountParams"><span class="pre">WithdrawNonceAccountParams</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><span class="pre">Instruction</span></a></span></span><a class="headerlink" href="#solders.system_program.withdraw_nonce_account" title="Permalink to this definition"></a></dt>
+<dd><p>Generate an instruction that withdraws lamports from a Nonce account.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>params</strong> (<a class="reference internal" href="#solders.system_program.WithdrawNonceAccountParams" title="solders.system_program.WithdrawNonceAccountParams"><em>WithdrawNonceAccountParams</em></a>) – The WithdrawNonceAccount params.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The WithdrawNonceAccount instruction.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction">Instruction</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.system_program.decode_withdraw_nonce_account">
+<span class="sig-name descname"><span class="pre">decode_withdraw_nonce_account</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instruction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><span class="pre">Instruction</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#solders.system_program.WithdrawNonceAccountParams" title="solders.system_program.WithdrawNonceAccountParams"><span class="pre">WithdrawNonceAccountParams</span></a></span></span><a class="headerlink" href="#solders.system_program.decode_withdraw_nonce_account" title="Permalink to this definition"></a></dt>
+<dd><p>Decode a withdraw nonce account instruction and retrieve the instruction params.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>instruction</strong> (<a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><em>Instruction</em></a>) – The WithdrawNonceAccount instruction.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The params used to create the instruction.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#solders.system_program.WithdrawNonceAccountParams" title="solders.system_program.WithdrawNonceAccountParams">WithdrawNonceAccountParams</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.system_program.AuthorizeNonceAccountParams">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AuthorizeNonceAccountParams</span></span><a class="headerlink" href="#solders.system_program.AuthorizeNonceAccountParams" title="Permalink to this definition"></a></dt>
+<dd><p>Authorize nonce account system transaction params.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.AuthorizeNonceAccountParams.nonce_pubkey">
+<span class="sig-name descname"><span class="pre">nonce_pubkey</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.AuthorizeNonceAccountParams.nonce_pubkey" title="Permalink to this definition"></a></dt>
+<dd><p>Nonce account.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.AuthorizeNonceAccountParams.authorized_pubkey">
+<span class="sig-name descname"><span class="pre">authorized_pubkey</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.AuthorizeNonceAccountParams.authorized_pubkey" title="Permalink to this definition"></a></dt>
+<dd><p>Pubkey of the current nonce authority.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.AuthorizeNonceAccountParams.new_authority">
+<span class="sig-name descname"><span class="pre">new_authority</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.AuthorizeNonceAccountParams.new_authority" title="Permalink to this definition"></a></dt>
+<dd><p>Pubkey of the new nonce authority.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.system_program.authorize_nonce_account">
+<span class="sig-name descname"><span class="pre">authorize_nonce_account</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#solders.system_program.AuthorizeNonceAccountParams" title="solders.system_program.AuthorizeNonceAccountParams"><span class="pre">AuthorizeNonceAccountParams</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><span class="pre">Instruction</span></a></span></span><a class="headerlink" href="#solders.system_program.authorize_nonce_account" title="Permalink to this definition"></a></dt>
+<dd><p>Generate an instruction that authorizes a new Pubkey as the nonce authority.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>params</strong> (<a class="reference internal" href="#solders.system_program.AuthorizeNonceAccountParams" title="solders.system_program.AuthorizeNonceAccountParams"><em>AuthorizeNonceAccountParams</em></a>) – The AuthorizeNonceAccount params.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The AuthorizeNonceAccount instruction.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction">Instruction</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.system_program.decode_authorize_nonce_account">
+<span class="sig-name descname"><span class="pre">decode_authorize_nonce_account</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instruction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><span class="pre">Instruction</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#solders.system_program.AuthorizeNonceAccountParams" title="solders.system_program.AuthorizeNonceAccountParams"><span class="pre">AuthorizeNonceAccountParams</span></a></span></span><a class="headerlink" href="#solders.system_program.decode_authorize_nonce_account" title="Permalink to this definition"></a></dt>
+<dd><p>Decode authorize nonce account instruction and retrieve the instruction params.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>instruction</strong> (<a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><em>Instruction</em></a>) – The AuthorizeNonceAccount instruction.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The params used to create the instruction.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#solders.system_program.AuthorizeNonceAccountParams" title="solders.system_program.AuthorizeNonceAccountParams">AuthorizeNonceAccountParams</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.system_program.CloseLookupTableParams">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CloseLookupTableParams</span></span><a class="headerlink" href="#solders.system_program.CloseLookupTableParams" title="Permalink to this definition"></a></dt>
+<dd><p>Close lookup table system transaction params.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.CloseLookupTableParams.lookup_table_address">
+<span class="sig-name descname"><span class="pre">lookup_table_address</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.CloseLookupTableParams.lookup_table_address" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.CloseLookupTableParams.authority_address">
+<span class="sig-name descname"><span class="pre">authority_address</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.CloseLookupTableParams.authority_address" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.CloseLookupTableParams.recipient_address">
+<span class="sig-name descname"><span class="pre">recipient_address</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.CloseLookupTableParams.recipient_address" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.system_program.close_lookup_table">
+<span class="sig-name descname"><span class="pre">close_lookup_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#solders.system_program.CloseLookupTableParams" title="solders.system_program.CloseLookupTableParams"><span class="pre">CloseLookupTableParams</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><span class="pre">Instruction</span></a></span></span><a class="headerlink" href="#solders.system_program.close_lookup_table" title="Permalink to this definition"></a></dt>
+<dd><p>Returns an instruction that closes an address lookup table account.</p>
+<p>The account will be deallocated and the lamports will be drained
+to the recipient address.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>params</strong> (<a class="reference internal" href="#solders.system_program.CloseLookupTableParams" title="solders.system_program.CloseLookupTableParams"><em>CloseLookupTableParams</em></a>) – The CloseLookupTable params.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The CloseLookupTable instruction.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction">Instruction</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.system_program.CreateLookupTableParams">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CreateLookupTableParams</span></span><a class="headerlink" href="#solders.system_program.CreateLookupTableParams" title="Permalink to this definition"></a></dt>
+<dd><p>Create lookup table system transaction params.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.CreateLookupTableParams.authority_address">
+<span class="sig-name descname"><span class="pre">authority_address</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.CreateLookupTableParams.authority_address" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.CreateLookupTableParams.payer_address">
+<span class="sig-name descname"><span class="pre">payer_address</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.CreateLookupTableParams.payer_address" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.CreateLookupTableParams.recent_slot">
+<span class="sig-name descname"><span class="pre">recent_slot</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#solders.system_program.CreateLookupTableParams.recent_slot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.system_program.create_lookup_table">
+<span class="sig-name descname"><span class="pre">create_lookup_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#solders.system_program.CreateLookupTableParams" title="solders.system_program.CreateLookupTableParams"><span class="pre">CreateLookupTableParams</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><span class="pre">Instruction</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#solders.system_program.create_lookup_table" title="Permalink to this definition"></a></dt>
+<dd><p>Constructs an instruction to create a table account.</p>
+<p>Returns the instruction and the table account`s derived address.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>params</strong> (<a class="reference internal" href="#solders.system_program.CreateLookupTableParams" title="solders.system_program.CreateLookupTableParams"><em>CreateLookupTableParams</em></a>) – The CreateLookupTable params.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The CreateLookupTable instruction
+and the table account`s derived address</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[<a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction">Instruction</a>, PubKey]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.system_program.CreateLookupTableSignedParams">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CreateLookupTableSignedParams</span></span><a class="headerlink" href="#solders.system_program.CreateLookupTableSignedParams" title="Permalink to this definition"></a></dt>
+<dd><p>Create lookup table signed system transaction params.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.CreateLookupTableSignedParams.authority_address">
+<span class="sig-name descname"><span class="pre">authority_address</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.CreateLookupTableSignedParams.authority_address" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.CreateLookupTableSignedParams.payer_address">
+<span class="sig-name descname"><span class="pre">payer_address</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.CreateLookupTableSignedParams.payer_address" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.CreateLookupTableSignedParams.recent_slot">
+<span class="sig-name descname"><span class="pre">recent_slot</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#solders.system_program.CreateLookupTableSignedParams.recent_slot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.system_program.create_lookup_table_signed">
+<span class="sig-name descname"><span class="pre">create_lookup_table_signed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#solders.system_program.CreateLookupTableSignedParams" title="solders.system_program.CreateLookupTableSignedParams"><span class="pre">CreateLookupTableSignedParams</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><span class="pre">Instruction</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#solders.system_program.create_lookup_table_signed" title="Permalink to this definition"></a></dt>
+<dd><p>Constructs an instruction to create a table account.</p>
+<blockquote>
+<div><p>Returns the instruction and the table account`s derived address.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>params</strong> (<a class="reference internal" href="#solders.system_program.CreateLookupTableSignedParams" title="solders.system_program.CreateLookupTableSignedParams"><em>CreateLookupTableSignedParams</em></a>) – The CreateLookupTableSigned params.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The CreateLookupTableSigned instruction
+and the table account’s derived address</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[<a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction">Instruction</a>, PubKey]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.system_program.DeactivateLookupTableParams">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DeactivateLookupTableParams</span></span><a class="headerlink" href="#solders.system_program.DeactivateLookupTableParams" title="Permalink to this definition"></a></dt>
+<dd><p>Deactivate lookup table system transaction params.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.DeactivateLookupTableParams.lookup_table_address">
+<span class="sig-name descname"><span class="pre">lookup_table_address</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.DeactivateLookupTableParams.lookup_table_address" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.DeactivateLookupTableParams.authority_address">
+<span class="sig-name descname"><span class="pre">authority_address</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.DeactivateLookupTableParams.authority_address" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.system_program.deactivate_lookup_table">
+<span class="sig-name descname"><span class="pre">deactivate_lookup_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#solders.system_program.DeactivateLookupTableParams" title="solders.system_program.DeactivateLookupTableParams"><span class="pre">DeactivateLookupTableParams</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><span class="pre">Instruction</span></a></span></span><a class="headerlink" href="#solders.system_program.deactivate_lookup_table" title="Permalink to this definition"></a></dt>
+<dd><p>Constructs an instruction that deactivates an address lookup table.</p>
+<p>So that it cannot be extended again and will be unusable and eligible
+for closure after a short amount of time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>params</strong> (<a class="reference internal" href="#solders.system_program.DeactivateLookupTableParams" title="solders.system_program.DeactivateLookupTableParams"><em>DeactivateLookupTableParams</em></a>) – The DeactivateLookupTable params.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The DeactivateLookupTable instruction.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction">Instruction</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.system_program.ExtendLookupTableParams">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ExtendLookupTableParams</span></span><a class="headerlink" href="#solders.system_program.ExtendLookupTableParams" title="Permalink to this definition"></a></dt>
+<dd><p>Extend lookup table system transaction params.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.ExtendLookupTableParams.payer_address">
+<span class="sig-name descname"><span class="pre">payer_address</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#solders.system_program.ExtendLookupTableParams.payer_address" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.ExtendLookupTableParams.lookup_table_address">
+<span class="sig-name descname"><span class="pre">lookup_table_address</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.ExtendLookupTableParams.lookup_table_address" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.ExtendLookupTableParams.authority_address">
+<span class="sig-name descname"><span class="pre">authority_address</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.ExtendLookupTableParams.authority_address" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.ExtendLookupTableParams.new_addresses">
+<span class="sig-name descname"><span class="pre">new_addresses</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#solders.system_program.ExtendLookupTableParams.new_addresses" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.system_program.extend_lookup_table">
+<span class="sig-name descname"><span class="pre">extend_lookup_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#solders.system_program.ExtendLookupTableParams" title="solders.system_program.ExtendLookupTableParams"><span class="pre">ExtendLookupTableParams</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><span class="pre">Instruction</span></a></span></span><a class="headerlink" href="#solders.system_program.extend_lookup_table" title="Permalink to this definition"></a></dt>
+<dd><p>Constructs an instruction which extends an ATL account with new addresses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>params</strong> (<a class="reference internal" href="#solders.system_program.ExtendLookupTableParams" title="solders.system_program.ExtendLookupTableParams"><em>ExtendLookupTableParams</em></a>) – the ExtendLookupTable params.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The ExtendLookupTable instruction.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction">Instruction</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.system_program.FreezeLookupTableParams">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FreezeLookupTableParams</span></span><a class="headerlink" href="#solders.system_program.FreezeLookupTableParams" title="Permalink to this definition"></a></dt>
+<dd><p>Freeze lookup table system transaction params.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.FreezeLookupTableParams.lookup_table_address">
+<span class="sig-name descname"><span class="pre">lookup_table_address</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.FreezeLookupTableParams.lookup_table_address" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.system_program.FreezeLookupTableParams.authority_address">
+<span class="sig-name descname"><span class="pre">authority_address</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a></em><a class="headerlink" href="#solders.system_program.FreezeLookupTableParams.authority_address" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.system_program.freeze_lookup_table">
+<span class="sig-name descname"><span class="pre">freeze_lookup_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#solders.system_program.FreezeLookupTableParams" title="solders.system_program.FreezeLookupTableParams"><span class="pre">FreezeLookupTableParams</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction"><span class="pre">Instruction</span></a></span></span><a class="headerlink" href="#solders.system_program.freeze_lookup_table" title="Permalink to this definition"></a></dt>
+<dd><p>Constructs an instruction that freezes an address lookup table.</p>
+<p>So that it can never be closed or extended again.
+Empty lookup tables cannot be frozen.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>params</strong> (<a class="reference internal" href="#solders.system_program.FreezeLookupTableParams" title="solders.system_program.FreezeLookupTableParams"><em>FreezeLookupTableParams</em></a>) – The FreezeLookupTable params.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The FreezeLookupTable instruction.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="instruction.html#solders.instruction.Instruction" title="solders.instruction.Instruction">Instruction</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="signature.html" class="btn btn-neutral float-left" title="Signature" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="sysvar.html" class="btn btn-neutral float-right" title="Sysvar" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Kevin Heavey.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
