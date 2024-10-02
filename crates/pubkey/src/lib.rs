@@ -144,7 +144,7 @@ impl Pubkey {
     ///     Pubkey(
     ///         3gF2KMe9KiC6FNVBmfg9i267aMPvK37FewCip4eGBFcT,
     ///     )
-    /// 
+    ///
     pub fn create_program_address(seeds: Vec<&[u8]>, program_id: &Self) -> PyResult<Self> {
         handle_py_err(PubkeyOriginal::create_program_address(
             &seeds,
