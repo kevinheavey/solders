@@ -398,7 +398,7 @@ impl<'de> serde::Deserialize<'de> for RPCError {
                     Self::InternalErrorMessage(InternalErrorMessage::deserialize(value).unwrap())
                 }
                 Some(num) => Self::Unrecognized(num),
-                type_ => panic!("unsupported type {type_:?}"),
+                type_ => return Err(D::Error::custom(format!("unsupported type {type_:?}")))
             },
         )
     }
