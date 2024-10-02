@@ -962,32 +962,6 @@ def test_tx_uses_nonce_wrong_first_nonce_ix_fail() -> None:
     tx = Transaction([from_keypair, nonce_keypair], message, Hash.default())
     assert tx.uses_durable_nonce() is None
 
-
-def test_get_nonce_pub_from_ix_ok() -> None:
-    (_, nonce_pubkey, tx) = nonced_transfer_tx()
-    nonce_ix = tx.uses_durable_nonce()
-    assert nonce_ix is not None
-    assert tx.get_nonce_pubkey_from_instruction(nonce_ix) == nonce_pubkey
-
-
-def test_get_nonce_pub_from_ix_no_accounts_fail() -> None:
-    (_, _, tx) = nonced_transfer_tx()
-    nonce_ix = tx.uses_durable_nonce()
-    assert nonce_ix is not None
-    nonce_ix = tx.uses_durable_nonce()
-    assert nonce_ix is not None
-    nonce_ix.accounts = b""
-    assert tx.get_nonce_pubkey_from_instruction(nonce_ix) is None
-
-
-def test_get_nonce_pub_from_ix_bad_acc_idx_fail() -> None:
-    (_, _, tx) = nonced_transfer_tx()
-    nonce_ix = tx.uses_durable_nonce()
-    assert nonce_ix is not None
-    nonce_ix.accounts = bytes([255, *list(nonce_ix.accounts[1:])])
-    assert tx.get_nonce_pubkey_from_instruction(nonce_ix) is None
-
-
 def test_tx_keypair_pubkey_mismatch() -> None:
     from_keypair = Keypair()
     from_pubkey = from_keypair.pubkey()

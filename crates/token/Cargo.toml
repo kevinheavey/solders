@@ -16,5 +16,5 @@ solana-program = { workspace = true }
 solders-macros = { workspace = true }
 solders-pubkey = { workspace = true }
 solders-traits-core = { workspace = true }
-spl-associated-token-account = "1.1.2"
-spl-token = "3.5.0"
+spl-associated-token-account = "5.0.1"
+spl-token = "6.0.0"

@@ -1101,6 +1101,7 @@ impl UiConfirmedBlock {
         rewards: Option<Rewards>,
         block_time: Option<UnixTimestamp>,
         block_height: Option<u64>,
+        num_reward_partitions: Option<u64>,
     ) -> Self {
         UiConfirmedBlockOriginal {
             previous_blockhash: previous_blockhash.to_string(),
@@ -1111,6 +1112,7 @@ impl UiConfirmedBlock {
             rewards: rewards.map(|v| v.into_iter().map(|r| r.into()).collect()),
             block_time,
             block_height,
+            num_reward_partitions
         }
         .into()
     }

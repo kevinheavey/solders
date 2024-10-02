@@ -822,6 +822,7 @@ class UiConfirmedBlock:
     rewards: Optional[List[Reward]]
     block_time: Optional[int]
     block_height: Optional[int]
+    num_reward_partitions: Optional[int]
     def __init__(
         self,
         previous_blockhash: Hash,
@@ -832,6 +833,7 @@ class UiConfirmedBlock:
         rewards: Optional[Sequence[Reward]] = None,
         block_time: Optional[int] = None,
         block_height: Optional[int] = None,
+        num_reward_partitions: Optional[int] = None,
     ) -> None: ...
     def to_json(self) -> str: ...
     @staticmethod

@@ -19,4 +19,4 @@ solders-transaction-confirmation-status = { workspace = true }
 solders-transaction-return-data = { workspace = true }
 solders-transaction-status-struct = { workspace = true }
 solana-banks-client = { workspace = true }
-solana-banks-interface = { version = "1.16.0" }
+solana-banks-interface = { workspace = true }

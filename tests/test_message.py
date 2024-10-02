@@ -118,44 +118,6 @@ def test_program_ids() -> None:
     )
     assert message.program_ids() == [loader2]
 
-
-def test_is_key_passed_to_program() -> None:
-    key0 = Pubkey.new_unique()
-    key1 = Pubkey.new_unique()
-    loader2 = Pubkey.new_unique()
-    instructions = [CompiledInstruction(2, b"", bytes([0, 1]))]
-    message = Message.new_with_compiled_instructions(
-        1,
-        0,
-        2,
-        [key0, key1, loader2],
-        Hash.default(),
-        instructions,
-    )
-
-    assert message.is_key_passed_to_program(0)
-    assert message.is_key_passed_to_program(1)
-    assert not message.is_key_passed_to_program(2)
-
-
-def test_is_non_loader_key() -> None:
-    key0 = Pubkey.new_unique()
-    key1 = Pubkey.new_unique()
-    loader2 = Pubkey.new_unique()
-    instructions = [CompiledInstruction(2, b"", bytes([0, 1]))]
-    message = Message.new_with_compiled_instructions(
-        1,
-        0,
-        2,
-        [key0, key1, loader2],
-        Hash.default(),
-        instructions,
-    )
-    assert message.is_non_loader_key(0)
-    assert message.is_non_loader_key(1)
-    assert not message.is_non_loader_key(2)
-
-
 def test_message_header_len_constant() -> None:
     assert MessageHeader.LENGTH == 3
 

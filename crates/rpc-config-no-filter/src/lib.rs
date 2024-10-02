@@ -273,10 +273,12 @@ impl RpcLargestAccountsConfig {
     pub fn new(
         commitment: Option<CommitmentLevel>,
         filter: Option<RpcLargestAccountsFilter>,
+        sort_results: Option<bool>,
     ) -> Self {
         Self(rpc_config::RpcLargestAccountsConfig {
             commitment: commitment.map(|c| c.into()),
             filter: filter.map(|f| f.into()),
+            sort_results
         })
     }
 

@@ -313,6 +313,11 @@ class RpcContactInfo:
     version: Optional[str]
     feature_set: Optional[int]
     shred_version: Optional[int]
+    tvu: Optional[str]
+    tpu_forwards: Optional[str]
+    tpu_forwards_quic: Optional[str]
+    tpu_vote: Optional[str]
+    serve_repair: Optional[str]
     def __init__(
         self,
         pubkey: Pubkey,

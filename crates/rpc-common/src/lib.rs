@@ -8,6 +8,7 @@ use solana_transaction_status::UiInnerInstructions as UiInnerInstructionsOrigina
 use solders_account::Account;
 use solders_macros::{common_methods, richcmp_eq_only};
 use solders_rpc_response_data_boilerplate::response_data_boilerplate;
+use solders_rpc_responses_common::RpcBlockhash;
 use solders_transaction_error::TransactionErrorType;
 use solders_transaction_return_data::TransactionReturnData;
 use solders_transaction_status::UiInnerInstructions;
@@ -32,6 +33,7 @@ impl RpcSimulateTransactionResult {
         units_consumed: Option<u64>,
         return_data: Option<TransactionReturnData>,
         inner_instructions: Option<Vec<UiInnerInstructions>>,
+        replacement_blockhash: Option<RpcBlockhash>
     ) -> Self {
         let accounts_underlying: Option<Vec<Option<UiAccount>>> = accounts.map(|accs| {
             accs.into_iter()
@@ -47,6 +49,7 @@ impl RpcSimulateTransactionResult {
             units_consumed,
             return_data: return_data.map(Into::into),
             inner_instructions: inner_instructions_underlying,
+            replacement_blockhash: replacement_blockhash.map(Into::into),
         })
     }
 
