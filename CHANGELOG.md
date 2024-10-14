@@ -2,6 +2,10 @@
 
 ## [0.21.1] - Unreleased
 
+### Changed
+
+- Upgrade Solana deps to 2.0 [(#116)](https://github.com/kevinheavey/solders/pull/116).
+
 ### Fixed
 
 - Avoid panic in `Keypair.from_base58_string` [(#93)](https://github.com/kevinheavey/solders/pull/93).
