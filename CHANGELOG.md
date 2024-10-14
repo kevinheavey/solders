@@ -5,6 +5,7 @@
 ### Changed
 
 - Upgrade Solana deps to 2.0 [(#116)](https://github.com/kevinheavey/solders/pull/116).
+- Remove GetStakeActivationResp (no longer exists) [(#116)](https://github.com/kevinheavey/solders/pull/116).
 
 ### Fixed
 

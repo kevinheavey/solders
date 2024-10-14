@@ -48,7 +48,6 @@ use solana_rpc_client_api::{
         RpcSnapshotSlotInfo as RpcSnapshotSlotInfoOriginal, RpcSupply as RpcSupplyOriginal,
         RpcVote as RpcVoteOriginal, SlotInfo as SlotInfoOriginal,
         SlotTransactionStats as SlotTransactionStatsOriginal, SlotUpdate as SlotUpdateOriginal,
-        StakeActivationState as StakeActivationStateOriginal,
     },
 };
 use solana_sdk::clock::{Epoch, Slot, UnixTimestamp};
@@ -1219,17 +1218,6 @@ contextless_resp_eq!(
     "Vec<DisplayFromStr>"
 );
 
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
-#[serde(rename_all = "camelCase")]
-#[pyclass(module = "solders.rpc.responses")]
-#[enum_original_mapping(StakeActivationStateOriginal)]
-pub enum StakeActivationState {
-    Activating,
-    Active,
-    Deactivating,
-    Inactive,
-}
-
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
 pub struct RpcSupply(RpcSupplyOriginal);
@@ -2168,7 +2156,6 @@ pub fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<GetSlotResp>()?;
     m.add_class::<GetSlotLeaderResp>()?;
     m.add_class::<GetSlotLeadersResp>()?;
-    m.add_class::<StakeActivationState>()?;
     m.add_class::<RpcSupply>()?;
     m.add_class::<GetSupplyResp>()?;
     m.add_class::<GetTokenAccountBalanceResp>()?;

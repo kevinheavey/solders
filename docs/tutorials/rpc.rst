@@ -41,17 +41,15 @@ The ``rpc.repsonses`` module parses JSON RPC responses into strongly-typed objec
 
 .. testcode::
 
-    from solders.rpc.responses import GetStakeActivationResp, RpcStakeActivation, StakeActivationState
+    from solders.rpc.responses import GetIdentityResp, RpcIdentity
     raw = """{
     "jsonrpc": "2.0",
-    "result": { "active": 197717120, "inactive": 0, "state": "active" },
+    "result": { "identity": "2r1F4iWqVcb8M1DbAjQuFpebkQHY9hcVU4WuW2DJBppN" },
     "id": 1
     }"""
-    parsed = GetStakeActivationResp.from_json(raw)
-    assert isinstance(parsed, GetStakeActivationResp)
-    assert parsed.value == RpcStakeActivation(
-        state=StakeActivationState.Active, active=197717120, inactive=0
-    )
+    parsed = GetIdentityResp.from_json(raw)
+    assert isinstance(parsed, GetIdentityResp)
+    assert str(parsed.value.identity) == "2r1F4iWqVcb8M1DbAjQuFpebkQHY9hcVU4WuW2DJBppN"
 
 -----------------------------
 Parsing an RPC batch repsonse
