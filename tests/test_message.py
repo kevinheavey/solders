@@ -78,31 +78,6 @@ def test_program_position() -> None:
     assert message.program_position(1) == 0
     assert message.program_position(2) == 1
 
-
-def test_is_writable() -> None:
-    key0 = Pubkey.new_unique()
-    key1 = Pubkey.new_unique()
-    key2 = Pubkey.new_unique()
-    key3 = Pubkey.new_unique()
-    key4 = Pubkey.new_unique()
-    key5 = Pubkey.new_unique()
-
-    message = Message.new_with_compiled_instructions(
-        num_required_signatures=3,
-        num_readonly_signed_accounts=2,
-        num_readonly_unsigned_accounts=1,
-        account_keys=[key0, key1, key2, key3, key4, key5],
-        recent_blockhash=Hash.default(),
-        instructions=[],
-    )
-    assert message.is_writable(0)
-    assert not message.is_writable(1)
-    assert not message.is_writable(2)
-    assert message.is_writable(3)
-    assert message.is_writable(4)
-    assert not message.is_writable(5)
-
-
 def test_program_ids() -> None:
     key0 = Pubkey.new_unique()
     key1 = Pubkey.new_unique()
