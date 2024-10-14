@@ -30,13 +30,13 @@ impl RpcProgramAccountsConfig {
         account_config: RpcAccountInfoConfig,
         filters: Option<Vec<RpcFilterType>>,
         with_context: Option<bool>,
-        sort_results: Option<bool>
+        sort_results: Option<bool>,
     ) -> Self {
         Self(rpc_config::RpcProgramAccountsConfig {
             filters: filters.map(|v| v.into_iter().map(|f| f.into()).collect()),
             account_config: account_config.into(),
             with_context,
-            sort_results
+            sort_results,
         })
     }
 

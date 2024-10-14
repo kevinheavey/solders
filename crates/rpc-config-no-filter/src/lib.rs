@@ -278,7 +278,7 @@ impl RpcLargestAccountsConfig {
         Self(rpc_config::RpcLargestAccountsConfig {
             commitment: commitment.map(|c| c.into()),
             filter: filter.map(|f| f.into()),
-            sort_results
+            sort_results,
         })
     }
 

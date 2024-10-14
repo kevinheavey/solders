@@ -7,8 +7,8 @@ use solana_sdk::{
     sanitize::Sanitize,
     signature::Signature as SignatureOriginal,
     transaction::{
-        uses_durable_nonce, Legacy as LegacyOriginal,
-        Transaction as TransactionOriginal, TransactionVersion as TransactionVersionOriginal,
+        uses_durable_nonce, Legacy as LegacyOriginal, Transaction as TransactionOriginal,
+        TransactionVersion as TransactionVersionOriginal,
         VersionedTransaction as VersionedTransactionOriginal,
     },
 };

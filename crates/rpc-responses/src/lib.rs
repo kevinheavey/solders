@@ -45,8 +45,7 @@ use solana_rpc_client_api::{
         RpcInflationRate as RpcInflationRateOriginal,
         RpcInflationReward as RpcInflationRewardOriginal,
         RpcLogsResponse as RpcLogsResponseOriginal, RpcPerfSample as RpcPerfSampleOriginal,
-        RpcSnapshotSlotInfo as RpcSnapshotSlotInfoOriginal,
-        RpcSupply as RpcSupplyOriginal,
+        RpcSnapshotSlotInfo as RpcSnapshotSlotInfoOriginal, RpcSupply as RpcSupplyOriginal,
         RpcVote as RpcVoteOriginal, SlotInfo as SlotInfoOriginal,
         SlotTransactionStats as SlotTransactionStatsOriginal, SlotUpdate as SlotUpdateOriginal,
         StakeActivationState as StakeActivationStateOriginal,
@@ -398,7 +397,7 @@ impl<'de> serde::Deserialize<'de> for RPCError {
                     Self::InternalErrorMessage(InternalErrorMessage::deserialize(value).unwrap())
                 }
                 Some(num) => Self::Unrecognized(num),
-                type_ => return Err(D::Error::custom(format!("unsupported type {type_:?}")))
+                type_ => return Err(D::Error::custom(format!("unsupported type {type_:?}"))),
             },
         )
     }
@@ -875,7 +874,7 @@ impl RpcContactInfo {
             tpu_forwards,
             tpu_forwards_quic,
             tpu_vote,
-            serve_repair
+            serve_repair,
         }))
     }
 }

@@ -33,7 +33,7 @@ impl RpcSimulateTransactionResult {
         units_consumed: Option<u64>,
         return_data: Option<TransactionReturnData>,
         inner_instructions: Option<Vec<UiInnerInstructions>>,
-        replacement_blockhash: Option<RpcBlockhash>
+        replacement_blockhash: Option<RpcBlockhash>,
     ) -> Self {
         let accounts_underlying: Option<Vec<Option<UiAccount>>> = accounts.map(|accs| {
             accs.into_iter()

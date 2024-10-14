@@ -63,10 +63,7 @@ impl_display!(Memcmp);
 #[pymethods]
 impl Memcmp {
     #[new]
-    pub fn new(
-        offset: usize,
-        bytes_: MemcmpEncodedBytes,
-    ) -> Self {
+    pub fn new(offset: usize, bytes_: MemcmpEncodedBytes) -> Self {
         Self(MemcmpOriginal::new(offset, bytes_.into()))
     }
 

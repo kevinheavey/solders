@@ -1112,7 +1112,7 @@ impl UiConfirmedBlock {
             rewards: rewards.map(|v| v.into_iter().map(|r| r.into()).collect()),
             block_time,
             block_height,
-            num_reward_partitions
+            num_reward_partitions,
         }
         .into()
     }
