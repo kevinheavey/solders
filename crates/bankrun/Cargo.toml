@@ -9,6 +9,8 @@ repository = { workspace = true }
 description = "Solders bankrun crate."
 
 [dependencies]
+chrono-humanize = { workspace = true }
+log = { workspace = true }
 pyo3 = { workspace = true, features = ["macros"] }
 derive_more = { workspace = true }
 solders-banks-interface = { workspace = true }
@@ -28,5 +30,6 @@ solana-sdk = { workspace = true }
 solana-program-test = { workspace = true }
 solana-banks-client = { workspace = true }
 tarpc = { version = "0.29.0" }
+time = { workspace = true }
 toml = "0.7.3"
 pyo3-asyncio = { version = "0.20.0", features = ["tokio-runtime"] }

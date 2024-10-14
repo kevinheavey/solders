@@ -72,6 +72,8 @@ license = "MIT"
 edition = "2021"
 
 [workspace.dependencies]
+chrono-humanize = "0.2.3"
+log = "0.4"
 pyo3 = { version = "0.20.2", default-features = false }
 solders-macros = { path = "./crates/macros", version = "=0.21.0" }
 solders-traits = { path = "./crates/traits", version = "=0.21.0" }
@@ -140,6 +142,7 @@ serde = "^1.0.188"
 serde_bytes = "0.11.12"
 serde_json = "^1.0.106"
 serde_cbor = "^0.11.2"
+time = "0.3.35"
 derive_more = "0.99.17"
 solana-program-test = "2.0.11"
 solana-banks-client = "2.0.11"
