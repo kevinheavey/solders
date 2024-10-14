@@ -150,3 +150,7 @@ pythonize = "0.20.0"
 bs58 = "0.4.0"
 thiserror = "^1.0.31"
 camelpaste = "0.1.0"
+
+
+[patch.crates-io]
+solana-svm = { git = "https://github.com/kevinheavey/agave", rev = "5e3b64ccf335b8ca64344f00ee188859a4b9b844" }

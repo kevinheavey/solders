@@ -14,9 +14,6 @@ jobs:
         with:
           rust-version: nightly
           components: clippy
-      
-      - name: Install protobuf compiler
-        run: sudo apt-get install protobuf-compiler
 
       - name: Set up Python
         uses: actions/setup-python@v1
