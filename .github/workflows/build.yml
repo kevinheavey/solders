@@ -28,6 +28,8 @@ jobs:
           toolchain: nightly
           profile: minimal
           default: true
+      - name: Install protobuf compiler
+        run: brew install protobuf-compiler
       - name: Build wheels
         uses: messense/maturin-action@v1
         with:
@@ -54,6 +56,8 @@ jobs:
           toolchain: nightly
           profile: minimal
           default: true
+      - name: Install protobuf compiler
+        run: brew install protobuf-compiler
       - name: Build wheels
         uses: messense/maturin-action@v1
         with:
@@ -119,6 +123,8 @@ jobs:
           toolchain: nightly
           profile: minimal
           default: true
+      - name: Install protobuf compiler
+        run: sudo apt-get install protobuf-compiler
       - name: Build Wheels
         uses: messense/maturin-action@v1
         with:
@@ -179,6 +185,8 @@ jobs:
           toolchain: nightly
           profile: minimal
           default: true
+      - name: Install protobuf compiler
+        run: sudo apt-get install protobuf-compiler
       - name: Build wheels
         uses: messense/maturin-action@v1
         with:
