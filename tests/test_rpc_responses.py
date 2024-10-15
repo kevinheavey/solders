@@ -69,7 +69,6 @@ from solders.rpc.responses import (
     GetSlotLeaderResp,
     GetSlotLeadersResp,
     GetSlotResp,
-    GetStakeActivationResp,
     GetSupplyResp,
     GetTokenAccountBalanceResp,
     GetTokenAccountsByDelegateJsonParsedResp,
@@ -110,7 +109,6 @@ from solders.rpc.responses import (
     RpcSignatureResponse,
     RpcSimulateTransactionResult,
     RpcSnapshotSlotInfo,
-    RpcStakeActivation,
     RpcSupply,
     RpcTokenAccountBalance,
     RpcVersionInfo,
@@ -125,7 +123,6 @@ from solders.rpc.responses import (
     SlotNotification,
     SlotUpdateNotification,
     SlotUpdateOptimisticConfirmation,
-    StakeActivationState,
     SubscriptionError,
     SubscriptionResult,
     ValidatorExitResp,
@@ -1525,20 +1522,6 @@ def test_get_slot_leaders() -> None:
             "DWvDTSh3qfn88UoQTEKRV2JnLt5jtJAVoiCo3ivtMwXP",
         )
     ]
-
-
-def test_get_stake_activation() -> None:
-    raw = """{
-  "jsonrpc": "2.0",
-  "result": { "active": 197717120, "inactive": 0, "state": "active" },
-  "id": 1
-}"""
-    parsed = GetStakeActivationResp.from_json(raw)
-    assert isinstance(parsed, GetStakeActivationResp)
-    assert parsed.value == RpcStakeActivation(
-        state=StakeActivationState.Active, active=197717120, inactive=0
-    )
-
 
 def test_get_supply() -> None:
     raw = """{

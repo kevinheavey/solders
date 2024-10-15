@@ -500,6 +500,7 @@ pub enum TransactionErrorFieldless {
     ResanitizationNeeded,
     InvalidLoadedAccountsDataSizeLimit,
     UnbalancedTransaction,
+    ProgramCacheHitMaxLimit,
 }
 
 #[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, EnumIntoPy)]
@@ -606,6 +607,7 @@ impl From<TransactionErrorType> for TransactionErrorOriginal {
                     Self::InvalidLoadedAccountsDataSizeLimit
                 }
                 TransactionErrorFieldless::UnbalancedTransaction => Self::UnbalancedTransaction,
+                TransactionErrorFieldless::ProgramCacheHitMaxLimit => Self::ProgramCacheHitMaxLimit,
             },
         }
     }
@@ -734,6 +736,9 @@ impl From<TransactionErrorOriginal> for TransactionErrorType {
             }
             TransactionErrorOriginal::UnbalancedTransaction => {
                 Self::Fieldless(TransactionErrorFieldless::UnbalancedTransaction)
+            }
+            TransactionErrorOriginal::ProgramCacheHitMaxLimit => {
+                Self::Fieldless(TransactionErrorFieldless::ProgramCacheHitMaxLimit)
             }
         }
     }

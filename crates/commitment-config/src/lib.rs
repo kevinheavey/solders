@@ -58,11 +58,6 @@ impl From<CommitmentLevelOriginal> for CommitmentLevel {
             CommitmentLevelOriginal::Processed => Self::Processed,
             CommitmentLevelOriginal::Confirmed => Self::Confirmed,
             CommitmentLevelOriginal::Finalized => Self::Finalized,
-            CommitmentLevelOriginal::Max => Self::Finalized,
-            CommitmentLevelOriginal::Recent => Self::Processed,
-            CommitmentLevelOriginal::Root => Self::Finalized,
-            CommitmentLevelOriginal::Single => Self::Confirmed,
-            CommitmentLevelOriginal::SingleGossip => Self::Confirmed,
         }
     }
 }

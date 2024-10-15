@@ -45,11 +45,9 @@ use solana_rpc_client_api::{
         RpcInflationRate as RpcInflationRateOriginal,
         RpcInflationReward as RpcInflationRewardOriginal,
         RpcLogsResponse as RpcLogsResponseOriginal, RpcPerfSample as RpcPerfSampleOriginal,
-        RpcSnapshotSlotInfo as RpcSnapshotSlotInfoOriginal,
-        RpcStakeActivation as RpcStakeActivationOriginal, RpcSupply as RpcSupplyOriginal,
+        RpcSnapshotSlotInfo as RpcSnapshotSlotInfoOriginal, RpcSupply as RpcSupplyOriginal,
         RpcVote as RpcVoteOriginal, SlotInfo as SlotInfoOriginal,
         SlotTransactionStats as SlotTransactionStatsOriginal, SlotUpdate as SlotUpdateOriginal,
-        StakeActivationState as StakeActivationStateOriginal,
     },
 };
 use solana_sdk::clock::{Epoch, Slot, UnixTimestamp};
@@ -58,9 +56,7 @@ use solders_account::{Account, AccountJSON};
 use solders_account_decoder::UiTokenAmount;
 use solders_epoch_info::EpochInfo;
 use solders_hash::Hash as SolderHash;
-use solders_macros::{
-    common_methods, common_methods_rpc_resp, enum_original_mapping, richcmp_eq_only, EnumIntoPy,
-};
+use solders_macros::{common_methods, common_methods_rpc_resp, richcmp_eq_only, EnumIntoPy};
 use solders_primitives::epoch_schedule::EpochSchedule;
 use solders_pubkey::Pubkey;
 use solders_signature::Signature;
@@ -398,7 +394,7 @@ impl<'de> serde::Deserialize<'de> for RPCError {
                     Self::InternalErrorMessage(InternalErrorMessage::deserialize(value).unwrap())
                 }
                 Some(num) => Self::Unrecognized(num),
-                type_ => return Err(D::Error::custom(format!("unsupported type {type_:?}")))
+                type_ => return Err(D::Error::custom(format!("unsupported type {type_:?}"))),
             },
         )
     }
@@ -845,18 +841,38 @@ impl RpcContactInfo {
         version: Option<String>,
         feature_set: Option<u32>,
         shred_version: Option<u16>,
-    ) -> Self {
-        Self(RpcContactInfoOriginal {
+        tvu: Option<String>,
+        tpu_forwards: Option<String>,
+        tpu_forwards_quic: Option<String>,
+        tpu_vote: Option<String>,
+        serve_repair: Option<String>,
+    ) -> PyResult<Self> {
+        let gossip = gossip.map(|x| x.parse().unwrap());
+        let tvu = tvu.map(|x| x.parse().unwrap());
+        let pubsub = pubsub.map(|x| x.parse().unwrap());
+        let rpc = rpc.map(|x| x.parse().unwrap());
+        let tpu_quic = tpu_quic.map(|x| x.parse().unwrap());
+        let tpu = tpu.map(|x| x.parse().unwrap());
+        let tpu_forwards = tpu_forwards.map(|x| x.parse().unwrap());
+        let tpu_forwards_quic = tpu_forwards_quic.map(|x| x.parse().unwrap());
+        let tpu_vote = tpu_vote.map(|x| x.parse().unwrap());
+        let serve_repair = serve_repair.map(|x| x.parse().unwrap());
+        Ok(Self(RpcContactInfoOriginal {
             pubkey: pubkey.to_string(),
-            gossip: gossip.map(|x| x.parse().unwrap()),
-            tpu: tpu.map(|x| x.parse().unwrap()),
-            tpu_quic: tpu_quic.map(|x| x.parse().unwrap()),
-            rpc: rpc.map(|x| x.parse().unwrap()),
-            pubsub: pubsub.map(|x| x.parse().unwrap()),
+            gossip,
+            tpu,
+            tpu_quic,
+            rpc,
+            pubsub,
             version,
             feature_set,
             shred_version,
-        })
+            tvu,
+            tpu_forwards,
+            tpu_forwards_quic,
+            tpu_vote,
+            serve_repair,
+        }))
     }
 }
 
@@ -1199,53 +1215,6 @@ contextless_resp_eq!(
     clone,
     "Vec<DisplayFromStr>"
 );
-
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
-#[serde(rename_all = "camelCase")]
-#[pyclass(module = "solders.rpc.responses")]
-#[enum_original_mapping(StakeActivationStateOriginal)]
-pub enum StakeActivationState {
-    Activating,
-    Active,
-    Deactivating,
-    Inactive,
-}
-
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
-pub struct RpcStakeActivation(RpcStakeActivationOriginal);
-
-response_data_boilerplate!(RpcStakeActivation);
-
-#[richcmp_eq_only]
-#[common_methods]
-#[pymethods]
-impl RpcStakeActivation {
-    #[new]
-    pub fn new(state: StakeActivationState, active: u64, inactive: u64) -> Self {
-        RpcStakeActivationOriginal {
-            state: state.into(),
-            active,
-            inactive,
-        }
-        .into()
-    }
-
-    #[getter]
-    pub fn state(&self) -> StakeActivationState {
-        self.0.state.clone().into()
-    }
-    #[getter]
-    pub fn active(&self) -> u64 {
-        self.0.active
-    }
-    #[getter]
-    pub fn inactive(&self) -> u64 {
-        self.0.inactive
-    }
-}
-
-contextless_resp_eq!(GetStakeActivationResp, RpcStakeActivation, clone);
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
@@ -1847,7 +1816,6 @@ pyunion_resp!(
     GetSlotResp,
     GetSlotLeaderResp,
     GetSlotLeadersResp,
-    GetStakeActivationResp,
     GetSupplyResp,
     GetTokenAccountBalanceResp,
     GetTokenAccountsByDelegateResp,
@@ -2060,7 +2028,6 @@ pub fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
         GetSlotResp::type_object(py),
         GetSlotLeaderResp::type_object(py),
         GetSlotLeadersResp::type_object(py),
-        GetStakeActivationResp::type_object(py),
         GetSupplyResp::type_object(py),
         GetTokenAccountBalanceResp::type_object(py),
         GetTokenAccountsByDelegateResp::type_object(py),
@@ -2187,9 +2154,6 @@ pub fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<GetSlotResp>()?;
     m.add_class::<GetSlotLeaderResp>()?;
     m.add_class::<GetSlotLeadersResp>()?;
-    m.add_class::<StakeActivationState>()?;
-    m.add_class::<RpcStakeActivation>()?;
-    m.add_class::<GetStakeActivationResp>()?;
     m.add_class::<RpcSupply>()?;
     m.add_class::<GetSupplyResp>()?;
     m.add_class::<GetTokenAccountBalanceResp>()?;

@@ -78,31 +78,6 @@ def test_program_position() -> None:
     assert message.program_position(1) == 0
     assert message.program_position(2) == 1
 
-
-def test_is_writable() -> None:
-    key0 = Pubkey.new_unique()
-    key1 = Pubkey.new_unique()
-    key2 = Pubkey.new_unique()
-    key3 = Pubkey.new_unique()
-    key4 = Pubkey.new_unique()
-    key5 = Pubkey.new_unique()
-
-    message = Message.new_with_compiled_instructions(
-        num_required_signatures=3,
-        num_readonly_signed_accounts=2,
-        num_readonly_unsigned_accounts=1,
-        account_keys=[key0, key1, key2, key3, key4, key5],
-        recent_blockhash=Hash.default(),
-        instructions=[],
-    )
-    assert message.is_writable(0)
-    assert not message.is_writable(1)
-    assert not message.is_writable(2)
-    assert message.is_writable(3)
-    assert message.is_writable(4)
-    assert not message.is_writable(5)
-
-
 def test_program_ids() -> None:
     key0 = Pubkey.new_unique()
     key1 = Pubkey.new_unique()
@@ -117,44 +92,6 @@ def test_program_ids() -> None:
         instructions,
     )
     assert message.program_ids() == [loader2]
-
-
-def test_is_key_passed_to_program() -> None:
-    key0 = Pubkey.new_unique()
-    key1 = Pubkey.new_unique()
-    loader2 = Pubkey.new_unique()
-    instructions = [CompiledInstruction(2, b"", bytes([0, 1]))]
-    message = Message.new_with_compiled_instructions(
-        1,
-        0,
-        2,
-        [key0, key1, loader2],
-        Hash.default(),
-        instructions,
-    )
-
-    assert message.is_key_passed_to_program(0)
-    assert message.is_key_passed_to_program(1)
-    assert not message.is_key_passed_to_program(2)
-
-
-def test_is_non_loader_key() -> None:
-    key0 = Pubkey.new_unique()
-    key1 = Pubkey.new_unique()
-    loader2 = Pubkey.new_unique()
-    instructions = [CompiledInstruction(2, b"", bytes([0, 1]))]
-    message = Message.new_with_compiled_instructions(
-        1,
-        0,
-        2,
-        [key0, key1, loader2],
-        Hash.default(),
-        instructions,
-    )
-    assert message.is_non_loader_key(0)
-    assert message.is_non_loader_key(1)
-    assert not message.is_non_loader_key(2)
-
 
 def test_message_header_len_constant() -> None:
     assert MessageHeader.LENGTH == 3

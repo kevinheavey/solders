@@ -6,11 +6,11 @@ use pyo3::{
 use serde::{Deserialize, Serialize};
 use solana_rpc_client_api::filter::{
     Memcmp as MemcmpOriginal, MemcmpEncodedBytes as MemcmpEncodedBytesOriginal,
-    MemcmpEncoding as MemcmpEncodingOriginal, RpcFilterType as RpcFilterTypeOriginal,
+    RpcFilterType as RpcFilterTypeOriginal,
 };
 
 use derive_more::{From, Into};
-use solders_macros::{common_methods, enum_original_mapping, richcmp_eq_only, EnumIntoPy};
+use solders_macros::{common_methods, richcmp_eq_only, EnumIntoPy};
 
 use solders_traits_core::{
     impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
@@ -43,20 +43,11 @@ impl From<MemcmpEncodedBytesOriginal> for MemcmpEncodedBytes {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-#[enum_original_mapping(MemcmpEncodingOriginal)]
-#[pyclass(module = "solders.rpc.filter")]
-pub enum MemcmpEncoding {
-    Binary,
-}
-
 /// Compares a provided series of bytes with program account data at a particular offset.
 ///
 /// Args:
 ///     offset (int): Data offset to begin match.
 ///     bytes_ (str | Sequnce[int]): Bytes, encoded with specified encoding, or default Binary
-///     encoding (Optional[MemcmpEncoding]): Optional encoding specification.
 ///
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.rpc.filter", subclass)]
@@ -72,31 +63,13 @@ impl_display!(Memcmp);
 #[pymethods]
 impl Memcmp {
     #[new]
-    pub fn new(
-        offset: usize,
-        bytes_: MemcmpEncodedBytes,
-        encoding: Option<MemcmpEncoding>,
-    ) -> Self {
-        Self(MemcmpOriginal {
-            offset,
-            bytes: bytes_.into(),
-            encoding: encoding.map(|e| e.into()),
-        })
+    pub fn new(offset: usize, bytes_: MemcmpEncodedBytes) -> Self {
+        Self(MemcmpOriginal::new(offset, bytes_.into()))
     }
 
     #[getter]
     pub fn offset(&self) -> usize {
-        self.0.offset
-    }
-
-    #[getter]
-    pub fn bytes_(&self, py: Python) -> PyObject {
-        MemcmpEncodedBytes::from(self.0.bytes.clone()).into_py(py)
-    }
-
-    #[getter]
-    pub fn encoding(&self) -> Option<MemcmpEncoding> {
-        self.0.encoding.clone().map(MemcmpEncoding::from)
+        self.0.offset()
     }
 }
 
@@ -145,7 +118,6 @@ impl From<RpcFilterTypeOriginal> for RpcFilterType {
 
 pub fn create_filter_mod(py: Python<'_>) -> PyResult<&PyModule> {
     let m = PyModule::new(py, "filter")?;
-    m.add_class::<MemcmpEncoding>()?;
     m.add_class::<Memcmp>()?;
     m.add_class::<RpcFilterTypeFieldless>()?;
     let typing = py.import("typing")?;

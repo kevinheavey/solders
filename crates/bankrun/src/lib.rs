@@ -1,11 +1,19 @@
-use std::{path::PathBuf, str::FromStr};
+use std::{
+    fs::File,
+    io::Read,
+    path::{Path, PathBuf},
+    str::FromStr,
+};
 
+use chrono_humanize::{Accuracy, HumanTime, Tense};
 use derive_more::{From, Into};
+use log::{info, warn};
 use pyo3::{
     exceptions::{PyFileNotFoundError, PyValueError},
     prelude::*,
 };
 use solana_banks_client::BanksClientError as BanksClientErrorOriginal;
+use solana_program_test::find_file;
 use solders_account::Account;
 use solders_banks_interface::{
     transaction_status_from_banks, BanksTransactionMeta, BanksTransactionResultWithMeta,
@@ -67,7 +75,7 @@ impl BanksClient {
         py: Python<'p>,
         transaction: TransactionType,
     ) -> PyResult<&'p PyAny> {
-        let mut underlying = self.0.clone();
+        let underlying = self.0.clone();
         pyo3_asyncio::tokio::future_into_py(py, async move {
             let res = match transaction {
                 TransactionType::Legacy(t) => underlying.send_transaction(t.0).await,
@@ -92,7 +100,7 @@ impl BanksClient {
         py: Python<'p>,
         transaction: TransactionType,
     ) -> PyResult<&'p PyAny> {
-        let mut underlying = self.0.clone();
+        let underlying = self.0.clone();
         pyo3_asyncio::tokio::future_into_py(py, async move {
             let awaited = match transaction {
                 TransactionType::Legacy(t) => {
@@ -131,7 +139,7 @@ impl BanksClient {
         commitment: Option<CommitmentLevel>,
     ) -> PyResult<&'p PyAny> {
         let commitment_inner = CommitmentLevelOriginal::from(commitment.unwrap_or_default());
-        let mut underlying = self.0.clone();
+        let underlying = self.0.clone();
         pyo3_asyncio::tokio::future_into_py(py, async move {
             let awaited = match transaction {
                 TransactionType::Legacy(t) => {
@@ -171,7 +179,7 @@ impl BanksClient {
     ) -> PyResult<&'p PyAny> {
         let address_inner = address.0;
         let commitment_inner = CommitmentLevelOriginal::from(commitment.unwrap_or_default());
-        let mut underlying = self.0.clone();
+        let underlying = self.0.clone();
         pyo3_asyncio::tokio::future_into_py(py, async move {
             let res =
                 async_res!(underlying.get_account_with_commitment(address_inner, commitment_inner));
@@ -200,7 +208,7 @@ impl BanksClient {
         py: Python<'p>,
         signature: Signature,
     ) -> PyResult<&'p PyAny> {
-        let mut underlying = self.0.clone();
+        let underlying = self.0.clone();
         let signature_underlying = signature.0;
         pyo3_asyncio::tokio::future_into_py(py, async move {
             let res = async_res!(underlying.get_transaction_status(signature_underlying));
@@ -224,7 +232,7 @@ impl BanksClient {
         py: Python<'p>,
         signatures: Vec<Signature>,
     ) -> PyResult<&'p PyAny> {
-        let mut underlying = self.0.clone();
+        let underlying = self.0.clone();
         let signatures_underlying = signatures.iter().map(|x| x.0).collect();
         pyo3_asyncio::tokio::future_into_py(py, async move {
             let res = async_res!(underlying.get_transaction_statuses(signatures_underlying));
@@ -255,7 +263,7 @@ impl BanksClient {
         py: Python<'p>,
         commitment: Option<CommitmentLevel>,
     ) -> PyResult<&'p PyAny> {
-        let mut underlying = self.0.clone();
+        let underlying = self.0.clone();
         let commitment_inner = CommitmentLevelOriginal::from(commitment.unwrap_or_default());
         pyo3_asyncio::tokio::future_into_py(py, async move {
             let res = async_res!(underlying.get_slot_with_context(current(), commitment_inner));
@@ -277,7 +285,7 @@ impl BanksClient {
         py: Python<'p>,
         commitment: Option<CommitmentLevel>,
     ) -> PyResult<&'p PyAny> {
-        let mut underlying = self.0.clone();
+        let underlying = self.0.clone();
         let commitment_inner = CommitmentLevelOriginal::from(commitment.unwrap_or_default());
         pyo3_asyncio::tokio::future_into_py(py, async move {
             let res =
@@ -293,7 +301,7 @@ impl BanksClient {
     ///     Rent: The rent object.
     ///  
     pub fn get_rent<'p>(&mut self, py: Python<'p>) -> PyResult<&'p PyAny> {
-        let mut underlying = self.0.clone();
+        let underlying = self.0.clone();
         pyo3_asyncio::tokio::future_into_py(py, async move {
             let res = async_res!(underlying.get_rent());
             let pyobj: PyResult<PyObject> =
@@ -308,7 +316,7 @@ impl BanksClient {
     ///     Clock: the clock object.
     ///
     pub fn get_clock<'p>(&mut self, py: Python<'p>) -> PyResult<&'p PyAny> {
-        let mut underlying = self.0.clone();
+        let underlying = self.0.clone();
         pyo3_asyncio::tokio::future_into_py(py, async move {
             let res = async_res!(underlying.get_sysvar::<ClockOriginal>());
             let pyobj: PyResult<PyObject> =
@@ -333,7 +341,7 @@ impl BanksClient {
         address: Pubkey,
         commitment: Option<CommitmentLevel>,
     ) -> PyResult<&'p PyAny> {
-        let mut underlying = self.0.clone();
+        let underlying = self.0.clone();
         let commitment_inner = CommitmentLevelOriginal::from(commitment.unwrap_or_default());
         let address_inner = address.0;
         pyo3_asyncio::tokio::future_into_py(py, async move {
@@ -357,7 +365,7 @@ impl BanksClient {
         py: Python<'p>,
         commitment: Option<CommitmentLevel>,
     ) -> PyResult<&'p PyAny> {
-        let mut underlying = self.0.clone();
+        let underlying = self.0.clone();
         let commitment_inner = CommitmentLevelOriginal::from(commitment.unwrap_or_default());
         pyo3_asyncio::tokio::future_into_py(py, async move {
             let res = async_res!(underlying.get_latest_blockhash_with_commitment(commitment_inner));
@@ -391,7 +399,7 @@ impl BanksClient {
         message: Message,
         commitment: Option<CommitmentLevel>,
     ) -> PyResult<&'p PyAny> {
-        let mut underlying = self.0.clone();
+        let underlying = self.0.clone();
         let commitment_inner = CommitmentLevelOriginal::from(commitment.unwrap_or_default());
         let message_inner = message.0;
         pyo3_asyncio::tokio::future_into_py(py, async move {
@@ -407,6 +415,118 @@ impl BanksClient {
     }
 }
 
+fn read_file<P: AsRef<Path>>(path: P) -> Vec<u8> {
+    let path = path.as_ref();
+    let mut file = File::open(path)
+        .unwrap_or_else(|err| panic!("Failed to open \"{}\": {}", path.display(), err));
+
+    let mut file_data = Vec::new();
+    file.read_to_end(&mut file_data)
+        .unwrap_or_else(|err| panic!("Failed to read \"{}\": {}", path.display(), err));
+    file_data
+}
+
+fn default_shared_object_dirs() -> Vec<PathBuf> {
+    let mut search_path = vec![];
+    if let Ok(bpf_out_dir) = std::env::var("BPF_OUT_DIR") {
+        search_path.push(PathBuf::from(bpf_out_dir));
+    } else if let Ok(bpf_out_dir) = std::env::var("SBF_OUT_DIR") {
+        search_path.push(PathBuf::from(bpf_out_dir));
+    }
+    search_path.push(PathBuf::from("tests/fixtures"));
+    if let Ok(dir) = std::env::current_dir() {
+        search_path.push(dir);
+    }
+    search_path
+}
+
+/// Ripped from solana-program-test after they rugged
+/// by requiring &'static str
+fn add_program_inner(inner: &mut ProgramTest, program_name: &str, program_id: Pubkey) {
+    let add_bpf = |this: &mut ProgramTest, program_file: PathBuf| {
+        let data = read_file(&program_file);
+        info!(
+            "\"{}\" SBF program from {}{}",
+            program_name,
+            program_file.display(),
+            std::fs::metadata(&program_file)
+                .map(|metadata| {
+                    metadata
+                        .modified()
+                        .map(|time| {
+                            format!(
+                                ", modified {}",
+                                HumanTime::from(time).to_text_en(Accuracy::Precise, Tense::Past)
+                            )
+                        })
+                        .ok()
+                })
+                .ok()
+                .flatten()
+                .unwrap_or_default()
+        );
+
+        this.add_account(
+            program_id.0,
+            solana_sdk::account::Account {
+                lamports: Rent::default().minimum_balance(data.len()).max(1),
+                data,
+                owner: solana_sdk::bpf_loader::id(),
+                executable: true,
+                rent_epoch: 0,
+            },
+        );
+    };
+
+    let warn_invalid_program_name = || {
+        let valid_program_names = default_shared_object_dirs()
+            .iter()
+            .filter_map(|dir| dir.read_dir().ok())
+            .flat_map(|read_dir| {
+                read_dir.filter_map(|entry| {
+                    let path = entry.ok()?.path();
+                    if !path.is_file() {
+                        return None;
+                    }
+                    match path.extension()?.to_str()? {
+                        "so" => Some(path.file_stem()?.to_os_string()),
+                        _ => None,
+                    }
+                })
+            })
+            .collect::<Vec<_>>();
+
+        if valid_program_names.is_empty() {
+            // This should be unreachable as `test-bpf` should guarantee at least one shared
+            // object exists somewhere.
+            warn!("No SBF shared objects found.");
+            return;
+        }
+
+        warn!(
+            "Possible bogus program name. Ensure the program name ({}) \
+            matches one of the following recognizable program names:",
+            program_name,
+        );
+        for name in valid_program_names {
+            warn!(" - {}", name.to_str().unwrap());
+        }
+    };
+
+    let program_file = find_file(&format!("{program_name}.so"));
+    match program_file {
+        // If SBF is preferred (i.e., `test-sbf` is invoked) and a BPF shared object exists,
+        // use that as the program data.
+        Some(file) => add_bpf(inner, file),
+
+        // Invalid: `test-sbf` invocation with no matching SBF shared object.
+        None => {
+            warn_invalid_program_name();
+            panic!("Program file data not available for {program_name} ({program_id})");
+        }
+    }
+}
+
 fn new_bankrun(
     programs: Vec<(&str, Pubkey)>,
     compute_max_units: Option<u64>,
@@ -416,7 +536,7 @@ fn new_bankrun(
     let mut pt = ProgramTest::default();
     pt.prefer_bpf(true);
     for prog in programs {
-        pt.add_program(prog.0, prog.1.into(), None);
+        add_program_inner(&mut pt, prog.0, prog.1);
     }
     if let Some(cmu) = compute_max_units {
         pt.set_compute_max_units(cmu);

@@ -2,7 +2,7 @@ use derive_more::{From, Into};
 use pyo3::{create_exception, exceptions::PyException, prelude::*, types::PyBytes};
 use serde::{Deserialize, Serialize};
 use solana_program::{
-    address_lookup_table_account::AddressLookupTableAccount as AddressLookupTableAccountOriginal,
+    address_lookup_table::AddressLookupTableAccount as AddressLookupTableAccountOriginal,
     instruction::CompiledInstruction as CompiledInstructionOriginal,
     instruction::Instruction as InstructionOriginal,
     message::{
@@ -416,19 +416,6 @@ impl Message {
         self.0.program_ids().into_iter().map(Pubkey::from).collect()
     }
 
-    /// Check if ``key_index`` is contained in the accounts of
-    /// any of the message's instructions.
-    ///
-    /// Args:
-    ///     key_index (int): The index to check.
-    ///
-    /// Returns:
-    ///     bool: True if the key is passed to the program.
-    ///
-    pub fn is_key_passed_to_program(&self, key_index: usize) -> bool {
-        self.0.is_key_passed_to_program(key_index)
-    }
-
     /// Check if the ``program_id_index`` of any of the message's instructions matches ``key_index``.
     ///
     /// Args:
@@ -441,18 +428,6 @@ impl Message {
         self.0.is_key_called_as_program(key_index)
     }
 
-    /// Check if the key is passed to the program OR if the key is not called as program.
-    ///
-    /// Args:
-    ///     key_index (int): The index to check.
-    ///
-    /// Returns:
-    ///     bool: The result of the check.
-    ///
-    pub fn is_non_loader_key(&self, key_index: usize) -> bool {
-        self.0.is_non_loader_key(key_index)
-    }
-
     /// See https://docs.rs/solana-sdk/latest/solana_sdk/message/legacy/struct.Message.html#method.program_position
     pub fn program_position(&self, index: usize) -> Option<usize> {
         self.0.program_position(index)
@@ -461,11 +436,6 @@ impl Message {
     /// See https://docs.rs/solana-sdk/latest/solana_sdk/message/legacy/struct.Message.html#method.maybe_executable
     pub fn maybe_executable(&self, i: usize) -> bool {
         self.0.maybe_executable(i)
-    }
-
-    /// See https://docs.rs/solana-sdk/latest/solana_sdk/message/legacy/struct.Message.html#method.is_writable
-    pub fn is_writable(&self, i: usize) -> bool {
-        self.0.is_writable(i)
     }
 
     /// See https://docs.rs/solana-sdk/latest/solana_sdk/message/legacy/struct.Message.html#method.is_signer
@@ -779,7 +749,7 @@ impl MessageV0 {
     /// Before loading addresses, we can't demote write locks for dynamically loaded
     /// addresses so this should not be used by the runtime.
     pub fn is_maybe_writable(&self, key_index: usize) -> bool {
-        self.0.is_maybe_writable(key_index)
+        self.0.is_maybe_writable(key_index, None)
     }
 
     /// Returns true if the account at the specified index signed this

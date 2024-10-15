@@ -7,8 +7,8 @@ use solana_sdk::{
     sanitize::Sanitize,
     signature::Signature as SignatureOriginal,
     transaction::{
-        get_nonce_pubkey_from_instruction, uses_durable_nonce, Legacy as LegacyOriginal,
-        Transaction as TransactionOriginal, TransactionVersion as TransactionVersionOriginal,
+        uses_durable_nonce, Legacy as LegacyOriginal, Transaction as TransactionOriginal,
+        TransactionVersion as TransactionVersionOriginal,
         VersionedTransaction as VersionedTransactionOriginal,
     },
 };
@@ -684,11 +684,6 @@ impl Transaction {
     ///
     pub fn from_bytes(data: &[u8]) -> PyResult<Self> {
         Self::py_from_bytes(data)
-    }
-
-    /// Deprecated in the Solana Rust SDK, expose here only for testing.
-    pub fn get_nonce_pubkey_from_instruction(&self, ix: &CompiledInstruction) -> Option<Pubkey> {
-        get_nonce_pubkey_from_instruction(ix.as_ref(), self.as_ref()).map(Pubkey::from)
     }
 }
 
