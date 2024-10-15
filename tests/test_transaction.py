@@ -13,7 +13,6 @@ from solders.message import Message
 from solders.presigner import Presigner
 from solders.pubkey import Pubkey
 from solders.signature import Signature
-from solders.sysvar import RECENT_BLOCKHASHES
 from solders.transaction import SanitizeError, Transaction, TransactionError
 
 from .utils import ZERO_BYTES
