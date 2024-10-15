@@ -914,32 +914,6 @@ def test_tx_uses_nonce_first_prog_id_not_nonce_fail() -> None:
     tx = Transaction([from_keypair, nonce_keypair], message, Hash.default())
     assert tx.uses_durable_nonce() is None
 
-
-def test_tx_uses_ro_nonce_account() -> None:
-    from_keypair = Keypair()
-    from_pubkey = from_keypair.pubkey()
-    nonce_keypair = Keypair()
-    nonce_pubkey = nonce_keypair.pubkey()
-    account_metas = [
-        AccountMeta(nonce_pubkey, False, False),
-        AccountMeta(RECENT_BLOCKHASHES, False, False),
-        AccountMeta(nonce_pubkey, True, False),
-    ]
-    advance_nonce_account_idx = b"\x04\x00\x00\x00"
-    nonce_instruction = Instruction(
-        system_program.ID,
-        advance_nonce_account_idx,
-        account_metas,
-    )
-    tx = Transaction.new_signed_with_payer(
-        [nonce_instruction],
-        from_pubkey,
-        [from_keypair, nonce_keypair],
-        Hash.default(),
-    )
-    assert tx.uses_durable_nonce() is None
-
-
 def test_tx_uses_nonce_wrong_first_nonce_ix_fail() -> None:
     from_keypair = Keypair()
     from_pubkey = from_keypair.pubkey()

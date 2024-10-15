@@ -75,7 +75,7 @@ impl BanksClient {
         py: Python<'p>,
         transaction: TransactionType,
     ) -> PyResult<&'p PyAny> {
-        let mut underlying = self.0.clone();
+        let underlying = self.0.clone();
         pyo3_asyncio::tokio::future_into_py(py, async move {
             let res = match transaction {
                 TransactionType::Legacy(t) => underlying.send_transaction(t.0).await,
@@ -100,7 +100,7 @@ impl BanksClient {
         py: Python<'p>,
         transaction: TransactionType,
     ) -> PyResult<&'p PyAny> {
-        let mut underlying = self.0.clone();
+        let underlying = self.0.clone();
         pyo3_asyncio::tokio::future_into_py(py, async move {
             let awaited = match transaction {
                 TransactionType::Legacy(t) => {
@@ -139,7 +139,7 @@ impl BanksClient {
         commitment: Option<CommitmentLevel>,
     ) -> PyResult<&'p PyAny> {
         let commitment_inner = CommitmentLevelOriginal::from(commitment.unwrap_or_default());
-        let mut underlying = self.0.clone();
+        let underlying = self.0.clone();
         pyo3_asyncio::tokio::future_into_py(py, async move {
             let awaited = match transaction {
                 TransactionType::Legacy(t) => {
@@ -179,7 +179,7 @@ impl BanksClient {
     ) -> PyResult<&'p PyAny> {
         let address_inner = address.0;
         let commitment_inner = CommitmentLevelOriginal::from(commitment.unwrap_or_default());
-        let mut underlying = self.0.clone();
+        let underlying = self.0.clone();
         pyo3_asyncio::tokio::future_into_py(py, async move {
             let res =
                 async_res!(underlying.get_account_with_commitment(address_inner, commitment_inner));
@@ -208,7 +208,7 @@ impl BanksClient {
         py: Python<'p>,
         signature: Signature,
     ) -> PyResult<&'p PyAny> {
-        let mut underlying = self.0.clone();
+        let underlying = self.0.clone();
         let signature_underlying = signature.0;
         pyo3_asyncio::tokio::future_into_py(py, async move {
             let res = async_res!(underlying.get_transaction_status(signature_underlying));
@@ -232,7 +232,7 @@ impl BanksClient {
         py: Python<'p>,
         signatures: Vec<Signature>,
     ) -> PyResult<&'p PyAny> {
-        let mut underlying = self.0.clone();
+        let underlying = self.0.clone();
         let signatures_underlying = signatures.iter().map(|x| x.0).collect();
         pyo3_asyncio::tokio::future_into_py(py, async move {
             let res = async_res!(underlying.get_transaction_statuses(signatures_underlying));
@@ -263,7 +263,7 @@ impl BanksClient {
         py: Python<'p>,
         commitment: Option<CommitmentLevel>,
     ) -> PyResult<&'p PyAny> {
-        let mut underlying = self.0.clone();
+        let underlying = self.0.clone();
         let commitment_inner = CommitmentLevelOriginal::from(commitment.unwrap_or_default());
         pyo3_asyncio::tokio::future_into_py(py, async move {
             let res = async_res!(underlying.get_slot_with_context(current(), commitment_inner));
@@ -285,7 +285,7 @@ impl BanksClient {
         py: Python<'p>,
         commitment: Option<CommitmentLevel>,
     ) -> PyResult<&'p PyAny> {
-        let mut underlying = self.0.clone();
+        let underlying = self.0.clone();
         let commitment_inner = CommitmentLevelOriginal::from(commitment.unwrap_or_default());
         pyo3_asyncio::tokio::future_into_py(py, async move {
             let res =
@@ -301,7 +301,7 @@ impl BanksClient {
     ///     Rent: The rent object.
     ///  
     pub fn get_rent<'p>(&mut self, py: Python<'p>) -> PyResult<&'p PyAny> {
-        let mut underlying = self.0.clone();
+        let underlying = self.0.clone();
         pyo3_asyncio::tokio::future_into_py(py, async move {
             let res = async_res!(underlying.get_rent());
             let pyobj: PyResult<PyObject> =
@@ -316,7 +316,7 @@ impl BanksClient {
     ///     Clock: the clock object.
     ///
     pub fn get_clock<'p>(&mut self, py: Python<'p>) -> PyResult<&'p PyAny> {
-        let mut underlying = self.0.clone();
+        let underlying = self.0.clone();
         pyo3_asyncio::tokio::future_into_py(py, async move {
             let res = async_res!(underlying.get_sysvar::<ClockOriginal>());
             let pyobj: PyResult<PyObject> =
@@ -341,7 +341,7 @@ impl BanksClient {
         address: Pubkey,
         commitment: Option<CommitmentLevel>,
     ) -> PyResult<&'p PyAny> {
-        let mut underlying = self.0.clone();
+        let underlying = self.0.clone();
         let commitment_inner = CommitmentLevelOriginal::from(commitment.unwrap_or_default());
         let address_inner = address.0;
         pyo3_asyncio::tokio::future_into_py(py, async move {
@@ -365,7 +365,7 @@ impl BanksClient {
         py: Python<'p>,
         commitment: Option<CommitmentLevel>,
     ) -> PyResult<&'p PyAny> {
-        let mut underlying = self.0.clone();
+        let underlying = self.0.clone();
         let commitment_inner = CommitmentLevelOriginal::from(commitment.unwrap_or_default());
         pyo3_asyncio::tokio::future_into_py(py, async move {
             let res = async_res!(underlying.get_latest_blockhash_with_commitment(commitment_inner));
@@ -399,7 +399,7 @@ impl BanksClient {
         message: Message,
         commitment: Option<CommitmentLevel>,
     ) -> PyResult<&'p PyAny> {
-        let mut underlying = self.0.clone();
+        let underlying = self.0.clone();
         let commitment_inner = CommitmentLevelOriginal::from(commitment.unwrap_or_default());
         let message_inner = message.0;
         pyo3_asyncio::tokio::future_into_py(py, async move {

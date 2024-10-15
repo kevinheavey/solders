@@ -7,6 +7,7 @@ include = ["/src"]
 
 [dependencies]
 solana-program = { workspace = true }
+zeroize = { workspace = true }
 
 [lib]
 crate-type = ["cdylib"]
