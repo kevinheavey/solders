@@ -1100,7 +1100,7 @@ request_boilerplate!(GetMultipleAccounts);
 ///     >>> filters = [10, Memcmp(offset=10, bytes_=b"123")]
 ///     >>> config = RpcProgramAccountsConfig(acc_info_config, filters)
 ///     >>> GetProgramAccounts(Pubkey.default(), config).to_json()
-///     '{"method":"getProgramAccounts","jsonrpc":"2.0","id":0,"params":["11111111111111111111111111111111",{"filters":[{"dataSize":10},{"memcmp":{"offset":10,"bytes":[49,50,51],"encoding":null}}],"encoding":null,"dataSlice":null,"minContextSlot":null,"withContext":null}]}'
+///     '{"method":"getProgramAccounts","jsonrpc":"2.0","id":0,"params":["11111111111111111111111111111111",{"filters":[{"dataSize":10},{"memcmp":{"offset":10,"encoding":"bytes","bytes":[49,50,51]}}],"encoding":null,"dataSlice":null,"minContextSlot":null,"withContext":null,"sortResults":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
@@ -2578,7 +2578,7 @@ request_boilerplate!(LogsSubscribe);
 ///     >>> filters = [10, Memcmp(offset=10, bytes_=b"123")]
 ///     >>> config = RpcProgramAccountsConfig(acc_info_config, filters)
 ///     >>> ProgramSubscribe(Pubkey.default(), config).to_json()
-///     '{"method":"programSubscribe","jsonrpc":"2.0","id":0,"params":["11111111111111111111111111111111",{"filters":[{"dataSize":10},{"memcmp":{"offset":10,"bytes":[49,50,51],"encoding":null}}],"encoding":null,"dataSlice":null,"minContextSlot":null,"withContext":null}]}'
+///     '{"method":"programSubscribe","jsonrpc":"2.0","id":0,"params":["11111111111111111111111111111111",{"filters":[{"dataSize":10},{"memcmp":{"offset":10,"encoding":"bytes","bytes":[49,50,51]}}],"encoding":null,"dataSlice":null,"minContextSlot":null,"withContext":null,"sortResults":null}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
 #[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
