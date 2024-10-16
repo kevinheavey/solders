@@ -913,6 +913,7 @@ def test_tx_uses_nonce_first_prog_id_not_nonce_fail() -> None:
     tx = Transaction([from_keypair, nonce_keypair], message, Hash.default())
     assert tx.uses_durable_nonce() is None
 
+
 def test_tx_uses_nonce_wrong_first_nonce_ix_fail() -> None:
     from_keypair = Keypair()
     from_pubkey = from_keypair.pubkey()
@@ -934,6 +935,7 @@ def test_tx_uses_nonce_wrong_first_nonce_ix_fail() -> None:
     message = Message(instructions, nonce_pubkey)
     tx = Transaction([from_keypair, nonce_keypair], message, Hash.default())
     assert tx.uses_durable_nonce() is None
+
 
 def test_tx_keypair_pubkey_mismatch() -> None:
     from_keypair = Keypair()

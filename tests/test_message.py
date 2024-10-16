@@ -78,6 +78,7 @@ def test_program_position() -> None:
     assert message.program_position(1) == 0
     assert message.program_position(2) == 1
 
+
 def test_program_ids() -> None:
     key0 = Pubkey.new_unique()
     key1 = Pubkey.new_unique()
@@ -92,6 +93,7 @@ def test_program_ids() -> None:
         instructions,
     )
     assert message.program_ids() == [loader2]
+
 
 def test_message_header_len_constant() -> None:
     assert MessageHeader.LENGTH == 3

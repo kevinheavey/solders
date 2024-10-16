@@ -1523,6 +1523,7 @@ def test_get_slot_leaders() -> None:
         )
     ]
 
+
 def test_get_supply() -> None:
     raw = """{
   "jsonrpc": "2.0",

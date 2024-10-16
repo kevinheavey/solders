@@ -4,6 +4,7 @@
 
 ### Changed
 
+- Add optional `token_program_id` param to `get_associated_token_address` [(#117)](https://github.com/kevinheavey/solders/pull/117).
 - Upgrade Solana deps to 2.0 [(#116)](https://github.com/kevinheavey/solders/pull/116).
 - Remove GetStakeActivationResp (no longer exists) [(#116)](https://github.com/kevinheavey/solders/pull/116).
 
