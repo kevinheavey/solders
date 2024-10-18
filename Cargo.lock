@@ -5152,7 +5152,7 @@ dependencies = [
 
 [[package]]
 name = "solders"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "bincode",
  "derive_more",
@@ -5187,7 +5187,7 @@ dependencies = [
 
 [[package]]
 name = "solders-account"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "base64 0.13.1",
  "derive_more",
@@ -5205,7 +5205,7 @@ dependencies = [
 
 [[package]]
 name = "solders-account-decoder"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "base64 0.13.1",
  "bs58 0.4.0",
@@ -5223,7 +5223,7 @@ dependencies = [
 
 [[package]]
 name = "solders-address-lookup-table-account"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "derive_more",
  "pyo3",
@@ -5237,7 +5237,7 @@ dependencies = [
 
 [[package]]
 name = "solders-bankrun"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "chrono-humanize",
  "derive_more",
@@ -5267,7 +5267,7 @@ dependencies = [
 
 [[package]]
 name = "solders-banks-interface"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "derive_more",
  "pyo3",
@@ -5284,7 +5284,7 @@ dependencies = [
 
 [[package]]
 name = "solders-base64-string"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "base64 0.13.1",
  "bincode",
@@ -5304,7 +5304,7 @@ dependencies = [
 
 [[package]]
 name = "solders-commitment-config"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "derive_more",
  "pyo3",
@@ -5315,7 +5315,7 @@ dependencies = [
 
 [[package]]
 name = "solders-compute-budget"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "pyo3",
  "solana-sdk",
@@ -5325,7 +5325,7 @@ dependencies = [
 
 [[package]]
 name = "solders-epoch-info"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "derive_more",
  "pyo3",
@@ -5338,7 +5338,7 @@ dependencies = [
 
 [[package]]
 name = "solders-hash"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "derive_more",
  "pyo3",
@@ -5351,7 +5351,7 @@ dependencies = [
 
 [[package]]
 name = "solders-instruction"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "derive_more",
  "pyo3",
@@ -5364,7 +5364,7 @@ dependencies = [
 
 [[package]]
 name = "solders-keypair"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "derive_more",
  "pyo3",
@@ -5379,7 +5379,7 @@ dependencies = [
 
 [[package]]
 name = "solders-macros"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -5388,7 +5388,7 @@ dependencies = [
 
 [[package]]
 name = "solders-message"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "bincode",
  "derive_more",
@@ -5406,7 +5406,7 @@ dependencies = [
 
 [[package]]
 name = "solders-primitives"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "bincode",
  "derive_more",
@@ -5419,7 +5419,7 @@ dependencies = [
 
 [[package]]
 name = "solders-pubkey"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "derive_more",
  "pyo3",
@@ -5432,7 +5432,7 @@ dependencies = [
 
 [[package]]
 name = "solders-rpc-account-info-config"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "pyo3",
  "serde",
@@ -5447,7 +5447,7 @@ dependencies = [
 
 [[package]]
 name = "solders-rpc-common"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "derive_more",
  "pyo3",
@@ -5468,7 +5468,7 @@ dependencies = [
 
 [[package]]
 name = "solders-rpc-config"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "pyo3",
  "solders-rpc-account-info-config",
@@ -5485,11 +5485,11 @@ dependencies = [
 
 [[package]]
 name = "solders-rpc-config-macros"
-version = "0.21.0"
+version = "0.22.0"
 
 [[package]]
 name = "solders-rpc-config-no-filter"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "pyo3",
  "serde",
@@ -5507,7 +5507,7 @@ dependencies = [
 
 [[package]]
 name = "solders-rpc-config-no-rpc-api"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "pyo3",
  "serde",
@@ -5518,7 +5518,7 @@ dependencies = [
 
 [[package]]
 name = "solders-rpc-errors"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "pyo3",
  "serde",
@@ -5529,11 +5529,11 @@ dependencies = [
 
 [[package]]
 name = "solders-rpc-errors-common"
-version = "0.21.0"
+version = "0.22.0"
 
 [[package]]
 name = "solders-rpc-errors-no-tx-status"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "derive_more",
  "pyo3",
@@ -5546,7 +5546,7 @@ dependencies = [
 
 [[package]]
 name = "solders-rpc-errors-tx-status"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "derive_more",
  "pyo3",
@@ -5560,7 +5560,7 @@ dependencies = [
 
 [[package]]
 name = "solders-rpc-filter"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "base64 0.13.1",
  "bs58 0.4.0",
@@ -5575,7 +5575,7 @@ dependencies = [
 
 [[package]]
 name = "solders-rpc-program-accounts-config"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "pyo3",
  "serde",
@@ -5589,7 +5589,7 @@ dependencies = [
 
 [[package]]
 name = "solders-rpc-request-airdrop-config"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "pyo3",
  "serde",
@@ -5603,7 +5603,7 @@ dependencies = [
 
 [[package]]
 name = "solders-rpc-request-params"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "bincode",
  "serde",
@@ -5626,7 +5626,7 @@ dependencies = [
 
 [[package]]
 name = "solders-rpc-request-params-no-config"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "bincode",
  "serde",
@@ -5640,7 +5640,7 @@ dependencies = [
 
 [[package]]
 name = "solders-rpc-requests"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "camelpaste",
  "pyo3",
@@ -5671,11 +5671,11 @@ dependencies = [
 
 [[package]]
 name = "solders-rpc-response-data-boilerplate"
-version = "0.21.0"
+version = "0.22.0"
 
 [[package]]
 name = "solders-rpc-responses"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "camelpaste",
  "derive_more",
@@ -5712,7 +5712,7 @@ dependencies = [
 
 [[package]]
 name = "solders-rpc-responses-common"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "camelpaste",
  "derive_more",
@@ -5735,7 +5735,7 @@ dependencies = [
 
 [[package]]
 name = "solders-rpc-responses-tx-status"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "derive_more",
  "pyo3",
@@ -5751,7 +5751,7 @@ dependencies = [
 
 [[package]]
 name = "solders-rpc-send-transaction-config"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "pyo3",
  "serde",
@@ -5767,7 +5767,7 @@ dependencies = [
 
 [[package]]
 name = "solders-rpc-sig-status-config"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "pyo3",
  "serde",
@@ -5779,7 +5779,7 @@ dependencies = [
 
 [[package]]
 name = "solders-rpc-sigs-for-address-config"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "pyo3",
  "serde",
@@ -5793,7 +5793,7 @@ dependencies = [
 
 [[package]]
 name = "solders-rpc-sim-transaction-config"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "pyo3",
  "serde",
@@ -5809,7 +5809,7 @@ dependencies = [
 
 [[package]]
 name = "solders-rpc-simulate-tx-accounts-config"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "pyo3",
  "serde",
@@ -5823,14 +5823,14 @@ dependencies = [
 
 [[package]]
 name = "solders-rpc-version"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "serde",
 ]
 
 [[package]]
 name = "solders-signature"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "derive_more",
  "pyo3",
@@ -5843,7 +5843,7 @@ dependencies = [
 
 [[package]]
 name = "solders-system-program"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "bincode",
  "derive_more",
@@ -5861,7 +5861,7 @@ dependencies = [
 
 [[package]]
 name = "solders-token"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "derive_more",
  "pyo3",
@@ -5876,7 +5876,7 @@ dependencies = [
 
 [[package]]
 name = "solders-traits"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "bincode",
  "pyo3",
@@ -5889,7 +5889,7 @@ dependencies = [
 
 [[package]]
 name = "solders-traits-core"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "bincode",
  "pyo3",
@@ -5900,7 +5900,7 @@ dependencies = [
 
 [[package]]
 name = "solders-transaction"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "derive_more",
  "pyo3",
@@ -5919,7 +5919,7 @@ dependencies = [
 
 [[package]]
 name = "solders-transaction-confirmation-status"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "pyo3",
  "serde",
@@ -5929,7 +5929,7 @@ dependencies = [
 
 [[package]]
 name = "solders-transaction-error"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "derive_more",
  "pyo3",
@@ -5941,7 +5941,7 @@ dependencies = [
 
 [[package]]
 name = "solders-transaction-return-data"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "base64 0.13.1",
  "derive_more",
@@ -5956,7 +5956,7 @@ dependencies = [
 
 [[package]]
 name = "solders-transaction-status"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "base64 0.13.1",
  "bincode",
@@ -5986,7 +5986,7 @@ dependencies = [
 
 [[package]]
 name = "solders-transaction-status-enums"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "pyo3",
  "serde",
@@ -5996,7 +5996,7 @@ dependencies = [
 
 [[package]]
 name = "solders-transaction-status-struct"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "derive_more",
  "pyo3",
