@@ -184,7 +184,7 @@ jobs:
         with:
           target: x86_64-unknown-linux-musl
           manylinux: musllinux_1_2
-          args: --release --out dist
+          args: --release --no-default-features -F ring --out dist
           maturin-version: ${{ env.maturin_version }}
       - name: Install built wheel
         uses: addnab/docker-run-action@v3
@@ -195,7 +195,7 @@ jobs:
             apk add py3-pip
             pip3 install -U pip pytest pytest-asyncio based58 pybip39 mnemonic typing-extensions jsonalias --break-system-packages
             pip3 install ${{ env.name }} --find-links /io/dist/ --force-reinstall --no-index --no-dependencies --break-system-packages
-            python3 -m pytest
+            python3 -m pytest --ignore=tests/bankrun
       - name: Upload wheels
         uses: actions/upload-artifact@v3
         with:

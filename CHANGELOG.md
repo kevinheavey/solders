@@ -6,6 +6,7 @@
 
 - Upgrade Solana Rust deps to 2.1 [(#123)](https://github.com/kevinheavey/solders/pull/123).
 - Stop publishing Rust crates for now (most of the publish CI was failing anyway) [(#123)](https://github.com/kevinheavey/solders/pull/123).
+- Drop support for bankrun on musllinux-i686 as its dependencies no longer support it [(#123)](https://github.com/kevinheavey/solders/pull/123).
 
 ## [0.22.0] - 2024-10-18
 
