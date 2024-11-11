@@ -125,6 +125,7 @@ from solders.rpc.responses import (
     SlotUpdateOptimisticConfirmation,
     SubscriptionError,
     SubscriptionResult,
+    UnsubscribeResult,
     ValidatorExitResp,
     VoteNotification,
     batch_from_json,
@@ -2587,6 +2588,10 @@ def test_parse_ws_message() -> None:
     parsed_multi = parse_websocket_message(raw_multi)
     assert len(parsed_multi) == 2
     assert isinstance(parsed_multi[0], SubscriptionResult)
+    raw_unsubcribe = '{"jsonrpc":"2.0","result":true,"id":1}'
+    parsed_unsubcribe = parse_websocket_message(raw_unsubcribe)
+    assert isinstance(parsed_unsubcribe[0], UnsubscribeResult)
+    assert parsed_unsubcribe[0].result is True
 
 
 def test_parse_preflight_error() -> None:

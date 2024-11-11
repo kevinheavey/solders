@@ -1,5 +1,9 @@
 # Changelog
 
+# Unreleased
+
+- Add support for UnsubscribeResult parsing [(#125)](https://github.com/kevinheavey/solders/pull/125).
+
 # [0.23.0] - 2024-11-10
 
 ### Changed
