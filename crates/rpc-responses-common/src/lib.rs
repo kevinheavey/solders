@@ -662,6 +662,33 @@ impl SubscriptionResult {
     }
 }
 
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct UnsubscribeResult {
+    #[serde(skip_deserializing)]
+    jsonrpc: solders_rpc_version::V2,
+    #[pyo3(get)]
+    id: u64,
+    #[pyo3(get)]
+    result: bool,
+}
+
+response_data_boilerplate!(UnsubscribeResult);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl UnsubscribeResult {
+    #[new]
+    pub fn new(id: u64, result: bool) -> Self {
+        Self {
+            id,
+            result,
+            jsonrpc: solders_rpc_version::V2::default(),
+        }
+    }
+}
+
 notification!(AccountNotification, Account, "TryFromInto<UiAccount>");
 notification!(
     AccountNotificationJsonParsed,

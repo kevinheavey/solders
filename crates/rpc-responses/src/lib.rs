@@ -89,7 +89,7 @@ use solders_rpc_responses_common::{
     RootNotification, RpcBlockhash, RpcIdentity, RpcKeyedAccount, RpcKeyedAccountJsonParsed,
     RpcKeyedAccountMaybeJSON, RpcLeaderSchedule, RpcResponseContext, RpcSignatureResponse,
     RpcTokenAccountBalance, RpcVersionInfo, RpcVoteAccountInfo, RpcVoteAccountStatus,
-    SignatureNotification, SignatureNotificationResult, SubscriptionResult,
+    SignatureNotification, SignatureNotificationResult, SubscriptionResult, UnsubscribeResult,
 };
 use solders_rpc_responses_tx_status::RpcConfirmedTransactionStatusWithSignature;
 
@@ -637,6 +637,7 @@ pub enum WebsocketMessage {
     Notification(Notification),
     SubscriptionResult(SubscriptionResult),
     SubscriptionError(SubscriptionError),
+    UnsubscribeResult(UnsubscribeResult),
 }
 
 #[serde_as]
@@ -2089,6 +2090,7 @@ pub fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     websocket_message_members_raw.extend(vec![
         SubscriptionResult::type_object(py),
         SubscriptionError::type_object(py),
+        UnsubscribeResult::type_object(py),
     ]);
     let websocket_message_members = PyTuple::new(py, websocket_message_members_raw);
     let websocket_message_alias = union.get_item(websocket_message_members)?;
@@ -2210,6 +2212,7 @@ pub fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<VoteNotification>()?;
     m.add_class::<RpcBlockUpdate>()?;
     m.add_class::<BlockStoreError>()?;
+    m.add_class::<UnsubscribeResult>()?;
     m.add("RPCError", rpc_error_alias)?;
     m.add("RPCResult", rpc_result_alias)?;
     m.add("SlotUpdate", slot_update_alias)?;
