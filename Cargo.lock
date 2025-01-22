@@ -5688,6 +5688,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "solders-litesvm"
+version = "0.23.0"
+dependencies = [
+ "base64 0.13.1",
+ "derive_more",
+ "pyo3",
+ "serde",
+ "serde_bytes",
+ "serde_with 1.14.0",
+ "solana-account-decoder",
+ "solana-sdk",
+ "solders-account-decoder",
+ "solders-macros",
+ "solders-pubkey",
+ "solders-traits-core",
+]
+
+[[package]]
 name = "solders-macros"
 version = "0.23.0"
 dependencies = [
