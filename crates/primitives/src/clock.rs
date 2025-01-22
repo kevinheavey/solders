@@ -49,10 +49,20 @@ impl Clock {
         self.0.slot
     }
 
+    #[setter]
+    pub fn set_slot(&self, slot: Slot) {
+        self.0.slot = slot;
+    }
+
     /// int: The timestamp of the first ``Slot`` in this ``Epoch``.
     #[getter]
     pub fn epoch_start_timestamp(&self) -> UnixTimestamp {
         self.0.epoch_start_timestamp
+    }
+
+    #[setter]
+    pub fn set_epoch_start_timestamp(&self, timestamp: UnixTimestamp) {
+        self.0.epoch_start_timestamp = timestamp;
     }
 
     /// int: The current epoch.
@@ -61,16 +71,31 @@ impl Clock {
         self.0.epoch
     }
 
+    #[setter]
+    pub fn set_epoch(&self, epoch: Epoch) {
+        self.0.epoch = epoch;
+    }
+
     /// int: The future Epoch for which the leader schedule has most recently been calculated.
     #[getter]
     pub fn leader_schedule_epoch(&self) -> Epoch {
         self.0.leader_schedule_epoch
     }
 
+    #[setter]
+    pub fn set_leader_schedule_epoch(&self, epoch: Epoch) {
+        self.0.leader_schedule_epoch = epoch;
+    }
+
     /// int: The approximate real world time of the current slot.
     #[getter]
     pub fn unix_timestamp(&self) -> UnixTimestamp {
         self.0.unix_timestamp
+    }
+
+    #[setter]
+    pub fn set_unix_timestamp(&self, timestamp: UnixTimestamp) {
+        self.0.unix_timestamp = timestamp;
     }
 }
 
