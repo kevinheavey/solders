@@ -9,7 +9,7 @@ use rpc::create_rpc_mod;
 use solders_account::create_account_mod;
 use solders_instruction::{AccountMeta, CompiledInstruction, Instruction};
 #[cfg(feature = "litesvm")]
-use solders_litesvm::transaction_metadata::create_transaction_metadata_mod;
+use solders_litesvm::{create_litesvm_mod, transaction_metadata::create_transaction_metadata_mod};
 use solders_system_program::create_system_program_mod;
 use solders_token::create_token_mod;
 use solders_traits::{BincodeError, CborError, ParseHashError, SerdeJSONError, SignerError};
@@ -93,6 +93,8 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
     let token_mod = create_token_mod(py)?;
     #[cfg(feature = "litesvm")]
     let transaction_metadata_mod = create_transaction_metadata_mod(py)?;
+    #[cfg(feature = "litesvm")]
+    let litesvm_mod = create_litesvm_mod(py)?;
     let submodules = [
         #[cfg(feature = "ring")]
         account_mod,
@@ -111,6 +113,8 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
         hash_mod,
         instruction_mod,
         keypair_mod,
+        #[cfg(feature = "litesvm")]
+        litesvm_mod,
         message_mod,
         null_signer_mod,
         presigner_mod,

@@ -298,3 +298,10 @@ impl LiteSVM {
         self.0.set_sysvar::<StakeHistoryOriginal>(&history.0)
     }
 }
+
+pub fn create_litesvm_mod(py: Python<'_>) -> PyResult<&PyModule> {
+    let m = PyModule::new(py, "_litesvm")?;
+    m.add_class::<FeatureSet>()?;
+    m.add_class::<LiteSVM>()?;
+    Ok(m)
+}

@@ -207,7 +207,7 @@ class LiteSVM:
 
     def latest_blockhash(self) -> str:
         """Gets the latest blockhash.
-        
+
         Since LiteSVM doesn't have blocks, this is an arbitrary
         value controlled by LiteSVM.
 
