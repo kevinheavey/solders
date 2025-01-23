@@ -12,7 +12,7 @@ use solders_macros::{common_methods, richcmp_eq_only};
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.transaction_status", subclass)]
-pub struct TransactionReturnData(TransactionReturnDataOriginal);
+pub struct TransactionReturnData(pub TransactionReturnDataOriginal);
 transaction_status_boilerplate!(TransactionReturnData);
 
 #[richcmp_eq_only]

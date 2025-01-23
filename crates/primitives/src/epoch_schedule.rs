@@ -19,7 +19,7 @@ use solders_traits_core::{
 ///
 #[pyclass(module = "solders.epoch_schedule", subclass)]
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Default, From, Into)]
-pub struct EpochSchedule(EpochScheduleOriginal);
+pub struct EpochSchedule(pub EpochScheduleOriginal);
 
 #[richcmp_eq_only]
 #[common_methods]

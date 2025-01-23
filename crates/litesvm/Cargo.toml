@@ -11,6 +11,18 @@ description = "Solders LiteSVM crate."
 [dependencies]
 pyo3 = { workspace = true, features = ["macros"] }
 serde = { workspace = true }
-litesvm.workspace = true
+litesvm = { workspace = true, features = ["nodejs-internal", "serde"] }
 solana-sdk = { workspace = true }
+solders-account = { workspace = true }
+solders-compute-budget = { workspace = true }
+solders-hash = { workspace = true }
+solders-instruction = { workspace = true }
+solders-macros = { workspace = true }
+solders-primitives = { workspace = true }
 solders-pubkey = { workspace = true }
+solders-signature = { workspace = true }
+solders-traits = { workspace = true, features = ["litesvm"] }
+solders-traits-core = { workspace = true }
+solders-transaction = { workspace = true }
+solders-transaction-error = { workspace = true }
+solders-transaction-return-data = { workspace = true }

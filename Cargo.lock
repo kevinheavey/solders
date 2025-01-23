@@ -2150,12 +2150,14 @@ checksum = "78b3ae25bc7c8c38cec158d1f2757ee79e9b3740fbc7ccf0e59e4b08d793fa89"
 [[package]]
 name = "litesvm"
 version = "0.4.0"
-source = "git+https://github.com/LiteSVM/litesvm#6f2f0651388086cb4933b7a5dbac144601b526ad"
+source = "git+https://github.com/LiteSVM/litesvm?branch=thread-safe#9820e096a82cff8e8e8b29b7f2872a91282f39bf"
 dependencies = [
  "bincode",
  "indexmap",
  "itertools 0.14.0",
  "log",
+ "qualifier_attr",
+ "serde",
  "solana-address-lookup-table-program",
  "solana-bpf-loader-program",
  "solana-compute-budget",
@@ -5767,9 +5769,12 @@ name = "solders-compute-budget"
 version = "0.23.0"
 dependencies = [
  "pyo3",
+ "solana-compute-budget",
  "solana-sdk",
  "solders-instruction",
+ "solders-macros",
  "solders-pubkey",
+ "solders-traits-core",
 ]
 
 [[package]]
@@ -5834,7 +5839,19 @@ dependencies = [
  "pyo3",
  "serde",
  "solana-sdk",
+ "solders-account",
+ "solders-compute-budget",
+ "solders-hash",
+ "solders-instruction",
+ "solders-macros",
+ "solders-primitives",
  "solders-pubkey",
+ "solders-signature",
+ "solders-traits",
+ "solders-traits-core",
+ "solders-transaction",
+ "solders-transaction-error",
+ "solders-transaction-return-data",
 ]
 
 [[package]]
@@ -6341,6 +6358,7 @@ name = "solders-traits"
 version = "0.23.0"
 dependencies = [
  "bincode",
+ "litesvm",
  "pyo3",
  "serde_cbor",
  "serde_json",

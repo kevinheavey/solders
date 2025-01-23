@@ -762,3 +762,18 @@ impl From<TransactionVersionOriginal> for TransactionVersion {
         }
     }
 }
+
+#[derive(FromPyObject, Clone, PartialEq, Eq, Debug)]
+pub enum TransactionType {
+    Legacy(Transaction),
+    Versioned(VersionedTransaction),
+}
+
+impl From<TransactionType> for VersionedTransactionOriginal {
+    fn from(value: TransactionType) -> Self {
+        match value {
+            TransactionType::Legacy(l) => l.0.into(),
+            TransactionType::Versioned(v) => v.0,
+        }
+    }
+}

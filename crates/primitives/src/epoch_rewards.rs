@@ -9,7 +9,7 @@ use {
 /// A type to hold data for the EpochRewards sysvar.
 #[derive(Debug, PartialEq, Clone, Deserialize, Serialize)]
 #[pyclass(module = "solders.epoch_rewards", subclass)]
-pub struct EpochRewards(pub(crate) EpochRewardsOriginal);
+pub struct EpochRewards(pub EpochRewardsOriginal);
 
 transaction_status_boilerplate!(EpochRewards);
 

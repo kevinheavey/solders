@@ -63,7 +63,7 @@ impl StakeHistoryEntry {
 /// A type to hold data for the StakeHistory sysvar.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
 #[pyclass(module = "solders.stake_history", subclass)]
-pub struct StakeHistory(pub(crate) StakeHistoryOriginal);
+pub struct StakeHistory(pub StakeHistoryOriginal);
 
 transaction_status_boilerplate!(StakeHistory);
 

@@ -20,7 +20,7 @@ pub enum SlotHistoryCheck {
 /// A bitvector indicating which slots are present in the past epoch.
 #[derive(Debug, PartialEq, Clone, Deserialize, Serialize)]
 #[pyclass(module = "solders.slot_history", subclass)]
-pub struct SlotHistory(pub(crate) SlotHistoryOriginal);
+pub struct SlotHistory(pub SlotHistoryOriginal);
 
 transaction_status_boilerplate!(SlotHistory);
 
