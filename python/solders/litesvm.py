@@ -205,7 +205,7 @@ class LiteSVM:
         """
         return self._inner.get_balance(address)
 
-    def latest_blockhash(self) -> str:
+    def latest_blockhash(self) -> Hash:
         """Gets the latest blockhash.
 
         Since LiteSVM doesn't have blocks, this is an arbitrary
