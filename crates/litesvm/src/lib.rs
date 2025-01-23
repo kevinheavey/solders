@@ -173,8 +173,8 @@ impl LiteSVM {
         self.0.get_balance(&pubkey.0)
     }
 
-    pub fn latest_blockhash(&self) -> String {
-        self.0.latest_blockhash().to_string()
+    pub fn latest_blockhash(&self) -> Blockhash {
+        Blockhash(self.0.latest_blockhash())
     }
 
     pub fn get_transaction(&self, signature: Signature) -> Option<TransactionResult> {
