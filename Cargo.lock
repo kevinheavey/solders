@@ -5620,6 +5620,7 @@ dependencies = [
  "solders-hash",
  "solders-instruction",
  "solders-keypair",
+ "solders-litesvm",
  "solders-message",
  "solders-primitives",
  "solders-pubkey",
@@ -5833,7 +5834,7 @@ dependencies = [
 
 [[package]]
 name = "solders-litesvm"
-version = "0.23.0"
+version = "0.1.0"
 dependencies = [
  "litesvm",
  "pyo3",

@@ -1,12 +1,5 @@
 use {
-    litesvm::{
-        types::{
-            FailedTransactionMetadata as FailedTransactionMetadataOriginal,
-            SimulatedTransactionInfo as SimulatedTransactionInfoOriginal,
-            TransactionResult as TransactionResultOriginal,
-        },
-        LiteSVM as LiteSVMOriginal,
-    },
+    litesvm::LiteSVM as LiteSVMOriginal,
     pyo3::{exceptions::PyFileNotFoundError, prelude::*},
     solana_sdk::{
         account::Account as AccountOriginal, clock::Clock as ClockOriginal,
@@ -33,9 +26,7 @@ use {
         collections::{HashMap, HashSet},
         path::PathBuf,
     },
-    transaction_metadata::{
-        FailedTransactionMetadata, SimulatedTransactionInfo, TransactionMetadata,
-    },
+    transaction_metadata::{SimulateResult, TransactionResult},
 };
 pub mod transaction_metadata;
 
@@ -105,62 +96,12 @@ impl FeatureSet {
     }
 }
 
-#[derive(FromPyObject, Clone, PartialEq, Debug)]
-pub enum TransactionResult {
-    Ok(TransactionMetadata),
-    Err(FailedTransactionMetadata),
-}
-
-impl IntoPy<PyObject> for TransactionResult {
-    fn into_py(self, py: Python<'_>) -> PyObject {
-        match self {
-            Self::Ok(x) => x.into_py(py),
-            Self::Err(e) => e.into_py(py),
-        }
-    }
-}
-
-impl From<TransactionResultOriginal> for TransactionResult {
-    fn from(value: TransactionResultOriginal) -> Self {
-        match value {
-            TransactionResultOriginal::Err(e) => Self::Err(FailedTransactionMetadata(e)),
-            TransactionResultOriginal::Ok(x) => Self::Ok(TransactionMetadata(x)),
-        }
-    }
-}
-
-#[derive(FromPyObject, Clone, PartialEq, Debug)]
-pub enum SimulateResult {
-    Ok(SimulatedTransactionInfo),
-    Err(FailedTransactionMetadata),
-}
-
-impl IntoPy<PyObject> for SimulateResult {
-    fn into_py(self, py: Python<'_>) -> PyObject {
-        match self {
-            Self::Ok(x) => x.into_py(py),
-            Self::Err(e) => e.into_py(py),
-        }
-    }
-}
-
-type SimResultOriginal =
-    Result<SimulatedTransactionInfoOriginal, FailedTransactionMetadataOriginal>;
-
-impl From<SimResultOriginal> for SimulateResult {
-    fn from(value: SimResultOriginal) -> Self {
-        match value {
-            SimResultOriginal::Err(e) => Self::Err(FailedTransactionMetadata(e)),
-            SimResultOriginal::Ok(x) => Self::Ok(SimulatedTransactionInfo(x)),
-        }
-    }
-}
-
 #[pyclass(module = "solders.litesvm", subclass)]
 pub struct LiteSVM(LiteSVMOriginal);
 
 #[pymethods]
 impl LiteSVM {
+    #[allow(clippy::new_without_default)]
     #[new]
     pub fn new() -> Self {
         Self(LiteSVMOriginal::new())
@@ -219,9 +160,7 @@ impl LiteSVM {
     }
 
     pub fn get_account(&self, pubkey: Pubkey) -> Option<Account> {
-        self.0
-            .get_account(&pubkey.0)
-            .map(|x| Account::from(AccountOriginal::from(x)))
+        self.0.get_account(&pubkey.0).map(Account::from)
     }
 
     pub fn set_account(&mut self, pubkey: Pubkey, data: &Account) -> PyResult<()> {

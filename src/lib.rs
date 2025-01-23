@@ -8,6 +8,8 @@ use rpc::create_rpc_mod;
 #[cfg(feature = "ring")]
 use solders_account::create_account_mod;
 use solders_instruction::{AccountMeta, CompiledInstruction, Instruction};
+#[cfg(feature = "litesvm")]
+use solders_litesvm::transaction_metadata::create_transaction_metadata_mod;
 use solders_system_program::create_system_program_mod;
 use solders_token::create_token_mod;
 use solders_traits::{BincodeError, CborError, ParseHashError, SerdeJSONError, SignerError};
@@ -89,6 +91,8 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
     let epoch_info_mod = create_epoch_info_mod(py)?;
     let compute_budget_mod = create_compute_budget_mod(py)?;
     let token_mod = create_token_mod(py)?;
+    #[cfg(feature = "litesvm")]
+    let transaction_metadata_mod = create_transaction_metadata_mod(py)?;
     let submodules = [
         #[cfg(feature = "ring")]
         account_mod,
@@ -123,6 +127,8 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
         transaction_mod,
         #[cfg(feature = "ring")]
         transaction_status_mod,
+        #[cfg(feature = "litesvm")]
+        transaction_metadata_mod,
     ];
     let modules: HashMap<String, &PyModule> = submodules
         .iter()

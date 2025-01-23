@@ -1,9 +1,9 @@
 use bincode::ErrorKind;
+#[cfg(feature = "litesvm")]
+use litesvm::error::LiteSVMError as LiteSVMErrorOriginal;
 use pyo3::{create_exception, exceptions::PyException, prelude::*, pyclass::CompareOp};
 #[cfg(feature = "banks-client")]
 use solana_banks_client::BanksClientError as BanksClientErrorOriginal;
-#[cfg(feature = "litesvm")]
-use litesvm::error::LiteSVMError as LiteSVMErrorOriginal;
 use solana_sdk::{
     commitment_config::ParseCommitmentLevelError as ParseCommitmentLevelErrorOriginal,
     hash::ParseHashError as ParseHashErrorOriginal,

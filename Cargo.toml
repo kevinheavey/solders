@@ -29,6 +29,7 @@ solders-epoch-info = { workspace = true }
 solders-hash = { workspace = true }
 solders-instruction = { workspace = true }
 solders-keypair = { workspace = true }
+solders-litesvm = { workspace = true, optional = true }
 solders-message = { workspace = true }
 solders-primitives = { workspace = true }
 solders-pubkey = { workspace = true }
@@ -45,8 +46,9 @@ solders-transaction-status = { workspace = true, optional = true }
 solders-token = { workspace = true }
 
 [features]
-default = ["bankrun", "ring"]
+default = ["bankrun", "litesvm", "ring"]
 bankrun = ["dep:solders-bankrun"]
+litesvm = ["dep:solders-litesvm"]
 ring = [
     "dep:solders-account",
     "dep:solders-account-decoder",
@@ -85,6 +87,7 @@ solders-banks-interface = { path = "./crates/banks-interface", version = "=0.23.
 solders-commitment-config = { path = "./crates/commitment-config", version = "=0.23.0" }
 solders-compute-budget = { path = "./crates/compute-budget", version = "=0.23.0" }
 solders-epoch-info = { path = "./crates/epoch-info", version = "=0.23.0" }
+solders-litesvm = { path = "./crates/litesvm", version = "=0.1.0" }
 solders-transaction-confirmation-status = { path = "./crates/transaction-confirmation-status", version = "=0.23.0" }
 solders-transaction-return-data = { path = "./crates/transaction-return-data", version = "=0.23.0" }
 solders-transaction-status = { path = "./crates/transaction-status", version = "=0.23.0" }
