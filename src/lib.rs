@@ -31,7 +31,9 @@ use solders_epoch_info::create_epoch_info_mod;
 use solders_hash::Hash as SolderHash;
 use solders_keypair::{null_signer::NullSigner, presigner::Presigner, Keypair};
 use solders_primitives::{
-    clock::create_clock_mod, epoch_schedule::create_epoch_schedule_mod, rent::create_rent_mod,
+    clock::create_clock_mod, epoch_rewards::create_epoch_rewards_mod,
+    epoch_schedule::create_epoch_schedule_mod, rent::create_rent_mod,
+    slot_history::create_slot_history_mod, stake_history::create_stake_history_mod,
 };
 use solders_pubkey::Pubkey;
 use solders_signature::Signature;
@@ -80,6 +82,9 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
     #[cfg(feature = "bankrun")]
     let bankrun_mod = solders_bankrun::create_bankrun_mod(py)?;
     let clock_mod = create_clock_mod(py)?;
+    let epoch_rewards_mod = create_epoch_rewards_mod(py)?;
+    let slot_history_mod = create_slot_history_mod(py)?;
+    let stake_history_mod = create_stake_history_mod(py)?;
     let rent_mod = create_rent_mod(py)?;
     let epoch_info_mod = create_epoch_info_mod(py)?;
     let compute_budget_mod = create_compute_budget_mod(py)?;
@@ -96,6 +101,7 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
         commitment_config_mod,
         compute_budget_mod,
         epoch_info_mod,
+        epoch_rewards_mod,
         epoch_schedule_mod,
         errors_mod,
         hash_mod,
@@ -109,6 +115,8 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
         #[cfg(feature = "ring")]
         rpc_mod,
         signature_mod,
+        slot_history_mod,
+        stake_history_mod,
         system_program_mod,
         sysvar_mod,
         token_mod,

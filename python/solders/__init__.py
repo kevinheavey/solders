@@ -7,6 +7,7 @@ from solders.solders import (
     commitment_config,
     compute_budget,
     epoch_info,
+    epoch_rewards,
     epoch_schedule,
     errors,
     hash,
@@ -18,6 +19,8 @@ from solders.solders import (
     pubkey,
     rent,
     signature,
+    slot_history,
+    stake_history,
     token,
     transaction,
 )

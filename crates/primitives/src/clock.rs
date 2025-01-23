@@ -15,7 +15,7 @@ use solders_traits_core::transaction_status_boilerplate;
 /// A representation of network time.
 ///
 /// All members of ``Clock`` start from 0 upon network boot.
-#[pyclass(module = "solders.account", subclass)]
+#[pyclass(module = "solders.clock", subclass)]
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Default, From, Into)]
 pub struct Clock(pub ClockOriginal);
 
@@ -50,7 +50,7 @@ impl Clock {
     }
 
     #[setter]
-    pub fn set_slot(&self, slot: Slot) {
+    pub fn set_slot(&mut self, slot: Slot) {
         self.0.slot = slot;
     }
 
@@ -61,7 +61,7 @@ impl Clock {
     }
 
     #[setter]
-    pub fn set_epoch_start_timestamp(&self, timestamp: UnixTimestamp) {
+    pub fn set_epoch_start_timestamp(&mut self, timestamp: UnixTimestamp) {
         self.0.epoch_start_timestamp = timestamp;
     }
 
@@ -72,7 +72,7 @@ impl Clock {
     }
 
     #[setter]
-    pub fn set_epoch(&self, epoch: Epoch) {
+    pub fn set_epoch(&mut self, epoch: Epoch) {
         self.0.epoch = epoch;
     }
 
@@ -83,7 +83,7 @@ impl Clock {
     }
 
     #[setter]
-    pub fn set_leader_schedule_epoch(&self, epoch: Epoch) {
+    pub fn set_leader_schedule_epoch(&mut self, epoch: Epoch) {
         self.0.leader_schedule_epoch = epoch;
     }
 
@@ -94,7 +94,7 @@ impl Clock {
     }
 
     #[setter]
-    pub fn set_unix_timestamp(&self, timestamp: UnixTimestamp) {
+    pub fn set_unix_timestamp(&mut self, timestamp: UnixTimestamp) {
         self.0.unix_timestamp = timestamp;
     }
 }
