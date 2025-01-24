@@ -1,12 +1,12 @@
 import contextlib as __ctxlib
 
-from solders.solders import __version__ as _version_untyped  # type: ignore
-from solders.solders import (
+from solders.solders import (  # type: ignore
     address_lookup_table_account,
     clock,
     commitment_config,
     compute_budget,
     epoch_info,
+    epoch_rewards,
     epoch_schedule,
     errors,
     hash,
@@ -18,6 +18,8 @@ from solders.solders import (
     pubkey,
     rent,
     signature,
+    slot_history,
+    stake_history,
     token,
     transaction,
 )
@@ -68,4 +70,4 @@ else:
     __all__ = __all_core  # noqa: PLE0605
 
 
-__version__: str = _version_untyped
+__version__ = "0.24.0"

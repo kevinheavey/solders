@@ -271,7 +271,7 @@ impl AsRef<InstructionOriginal> for Instruction {
 ///
 #[pyclass(module = "solders.instruction", subclass)]
 #[derive(PartialEq, Eq, Debug, Clone, Serialize, Deserialize, From, Into)]
-pub struct CompiledInstruction(CompiledInstructionOriginal);
+pub struct CompiledInstruction(pub CompiledInstructionOriginal);
 
 #[richcmp_eq_only]
 #[common_methods]

@@ -1,8 +1,15 @@
 # Changelog
 
-# Unreleased
+# [0.24.0] - 2025-01-24
 
+### Added
+
+- Add LiteSVM support [(#131)](https://github.com/kevinheavey/solders/pull/131)
 - Add support for UnsubscribeResult parsing [(#125)](https://github.com/kevinheavey/solders/pull/125).
+
+### Changed
+
+- Update maturin to 1.8.1 [(#130)](https://github.com/kevinheavey/solders/pull/130)
 
 # [0.23.0] - 2024-11-10
 

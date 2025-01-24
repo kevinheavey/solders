@@ -1,4 +1,6 @@
 use bincode::ErrorKind;
+#[cfg(feature = "litesvm")]
+use litesvm::error::LiteSVMError as LiteSVMErrorOriginal;
 use pyo3::{create_exception, exceptions::PyException, prelude::*, pyclass::CompareOp};
 #[cfg(feature = "banks-client")]
 use solana_banks_client::BanksClientError as BanksClientErrorOriginal;
@@ -163,6 +165,28 @@ impl From<BanksClientErrorOriginal> for PyErrWrapper {
         Self(BanksClientError::new_err(e.to_string()))
     }
 }
+
+#[cfg(feature = "litesvm")]
+create_exception!(
+    solders,
+    LiteSVMError,
+    PyException,
+    "Raised when LiteSVM encounters an error."
+);
+
+#[cfg(feature = "litesvm")]
+impl From<LiteSVMErrorOriginal> for PyErrWrapper {
+    fn from(e: LiteSVMErrorOriginal) -> Self {
+        Self(LiteSVMError::new_err(e.to_string()))
+    }
+}
+
+create_exception!(
+    solders,
+    AddProgramError,
+    PyException,
+    "Raised when adding a program from a file fails."
+);
 
 pub trait ToSignerOriginal {
     fn to_inner(&self) -> Box<dyn SignerTrait>;

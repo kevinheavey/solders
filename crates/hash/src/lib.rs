@@ -35,7 +35,7 @@ use solders_traits_core::{
     From,
     Into,
 )]
-pub struct Hash(HashOriginal);
+pub struct Hash(pub HashOriginal);
 
 #[pyhash]
 #[richcmp_full]

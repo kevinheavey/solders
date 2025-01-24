@@ -27,7 +27,7 @@ use solders_pubkey::Pubkey;
 use solders_signature::Signature;
 use solders_traits::{to_py_err, BanksClientError};
 use solders_traits_core::to_py_value_err;
-use solders_transaction::{Transaction, VersionedTransaction};
+use solders_transaction::TransactionType;
 use tarpc::context::current;
 use toml::Table;
 use {
@@ -47,12 +47,6 @@ macro_rules! async_res {
     ($fut:expr) => {
         $fut.await.map_err(to_py_err)
     };
-}
-
-#[derive(FromPyObject, Clone, PartialEq, Eq, Debug)]
-pub enum TransactionType {
-    Legacy(Transaction),
-    Versioned(VersionedTransaction),
 }
 
 /// A client for the ledger state, from the perspective of an arbitrary validator.

@@ -29,6 +29,7 @@ solders-epoch-info = { workspace = true }
 solders-hash = { workspace = true }
 solders-instruction = { workspace = true }
 solders-keypair = { workspace = true }
+solders-litesvm = { workspace = true, optional = true }
 solders-message = { workspace = true }
 solders-primitives = { workspace = true }
 solders-pubkey = { workspace = true }
@@ -45,8 +46,9 @@ solders-transaction-status = { workspace = true, optional = true }
 solders-token = { workspace = true }
 
 [features]
-default = ["bankrun", "ring"]
+default = ["bankrun", "litesvm", "ring"]
 bankrun = ["dep:solders-bankrun"]
+litesvm = ["dep:solders-litesvm"]
 ring = [
     "dep:solders-account",
     "dep:solders-account-decoder",
@@ -75,6 +77,7 @@ edition = "2021"
 chrono-humanize = "0.2.3"
 log = "0.4"
 pyo3 = { version = "0.20.2", default-features = false }
+solana-compute-budget = "2.1.10"
 solders-macros = { path = "./crates/macros", version = "=0.23.0" }
 solders-traits = { path = "./crates/traits", version = "=0.23.0" }
 solders-traits-core = { path = "./crates/traits-core", version = "=0.23.0" }
@@ -84,6 +87,7 @@ solders-banks-interface = { path = "./crates/banks-interface", version = "=0.23.
 solders-commitment-config = { path = "./crates/commitment-config", version = "=0.23.0" }
 solders-compute-budget = { path = "./crates/compute-budget", version = "=0.23.0" }
 solders-epoch-info = { path = "./crates/epoch-info", version = "=0.23.0" }
+solders-litesvm = { path = "./crates/litesvm", version = "=0.1.0" }
 solders-transaction-confirmation-status = { path = "./crates/transaction-confirmation-status", version = "=0.23.0" }
 solders-transaction-return-data = { path = "./crates/transaction-return-data", version = "=0.23.0" }
 solders-transaction-status = { path = "./crates/transaction-status", version = "=0.23.0" }
@@ -130,7 +134,7 @@ solders-transaction-error = { path = "./crates/transaction-error", version = "=0
 solders-account = { path = "./crates/account", version = "=0.23.0" }
 solders-hash = { path = "./crates/hash", version = "=0.23.0" }
 serde_with = { version = "^1.14.0", features = ["base64"] }
-solana-sdk = "2.1.0"
+solana-sdk = { version = "2.1.0", features = ["openssl-vendored"] }
 solana-account-decoder = "2.1.0"
 solana-banks-interface = "2.1.0"
 solana-transaction-status = "2.1.0"
@@ -140,13 +144,14 @@ spl-associated-token-account-client = "2.0"
 spl-token = "7.0"
 bincode = "1.3.3"
 base64 = "0.13.0"
+litesvm = "0.5.0"
 serde = "^1.0.188"
 serde_bytes = "0.11.12"
 serde_json = "^1.0.106"
 serde_cbor = "^0.11.2"
 time = "0.3.35"
 derive_more = "0.99.17"
-solana-program-test = "2.1.0"
+solana-program-test = "2.1.10"
 solana-banks-client = "2.1.0"
 pythonize = "0.20.0"
 bs58 = "0.4.0"

@@ -8,6 +8,8 @@ use rpc::create_rpc_mod;
 #[cfg(feature = "ring")]
 use solders_account::create_account_mod;
 use solders_instruction::{AccountMeta, CompiledInstruction, Instruction};
+#[cfg(feature = "litesvm")]
+use solders_litesvm::{create_litesvm_mod, transaction_metadata::create_transaction_metadata_mod};
 use solders_system_program::create_system_program_mod;
 use solders_token::create_token_mod;
 use solders_traits::{BincodeError, CborError, ParseHashError, SerdeJSONError, SignerError};
@@ -31,7 +33,9 @@ use solders_epoch_info::create_epoch_info_mod;
 use solders_hash::Hash as SolderHash;
 use solders_keypair::{null_signer::NullSigner, presigner::Presigner, Keypair};
 use solders_primitives::{
-    clock::create_clock_mod, epoch_schedule::create_epoch_schedule_mod, rent::create_rent_mod,
+    clock::create_clock_mod, epoch_rewards::create_epoch_rewards_mod,
+    epoch_schedule::create_epoch_schedule_mod, rent::create_rent_mod,
+    slot_history::create_slot_history_mod, stake_history::create_stake_history_mod,
 };
 use solders_pubkey::Pubkey;
 use solders_signature::Signature;
@@ -80,10 +84,17 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
     #[cfg(feature = "bankrun")]
     let bankrun_mod = solders_bankrun::create_bankrun_mod(py)?;
     let clock_mod = create_clock_mod(py)?;
+    let epoch_rewards_mod = create_epoch_rewards_mod(py)?;
+    let slot_history_mod = create_slot_history_mod(py)?;
+    let stake_history_mod = create_stake_history_mod(py)?;
     let rent_mod = create_rent_mod(py)?;
     let epoch_info_mod = create_epoch_info_mod(py)?;
     let compute_budget_mod = create_compute_budget_mod(py)?;
     let token_mod = create_token_mod(py)?;
+    #[cfg(feature = "litesvm")]
+    let transaction_metadata_mod = create_transaction_metadata_mod(py)?;
+    #[cfg(feature = "litesvm")]
+    let litesvm_mod = create_litesvm_mod(py)?;
     let submodules = [
         #[cfg(feature = "ring")]
         account_mod,
@@ -96,11 +107,14 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
         commitment_config_mod,
         compute_budget_mod,
         epoch_info_mod,
+        epoch_rewards_mod,
         epoch_schedule_mod,
         errors_mod,
         hash_mod,
         instruction_mod,
         keypair_mod,
+        #[cfg(feature = "litesvm")]
+        litesvm_mod,
         message_mod,
         null_signer_mod,
         presigner_mod,
@@ -109,12 +123,16 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
         #[cfg(feature = "ring")]
         rpc_mod,
         signature_mod,
+        slot_history_mod,
+        stake_history_mod,
         system_program_mod,
         sysvar_mod,
         token_mod,
         transaction_mod,
         #[cfg(feature = "ring")]
         transaction_status_mod,
+        #[cfg(feature = "litesvm")]
+        transaction_metadata_mod,
     ];
     let modules: HashMap<String, &PyModule> = submodules
         .iter()
@@ -125,6 +143,5 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
     for submod in submodules {
         m.add_submodule(submod)?;
     }
-    m.add("__version__", env!("CARGO_PKG_VERSION"))?;
     Ok(())
 }

@@ -9,4 +9,5 @@ Tutorials
    pubkeys
    transactions
    rpc
+   litesvm
    bankrun
