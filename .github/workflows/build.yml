@@ -119,8 +119,6 @@ jobs:
           toolchain: nightly
           profile: minimal
           default: true
-      - name: Install perl
-        run: sudo apt-get install perl
       - name: Build Wheels
         uses: messense/maturin-action@v1
         with:
@@ -154,8 +152,6 @@ jobs:
           toolchain: nightly
           profile: minimal
           default: true
-      - name: Install perl
-        run: sudo apt-get install perl
       - name: Build Wheels
         uses: messense/maturin-action@v1
         with:
