@@ -126,6 +126,7 @@ jobs:
           manylinux: auto
           args: --release --out dist
           maturin-version: ${{ env.maturin_version }}
+          before-script-linux: apt-get install -y libssl-dev openssl pkg-config
       - name: Install built wheel
         if: matrix.target == 'x86_64'
         run: |
@@ -159,6 +160,7 @@ jobs:
           manylinux: auto
           args: --release --no-default-features -F ring --out dist
           maturin-version: ${{ env.maturin_version }}
+          before-script-linux: apt-get install -y libssl-dev openssl pkg-config
       - name: Upload wheels
         uses: actions/upload-artifact@v3
         with:
