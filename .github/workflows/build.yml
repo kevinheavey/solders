@@ -130,6 +130,7 @@ jobs:
             # If we're running on rhel centos, install needed packages.
             if command -v yum &> /dev/null; then
                 yum update -y && yum install -y perl-core
+            fi
       - name: Install built wheel
         if: matrix.target == 'x86_64'
         run: |
