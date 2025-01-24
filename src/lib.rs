@@ -143,6 +143,5 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
     for submod in submodules {
         m.add_submodule(submod)?;
     }
-    m.add("__version__", env!("CARGO_PKG_VERSION"))?;
     Ok(())
 }

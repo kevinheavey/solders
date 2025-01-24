@@ -1,6 +1,5 @@
 import contextlib as __ctxlib
 
-from solders.solders import __version__ as _version_untyped  # type: ignore
 from solders.solders import (
     address_lookup_table_account,
     clock,
@@ -71,4 +70,4 @@ else:
     __all__ = __all_core  # noqa: PLE0605
 
 
-__version__: str = _version_untyped
+__version__: str = "0.23.0"
