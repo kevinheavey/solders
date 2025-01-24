@@ -166,7 +166,6 @@ jobs:
           maturin-version: ${{ env.maturin_version }}
           before-script-linux: |
             # If we're running on rhel centos, install needed packages.
-            if command -v yum &> /dev/null; then
                 yum update -y && yum install -y perl-core openssl openssl-devel pkgconfig libatomic
 
                 # If we're running on i686 we need to symlink libatomic
