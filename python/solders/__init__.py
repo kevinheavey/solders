@@ -1,6 +1,6 @@
 import contextlib as __ctxlib
 
-from solders.solders import (
+from solders.solders import (  # type: ignore
     address_lookup_table_account,
     clock,
     commitment_config,
