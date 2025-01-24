@@ -134,7 +134,7 @@ solders-transaction-error = { path = "./crates/transaction-error", version = "=0
 solders-account = { path = "./crates/account", version = "=0.23.0" }
 solders-hash = { path = "./crates/hash", version = "=0.23.0" }
 serde_with = { version = "^1.14.0", features = ["base64"] }
-solana-sdk = "2.1.0"
+solana-sdk = { version = "2.1.0", features = ["openssl-vendored"] }
 solana-account-decoder = "2.1.0"
 solana-banks-interface = "2.1.0"
 solana-transaction-status = "2.1.0"
