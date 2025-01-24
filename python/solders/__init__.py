@@ -70,4 +70,4 @@ else:
     __all__ = __all_core  # noqa: PLE0605
 
 
-__version__: str = "0.23.0"
+__version__ = "0.23.0"
