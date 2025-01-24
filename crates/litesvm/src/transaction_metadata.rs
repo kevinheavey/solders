@@ -20,6 +20,8 @@ use {
     solders_transaction_return_data::TransactionReturnData,
 };
 
+/// A compiled instruction that was invoked during a
+/// transaction instruction.
 #[pyclass(module = "solders.transaction_metadata", subclass)]
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
 pub struct InnerInstruction(InnerInstructionOriginal);
@@ -30,15 +32,22 @@ transaction_status_boilerplate!(InnerInstruction);
 #[solders_macros::common_methods]
 #[pymethods]
 impl InnerInstruction {
+    ///
+    /// Returns:
+    ///     CompiledInstruction: the compiled instruction
     pub fn instruction(&self) -> CompiledInstruction {
         CompiledInstruction(self.0.instruction.clone())
     }
 
+    ///
+    /// Returns:
+    ///     int: Invocation stack height of this instruction. Starts at 1.
     pub fn stack_height(&self) -> u8 {
         self.0.stack_height
     }
 }
 
+/// Information about sent transactions.
 #[pyclass(module = "solders.transaction_metadata", subclass)]
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
 pub struct TransactionMetadata(pub(crate) TransactionMetadataOriginal);
@@ -49,14 +58,23 @@ transaction_status_boilerplate!(TransactionMetadata);
 #[solders_macros::common_methods]
 #[pymethods]
 impl TransactionMetadata {
+    ///
+    /// Returns:
+    ///      Signature: The transaction signature
     pub fn signature(&self) -> Signature {
         Signature(self.0.signature)
     }
 
+    ///
+    /// Returns:
+    ///     list[str]: The transaction logs.
     pub fn logs(&self) -> Vec<String> {
         self.0.logs.clone()
     }
 
+    ///
+    /// Returns:
+    ///     list[list[InnerInstruction]]: The transaction's inner instructions.
     pub fn inner_instructions(&self) -> Vec<Vec<InnerInstruction>> {
         self.0
             .inner_instructions
@@ -66,15 +84,22 @@ impl TransactionMetadata {
             .collect()
     }
 
+    ///
+    /// Returns:
+    ///     int: The compute units consumed by the transaction.
     pub fn compute_units_consumed(&self) -> u64 {
         self.0.compute_units_consumed
     }
 
+    ///
+    /// Returns:
+    ///     TransactionReturnData: The transaction return data.
     pub fn return_data(&self) -> TransactionReturnData {
         TransactionReturnData(self.0.return_data.clone())
     }
 }
 
+/// Information about failed transactions.
 #[pyclass(module = "solders.transaction_metadata", subclass)]
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
 pub struct FailedTransactionMetadata(pub(crate) FailedTransactionMetadataOriginal);
@@ -85,15 +110,22 @@ transaction_status_boilerplate!(FailedTransactionMetadata);
 #[solders_macros::common_methods]
 #[pymethods]
 impl FailedTransactionMetadata {
+    ///
+    /// Returns:
+    ///     TransactionErrorType: The transaction error.
     pub fn err(&self) -> TransactionErrorType {
         self.0.err.clone().into()
     }
 
+    ///
+    /// Returns:
+    ///     TransactionMetadata: The transaction metadata.
     pub fn meta(&self) -> TransactionMetadata {
         TransactionMetadata(self.0.meta.clone())
     }
 }
 
+/// Information about simulated transactions.
 #[pyclass(module = "solders.transaction_metadata", subclass)]
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
 pub struct SimulatedTransactionInfo(pub(crate) SimulatedTransactionInfoOriginal);
@@ -104,10 +136,16 @@ transaction_status_boilerplate!(SimulatedTransactionInfo);
 #[solders_macros::common_methods]
 #[pymethods]
 impl SimulatedTransactionInfo {
+    ///
+    /// Returns:
+    ///     TransactionMetadata: The transaction metadata.
     pub fn meta(&self) -> TransactionMetadata {
         TransactionMetadata(self.0.meta.clone())
     }
 
+    ///
+    /// Returns:
+    ///     list[tuple[Pubkey, Account]]: Pubkey-Account pairs, showing the state of writable accounts after transaction execution.
     pub fn post_accounts(&self) -> Vec<(Pubkey, Account)> {
         self.0
             .post_accounts

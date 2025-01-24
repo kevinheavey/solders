@@ -39,6 +39,14 @@ impl RichcmpEqualityOnly for FeatureSet {}
 #[solders_macros::richcmp_eq_only]
 #[pymethods]
 impl FeatureSet {
+    /// Create a new FeatureSet.
+    ///
+    /// Args:
+    ///     active (Dict[Pubkey, int]): a mapping of feature IDs to the slots at which they were activated.
+    ///     inactive (Set[Pubkey]): a set of inactive feature IDs.
+    ///
+    /// Returns:
+    ///     FeatureSet: The FeatureSet object.
     #[new]
     pub fn new(active: HashMap<Pubkey, u64>, inactive: HashSet<Pubkey>) -> Self {
         let active_inner = active.into_iter().map(|x| (x.0 .0, x.1)).collect();
@@ -49,25 +57,50 @@ impl FeatureSet {
         })
     }
 
+    /// Create a new FeatureSet with no featues enabled.
+    ///
+    /// Returns:
+    ///     FeatureSet: The FeatureSet object.
     #[pyo3(name = "default")]
     #[staticmethod]
     pub fn new_default() -> Self {
         Self(FeatureSetOriginal::default())
     }
 
+    /// Create a new FeatureSet with all featues enabled.
+    ///
+    /// Returns:
+    ///     FeatureSet: The FeatureSet object.
     #[staticmethod]
     pub fn all_enabled() -> Self {
         Self(FeatureSetOriginal::all_enabled())
     }
 
+    /// Check if a given feature is active.
+    ///
+    /// Args:
+    ///     feature_id (Pubkey): The feature ID.
+    ///
+    /// Returns
+    ///     bool: True if the feature is active.
+    ///
     pub fn is_active(&self, feature_id: Pubkey) -> bool {
         self.0.is_active(&feature_id.0)
     }
 
+    /// Find the slot at which a feature was activated.
+    ///
+    /// Args:
+    ///     feature_id (Pubkey): The feature ID.
+    ///
+    /// Returns
+    ///     Optional[int]: The activated slot, if it exists.
+    ///
     pub fn activated_slot(&self, feature_id: Pubkey) -> Option<u64> {
         self.0.activated_slot(&feature_id.0)
     }
 
+    /// Dict[Pubkey, int]: Mapping of feature IDs to the slots at which they were activated.
     #[getter]
     pub fn active(&self) -> HashMap<Pubkey, u64> {
         self.0
@@ -84,6 +117,7 @@ impl FeatureSet {
         self.0.active = inner;
     }
 
+    /// Set[Pubkey]: The inactive feature IDs.
     #[getter]
     pub fn inactive(&self) -> HashSet<Pubkey> {
         self.0.inactive.clone().into_iter().map(Pubkey).collect()

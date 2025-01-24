@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import List, Optional, Sequence, Tuple, Union
 
 from solders._litesvm import FeatureSet as FeatureSet  # noqa: PLC0414
-from solders._litesvm import LiteSVM as LiteSVMInner
+from solders._litesvm import LiteSVM as _LiteSVM
 from solders.account import Account
 from solders.clock import Clock
 from solders.compute_budget import ComputeBudget
@@ -27,14 +27,14 @@ class LiteSVM:
 
     def __init__(self) -> None:
         """Create a new LiteSVM instance with standard functionality enabled."""
-        inner = LiteSVMInner()
+        inner = _LiteSVM()
         self._inner = inner
 
     @staticmethod
     def default() -> "LiteSVM":
         """Create a new LiteSVM instance with minimal functionality enabled."""
         svm = LiteSVM()
-        inner = LiteSVMInner.default()
+        inner = _LiteSVM.default()
         svm._inner = inner
         return svm
 
