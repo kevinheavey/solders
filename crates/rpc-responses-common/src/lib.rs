@@ -39,6 +39,7 @@ pub struct RpcResponseContext {
 #[common_methods]
 #[pymethods]
 impl RpcResponseContext {
+#[pyo3(signature = (slot, api_version=None))]
     #[new]
     pub fn new(slot: Slot, api_version: Option<String>) -> Self {
         Self { slot, api_version }
@@ -485,6 +486,7 @@ response_data_boilerplate!(RpcVersionInfo);
 #[common_methods]
 #[pymethods]
 impl RpcVersionInfo {
+#[pyo3(signature = (solana_core, feature_set=None))]
     #[new]
     pub fn new(solana_core: String, feature_set: Option<u32>) -> Self {
         RpcVersionInfoOriginal {
@@ -623,6 +625,7 @@ response_data_boilerplate!(RpcSignatureResponse);
 #[common_methods]
 #[pymethods]
 impl RpcSignatureResponse {
+#[pyo3(signature = (err=None))]
     #[new]
     pub fn new(err: Option<TransactionErrorType>) -> Self {
         Self { err }
@@ -630,7 +633,7 @@ impl RpcSignatureResponse {
 }
 
 #[derive(Clone, Deserialize, Serialize, Debug, Eq, PartialEq)]
-#[pyclass(module = "solders.rpc.responses")]
+#[pyclass(module = "solders.rpc.responses", eq, eq_int)]
 pub enum BlockStoreError {
     BlockStoreError,
 }

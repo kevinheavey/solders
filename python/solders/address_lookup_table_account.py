@@ -1,0 +1,4 @@
+from solders.internal import LookupTableStatusFieldless, LookupTableStatusDeactivating
+from typing import Union
+
+LookupTableStatusType = Union[LookupTableStatusFieldless, LookupTableStatusDeactivating]

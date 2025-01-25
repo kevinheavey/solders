@@ -22,6 +22,7 @@ response_data_boilerplate!(RpcConfirmedTransactionStatusWithSignature);
 #[common_methods]
 #[pymethods]
 impl RpcConfirmedTransactionStatusWithSignature {
+#[pyo3(signature = (signature, slot, err=None, memo=None, block_time=None, confirmation_status=None))]
     #[new]
     pub fn new(
         signature: Signature,

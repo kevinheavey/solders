@@ -890,9 +890,9 @@ dependencies = [
 
 [[package]]
 name = "dict_derive"
-version = "0.5.1"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "846a520b3b7937dcfe564d9674d2d26da9e3cd0f8f1bbef51ca42fd6b7bb4f4a"
+checksum = "8412843e5f647d71346cdfd2bfb7351d6a2b8fbf65185ac47d19baa8bc0737e5"
 dependencies = [
  "proc-macro2",
  "quote",

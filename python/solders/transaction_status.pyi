@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Sequence, Union
+from typing import Dict, List, Optional, Sequence
 
 from jsonalias import Json
 
@@ -8,7 +8,7 @@ from solders.hash import Hash
 from solders.message import MessageHeader
 from solders.pubkey import Pubkey
 from solders.signature import Signature
-from solders.transaction import TransactionVersion, VersionedTransaction
+from solders.transaction import TransactionVersion
 
 class UiTransactionEncoding:
     Binary: "UiTransactionEncoding"
@@ -691,23 +691,6 @@ class TransactionErrorFieldless:
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
     def __eq__(self, o: object) -> bool: ...
-
-UiParsedInstruction = Union[ParsedInstruction, UiPartiallyDecodedInstruction]
-UiInstruction = Union[UiParsedInstruction, UiCompiledInstruction]
-UiMessage = Union[UiParsedMessage, UiRawMessage]
-EncodedVersionedTransaction = Union[VersionedTransaction, UiTransaction, UiAccountsList]
-InstructionErrorType = Union[
-    InstructionErrorFieldless,
-    InstructionErrorCustom,
-    InstructionErrorBorshIO,
-]
-TransactionErrorType = Union[
-    TransactionErrorFieldless,
-    TransactionErrorInstructionError,
-    TransactionErrorDuplicateInstruction,
-    TransactionErrorInsufficientFundsForRent,
-    TransactionErrorProgramExecutionTemporarilyRestricted,
-]
 
 class Reward:
     def __init__(

@@ -1,6 +1,4 @@
 use pyo3::prelude::*;
-use pyo3::types::PyTuple;
-use pyo3::PyTypeInfo;
 use solana_sdk::address_lookup_table::{
     program::ID,
     state::{LOOKUP_TABLE_MAX_ADDRESSES, LOOKUP_TABLE_META_SIZE},
@@ -10,8 +8,8 @@ use solders_address_lookup_table_account::{
     LookupTableStatusDeactivating, LookupTableStatusFieldless, SlotHashes,
 };
 
-pub(crate) fn create_address_lookup_table_account_mod(py: Python<'_>) -> PyResult<&PyModule> {
-    let m = PyModule::new(py, "address_lookup_table_account")?;
+pub(crate) fn include_address_lookup_table_account(m: &Bound<'_, PyModule>) -> PyResult<()> {
+    
     m.add_class::<AddressLookupTableAccount>()?;
     m.add_class::<AddressLookupTable>()?;
     m.add_class::<LookupTableMeta>()?;
@@ -22,17 +20,5 @@ pub(crate) fn create_address_lookup_table_account_mod(py: Python<'_>) -> PyResul
     m.add("LOOKUP_TABLE_MAX_ADDRESSES", LOOKUP_TABLE_MAX_ADDRESSES)?;
     m.add("LOOKUP_TABLE_META_SIZE", LOOKUP_TABLE_META_SIZE)?;
     m.add_function(wrap_pyfunction!(derive_lookup_table_address, m)?)?;
-    let typing = py.import("typing")?;
-    let union = typing.getattr("Union")?;
-    m.add(
-        "LookupTableStatusType",
-        union.get_item(PyTuple::new(
-            py,
-            vec![
-                LookupTableStatusFieldless::type_object(py),
-                LookupTableStatusDeactivating::type_object(py),
-            ],
-        ))?,
-    )?;
-    Ok(m)
+    Ok(())
 }

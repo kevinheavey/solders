@@ -6,7 +6,7 @@ use solders_macros::enum_original_mapping;
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 #[enum_original_mapping(TransactionConfirmationStatusOriginal)]
-#[pyclass(module = "solders.transaction_status")]
+#[pyclass(module = "solders.transaction_status", eq, eq_int)]
 pub enum TransactionConfirmationStatus {
     Processed,
     Confirmed,

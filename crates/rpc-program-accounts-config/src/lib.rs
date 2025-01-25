@@ -25,6 +25,7 @@ pyclass_boilerplate_with_default!(
 #[common_methods]
 #[pymethods]
 impl RpcProgramAccountsConfig {
+#[pyo3(signature = (account_config, filters=None, with_context=None, sort_results=None))]
     #[new]
     pub fn new(
         account_config: RpcAccountInfoConfig,

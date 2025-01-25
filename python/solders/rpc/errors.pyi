@@ -426,20 +426,3 @@ class InternalErrorMessage:
     def __eq__(self, o: object) -> bool: ...
     def __bytes__(self) -> bytes: ...
     def __hash__(self) -> int: ...
-
-RpcCustomError = Union[
-    RpcCustomErrorFieldless,
-    BlockCleanedUp,
-    SendTransactionPreflightFailure,
-    BlockNotAvailable,
-    NodeUnhealthy,
-    TransactionPrecompileVerificationFailure,
-    SlotSkipped,
-    LongTermStorageSlotSkipped,
-    BlockCleanedUp,
-    KeyExcludedFromSecondaryIndex,
-    ScanError,
-    BlockStatusNotAvailableYet,
-    MinContextSlotNotReached,
-    UnsupportedTransactionVersion,
-]

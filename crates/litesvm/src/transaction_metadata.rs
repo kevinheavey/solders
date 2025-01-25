@@ -5,7 +5,7 @@ use {
         TransactionMetadata as TransactionMetadataOriginal,
         TransactionResult as TransactionResultOriginal,
     },
-    pyo3::{prelude::*, types::PyTuple, PyTypeInfo},
+    pyo3::prelude::*,
     serde::{Deserialize, Serialize},
     solana_sdk::{
         account::Account as AccountOriginal,
@@ -207,29 +207,11 @@ impl From<SimResultOriginal> for SimulateResult {
     }
 }
 
-pub fn create_transaction_metadata_mod(py: Python<'_>) -> PyResult<&PyModule> {
-    let m = PyModule::new(py, "transaction_metadata")?;
+pub fn include_transaction_metadata(m: &Bound<'_, PyModule>) -> PyResult<()> {
+    
     m.add_class::<InnerInstruction>()?;
     m.add_class::<TransactionMetadata>()?;
     m.add_class::<FailedTransactionMetadata>()?;
     m.add_class::<SimulatedTransactionInfo>()?;
-    let typing = py.import("typing")?;
-    let union = typing.getattr("Union")?;
-    let transaction_result_members = vec![
-        TransactionMetadata::type_object(py),
-        FailedTransactionMetadata::type_object(py),
-    ];
-    m.add(
-        "TransactionResult",
-        union.get_item(PyTuple::new(py, transaction_result_members))?,
-    )?;
-    let simulate_result_members = vec![
-        SimulatedTransactionInfo::type_object(py),
-        FailedTransactionMetadata::type_object(py),
-    ];
-    m.add(
-        "SimulateResult",
-        union.get_item(PyTuple::new(py, simulate_result_members))?,
-    )?;
-    Ok(m)
+    Ok(())
 }

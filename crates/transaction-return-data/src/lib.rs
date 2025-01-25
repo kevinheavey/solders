@@ -4,7 +4,7 @@ extern crate base64;
 use solders_pubkey::Pubkey;
 use solders_traits_core::transaction_status_boilerplate;
 
-use pyo3::{prelude::*, types::PyBytes};
+use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use solana_sdk::transaction_context::TransactionReturnData as TransactionReturnDataOriginal;
 use solana_transaction_status::UiTransactionReturnData;

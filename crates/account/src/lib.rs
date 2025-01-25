@@ -1,7 +1,7 @@
 #![allow(clippy::redundant_closure)]
 use std::str::FromStr;
 
-use pyo3::{prelude::*, types::PyBytes};
+use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, DisplayFromStr};
 use solana_sdk::{account::Account as AccountOriginal, clock::Epoch};
@@ -261,9 +261,9 @@ impl From<AccountJSON> for UiAccount {
     }
 }
 
-pub fn create_account_mod(py: Python<'_>) -> PyResult<&PyModule> {
-    let m = PyModule::new(py, "account")?;
+pub fn include_account(m: &Bound<'_, PyModule>) -> PyResult<()> {
+    
     m.add_class::<Account>()?;
     m.add_class::<AccountJSON>()?;
-    Ok(m)
+    Ok(())
 }

@@ -10,7 +10,7 @@ use solana_sdk::commitment_config::{
 use solders_traits::handle_py_err;
 
 /// RPC request `commitment <https://docs.solana.com/developing/clients/jsonrpc-api#configuring-state-commitment>`_ options.
-#[pyclass(module = "solders.commitment_config")]
+#[pyclass(module = "solders.commitment_config", eq, eq_int)]
 #[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum CommitmentLevel {
     /// The highest slot of the heaviest fork processed by the node. Ledger state at this slot is

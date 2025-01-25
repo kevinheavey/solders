@@ -9,7 +9,7 @@ use solders_traits_core::RichcmpEqualityOnly;
 /// Fieldless filters for ``logsSubscribe``.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-#[pyclass(module = "solders.rpc.config")]
+#[pyclass(module = "solders.rpc.config", eq, eq_int)]
 pub enum RpcTransactionLogsFilter {
     All,
     AllWithVotes,
@@ -105,7 +105,7 @@ impl RichcmpEqualityOnly for RpcTokenAccountsFilterProgramId {}
 /// Filter for ``blockSubscribe``.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-#[pyclass(module = "solders.rpc.config")]
+#[pyclass(module = "solders.rpc.config", eq, eq_int)]
 pub enum RpcBlockSubscribeFilter {
     All,
 }

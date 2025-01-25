@@ -20,6 +20,7 @@ transaction_status_boilerplate!(TransactionStatus);
 #[common_methods]
 #[pymethods]
 impl TransactionStatus {
+#[pyo3(signature = (slot, confirmations=None, status=None, err=None, confirmation_status=None))]
     #[new]
     pub fn new(
         slot: u64,

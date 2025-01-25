@@ -52,7 +52,7 @@ impl UiDataSliceConfig {
 impl RichcmpEqualityOnly for UiDataSliceConfig {}
 
 /// Encoding options for account data.
-#[pyclass(module = "solders.account_decoder")]
+#[pyclass(module = "solders.account_decoder", eq, eq_int)]
 #[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq, Hash)]
 #[serde(rename_all = "camelCase")]
 #[enum_original_mapping(UiAccountEncodingOriginal)]
@@ -84,7 +84,7 @@ solders_traits_core::common_methods_default!(ParsedAccount);
 #[pymethods]
 impl ParsedAccount {
     #[new]
-    pub fn new(program: &str, parsed: &PyAny, space: u64) -> PyResult<Self> {
+    pub fn new(program: &str, parsed: &Bound<'_, PyAny>, space: u64) -> PyResult<Self> {
         let value = handle_py_value_err(depythonize::<Value>(parsed))?;
         Ok(ParsedAccountOriginal {
             program: program.to_owned(),
@@ -168,11 +168,11 @@ impl UiTokenAmount {
     }
 }
 
-pub fn create_account_decoder_mod(py: Python<'_>) -> PyResult<&PyModule> {
-    let m = PyModule::new(py, "account_decoder")?;
+pub fn include_account_decoder(m: &Bound<'_, PyModule>) -> PyResult<()> {
+    
     m.add_class::<UiDataSliceConfig>()?;
     m.add_class::<UiAccountEncoding>()?;
     m.add_class::<ParsedAccount>()?;
     m.add_class::<UiTokenAmount>()?;
-    Ok(m)
+    Ok(())
 }

@@ -45,30 +45,6 @@ class RpcResponseContext:
     api_version: Optional[str]
     def __init__(self, slot: int, api_version: Optional[str] = None) -> None: ...
 
-RPCError = Union[
-    RpcCustomErrorFieldless,
-    BlockCleanedUpMessage,
-    SendTransactionPreflightFailureMessage,
-    BlockNotAvailableMessage,
-    NodeUnhealthyMessage,
-    TransactionPrecompileVerificationFailureMessage,
-    SlotSkippedMessage,
-    LongTermStorageSlotSkippedMessage,
-    KeyExcludedFromSecondaryIndexMessage,
-    ScanErrorMessage,
-    BlockStatusNotAvailableYetMessage,
-    MinContextSlotNotReachedMessage,
-    UnsupportedTransactionVersionMessage,
-    ParseErrorMessage,
-    InvalidRequestMessage,
-    MethodNotFoundMessage,
-    InvalidParamsMessage,
-    InternalErrorMessage,
-]
-
-T = TypeVar("T")
-Resp = Union[RPCError, T]
-
 class GetAccountInfoResp:
     context: RpcResponseContext
     value: Optional[Account]
@@ -2073,20 +2049,6 @@ class VoteNotification:
     def __bytes__(self) -> bytes: ...
     def __hash__(self) -> int: ...
 
-Notification = Union[
-    AccountNotification,
-    AccountNotificationJsonParsed,
-    BlockNotification,
-    LogsNotification,
-    ProgramNotification,
-    ProgramNotificationJsonParsed,
-    SignatureNotification,
-    SlotNotification,
-    SlotUpdateNotification,
-    RootNotification,
-    VoteNotification,
-]
-
 class SubscriptionResult:
     id: int
     result: int
@@ -2125,10 +2087,6 @@ class SubscriptionError:
     def __bytes__(self) -> bytes: ...
     def __hash__(self) -> int: ...
 
-WebsocketMessage = Union[
-    Notification, SubscriptionResult, SubscriptionError, UnsubscribeResult
-]
-
 class BlockStoreError:
     BlockStoreError: "BlockStoreError"
     def __int__(self) -> int: ...
@@ -2136,7 +2094,7 @@ class BlockStoreError:
     def __repr__(self) -> str: ...
     def __eq__(self, o: object) -> bool: ...
 
-RpcBlockUpdateError = Union[UnsupportedTransactionVersion, BlockStoreError]
+
 
 class RpcBlockUpdate:
     def __init__(
@@ -2180,82 +2138,6 @@ class UnsubscribeResult:
     def __eq__(self, o: object) -> bool: ...
     def __bytes__(self) -> bytes: ...
     def __hash__(self) -> int: ...
-
-SlotUpdate = Union[
-    SlotUpdateFirstShredReceived,
-    SlotUpdateCompleted,
-    SlotUpdateCreatedBank,
-    SlotUpdateDead,
-    SlotUpdateOptimisticConfirmation,
-    SlotUpdateRoot,
-    SlotUpdateFrozen,
-]
-
-RPCResult = Union[
-    RPCError,
-    GetAccountInfoResp,
-    GetAccountInfoJsonParsedResp,
-    GetAccountInfoMaybeJsonParsedResp,
-    GetBalanceResp,
-    GetBlockProductionResp,
-    GetBlockResp,
-    GetBlockCommitmentResp,
-    GetBlockHeightResp,
-    GetBlocksResp,
-    GetBlocksWithLimitResp,
-    GetBlockTimeResp,
-    GetClusterNodesResp,
-    GetEpochInfoResp,
-    GetEpochScheduleResp,
-    GetFeeForMessageResp,
-    GetFirstAvailableBlockResp,
-    GetGenesisHashResp,
-    GetHealthResp,
-    GetHighestSnapshotSlotResp,
-    GetIdentityResp,
-    GetInflationGovernorResp,
-    GetInflationRateResp,
-    GetInflationRewardResp,
-    GetLargestAccountsResp,
-    GetLatestBlockhashResp,
-    GetLeaderScheduleResp,
-    GetMaxRetransmitSlotResp,
-    GetMaxShredInsertSlotResp,
-    GetMinimumBalanceForRentExemptionResp,
-    GetMultipleAccountsResp,
-    GetMultipleAccountsJsonParsedResp,
-    GetMultipleAccountsMaybeJsonParsedResp,
-    GetProgramAccountsWithContextResp,
-    GetProgramAccountsResp,
-    GetProgramAccountsWithContextJsonParsedResp,
-    GetProgramAccountsJsonParsedResp,
-    GetProgramAccountsMaybeJsonParsedResp,
-    GetProgramAccountsWithContextMaybeJsonParsedResp,
-    GetRecentPerformanceSamplesResp,
-    GetSignaturesForAddressResp,
-    GetSignatureStatusesResp,
-    GetSlotResp,
-    GetSlotLeaderResp,
-    GetSlotLeadersResp,
-    GetSupplyResp,
-    GetTokenAccountBalanceResp,
-    GetTokenAccountsByDelegateResp,
-    GetTokenAccountsByDelegateJsonParsedResp,
-    GetTokenAccountsByOwnerResp,
-    GetTokenAccountsByOwnerJsonParsedResp,
-    GetTokenLargestAccountsResp,
-    GetTokenSupplyResp,
-    GetTransactionResp,
-    GetTransactionCountResp,
-    GetVersionResp,
-    RpcVersionInfo,
-    GetVoteAccountsResp,
-    IsBlockhashValidResp,
-    MinimumLedgerSlotResp,
-    RequestAirdropResp,
-    SendTransactionResp,
-    SimulateTransactionResp,
-]
 
 def batch_to_json(resps: Sequence[RPCResult]) -> str: ...
 def batch_from_json(raw: str, parsers: Sequence[Any]) -> List[RPCResult]: ...

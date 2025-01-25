@@ -13,6 +13,7 @@ use spl_associated_token_account_client::address::get_associated_token_address_w
 ///     Pubkey: The associated token address
 ///
 #[pyfunction]
+#[pyo3(signature = (wallet_address, token_mint_address, token_program_id=None))]
 pub fn get_associated_token_address(
     wallet_address: &Pubkey,
     token_mint_address: &Pubkey,
@@ -26,8 +27,8 @@ pub fn get_associated_token_address(
     .into()
 }
 
-pub fn create_associated_mod(py: Python<'_>) -> PyResult<&PyModule> {
-    let m = PyModule::new(py, "associated")?;
+pub fn include_associated(m: &Bound<'_, PyModule>) -> PyResult<()> {
+    
     m.add_function(wrap_pyfunction!(get_associated_token_address, m)?)?;
-    Ok(m)
+    Ok(())
 }

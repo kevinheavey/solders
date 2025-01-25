@@ -25,6 +25,7 @@ pyclass_boilerplate_with_default!(
 #[common_methods]
 #[pymethods]
 impl RpcSimulateTransactionAccountsConfig {
+#[pyo3(signature = (addresses, encoding=None))]
     #[new]
     pub fn new(addresses: Vec<Pubkey>, encoding: Option<UiAccountEncoding>) -> Self {
         Self(rpc_config::RpcSimulateTransactionAccountsConfig {

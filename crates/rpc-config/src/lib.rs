@@ -19,34 +19,33 @@ use solders_rpc_sigs_for_address_config::RpcSignaturesForAddressConfig;
 use solders_rpc_sim_transaction_config::RpcSimulateTransactionConfig;
 use solders_rpc_simulate_tx_accounts_config::RpcSimulateTransactionAccountsConfig;
 
-pub fn create_config_mod(py: Python<'_>) -> PyResult<&PyModule> {
-    let config_mod = PyModule::new(py, "config")?;
-    config_mod.add_class::<RpcSignatureStatusConfig>()?;
-    config_mod.add_class::<RpcSendTransactionConfig>()?;
-    config_mod.add_class::<RpcSimulateTransactionAccountsConfig>()?;
-    config_mod.add_class::<RpcSimulateTransactionConfig>()?;
-    config_mod.add_class::<RpcRequestAirdropConfig>()?;
-    config_mod.add_class::<RpcLeaderScheduleConfig>()?;
-    config_mod.add_class::<RpcBlockProductionConfigRange>()?;
-    config_mod.add_class::<RpcBlockProductionConfig>()?;
-    config_mod.add_class::<RpcGetVoteAccountsConfig>()?;
-    config_mod.add_class::<RpcLargestAccountsFilter>()?;
-    config_mod.add_class::<RpcSupplyConfig>()?;
-    config_mod.add_class::<RpcEpochConfig>()?;
-    config_mod.add_class::<RpcAccountInfoConfig>()?;
-    config_mod.add_class::<RpcProgramAccountsConfig>()?;
-    config_mod.add_class::<RpcTransactionLogsFilter>()?;
-    config_mod.add_class::<RpcTransactionLogsFilterMentions>()?;
-    config_mod.add_class::<RpcTransactionLogsConfig>()?;
-    config_mod.add_class::<RpcTokenAccountsFilterMint>()?;
-    config_mod.add_class::<RpcTokenAccountsFilterProgramId>()?;
-    config_mod.add_class::<RpcSignatureSubscribeConfig>()?;
-    config_mod.add_class::<RpcBlockSubscribeFilter>()?;
-    config_mod.add_class::<RpcBlockSubscribeFilterMentions>()?;
-    config_mod.add_class::<RpcBlockSubscribeConfig>()?;
-    config_mod.add_class::<RpcSignaturesForAddressConfig>()?;
-    config_mod.add_class::<RpcBlockConfig>()?;
-    config_mod.add_class::<RpcTransactionConfig>()?;
-    config_mod.add_class::<RpcContextConfig>()?;
-    Ok(config_mod)
+pub fn include_config(m: &Bound<'_, PyModule>) -> PyResult<()> {
+    m.add_class::<RpcSignatureStatusConfig>()?;
+    m.add_class::<RpcSendTransactionConfig>()?;
+    m.add_class::<RpcSimulateTransactionAccountsConfig>()?;
+    m.add_class::<RpcSimulateTransactionConfig>()?;
+    m.add_class::<RpcRequestAirdropConfig>()?;
+    m.add_class::<RpcLeaderScheduleConfig>()?;
+    m.add_class::<RpcBlockProductionConfigRange>()?;
+    m.add_class::<RpcBlockProductionConfig>()?;
+    m.add_class::<RpcGetVoteAccountsConfig>()?;
+    m.add_class::<RpcLargestAccountsFilter>()?;
+    m.add_class::<RpcSupplyConfig>()?;
+    m.add_class::<RpcEpochConfig>()?;
+    m.add_class::<RpcAccountInfoConfig>()?;
+    m.add_class::<RpcProgramAccountsConfig>()?;
+    m.add_class::<RpcTransactionLogsFilter>()?;
+    m.add_class::<RpcTransactionLogsFilterMentions>()?;
+    m.add_class::<RpcTransactionLogsConfig>()?;
+    m.add_class::<RpcTokenAccountsFilterMint>()?;
+    m.add_class::<RpcTokenAccountsFilterProgramId>()?;
+    m.add_class::<RpcSignatureSubscribeConfig>()?;
+    m.add_class::<RpcBlockSubscribeFilter>()?;
+    m.add_class::<RpcBlockSubscribeFilterMentions>()?;
+    m.add_class::<RpcBlockSubscribeConfig>()?;
+    m.add_class::<RpcSignaturesForAddressConfig>()?;
+    m.add_class::<RpcBlockConfig>()?;
+    m.add_class::<RpcTransactionConfig>()?;
+    m.add_class::<RpcContextConfig>()?;
+    Ok(())
 }

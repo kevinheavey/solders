@@ -2,7 +2,6 @@ use pyo3::{
     exceptions::{PyTypeError, PyValueError},
     prelude::*,
     pyclass::CompareOp,
-    types::PyBytes,
 };
 use serde::{Deserialize, Serialize};
 use std::{

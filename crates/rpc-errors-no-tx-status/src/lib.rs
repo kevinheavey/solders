@@ -32,7 +32,7 @@ impl BlockCleanedUp {
 error_message!(BlockCleanedUpMessage);
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone)]
-#[pyclass(module = "solders.transaction_status")]
+#[pyclass(module = "solders.transaction_status", eq, eq_int)]
 pub enum RpcCustomErrorFieldless {
     TransactionSignatureVerificationFailure,
     NoSnapshot,
@@ -75,6 +75,7 @@ transaction_status_boilerplate!(NodeUnhealthy);
 #[common_methods]
 #[pymethods]
 impl NodeUnhealthy {
+#[pyo3(signature = (num_slots_behind=None))]
     #[new]
     pub fn new(num_slots_behind: Option<Slot>) -> Self {
         num_slots_behind.into()

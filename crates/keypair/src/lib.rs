@@ -1,5 +1,5 @@
 use derive_more::{From, Into};
-use pyo3::{exceptions::PyValueError, prelude::*, types::PyBytes};
+use pyo3::{exceptions::PyValueError, prelude::*};
 use serde::{Deserialize, Serialize};
 use solana_sdk::{
     derivation_path::DerivationPath,

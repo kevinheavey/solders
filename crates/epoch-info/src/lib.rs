@@ -28,6 +28,8 @@ pub struct EpochInfo(EpochInfoOriginal);
 #[common_methods]
 #[pymethods]
 impl EpochInfo {
+    
+    #[pyo3(signature = (epoch, slot_index, slots_in_epoch, absolute_slot, block_height, transaction_count=None))]
     #[new]
     pub fn new(
         epoch: Epoch,
@@ -91,8 +93,8 @@ py_from_bytes_general_via_bincode!(EpochInfo);
 solders_traits_core::common_methods_default!(EpochInfo);
 impl RichcmpEqualityOnly for EpochInfo {}
 
-pub fn create_epoch_info_mod(py: Python<'_>) -> PyResult<&PyModule> {
-    let m = PyModule::new(py, "epoch_info")?;
+pub fn include_epoch_info(m: &Bound<'_, PyModule>) -> PyResult<()> {
+    
     m.add_class::<EpochInfo>()?;
-    Ok(m)
+    Ok(())
 }

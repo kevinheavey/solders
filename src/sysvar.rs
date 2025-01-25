@@ -2,8 +2,7 @@ use crate::Pubkey;
 use pyo3::prelude::*;
 use solana_sdk::sysvar as sysvar_original;
 
-pub fn create_sysvar_mod(py: Python<'_>) -> PyResult<&PyModule> {
-    let sysvar_mod = PyModule::new(py, "_sysvar")?;
+pub fn include_sysvar(m: &Bound<'_, PyModule>) -> PyResult<()> {
     let sysvars = vec![
         ("CLOCK", sysvar_original::clock::ID),
         (
@@ -18,7 +17,7 @@ pub fn create_sysvar_mod(py: Python<'_>) -> PyResult<&PyModule> {
         ("SLOT_HASHES", sysvar_original::slot_hashes::ID),
     ];
     for sysvar in sysvars {
-        sysvar_mod.add(sysvar.0, Pubkey(sysvar.1))?
+        m.add(sysvar.0, Pubkey(sysvar.1))?
     }
-    Ok(sysvar_mod)
+    Ok(())
 }

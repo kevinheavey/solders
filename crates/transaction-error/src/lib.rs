@@ -50,7 +50,7 @@ impl InstructionErrorBorshIO {
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone)]
-#[pyclass(module = "solders.transaction_status")]
+#[pyclass(module = "solders.transaction_status", eq, eq_int)]
 pub enum InstructionErrorFieldless {
     GenericError,
     InvalidArgument,
@@ -464,7 +464,7 @@ impl TransactionErrorProgramExecutionTemporarilyRestricted {
     }
 }
 
-#[pyclass(module = "solders.transaction_status")]
+#[pyclass(module = "solders.transaction_status", eq, eq_int)]
 #[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum TransactionErrorFieldless {
     AccountInUse,

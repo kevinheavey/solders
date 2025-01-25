@@ -133,8 +133,8 @@ impl Rent {
     }
 }
 
-pub fn create_rent_mod(py: Python<'_>) -> PyResult<&PyModule> {
-    let m = PyModule::new(py, "rent")?;
+pub fn include_rent(m: &Bound<'_, PyModule>) -> PyResult<()> {
+    
     m.add_class::<Rent>()?;
     m.add(
         "DEFAULT_LAMPORTS_PER_BYTE_YEAR",
@@ -143,5 +143,5 @@ pub fn create_rent_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add("DEFAULT_EXEMPTION_THRESHOLD", DEFAULT_EXEMPTION_THRESHOLD)?;
     m.add("DEFAULT_BURN_PERCENT", DEFAULT_BURN_PERCENT)?;
     m.add("ACCOUNT_STORAGE_OVERHEAD", ACCOUNT_STORAGE_OVERHEAD)?;
-    Ok(m)
+    Ok(())
 }

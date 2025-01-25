@@ -1,5 +1,5 @@
 use derive_more::{From, Into};
-use pyo3::{create_exception, exceptions::PyException, prelude::*, types::PyBytes};
+use pyo3::{create_exception, exceptions::PyException, prelude::*};
 use serde::{Deserialize, Serialize};
 use solana_program::{
     address_lookup_table::AddressLookupTableAccount as AddressLookupTableAccountOriginal,
@@ -174,6 +174,8 @@ pub struct Message(pub MessageOriginal);
 #[common_methods]
 #[pymethods]
 impl Message {
+
+#[pyo3(signature = (instructions, payer=None))]
     #[new]
     pub fn new(instructions: Vec<Instruction>, payer: Option<&Pubkey>) -> Self {
         let instructions_inner = convert_instructions(instructions);

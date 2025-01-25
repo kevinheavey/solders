@@ -1,143 +1,87 @@
 //! These docstrings are written for Python users.
 //!
 //! If you're viewing them on docs.rs, the formatting won't make much sense.
-use address_lookup_table_account::create_address_lookup_table_account_mod;
+use address_lookup_table_account::include_address_lookup_table_account;
 use pyo3::prelude::*;
 #[cfg(feature = "ring")]
-use rpc::create_rpc_mod;
+use rpc::include_rpc;
 #[cfg(feature = "ring")]
-use solders_account::create_account_mod;
+use solders_account::include_account;
 use solders_instruction::{AccountMeta, CompiledInstruction, Instruction};
 #[cfg(feature = "litesvm")]
-use solders_litesvm::{create_litesvm_mod, transaction_metadata::create_transaction_metadata_mod};
-use solders_system_program::create_system_program_mod;
-use solders_token::create_token_mod;
+use solders_litesvm::{include_litesvm, transaction_metadata::include_transaction_metadata};
+use solders_system_program::include_system_program;
+use solders_token::include_token;
 use solders_traits::{BincodeError, CborError, ParseHashError, SerdeJSONError, SignerError};
 #[cfg(feature = "ring")]
-use solders_transaction_status::create_transaction_status_mod;
-use std::collections::HashMap;
-use sysvar::create_sysvar_mod;
+use solders_transaction_status::include_transaction_status;
+use sysvar::include_sysvar;
 pub mod message;
-use message::create_message_mod;
+use message::include_message;
 pub mod transaction;
 #[cfg(feature = "ring")]
-use solders_account_decoder::create_account_decoder_mod;
-use transaction::create_transaction_mod;
+use solders_account_decoder::include_account_decoder;
+use transaction::include_transaction;
 pub mod address_lookup_table_account;
 #[cfg(feature = "ring")]
 pub mod rpc;
 pub mod sysvar;
 use solders_commitment_config::{CommitmentConfig, CommitmentLevel};
-use solders_compute_budget::create_compute_budget_mod;
-use solders_epoch_info::create_epoch_info_mod;
+use solders_compute_budget::include_compute_budget;
+use solders_epoch_info::include_epoch_info;
 use solders_hash::Hash as SolderHash;
 use solders_keypair::{null_signer::NullSigner, presigner::Presigner, Keypair};
 use solders_primitives::{
-    clock::create_clock_mod, epoch_rewards::create_epoch_rewards_mod,
-    epoch_schedule::create_epoch_schedule_mod, rent::create_rent_mod,
-    slot_history::create_slot_history_mod, stake_history::create_stake_history_mod,
+    clock::include_clock, epoch_rewards::include_epoch_rewards,
+    epoch_schedule::include_epoch_schedule, rent::include_rent,
+    slot_history::include_slot_history, stake_history::include_stake_history,
 };
 use solders_pubkey::Pubkey;
 use solders_signature::Signature;
 
 #[pymodule]
-fn solders(py: Python, m: &PyModule) -> PyResult<()> {
-    let hash_mod = PyModule::new(py, "hash")?;
-    hash_mod.add_class::<SolderHash>()?;
-    hash_mod.add("ParseHashError", py.get_type::<ParseHashError>())?;
-    let instruction_mod = PyModule::new(py, "instruction")?;
-    instruction_mod.add_class::<AccountMeta>()?;
-    instruction_mod.add_class::<Instruction>()?;
-    instruction_mod.add_class::<CompiledInstruction>()?;
-    let pubkey_mod = PyModule::new(py, "pubkey")?;
-    pubkey_mod.add_class::<Pubkey>()?;
-    let keypair_mod = PyModule::new(py, "keypair")?;
-    keypair_mod.add_class::<Keypair>()?;
-    let signature_mod = PyModule::new(py, "signature")?;
-    signature_mod.add_class::<Signature>()?;
-    let message_mod = create_message_mod(py)?;
-    let null_signer_mod = PyModule::new(py, "null_signer")?;
-    null_signer_mod.add_class::<NullSigner>()?;
-    let transaction_mod = create_transaction_mod(py)?;
-    let system_program_mod = create_system_program_mod(py)?;
-    let sysvar_mod = create_sysvar_mod(py)?;
-    let presigner_mod = PyModule::new(py, "presigner")?;
-    presigner_mod.add_class::<Presigner>()?;
-    let errors_mod = PyModule::new(py, "errors")?;
-    errors_mod.add("BincodeError", py.get_type::<BincodeError>())?;
-    errors_mod.add("SignerError", py.get_type::<SignerError>())?;
-    errors_mod.add("CborError", py.get_type::<CborError>())?;
-    errors_mod.add("SerdeJSONError", py.get_type::<SerdeJSONError>())?;
+fn solders(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
+    m.add_class::<SolderHash>()?;
+    m.add("ParseHashError", py.get_type::<ParseHashError>())?;
+    m.add_class::<AccountMeta>()?;
+    m.add_class::<Instruction>()?;
+    m.add_class::<CompiledInstruction>()?;
+    m.add_class::<Pubkey>()?;
+    m.add_class::<Keypair>()?;
+    m.add_class::<Signature>()?;
+    include_message(m)?;
+    m.add_class::<NullSigner>()?;
+    include_transaction(m, py)?;
+    include_system_program(m)?;
+    include_sysvar(m)?;
+    m.add_class::<Presigner>()?;
+    m.add("BincodeError", py.get_type::<BincodeError>())?;
+    m.add("SignerError", py.get_type::<SignerError>())?;
+    m.add("CborError", py.get_type::<CborError>())?;
+    m.add("SerdeJSONError", py.get_type::<SerdeJSONError>())?;
     #[cfg(feature = "ring")]
-    let rpc_mod = create_rpc_mod(py)?;
-    let commitment_config_mod = PyModule::new(py, "commitment_config")?;
-    commitment_config_mod.add_class::<CommitmentConfig>()?;
-    commitment_config_mod.add_class::<CommitmentLevel>()?;
+    include_rpc(m)?;
+    m.add_class::<CommitmentConfig>()?;
+    m.add_class::<CommitmentLevel>()?;
     #[cfg(feature = "ring")]
-    let transaction_status_mod = create_transaction_status_mod(py)?;
+    include_transaction_status(m)?;
     #[cfg(feature = "ring")]
-    let account_decoder_mod = create_account_decoder_mod(py)?;
+    include_account_decoder(m)?;
     #[cfg(feature = "ring")]
-    let account_mod = create_account_mod(py)?;
-    let epoch_schedule_mod = create_epoch_schedule_mod(py)?;
-    let address_lookup_table_account_mod = create_address_lookup_table_account_mod(py)?;
-    let clock_mod = create_clock_mod(py)?;
-    let epoch_rewards_mod = create_epoch_rewards_mod(py)?;
-    let slot_history_mod = create_slot_history_mod(py)?;
-    let stake_history_mod = create_stake_history_mod(py)?;
-    let rent_mod = create_rent_mod(py)?;
-    let epoch_info_mod = create_epoch_info_mod(py)?;
-    let compute_budget_mod = create_compute_budget_mod(py)?;
-    let token_mod = create_token_mod(py)?;
+    include_account(m)?;
+    include_epoch_schedule(m)?;
+    include_address_lookup_table_account(m)?;
+    include_clock(m)?;
+    include_epoch_rewards(m)?;
+    include_slot_history(m)?;
+    include_stake_history(m)?;
+    include_rent(m)?;
+    include_epoch_info(m)?;
+    include_compute_budget(m)?;
+    include_token(m)?;
     #[cfg(feature = "litesvm")]
-    let transaction_metadata_mod = create_transaction_metadata_mod(py)?;
+    include_transaction_metadata(m)?;
     #[cfg(feature = "litesvm")]
-    let litesvm_mod = create_litesvm_mod(py)?;
-    let submodules = [
-        #[cfg(feature = "ring")]
-        account_mod,
-        #[cfg(feature = "ring")]
-        account_decoder_mod,
-        address_lookup_table_account_mod,
-        clock_mod,
-        commitment_config_mod,
-        compute_budget_mod,
-        epoch_info_mod,
-        epoch_rewards_mod,
-        epoch_schedule_mod,
-        errors_mod,
-        hash_mod,
-        instruction_mod,
-        keypair_mod,
-        #[cfg(feature = "litesvm")]
-        litesvm_mod,
-        message_mod,
-        null_signer_mod,
-        presigner_mod,
-        pubkey_mod,
-        rent_mod,
-        #[cfg(feature = "ring")]
-        rpc_mod,
-        signature_mod,
-        slot_history_mod,
-        stake_history_mod,
-        system_program_mod,
-        sysvar_mod,
-        token_mod,
-        transaction_mod,
-        #[cfg(feature = "ring")]
-        transaction_status_mod,
-        #[cfg(feature = "litesvm")]
-        transaction_metadata_mod,
-    ];
-    let modules: HashMap<String, &PyModule> = submodules
-        .iter()
-        .map(|x| (format!("solders.{}", x.name().unwrap()), *x))
-        .collect();
-    let sys_modules = py.import("sys")?.getattr("modules")?;
-    sys_modules.call_method1("update", (modules,))?;
-    for submod in submodules {
-        m.add_submodule(submod)?;
-    }
+    include_litesvm(m)?;
     Ok(())
 }

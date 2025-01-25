@@ -107,7 +107,7 @@ pub enum LookupTableStatusTagged {
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone)]
-#[pyclass(module = "solders.address_lookup_table_account")]
+#[pyclass(module = "solders.address_lookup_table_account", eq, eq_int)]
 pub enum LookupTableStatusFieldless {
     Activated,
     Deactivated,

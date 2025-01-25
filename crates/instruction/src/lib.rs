@@ -1,7 +1,7 @@
 use std::hash::Hasher;
 
 use derive_more::{From, Into};
-use pyo3::{prelude::*, types::PyBytes};
+use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use solana_program::{
     instruction::{

@@ -1,4 +1,4 @@
-use pyo3::{prelude::*, types::PyTuple, PyTypeInfo};
+use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use solders_macros::EnumIntoPy;
 use solders_rpc_errors_no_tx_status::{
@@ -34,8 +34,8 @@ pub enum RpcCustomError {
     UnsupportedTransactionVersion(UnsupportedTransactionVersion),
 }
 
-pub fn create_errors_mod(py: Python<'_>) -> PyResult<&PyModule> {
-    let m = PyModule::new(py, "errors")?;
+pub fn include_errors(m: &Bound<'_, PyModule>) -> PyResult<()> {
+    
     m.add_class::<RpcCustomErrorFieldless>()?;
     m.add_class::<BlockCleanedUp>()?;
     m.add_class::<SendTransactionPreflightFailure>()?;
@@ -68,27 +68,5 @@ pub fn create_errors_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<MethodNotFoundMessage>()?;
     m.add_class::<InvalidParamsMessage>()?;
     m.add_class::<InternalErrorMessage>()?;
-    let typing = py.import("typing")?;
-    let union = typing.getattr("Union")?;
-    let union_members = vec![
-        RpcCustomErrorFieldless::type_object(py),
-        BlockCleanedUp::type_object(py),
-        SendTransactionPreflightFailure::type_object(py),
-        BlockNotAvailable::type_object(py),
-        NodeUnhealthy::type_object(py),
-        TransactionPrecompileVerificationFailure::type_object(py),
-        SlotSkipped::type_object(py),
-        LongTermStorageSlotSkipped::type_object(py),
-        BlockCleanedUp::type_object(py),
-        KeyExcludedFromSecondaryIndex::type_object(py),
-        ScanError::type_object(py),
-        BlockStatusNotAvailableYet::type_object(py),
-        MinContextSlotNotReached::type_object(py),
-        UnsupportedTransactionVersion::type_object(py),
-    ];
-    m.add(
-        "RpcCustomError",
-        union.get_item(PyTuple::new(py, union_members))?,
-    )?;
-    Ok(m)
+    Ok(())
 }
