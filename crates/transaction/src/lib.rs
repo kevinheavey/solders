@@ -498,8 +498,8 @@ impl Transaction {
     /// Returns:
     ///     bytes: The serialized message data.
     ///
-    pub fn message_data<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        PyBytes::new(py, &self.0.message_data())
+    pub fn message_data(&self) -> Vec<u8> {
+        self.0.message_data().clone()
     }
 
     /// Sign the transaction, returning any errors.

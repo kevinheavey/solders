@@ -261,8 +261,8 @@ impl Keypair {
 
 impl_signer_hash!(Keypair);
 impl PyBytesGeneral for Keypair {
-    fn pybytes_general<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        PyBytes::new(py, &self.to_bytes_array())
+    fn pybytes_general(&self) -> Vec<u8> {
+        self.to_bytes_array().to_vec()
     }
 }
 impl PyHash for Keypair {}

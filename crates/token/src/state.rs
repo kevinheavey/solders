@@ -16,10 +16,10 @@ macro_rules! token_boilerplate {
     ($typ:ident, $inner:ident) => {
         impl_display!($typ);
         impl PyBytesGeneral for $typ {
-            fn pybytes_general<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+            fn pybytes_general(&self) -> Vec<u8> {
                 let mut inner = [0u8; $inner::LEN];
                 self.0.pack_into_slice(&mut inner);
-                PyBytes::new(py, &inner)
+                inner.to_vec()
             }
         }
 

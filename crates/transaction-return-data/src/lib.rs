@@ -34,8 +34,8 @@ impl TransactionReturnData {
     }
 
     #[getter]
-    pub fn data<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        PyBytes::new(py, &self.0.data)
+    pub fn data(&self) -> Vec<u8> {
+        self.0.data.clone()
     }
 }
 

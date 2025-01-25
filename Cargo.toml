@@ -73,7 +73,7 @@ edition = "2021"
 [workspace.dependencies]
 chrono-humanize = "0.2.3"
 log = "0.4"
-pyo3 = { version = "0.21", default-features = false }
+pyo3 = { version = "0.22", default-features = false }
 solana-compute-budget = "2.1.10"
 solders-macros = { path = "./crates/macros", version = "=0.23.0" }
 solders-traits = { path = "./crates/traits", version = "=0.23.0" }
@@ -149,7 +149,7 @@ time = "0.3.35"
 derive_more = "0.99.17"
 solana-program-test = "2.1.10"
 solana-banks-client = "2.1.0"
-pythonize = "0.21"
+pythonize = "0.22"
 bs58 = "0.4.0"
 thiserror = "^1.0.31"
 camelpaste = "0.1.0"

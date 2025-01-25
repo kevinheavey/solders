@@ -96,8 +96,8 @@ pub fn richcmp_signer(_: TokenStream, item: TokenStream) -> TokenStream {
 fn add_core_methods(ast: &mut ItemImpl) {
     let mut methods = vec![
         ImplItem::Verbatim(
-            quote! {pub fn __bytes__<'a>(&self, py: pyo3::prelude::Python<'a>) -> &'a pyo3::types::PyBytes  {
-                solders_traits_core::CommonMethodsCore::pybytes(self, py)
+            quote! {pub fn __bytes__<'a>(&self) -> Vec<u8>  {
+                solders_traits_core::CommonMethodsCore::pybytes(self)
             }},
         ),
         ImplItem::Verbatim(quote! { pub fn __str__(&self) -> String {
@@ -173,8 +173,8 @@ pub fn common_methods_rpc_resp(_: TokenStream, item: TokenStream) -> TokenStream
     let mut ast = parse_macro_input!(item as ItemImpl);
     let methods = vec![
         ImplItem::Verbatim(
-            quote! {pub fn __bytes__<'a>(&self, py: pyo3::prelude::Python<'a>) -> &'a pyo3::types::PyBytes  {
-                CommonMethodsRpcResp::pybytes(self, py)
+            quote! {pub fn __bytes__(&self) -> Vec<u8>  {
+                CommonMethodsRpcResp::pybytes(self)
             }},
         ),
         ImplItem::Verbatim(quote! { pub fn __str__(&self) -> String {

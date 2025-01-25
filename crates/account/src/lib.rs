@@ -111,8 +111,8 @@ impl Account {
 
     /// bytes: Data held in this account.
     #[getter]
-    pub fn data<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        PyBytes::new(py, &self.data)
+    pub fn data(&self) -> Vec<u8> {
+        self.data.clone()
     }
 
     #[staticmethod]

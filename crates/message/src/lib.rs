@@ -502,8 +502,8 @@ impl Message {
 
 impl RichcmpEqualityOnly for Message {}
 impl PyBytesGeneral for Message {
-    fn pybytes_general<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        PyBytes::new(py, &self.0.serialize())
+    fn pybytes_general(&self) -> Vec<u8> {
+        self.0.serialize().clone()
     }
 }
 impl_display!(Message);
@@ -556,14 +556,14 @@ impl MessageAddressTableLookup {
 
     /// bytes: List of u8 indexes used to load writable account addresses, represented as bytes.
     #[getter]
-    pub fn writable_indexes<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        PyBytes::new(py, &self.0.writable_indexes)
+    pub fn writable_indexes(&self) -> Vec<u8> {
+        self.0.writable_indexes.clone()
     }
 
     /// bytes: List of u8 indexes used to load readonly account addresses, represented as bytes.
     #[getter]
-    pub fn readonly_indexes<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        PyBytes::new(py, &self.0.readonly_indexes)
+    pub fn readonly_indexes(&self) -> Vec<u8> {
+        self.0.readonly_indexes.clone()
     }
 }
 
@@ -872,8 +872,8 @@ impl From<VersionedMessage> for MessageV0Original {
 /// Returns:
 ///     bytes: the serialized message.
 #[pyfunction]
-pub fn to_bytes_versioned(msg: VersionedMessage, py: Python<'_>) -> &PyBytes {
-    PyBytes::new(py, &VersionedMessageOriginal::from(msg).serialize())
+pub fn to_bytes_versioned(msg: VersionedMessage) -> Vec<u8> {
+    VersionedMessageOriginal::from(msg).serialize()
 }
 
 /// Deserialize a versioned message, where the first byte indicates whether or not it's a legacy message.

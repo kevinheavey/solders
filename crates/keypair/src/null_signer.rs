@@ -105,8 +105,8 @@ impl_signer_hash!(NullSigner);
 impl PyHash for NullSigner {}
 
 impl PyBytesGeneral for NullSigner {
-    fn pybytes_general<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        self.py_pubkey().pybytes(py)
+    fn pybytes_general(&self) -> Vec<u8> {
+        self.py_pubkey().pybytes()
     }
 }
 

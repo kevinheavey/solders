@@ -104,8 +104,8 @@ pub trait CommonMethodsRpcResp<'a>:
     + Deserialize<'a>
     + PyClass
 {
-    fn pybytes<'b>(&self, py: Python<'b>) -> &'b PyBytes {
-        PyBytesBincode::pybytes_bincode(self, py)
+    fn pybytes<'b>(&self) -> Vec<u8> {
+        PyBytesBincode::pybytes_bincode(self)
     }
 
     fn pystr(&self) -> String {
@@ -123,7 +123,7 @@ pub trait CommonMethodsRpcResp<'a>:
         let cloned = self.clone();
         Python::with_gil(|py| {
             let constructor = cloned.into_py(py).getattr(py, "from_bytes")?;
-            Ok((constructor, (self.pybytes(py).to_object(py),).to_object(py)))
+            Ok((constructor, (self.pybytes().to_object(py),).to_object(py)))
         })
     }
 

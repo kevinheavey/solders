@@ -98,8 +98,8 @@ impl UiCompiledInstruction {
     }
 
     #[getter]
-    pub fn accounts<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        PyBytes::new(py, &self.0.accounts)
+    pub fn accounts(&self) -> Vec<u8> {
+        self.0.accounts.clone()
     }
 
     #[getter]
@@ -139,13 +139,13 @@ impl UiAddressTableLookup {
     }
 
     #[getter]
-    pub fn writable_indexes<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        PyBytes::new(py, &self.0.writable_indexes)
+    pub fn writable_indexes(&self) -> Vec<u8> {
+        self.0.writable_indexes.clone()
     }
 
     #[getter]
-    pub fn readonly_indexes<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        PyBytes::new(py, &self.0.readonly_indexes)
+    pub fn readonly_indexes(&self) -> Vec<u8> {
+        self.0.readonly_indexes.clone()
     }
 }
 

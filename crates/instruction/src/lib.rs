@@ -195,8 +195,8 @@ impl Instruction {
     }
 
     #[getter]
-    pub fn data<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        PyBytes::new(py, &self.0.data)
+    pub fn data(&self) -> Vec<u8> {
+        self.0.data.clone()
     }
 
     #[getter]
@@ -305,8 +305,8 @@ impl CompiledInstruction {
     }
 
     #[getter]
-    pub fn accounts<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        PyBytes::new(py, &self.0.accounts)
+    pub fn accounts(&self) -> Vec<u8> {
+        self.0.accounts.clone()
     }
 
     #[setter]
@@ -315,8 +315,8 @@ impl CompiledInstruction {
     }
 
     #[getter]
-    pub fn data<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        PyBytes::new(py, &self.0.data)
+    pub fn data(&self) -> Vec<u8> {
+        self.0.data.clone()
     }
 
     #[staticmethod]
