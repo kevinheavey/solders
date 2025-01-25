@@ -73,11 +73,10 @@ if __has_ring:
             __all__ = [*__with_ring_modules, "bankrun", "litesvm"]  # noqa: PLE0604
         else:
             __all__ = [*__with_ring_modules, "bankrun"]  # noqa: PLE0604
+    elif __has_litesvm:
+        __all__ = [*__with_ring_modules, "litesvm"]  # noqa: PLE0604
     else:
-        if __has_litesvm:
-            __all__ = [*__with_ring_modules, "litesvm"]  # noqa: PLE0604
-        else:
-            __all__ = __with_ring_modules  # noqa: PLE0605
+        __all__ = __with_ring_modules  # noqa: PLE0605
 else:
     __all__ = __all_core  # noqa: PLE0605
 
