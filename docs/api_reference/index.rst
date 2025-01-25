@@ -11,7 +11,6 @@ Modules:
    account
    account_decoder
    address_lookup_table_account
-   bankrun
    clock
    commitment_config
    compute_budget

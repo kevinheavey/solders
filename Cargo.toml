@@ -22,7 +22,6 @@ derive_more = { workspace = true }
 solders-account = { workspace = true, optional = true }
 solders-account-decoder = { workspace = true, optional = true }
 solders-address-lookup-table-account = { workspace = true }
-solders-bankrun = { workspace = true, optional = true }
 solders-compute-budget = { workspace = true }
 solders-commitment-config = { workspace = true }
 solders-epoch-info = { workspace = true }
@@ -46,8 +45,7 @@ solders-transaction-status = { workspace = true, optional = true }
 solders-token = { workspace = true }
 
 [features]
-default = ["bankrun", "litesvm", "ring"]
-bankrun = ["dep:solders-bankrun"]
+default = ["litesvm", "ring"]
 litesvm = ["dep:solders-litesvm"]
 ring = [
     "dep:solders-account",
@@ -64,7 +62,6 @@ ring = [
 members = [
     ".",
     "crates/*",
-    "tests/bankrun/clock-example"
 ]
 
 [workspace.package]
@@ -82,7 +79,6 @@ solders-macros = { path = "./crates/macros", version = "=0.23.0" }
 solders-traits = { path = "./crates/traits", version = "=0.23.0" }
 solders-traits-core = { path = "./crates/traits-core", version = "=0.23.0" }
 solders-account-decoder = { path = "./crates/account-decoder", version = "=0.23.0" }
-solders-bankrun = { path = "./crates/bankrun", version = "=0.23.0" }
 solders-banks-interface = { path = "./crates/banks-interface", version = "=0.23.0" }
 solders-commitment-config = { path = "./crates/commitment-config", version = "=0.23.0" }
 solders-compute-budget = { path = "./crates/compute-budget", version = "=0.23.0" }

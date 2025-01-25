@@ -10,4 +10,3 @@ Tutorials
    transactions
    rpc
    litesvm
-   bankrun

@@ -26,12 +26,6 @@ from solders.solders import (  # type: ignore
 
 from . import system_program, sysvar
 
-__has_bankrun = False
-with __ctxlib.suppress(ImportError):
-    from solders.solders import bankrun
-
-    __has_bankrun = True
-
 __has_litesvm = False
 with __ctxlib.suppress(ImportError):
     from solders.solders import litesvm
@@ -68,12 +62,7 @@ __all_core = [
 __with_ring_modules = [*__all_core, *__ring_modules]
 
 if __has_ring:
-    if __has_bankrun:
-        if __has_litesvm:
-            __all__ = [*__with_ring_modules, "bankrun", "litesvm"]  # noqa: PLE0604
-        else:
-            __all__ = [*__with_ring_modules, "bankrun"]  # noqa: PLE0604
-    elif __has_litesvm:
+    if __has_litesvm:
         __all__ = [*__with_ring_modules, "litesvm"]  # noqa: PLE0604
     else:
         __all__ = __with_ring_modules  # noqa: PLE0605
