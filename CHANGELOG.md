@@ -1,5 +1,11 @@
 # Changelog
 
+# [0.24.1] - 2025-01-25
+
+### Fixed
+
+- Explicitly add `litesvm` to `__init__.py` [(#133)](https://github.com/kevinheavey/solders/pull/133)
+
 # [0.24.0] - 2025-01-24
 
 ### Added
