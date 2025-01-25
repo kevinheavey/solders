@@ -1889,7 +1889,10 @@ pub fn batch_from_json(raw: &str, parsers: Vec<&PyType>) -> PyResult<Vec<PyObjec
         Err(PyValueError::new_err(msg))
     } else {
         let parsed = raw_objects.iter().zip(parsers.iter()).map(|(res, parser)| {
-            RPCResult::from_json(&serde_json::to_string(res).unwrap(), parser.name().unwrap())
+            RPCResult::from_json(
+                &serde_json::to_string(res).unwrap(),
+                &parser.qualname().unwrap(),
+            )
         });
         Python::with_gil(|py| parsed.map(|obj| obj.map(|o| o.into_py(py))).collect())
     }

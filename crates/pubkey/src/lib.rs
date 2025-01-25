@@ -148,9 +148,10 @@ impl Pubkey {
     ///         3gF2KMe9KiC6FNVBmfg9i267aMPvK37FewCip4eGBFcT,
     ///     )
     ///
-    pub fn create_program_address(seeds: Vec<&[u8]>, program_id: &Self) -> PyResult<Self> {
+    pub fn create_program_address(seeds: Vec<Vec<u8>>, program_id: &Self) -> PyResult<Self> {
+        let seeds_inner: Vec<&[u8]> = seeds.iter().map(|v| v.as_ref()).collect();
         handle_py_err(PubkeyOriginal::create_program_address(
-            &seeds,
+            &seeds_inner,
             &program_id.0,
         ))
     }
@@ -209,8 +210,9 @@ impl Pubkey {
     ///     >>> nonce
     ///     255
     ///
-    pub fn find_program_address(seeds: Vec<&[u8]>, program_id: &Self) -> (Self, u8) {
-        let (pubkey, nonce) = PubkeyOriginal::find_program_address(&seeds, &program_id.0);
+    pub fn find_program_address(seeds: Vec<Vec<u8>>, program_id: &Self) -> (Self, u8) {
+        let seeds_inner: Vec<&[u8]> = seeds.iter().map(|v| v.as_ref()).collect();
+        let (pubkey, nonce) = PubkeyOriginal::find_program_address(&seeds_inner, &program_id.0);
         (pubkey.into(), nonce)
     }
 
