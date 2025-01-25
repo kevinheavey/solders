@@ -81,8 +81,6 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
     let account_mod = create_account_mod(py)?;
     let epoch_schedule_mod = create_epoch_schedule_mod(py)?;
     let address_lookup_table_account_mod = create_address_lookup_table_account_mod(py)?;
-    #[cfg(feature = "bankrun")]
-    let bankrun_mod = solders_bankrun::create_bankrun_mod(py)?;
     let clock_mod = create_clock_mod(py)?;
     let epoch_rewards_mod = create_epoch_rewards_mod(py)?;
     let slot_history_mod = create_slot_history_mod(py)?;
@@ -101,8 +99,6 @@ fn solders(py: Python, m: &PyModule) -> PyResult<()> {
         #[cfg(feature = "ring")]
         account_decoder_mod,
         address_lookup_table_account_mod,
-        #[cfg(feature = "bankrun")]
-        bankrun_mod,
         clock_mod,
         commitment_config_mod,
         compute_budget_mod,
