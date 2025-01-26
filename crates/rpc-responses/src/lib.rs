@@ -7,15 +7,11 @@ use camelpaste::paste;
 use derive_more::{From, Into};
 use pyo3::exceptions::PyValueError;
 use pyo3::types::PyType;
-use pyo3::{
-    prelude::*,
-    types::{PyBytes, PyTuple},
-    PyClass, PyTypeInfo,
-};
+use pyo3::{prelude::*, IntoPyObject, IntoPyObjectExt, PyClass};
 use serde::{de::Error, Deserialize, Serialize, Serializer};
 use serde_json::Value;
 use serde_with::{serde_as, DisplayFromStr, FromInto, OneOrMany, TryFromInto};
-use solana_account_decoder::UiAccount;
+use solana_account_decoder_client_types::UiAccount;
 use solana_rpc_client_api::{
     custom_error::{
         JSON_RPC_SCAN_ERROR, JSON_RPC_SERVER_ERROR_BLOCK_CLEANED_UP,
@@ -51,12 +47,12 @@ use solana_rpc_client_api::{
     },
 };
 use solana_sdk::clock::{Epoch, Slot, UnixTimestamp};
-use solana_transaction_status::TransactionStatus as TransactionStatusOriginal;
+use solana_transaction_status_client_types::TransactionStatus as TransactionStatusOriginal;
 use solders_account::{Account, AccountJSON};
 use solders_account_decoder::UiTokenAmount;
 use solders_epoch_info::EpochInfo;
 use solders_hash::Hash as SolderHash;
-use solders_macros::{common_methods, common_methods_rpc_resp, richcmp_eq_only, EnumIntoPy};
+use solders_macros::{common_methods, common_methods_rpc_resp, richcmp_eq_only};
 use solders_primitives::epoch_schedule::EpochSchedule;
 use solders_pubkey::Pubkey;
 use solders_signature::Signature;
@@ -98,14 +94,15 @@ pub trait CommonMethodsRpcResp<'a>:
     + std::fmt::Debug
     + PyBytesBincode
     + PyFromBytesBincode<'a>
-    + IntoPy<PyObject>
     + Clone
     + Serialize
     + Deserialize<'a>
     + PyClass
+where
+    for<'py> Self: pyo3::IntoPyObject<'py>,
 {
-    fn pybytes<'b>(&self, py: Python<'b>) -> &'b PyBytes {
-        PyBytesBincode::pybytes_bincode(self, py)
+    fn pybytes(&self) -> Vec<u8> {
+        PyBytesBincode::pybytes_bincode(self)
     }
 
     fn pystr(&self) -> String {
@@ -117,14 +114,6 @@ pub trait CommonMethodsRpcResp<'a>:
 
     fn py_from_bytes(raw: &'a [u8]) -> PyResult<Self> {
         <Self as PyFromBytesBincode>::py_from_bytes_bincode(raw)
-    }
-
-    fn pyreduce(&self) -> PyResult<(PyObject, PyObject)> {
-        let cloned = self.clone();
-        Python::with_gil(|py| {
-            let constructor = cloned.into_py(py).getattr(py, "from_bytes")?;
-            Ok((constructor, (self.pybytes(py).to_object(py),).to_object(py)))
-        })
     }
 
     fn py_to_json(&self) -> String {
@@ -198,11 +187,49 @@ macro_rules! contextless_resp_methods_no_clone {
     };
 }
 
+macro_rules! contextless_resp_methods_no_clone_nullable {
+    ($name:ident, $inner:ty) => {
+        #[common_methods_rpc_resp]
+        #[pymethods]
+        impl $name {
+            #[pyo3(signature = (value=None))]
+            #[new]
+            pub fn new(value: $inner) -> Self {
+                Self(value)
+            }
+
+            #[getter]
+            pub fn value(&self) -> $inner {
+                self.0
+            }
+        }
+    };
+}
+
 macro_rules! contextless_resp_methods_clone {
     ($name:ident, $inner:ty) => {
         #[common_methods_rpc_resp]
         #[pymethods]
         impl $name {
+            #[new]
+            pub fn new(value: $inner) -> Self {
+                Self(value)
+            }
+
+            #[getter]
+            pub fn value(&self) -> $inner {
+                self.0.clone()
+            }
+        }
+    };
+}
+
+macro_rules! contextless_resp_methods_clone_nullable {
+    ($name:ident, $inner:ty) => {
+        #[common_methods_rpc_resp]
+        #[pymethods]
+        impl $name {
+            #[pyo3(signature = (value=None))]
             #[new]
             pub fn new(value: $inner) -> Self {
                 Self(value)
@@ -246,7 +273,7 @@ macro_rules! contextless_resp_no_eq {
     };
 }
 
-#[derive(FromPyObject, Clone, Debug, PartialEq, Eq, EnumIntoPy)]
+#[derive(FromPyObject, Clone, Debug, PartialEq, Eq, IntoPyObject)]
 pub enum RPCError {
     Fieldless(RpcCustomErrorFieldless),
     BlockCleanedUpMessage(BlockCleanedUpMessage),
@@ -539,7 +566,10 @@ impl Serialize for RPCError {
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 #[serde(untagged)]
-pub enum Resp<T: IntoPy<PyObject>> {
+pub enum Resp<T>
+where
+    T: for<'py> IntoPyObject<'py>,
+{
     Result {
         #[serde(skip_deserializing)]
         jsonrpc: solders_rpc_version::V2,
@@ -556,12 +586,22 @@ pub enum Resp<T: IntoPy<PyObject>> {
     },
 }
 
-impl<T: PyClass + IntoPy<PyObject>> IntoPy<PyObject> for Resp<T> {
-    fn into_py(self, py: Python<'_>) -> PyObject {
-        match self {
-            Self::Error { error: e, .. } => e.into_py(py),
-            Self::Result { result: r, .. } => r.into_py(py),
-        }
+impl<'py, T> IntoPyObject<'py> for Resp<T>
+where
+    T: for<'py2> IntoPyObject<'py2>,
+{
+    type Target = PyAny; // the Python type
+    type Output = Bound<'py, Self::Target>; // in most cases this will be `Bound`
+    type Error = std::convert::Infallible;
+
+    fn into_pyobject(
+        self,
+        py: Python<'py>,
+    ) -> Result<Self::Output, <Resp<T> as IntoPyObject>::Error> {
+        Ok(match self {
+            Self::Error { error: e, .. } => e.into_bound_py_any(py).unwrap(),
+            Self::Result { result: r, .. } => r.into_bound_py_any(py).unwrap(),
+        })
     }
 }
 
@@ -615,23 +655,28 @@ pub enum Notification {
     },
 }
 
-impl IntoPy<PyObject> for Notification {
-    fn into_py(self, py: Python<'_>) -> PyObject {
-        match self {
-            Self::AccountNotification { params: p, .. } => p.into_py(py),
-            Self::BlockNotification { params: p, .. } => p.into_py(py),
-            Self::LogsNotification { params: p, .. } => p.into_py(py),
-            Self::ProgramNotification { params: p, .. } => p.into_py(py),
-            Self::SignatureNotification { params: p, .. } => p.into_py(py),
-            Self::SlotNotification { params: p, .. } => p.into_py(py),
-            Self::SlotsUpdatesNotification { params: p, .. } => p.into_py(py),
-            Self::RootNotification { params: p, .. } => p.into_py(py),
-            Self::VoteNotification { params: p, .. } => p.into_py(py),
-        }
+impl<'py> IntoPyObject<'py> for Notification {
+    type Target = PyAny; // the Python type
+    type Output = Bound<'py, Self::Target>; // in most cases this will be `Bound`
+    type Error = std::convert::Infallible;
+
+    fn into_pyobject(self, py: Python<'py>) -> Result<Self::Output, Self::Error> {
+        Ok((match self {
+            Self::AccountNotification { params: p, .. } => p.into_bound_py_any(py),
+            Self::BlockNotification { params: p, .. } => p.into_bound_py_any(py),
+            Self::LogsNotification { params: p, .. } => p.into_bound_py_any(py),
+            Self::ProgramNotification { params: p, .. } => p.into_bound_py_any(py),
+            Self::SignatureNotification { params: p, .. } => p.into_bound_py_any(py),
+            Self::SlotNotification { params: p, .. } => p.into_bound_py_any(py),
+            Self::SlotsUpdatesNotification { params: p, .. } => p.into_bound_py_any(py),
+            Self::RootNotification { params: p, .. } => p.into_bound_py_any(py),
+            Self::VoteNotification { params: p, .. } => p.into_bound_py_any(py),
+        })
+        .unwrap())
     }
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, EnumIntoPy)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, IntoPyObject)]
 #[serde(untagged)]
 pub enum WebsocketMessage {
     Notification(Notification),
@@ -644,9 +689,13 @@ pub enum WebsocketMessage {
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct WebsocketMessages(#[serde_as(deserialize_as = "OneOrMany<_>")] Vec<WebsocketMessage>);
 
-impl IntoPy<PyObject> for WebsocketMessages {
-    fn into_py(self, py: Python<'_>) -> PyObject {
-        self.0.into_py(py)
+impl<'py> IntoPyObject<'py> for WebsocketMessages {
+    type Target = PyAny; // the Python type
+    type Output = Bound<'py, Self::Target>; // in most cases this will be `Bound`
+    type Error = std::convert::Infallible;
+
+    fn into_pyobject(self, py: Python<'py>) -> Result<Self::Output, Self::Error> {
+        Ok(self.0.into_bound_py_any(py).unwrap())
     }
 }
 
@@ -717,6 +766,7 @@ response_data_boilerplate!(RpcBlockCommitment);
 #[common_methods]
 #[pymethods]
 impl RpcBlockCommitment {
+    #[pyo3(signature = (total_stake, commitment=None))]
     #[new]
     pub fn new(total_stake: u64, commitment: Option<[u64; 32]>) -> Self {
         RpcBlockCommitmentOriginal {
@@ -813,11 +863,13 @@ impl RpcBlockProduction {
 
 contextful_resp_eq!(GetBlockProductionResp, RpcBlockProduction);
 
-contextless_resp_no_eq!(GetBlockResp, Option<UiConfirmedBlock>, clone);
+contextless_struct_def_no_eq!(GetBlockResp, Option<UiConfirmedBlock>);
+contextless_resp_methods_clone_nullable!(GetBlockResp, Option<UiConfirmedBlock>);
 
 contextless_resp_eq!(GetBlocksResp, Vec<u64>, clone);
 contextless_resp_eq!(GetBlocksWithLimitResp, Vec<u64>, clone);
-contextless_resp_eq!(GetBlockTimeResp, Option<u64>);
+contextless_struct_def_eq!(GetBlockTimeResp, Option<u64>);
+contextless_resp_methods_no_clone_nullable!(GetBlockTimeResp, Option<u64>);
 
 #[serde_as]
 #[derive(Serialize, Deserialize, Eq, PartialEq, Clone, Debug, From, Into)]
@@ -831,6 +883,7 @@ response_data_boilerplate!(RpcContactInfo);
 #[common_methods]
 #[pymethods]
 impl RpcContactInfo {
+    #[pyo3(signature = (pubkey, gossip=None, tpu=None, tpu_quic=None, rpc=None, pubsub=None, version=None, feature_set=None, shred_version=None, tvu=None, tpu_forwards=None, tpu_forwards_quic=None, tpu_vote=None, serve_repair=None))]
     #[new]
     pub fn new(
         pubkey: Pubkey,
@@ -896,6 +949,7 @@ response_data_boilerplate!(RpcSnapshotSlotInfo);
 #[common_methods]
 #[pymethods]
 impl RpcSnapshotSlotInfo {
+    #[pyo3(signature = (full, incremental=None))]
     #[new]
     pub fn new(full: Slot, incremental: Option<Slot>) -> Self {
         RpcSnapshotSlotInfoOriginal { full, incremental }.into()
@@ -1018,6 +1072,7 @@ response_data_boilerplate!(RpcInflationReward);
 #[common_methods]
 #[pymethods]
 impl RpcInflationReward {
+    #[pyo3(signature = (epoch, effective_slot, amount, post_balance, commission=None))]
     #[new]
     pub fn new(
         epoch: Epoch,
@@ -1154,6 +1209,7 @@ response_data_boilerplate!(RpcPerfSample);
 #[common_methods]
 #[pymethods]
 impl RpcPerfSample {
+    #[pyo3(signature = (slot, num_transactions, num_slots, sample_period_secs, num_non_vote_transactions=None))]
     #[new]
     pub fn new(
         slot: Slot,
@@ -1283,10 +1339,13 @@ contextful_resp_eq!(
 
 contextful_resp_no_eq!(GetTokenLargestAccountsResp, Vec<RpcTokenAccountBalance>);
 contextful_resp_no_eq!(GetTokenSupplyResp, UiTokenAmount);
-contextless_resp_no_eq!(
+contextless_struct_def_no_eq!(
     GetTransactionResp,
-    Option<EncodedConfirmedTransactionWithStatusMeta>,
-    clone
+    Option<EncodedConfirmedTransactionWithStatusMeta>
+);
+contextless_resp_methods_clone_nullable!(
+    GetTransactionResp,
+    Option<EncodedConfirmedTransactionWithStatusMeta>
 );
 contextless_resp_eq!(GetTransactionCountResp, u64);
 contextless_resp_eq!(GetVersionResp, RpcVersionInfo, clone);
@@ -1498,7 +1557,7 @@ impl From<SlotUpdateFrozen> for SlotUpdateOriginal {
     }
 }
 
-#[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, EnumIntoPy)]
+#[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, IntoPyObject)]
 #[serde(rename_all = "camelCase", tag = "type")]
 pub enum SlotUpdate {
     FirstShredReceived(SlotUpdateFirstShredReceived),
@@ -1622,7 +1681,7 @@ impl RpcVote {
     }
 }
 
-#[derive(FromPyObject, Serialize, Deserialize, Clone, Debug, PartialEq, Eq, EnumIntoPy)]
+#[derive(FromPyObject, Serialize, Deserialize, Clone, Debug, PartialEq, Eq, IntoPyObject)]
 #[serde(untagged)]
 pub enum RpcBlockUpdateError {
     BlockStoreError(BlockStoreError),
@@ -1663,6 +1722,7 @@ response_data_boilerplate!(RpcBlockUpdate);
 #[common_methods]
 #[pymethods]
 impl RpcBlockUpdate {
+    #[pyo3(signature = (slot, block=None, err=None))]
     #[new]
     pub fn new(
         slot: Slot,
@@ -1759,12 +1819,16 @@ macro_rules ! pyunion_resp {
             }
         }
 
-        impl IntoPy<PyObject> for $name {
-            fn into_py(self, py: Python<'_>) -> PyObject {
-                match self {
-                    Self::$err_variant(x) => x.into_py(py),
-                    $(Self::$variant(x) => x.into_py(py),)+
-                }
+        impl<'py> IntoPyObject<'py> for $name {
+            type Target = PyAny; // the Python type
+            type Output = Bound<'py, Self::Target>; // in most cases this will be `Bound`
+            type Error = std::convert::Infallible;
+
+            fn into_pyobject(self, py: Python<'py>) -> Result<Self::Output, Self::Error> {
+                Ok(match self {
+                    Self::$err_variant(x) => x.into_bound_py_any(py).unwrap(),
+                    $(Self::$variant(x) => x.into_bound_py_any(py).unwrap(),)+
+                })
             }
         }
     }
@@ -1851,7 +1915,7 @@ pyunion_resp!(
 ///     '[{"id":0,"jsonrpc":"2.0","result":1233},{"id":0,"jsonrpc":"2.0","result":1}]'
 ///
 #[pyfunction]
-pub fn batch_to_json(resps: Vec<RPCResult>) -> String {
+pub fn batch_responses_to_json(resps: Vec<RPCResult>) -> String {
     let objects: Vec<serde_json::Map<String, Value>> = resps
         .iter()
         .map(|r| serde_json::from_str(&r.to_json()).unwrap())
@@ -1879,7 +1943,11 @@ pub fn batch_to_json(resps: Vec<RPCResult>) -> String {
 ///     )]
 ///
 #[pyfunction]
-pub fn batch_from_json(raw: &str, parsers: Vec<&PyType>) -> PyResult<Vec<PyObject>> {
+pub fn batch_responses_from_json<'py>(
+    raw: &str,
+    parsers: Vec<Bound<'_, PyType>>,
+    py: Python<'py>,
+) -> PyResult<Vec<Bound<'py, PyAny>>> {
     let raw_objects: Vec<serde_json::Map<String, Value>> =
         serde_json::from_str(raw).map_err(to_py_err)?;
     let raw_objects_len = raw_objects.len();
@@ -1889,9 +1957,12 @@ pub fn batch_from_json(raw: &str, parsers: Vec<&PyType>) -> PyResult<Vec<PyObjec
         Err(PyValueError::new_err(msg))
     } else {
         let parsed = raw_objects.iter().zip(parsers.iter()).map(|(res, parser)| {
-            RPCResult::from_json(&serde_json::to_string(res).unwrap(), parser.name().unwrap())
+            let name = parser.qualname().unwrap();
+            RPCResult::from_json(&serde_json::to_string(res).unwrap(), &name.to_string())
         });
-        Python::with_gil(|py| parsed.map(|obj| obj.map(|o| o.into_py(py))).collect())
+        parsed
+            .map(|obj| obj.map(|o| o.into_pyobject(py).unwrap()))
+            .collect()
     }
 }
 
@@ -1950,150 +2021,7 @@ pub fn parse_websocket_message(msg: &str) -> PyResult<WebsocketMessages> {
     serde_json::from_str(msg).map_err(to_py_err)
 }
 
-pub fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
-    let m = PyModule::new(py, "responses")?;
-    let typing = py.import("typing")?;
-    let union = typing.getattr("Union")?;
-    let typevar = typing.getattr("TypeVar")?;
-    let t = typevar.call1(("T",))?;
-    let rpc_error_members_raw = vec![
-        RpcCustomErrorFieldless::type_object(py),
-        BlockCleanedUpMessage::type_object(py),
-        SendTransactionPreflightFailureMessage::type_object(py),
-        BlockNotAvailableMessage::type_object(py),
-        NodeUnhealthyMessage::type_object(py),
-        TransactionPrecompileVerificationFailureMessage::type_object(py),
-        SlotSkippedMessage::type_object(py),
-        LongTermStorageSlotSkippedMessage::type_object(py),
-        KeyExcludedFromSecondaryIndexMessage::type_object(py),
-        ScanErrorMessage::type_object(py),
-        BlockStatusNotAvailableYetMessage::type_object(py),
-        MinContextSlotNotReachedMessage::type_object(py),
-        UnsupportedTransactionVersionMessage::type_object(py),
-    ];
-    let rpc_error_members = PyTuple::new(py, rpc_error_members_raw.clone());
-    let rpc_error_alias = union.get_item(rpc_error_members)?;
-    let rpc_error_members_raw_cloned = rpc_error_members_raw.clone();
-    let mut resp_members = vec![t];
-    resp_members.extend(
-        rpc_error_members_raw_cloned
-            .iter()
-            .map(|x| x.as_ref())
-            .collect::<Vec<&PyAny>>(),
-    );
-    m.add("T", t)?;
-    m.add("Resp", union.get_item(PyTuple::new(py, resp_members))?)?;
-    let mut rpc_result_members_raw = rpc_error_members_raw.clone();
-    rpc_result_members_raw.extend(vec![
-        GetAccountInfoResp::type_object(py),
-        GetAccountInfoJsonParsedResp::type_object(py),
-        GetAccountInfoMaybeJsonParsedResp::type_object(py),
-        GetBalanceResp::type_object(py),
-        GetBlockProductionResp::type_object(py),
-        GetBlockResp::type_object(py),
-        GetBlockCommitmentResp::type_object(py),
-        GetBlockHeightResp::type_object(py),
-        GetBlocksResp::type_object(py),
-        GetBlocksWithLimitResp::type_object(py),
-        GetBlockTimeResp::type_object(py),
-        GetClusterNodesResp::type_object(py),
-        GetEpochInfoResp::type_object(py),
-        GetEpochScheduleResp::type_object(py),
-        GetFeeForMessageResp::type_object(py),
-        GetFirstAvailableBlockResp::type_object(py),
-        GetGenesisHashResp::type_object(py),
-        GetHealthResp::type_object(py),
-        GetHighestSnapshotSlotResp::type_object(py),
-        GetIdentityResp::type_object(py),
-        GetInflationGovernorResp::type_object(py),
-        GetInflationRateResp::type_object(py),
-        GetInflationRewardResp::type_object(py),
-        GetLargestAccountsResp::type_object(py),
-        GetLatestBlockhashResp::type_object(py),
-        GetLeaderScheduleResp::type_object(py),
-        GetMaxRetransmitSlotResp::type_object(py),
-        GetMaxShredInsertSlotResp::type_object(py),
-        GetMinimumBalanceForRentExemptionResp::type_object(py),
-        GetMultipleAccountsResp::type_object(py),
-        GetMultipleAccountsJsonParsedResp::type_object(py),
-        GetMultipleAccountsMaybeJsonParsedResp::type_object(py),
-        GetProgramAccountsWithContextResp::type_object(py),
-        GetProgramAccountsResp::type_object(py),
-        GetProgramAccountsWithContextJsonParsedResp::type_object(py),
-        GetProgramAccountsJsonParsedResp::type_object(py),
-        GetProgramAccountsMaybeJsonParsedResp::type_object(py),
-        GetProgramAccountsWithContextMaybeJsonParsedResp::type_object(py),
-        GetRecentPerformanceSamplesResp::type_object(py),
-        GetSignaturesForAddressResp::type_object(py),
-        GetSignatureStatusesResp::type_object(py),
-        GetSlotResp::type_object(py),
-        GetSlotLeaderResp::type_object(py),
-        GetSlotLeadersResp::type_object(py),
-        GetSupplyResp::type_object(py),
-        GetTokenAccountBalanceResp::type_object(py),
-        GetTokenAccountsByDelegateResp::type_object(py),
-        GetTokenAccountsByDelegateJsonParsedResp::type_object(py),
-        GetTokenAccountsByOwnerResp::type_object(py),
-        GetTokenAccountsByOwnerJsonParsedResp::type_object(py),
-        GetTokenLargestAccountsResp::type_object(py),
-        GetTokenSupplyResp::type_object(py),
-        GetTransactionResp::type_object(py),
-        GetTransactionCountResp::type_object(py),
-        GetVersionResp::type_object(py),
-        RpcVersionInfo::type_object(py),
-        GetVoteAccountsResp::type_object(py),
-        IsBlockhashValidResp::type_object(py),
-        MinimumLedgerSlotResp::type_object(py),
-        RequestAirdropResp::type_object(py),
-        SendTransactionResp::type_object(py),
-        SimulateTransactionResp::type_object(py),
-        ValidatorExitResp::type_object(py),
-    ]);
-    let rpc_result_members = PyTuple::new(py, rpc_result_members_raw);
-    let rpc_result_alias = union.get_item(rpc_result_members)?;
-    let slot_update_members = PyTuple::new(
-        py,
-        vec![
-            SlotUpdateFirstShredReceived::type_object(py),
-            SlotUpdateCompleted::type_object(py),
-            SlotUpdateCreatedBank::type_object(py),
-            SlotUpdateDead::type_object(py),
-            SlotUpdateOptimisticConfirmation::type_object(py),
-            SlotUpdateRoot::type_object(py),
-        ],
-    );
-    let slot_update_alias = union.get_item(slot_update_members)?;
-    let block_update_error_members = PyTuple::new(
-        py,
-        vec![
-            UnsupportedTransactionVersion::type_object(py),
-            BlockStoreError::type_object(py),
-        ],
-    );
-    let block_update_error_alias = union.get_item(block_update_error_members)?;
-    let notification_members_raw = vec![
-        AccountNotification::type_object(py),
-        AccountNotificationJsonParsed::type_object(py),
-        BlockNotification::type_object(py),
-        LogsNotification::type_object(py),
-        ProgramNotification::type_object(py),
-        ProgramNotificationJsonParsed::type_object(py),
-        SignatureNotification::type_object(py),
-        SlotNotification::type_object(py),
-        SlotUpdateNotification::type_object(py),
-        RootNotification::type_object(py),
-        VoteNotification::type_object(py),
-    ];
-    let notification_members = PyTuple::new(py, notification_members_raw.clone());
-    let notification_alias = union.get_item(notification_members)?;
-    let mut websocket_message_members_raw = notification_members_raw.clone();
-    websocket_message_members_raw.extend(vec![
-        SubscriptionResult::type_object(py),
-        SubscriptionError::type_object(py),
-        UnsubscribeResult::type_object(py),
-    ]);
-    let websocket_message_members = PyTuple::new(py, websocket_message_members_raw);
-    let websocket_message_alias = union.get_item(websocket_message_members)?;
+pub fn include_responses(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<RpcResponseContext>()?;
     m.add_class::<GetAccountInfoResp>()?;
     m.add_class::<GetAccountInfoJsonParsedResp>()?;
@@ -2186,6 +2114,7 @@ pub fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<SlotUpdateCompleted>()?;
     m.add_class::<SlotUpdateCreatedBank>()?;
     m.add_class::<SlotUpdateDead>()?;
+    m.add_class::<SlotUpdateFrozen>()?;
     m.add_class::<SlotUpdateOptimisticConfirmation>()?;
     m.add_class::<SlotUpdateRoot>()?;
     m.add_class::<RpcVote>()?;
@@ -2213,20 +2142,14 @@ pub fn create_responses_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add_class::<RpcBlockUpdate>()?;
     m.add_class::<BlockStoreError>()?;
     m.add_class::<UnsubscribeResult>()?;
-    m.add("RPCError", rpc_error_alias)?;
-    m.add("RPCResult", rpc_result_alias)?;
-    m.add("SlotUpdate", slot_update_alias)?;
-    m.add("Notification", notification_alias)?;
-    m.add("WebsocketMessage", websocket_message_alias)?;
-    m.add("RpcBlockUpddateError", block_update_error_alias)?;
     let funcs = [
-        wrap_pyfunction!(batch_to_json, m)?,
-        wrap_pyfunction!(batch_from_json, m)?,
+        wrap_pyfunction!(batch_responses_to_json, m)?,
+        wrap_pyfunction!(batch_responses_from_json, m)?,
         wrap_pyfunction!(parse_websocket_message, m)?,
         wrap_pyfunction!(parse_notification, m)?,
     ];
     for func in funcs {
         m.add_function(func)?;
     }
-    Ok(m)
+    Ok(())
 }

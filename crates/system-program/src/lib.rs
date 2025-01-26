@@ -1,3 +1,4 @@
+#![allow(deprecated)]
 use dict_derive::{FromPyObject, IntoPyObject};
 use pyo3::{exceptions::PyValueError, prelude::*};
 use solana_program::address_lookup_table::instruction::{
@@ -36,49 +37,48 @@ fn convert_instructions_from_original(ixs: Vec<InstructionOriginal>) -> Vec<Inst
     ixs.into_iter().map(Instruction::from).collect()
 }
 
-pub fn create_system_program_mod(py: Python<'_>) -> PyResult<&PyModule> {
-    let system_program_mod = PyModule::new(py, "_system_program")?;
-    system_program_mod.add("ID", Pubkey(system_program::ID))?;
+pub fn include_system_program(m: &Bound<'_, PyModule>) -> PyResult<()> {
+    m.add("SYSTEM_PROGRAM_ID", Pubkey(system_program::ID))?;
     let funcs = [
-        wrap_pyfunction!(create_account, system_program_mod)?,
-        wrap_pyfunction!(decode_create_account, system_program_mod)?,
-        wrap_pyfunction!(create_account_with_seed, system_program_mod)?,
-        wrap_pyfunction!(decode_create_account_with_seed, system_program_mod)?,
-        wrap_pyfunction!(assign, system_program_mod)?,
-        wrap_pyfunction!(decode_assign, system_program_mod)?,
-        wrap_pyfunction!(assign_with_seed, system_program_mod)?,
-        wrap_pyfunction!(decode_assign_with_seed, system_program_mod)?,
-        wrap_pyfunction!(transfer, system_program_mod)?,
-        wrap_pyfunction!(decode_transfer, system_program_mod)?,
-        wrap_pyfunction!(transfer_with_seed, system_program_mod)?,
-        wrap_pyfunction!(decode_transfer_with_seed, system_program_mod)?,
-        wrap_pyfunction!(allocate, system_program_mod)?,
-        wrap_pyfunction!(decode_allocate, system_program_mod)?,
-        wrap_pyfunction!(allocate_with_seed, system_program_mod)?,
-        wrap_pyfunction!(decode_allocate_with_seed, system_program_mod)?,
-        wrap_pyfunction!(transfer_many, system_program_mod)?,
-        wrap_pyfunction!(create_nonce_account, system_program_mod)?,
-        wrap_pyfunction!(initialize_nonce_account, system_program_mod)?,
-        wrap_pyfunction!(decode_initialize_nonce_account, system_program_mod)?,
-        wrap_pyfunction!(create_nonce_account_with_seed, system_program_mod)?,
-        wrap_pyfunction!(advance_nonce_account, system_program_mod)?,
-        wrap_pyfunction!(decode_advance_nonce_account, system_program_mod)?,
-        wrap_pyfunction!(withdraw_nonce_account, system_program_mod)?,
-        wrap_pyfunction!(decode_withdraw_nonce_account, system_program_mod)?,
-        wrap_pyfunction!(authorize_nonce_account, system_program_mod)?,
-        wrap_pyfunction!(decode_authorize_nonce_account, system_program_mod)?,
+        wrap_pyfunction!(create_account, m)?,
+        wrap_pyfunction!(decode_create_account, m)?,
+        wrap_pyfunction!(create_account_with_seed, m)?,
+        wrap_pyfunction!(decode_create_account_with_seed, m)?,
+        wrap_pyfunction!(assign, m)?,
+        wrap_pyfunction!(decode_assign, m)?,
+        wrap_pyfunction!(assign_with_seed, m)?,
+        wrap_pyfunction!(decode_assign_with_seed, m)?,
+        wrap_pyfunction!(transfer, m)?,
+        wrap_pyfunction!(decode_transfer, m)?,
+        wrap_pyfunction!(transfer_with_seed, m)?,
+        wrap_pyfunction!(decode_transfer_with_seed, m)?,
+        wrap_pyfunction!(allocate, m)?,
+        wrap_pyfunction!(decode_allocate, m)?,
+        wrap_pyfunction!(allocate_with_seed, m)?,
+        wrap_pyfunction!(decode_allocate_with_seed, m)?,
+        wrap_pyfunction!(transfer_many, m)?,
+        wrap_pyfunction!(create_nonce_account, m)?,
+        wrap_pyfunction!(initialize_nonce_account, m)?,
+        wrap_pyfunction!(decode_initialize_nonce_account, m)?,
+        wrap_pyfunction!(create_nonce_account_with_seed, m)?,
+        wrap_pyfunction!(advance_nonce_account, m)?,
+        wrap_pyfunction!(decode_advance_nonce_account, m)?,
+        wrap_pyfunction!(withdraw_nonce_account, m)?,
+        wrap_pyfunction!(decode_withdraw_nonce_account, m)?,
+        wrap_pyfunction!(authorize_nonce_account, m)?,
+        wrap_pyfunction!(decode_authorize_nonce_account, m)?,
         // address_lookup_table_program
-        wrap_pyfunction!(close_lookup_table, system_program_mod)?,
-        wrap_pyfunction!(create_lookup_table, system_program_mod)?,
-        wrap_pyfunction!(create_lookup_table_signed, system_program_mod)?,
-        wrap_pyfunction!(deactivate_lookup_table, system_program_mod)?,
-        wrap_pyfunction!(extend_lookup_table, system_program_mod)?,
-        wrap_pyfunction!(freeze_lookup_table, system_program_mod)?,
+        wrap_pyfunction!(close_lookup_table, m)?,
+        wrap_pyfunction!(create_lookup_table, m)?,
+        wrap_pyfunction!(create_lookup_table_signed, m)?,
+        wrap_pyfunction!(deactivate_lookup_table, m)?,
+        wrap_pyfunction!(extend_lookup_table, m)?,
+        wrap_pyfunction!(freeze_lookup_table, m)?,
     ];
     for func in funcs {
-        system_program_mod.add_function(func)?;
+        m.add_function(func)?;
     }
-    Ok(system_program_mod)
+    Ok(())
 }
 
 #[derive(FromPyObject, IntoPyObject)]

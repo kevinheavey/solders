@@ -17,4 +17,4 @@ solders-pubkey = { workspace = true }
 solders-macros = { workspace = true }
 base64 = { workspace = true }
 solders-traits-core = { workspace = true }
-solana-transaction-status = { workspace = true }
+solana-transaction-status-client-types = { workspace = true }

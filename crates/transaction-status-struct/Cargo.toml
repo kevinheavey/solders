@@ -14,7 +14,7 @@ serde = { workspace = true }
 derive_more = { workspace = true }
 solders-macros = { workspace = true }
 solders-traits-core = { workspace = true }
-solana-transaction-status = { workspace = true }
+solana-transaction-status-client-types = { workspace = true }
 solders-transaction-error = { workspace = true }
 solders-transaction-confirmation-status = { workspace = true }
 solders-commitment-config = { workspace = true }

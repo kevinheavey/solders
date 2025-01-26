@@ -1,5 +1,5 @@
 use derive_more::{From, Into};
-use pyo3::{exceptions::PyValueError, prelude::*, types::PyBytes};
+use pyo3::{exceptions::PyValueError, prelude::*};
 use serde::{Deserialize, Serialize};
 use solana_sdk::{
     derivation_path::DerivationPath,
@@ -97,9 +97,9 @@ impl Keypair {
     /// Example:
     ///      >>> from solders.keypair import Keypair
     ///      >>> raw_bytes = b'\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x8a\x88\xe3\xddt\t\xf1\x95\xfdR\xdb-<\xba]r\xcag\t\xbf\x1d\x94\x12\x1b\xf3t\x88\x01\xb4\x0fo\\'
-    ///      >>> assert Keypair.from_bytes(raw_bytes).to_bytes_array() == list(raw_bytes)
+    ///      >>> assert Keypair.from_bytes(raw_bytes).to_bytes() == raw_bytes
     ///
-    pub fn to_bytes_array(&self) -> [u8; Self::LENGTH] {
+    pub fn to_bytes(&self) -> [u8; Self::LENGTH] {
         self.0.to_bytes()
     }
 
@@ -261,8 +261,8 @@ impl Keypair {
 
 impl_signer_hash!(Keypair);
 impl PyBytesGeneral for Keypair {
-    fn pybytes_general<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        PyBytes::new(py, &self.to_bytes_array())
+    fn pybytes_general(&self) -> Vec<u8> {
+        self.to_bytes().to_vec()
     }
 }
 impl PyHash for Keypair {}
@@ -298,7 +298,7 @@ impl AsRef<KeypairOriginal> for Keypair {
 
 impl Clone for Keypair {
     fn clone(&self) -> Self {
-        Self::from_bytes(self.to_bytes_array()).unwrap()
+        Self::from_bytes(self.to_bytes()).unwrap()
     }
 }
 

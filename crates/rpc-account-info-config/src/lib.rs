@@ -26,6 +26,7 @@ pyclass_boilerplate_with_default!(
 #[common_methods]
 #[pymethods]
 impl RpcAccountInfoConfig {
+    #[pyo3(signature = (encoding=None, data_slice=None, commitment=None, min_context_slot=None))]
     #[new]
     pub fn new(
         encoding: Option<UiAccountEncoding>,

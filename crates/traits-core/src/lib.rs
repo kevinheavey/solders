@@ -2,7 +2,6 @@ use pyo3::{
     exceptions::{PyTypeError, PyValueError},
     prelude::*,
     pyclass::CompareOp,
-    types::PyBytes,
 };
 use serde::{Deserialize, Serialize};
 use std::{
@@ -68,8 +67,9 @@ pub trait PyHash: Hash {
 }
 
 pub trait PyBytesSlice: AsRef<[u8]> {
-    fn pybytes_slice<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        PyBytes::new(py, AsRef::<[u8]>::as_ref(self))
+    fn pybytes_slice(&self) -> Vec<u8> {
+        let sliced: &[u8] = self.as_ref();
+        sliced.to_vec()
     }
 }
 
@@ -77,11 +77,8 @@ pub trait PyBytesSlice: AsRef<[u8]> {
 macro_rules! pybytes_general_for_pybytes_slice {
     ($ident:ident) => {
         impl $crate::PyBytesGeneral for $ident {
-            fn pybytes_general<'a>(
-                &self,
-                py: pyo3::prelude::Python<'a>,
-            ) -> &'a pyo3::types::PyBytes {
-                $crate::PyBytesSlice::pybytes_slice(self, py)
+            fn pybytes_general(&self) -> Vec<u8> {
+                $crate::PyBytesSlice::pybytes_slice(self)
             }
         }
     };
@@ -91,11 +88,8 @@ macro_rules! pybytes_general_for_pybytes_slice {
 macro_rules! pybytes_general_for_pybytes_bincode {
     ($ident:ident) => {
         impl $crate::PyBytesGeneral for $ident {
-            fn pybytes_general<'a>(
-                &self,
-                py: pyo3::prelude::Python<'a>,
-            ) -> &'a pyo3::types::PyBytes {
-                $crate::PyBytesBincode::pybytes_bincode(self, py)
+            fn pybytes_general<'a>(&self) -> Vec<u8> {
+                $crate::PyBytesBincode::pybytes_bincode(self)
             }
         }
     };
@@ -105,30 +99,27 @@ macro_rules! pybytes_general_for_pybytes_bincode {
 macro_rules! pybytes_general_for_pybytes_cbor {
     ($ident:ident) => {
         impl $crate::PyBytesGeneral for $ident {
-            fn pybytes_general<'a>(
-                &self,
-                py: pyo3::prelude::Python<'a>,
-            ) -> &'a pyo3::types::PyBytes {
-                $crate::PyBytesCbor::pybytes_cbor(self, py)
+            fn pybytes_general<'a>(&self) -> Vec<u8> {
+                $crate::PyBytesCbor::pybytes_cbor(self)
             }
         }
     };
 }
 
 pub trait PyBytesBincode: Serialize {
-    fn pybytes_bincode<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        PyBytes::new(py, &bincode::serialize(self).unwrap())
+    fn pybytes_bincode(&self) -> Vec<u8> {
+        bincode::serialize(self).unwrap()
     }
 }
 
 pub trait PyBytesCbor: Serialize + std::marker::Sized {
-    fn pybytes_cbor<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        PyBytes::new(py, &serde_cbor::to_vec(self).unwrap())
+    fn pybytes_cbor(&self) -> Vec<u8> {
+        serde_cbor::to_vec(self).unwrap()
     }
 }
 
 pub trait PyBytesGeneral {
-    fn pybytes_general<'a>(&self, py: Python<'a>) -> &'a PyBytes;
+    fn pybytes_general(&self) -> Vec<u8>;
 }
 
 #[macro_export]
@@ -220,10 +211,10 @@ pub trait PyFromBytesGeneral: Sized {
 }
 
 pub trait CommonMethodsCore:
-    fmt::Display + fmt::Debug + PyBytesGeneral + PyFromBytesGeneral + IntoPy<PyObject> + Clone
+    fmt::Display + fmt::Debug + PyBytesGeneral + PyFromBytesGeneral + Clone
 {
-    fn pybytes<'b>(&self, py: Python<'b>) -> &'b PyBytes {
-        PyBytesGeneral::pybytes_general(self, py)
+    fn pybytes(&self) -> Vec<u8> {
+        PyBytesGeneral::pybytes_general(self)
     }
 
     fn pystr(&self) -> String {
@@ -235,17 +226,6 @@ pub trait CommonMethodsCore:
 
     fn py_from_bytes(raw: &[u8]) -> PyResult<Self> {
         <Self as PyFromBytesGeneral>::py_from_bytes_general(raw)
-    }
-
-    fn pyreduce(&self) -> PyResult<(PyObject, PyObject)> {
-        let cloned = self.clone();
-        Python::with_gil(|py| {
-            let constructor = cloned.into_py(py).getattr(py, "from_bytes")?;
-            Ok((
-                constructor,
-                (PyBytesGeneral::pybytes_general(self, py).to_object(py),).to_object(py),
-            ))
-        })
     }
 }
 

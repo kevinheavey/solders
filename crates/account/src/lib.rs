@@ -1,7 +1,7 @@
 #![allow(clippy::redundant_closure)]
 use std::str::FromStr;
 
-use pyo3::{prelude::*, types::PyBytes};
+use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, DisplayFromStr};
 use solana_sdk::{account::Account as AccountOriginal, clock::Epoch};
@@ -11,7 +11,7 @@ use solders_traits_core::{
     py_from_bytes_general_via_bincode, pybytes_general_via_bincode, RichcmpEqualityOnly,
 };
 
-use solana_account_decoder::{UiAccount, UiAccountData, UiAccountEncoding};
+use solana_account_decoder_client_types::{UiAccount, UiAccountData, UiAccountEncoding};
 use solders_account_decoder::ParsedAccount;
 
 // The Account from solana_sdk doesn't serialize the owner pubkey as base58,
@@ -111,8 +111,8 @@ impl Account {
 
     /// bytes: Data held in this account.
     #[getter]
-    pub fn data<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        PyBytes::new(py, &self.data)
+    pub fn data(&self) -> Vec<u8> {
+        self.data.clone()
     }
 
     #[staticmethod]
@@ -261,9 +261,8 @@ impl From<AccountJSON> for UiAccount {
     }
 }
 
-pub fn create_account_mod(py: Python<'_>) -> PyResult<&PyModule> {
-    let m = PyModule::new(py, "account")?;
+pub fn include_account(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Account>()?;
     m.add_class::<AccountJSON>()?;
-    Ok(m)
+    Ok(())
 }

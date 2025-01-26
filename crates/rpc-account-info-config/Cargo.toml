@@ -14,7 +14,7 @@ serde = { workspace = true }
 solders-macros = { workspace = true }
 solders-traits-core = { workspace = true }
 solders-account-decoder = { workspace = true }
-solana-account-decoder = { workspace = true }
+solana-account-decoder-client-types = { workspace = true }
 solders-rpc-config-macros = { workspace = true }
 solana-rpc-client-api = { workspace = true }
 solders-commitment-config = { workspace = true }

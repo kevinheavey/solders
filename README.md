@@ -14,7 +14,7 @@
 - Core SDK stuff: keypairs, pubkeys, signing and serializing transactions - that sort of thing.
 - RPC stuff: building requests and parsing responses (no networking stuff - if you want help with that, 
 [solana-py](https://michaelhly.github.io/solana-py/rpc/async_api/) is your friend).
-- Integration testing stuff: the `solders.bankrun` module is an alternative to `solana-test-validator` that's much more convenient and **much** faster. It's based on [solana-program-test](https://crates.io/crates/solana-program-test) if you know that is.
+- Integration testing stuff: the `solders.litesvm` module is an alternative to `solana-test-validator` that's much more convenient and **much** faster. It's based on [solana-program-test](https://crates.io/crates/solana-program-test) if you know that is.
 
 ## What about solana-py?
 
@@ -24,7 +24,7 @@ core API and RPC API. The main differences are:
 - `solders` doesn't have functions to actually interact with the RPC server (though `solana-py` does use the RPC code from `solders`).
 - `solders` doesn't provide SPL Token and SPL Memo clients.
 - `solana-py` may not have support for all the RPC requests and responses provided by `solders`.
-- `solana-py` doesn't have anything like the `bankrun` testing kit.
+- `solana-py` doesn't have anything like the `litesvm` testing kit.
 
 Since `solana-py` uses `solders` under the hood and they don't duplicate each other's features, you should just use whichever library you need.
 

@@ -19,10 +19,9 @@ solana-sdk = { workspace = true }
 bincode = { workspace = true }
 serde = { workspace = true }
 derive_more = { workspace = true }
-solders-account = { workspace = true, optional = true }
-solders-account-decoder = { workspace = true, optional = true }
+solders-account = { workspace = true }
+solders-account-decoder = { workspace = true }
 solders-address-lookup-table-account = { workspace = true }
-solders-bankrun = { workspace = true, optional = true }
 solders-compute-budget = { workspace = true }
 solders-commitment-config = { workspace = true }
 solders-epoch-info = { workspace = true }
@@ -42,29 +41,24 @@ solders-signature = { workspace = true }
 solders-system-program = { workspace = true }
 solders-traits = { workspace = true }
 solders-transaction = { workspace = true }
-solders-transaction-status = { workspace = true, optional = true }
+solders-transaction-status = { workspace = true }
 solders-token = { workspace = true }
 
 [features]
-default = ["bankrun", "litesvm", "ring"]
-bankrun = ["dep:solders-bankrun"]
+default = ["litesvm", "ring"]
 litesvm = ["dep:solders-litesvm"]
 ring = [
-    "dep:solders-account",
-    "dep:solders-account-decoder",
     "dep:solders-rpc-config",
     "dep:solders-rpc-errors",
     "dep:solders-rpc-filter",
     "dep:solders-rpc-requests",
     "dep:solders-rpc-responses",
-    "dep:solders-transaction-status"
 ]
 
 [workspace]
 members = [
     ".",
     "crates/*",
-    "tests/bankrun/clock-example"
 ]
 
 [workspace.package]
@@ -76,13 +70,12 @@ edition = "2021"
 [workspace.dependencies]
 chrono-humanize = "0.2.3"
 log = "0.4"
-pyo3 = { version = "0.20.2", default-features = false }
+pyo3 = { version = "0.23", default-features = false }
 solana-compute-budget = "2.1.10"
 solders-macros = { path = "./crates/macros", version = "=0.23.0" }
 solders-traits = { path = "./crates/traits", version = "=0.23.0" }
 solders-traits-core = { path = "./crates/traits-core", version = "=0.23.0" }
 solders-account-decoder = { path = "./crates/account-decoder", version = "=0.23.0" }
-solders-bankrun = { path = "./crates/bankrun", version = "=0.23.0" }
 solders-banks-interface = { path = "./crates/banks-interface", version = "=0.23.0" }
 solders-commitment-config = { path = "./crates/commitment-config", version = "=0.23.0" }
 solders-compute-budget = { path = "./crates/compute-budget", version = "=0.23.0" }
@@ -135,9 +128,9 @@ solders-account = { path = "./crates/account", version = "=0.23.0" }
 solders-hash = { path = "./crates/hash", version = "=0.23.0" }
 serde_with = { version = "^1.14.0", features = ["base64"] }
 solana-sdk = { version = "2.1.0", features = ["openssl-vendored"] }
-solana-account-decoder = "2.1.0"
+solana-account-decoder-client-types = { version = "2.1.0", features = ["zstd"] }
 solana-banks-interface = "2.1.0"
-solana-transaction-status = "2.1.0"
+solana-transaction-status-client-types = "2.1.0"
 solana-rpc-client-api = "2.1.0"
 solana-program = "2.1.0"
 spl-associated-token-account-client = "2.0"
@@ -153,7 +146,7 @@ time = "0.3.35"
 derive_more = "0.99.17"
 solana-program-test = "2.1.10"
 solana-banks-client = "2.1.0"
-pythonize = "0.20.0"
+pythonize = "0.23"
 bs58 = "0.4.0"
 thiserror = "^1.0.31"
 camelpaste = "0.1.0"

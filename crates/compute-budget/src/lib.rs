@@ -414,9 +414,8 @@ impl ComputeBudget {
     }
 }
 
-pub fn create_compute_budget_mod(py: Python<'_>) -> PyResult<&PyModule> {
-    let m = PyModule::new(py, "compute_budget")?;
-    m.add("ID", Pubkey(ID))?;
+pub fn include_compute_budget(m: &Bound<'_, PyModule>) -> PyResult<()> {
+    m.add("COMPUTE_BUDGET_ID", Pubkey(ID))?;
     let funcs = [
         wrap_pyfunction!(request_heap_frame, m)?,
         wrap_pyfunction!(set_compute_unit_limit, m)?,
@@ -426,5 +425,5 @@ pub fn create_compute_budget_mod(py: Python<'_>) -> PyResult<&PyModule> {
         m.add_function(func)?;
     }
     m.add_class::<ComputeBudget>()?;
-    Ok(m)
+    Ok(())
 }

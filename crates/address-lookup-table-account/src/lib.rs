@@ -17,7 +17,7 @@ use solana_program::{
     pubkey::Pubkey as PubkeyOriginal,
 };
 use solders_hash::Hash;
-use solders_macros::{common_methods, richcmp_eq_only, EnumIntoPy};
+use solders_macros::{common_methods, richcmp_eq_only};
 use solders_pubkey::Pubkey;
 use solders_traits_core::{
     handle_py_value_err, impl_display, py_from_bytes_general_via_bincode,
@@ -101,19 +101,19 @@ impl LookupTableStatusDeactivating {
     }
 }
 
-#[derive(Clone, PartialEq, Eq, Debug, Serialize, Deserialize, EnumIntoPy, FromPyObject)]
+#[derive(Clone, PartialEq, Eq, Debug, Serialize, Deserialize, IntoPyObject, FromPyObject)]
 pub enum LookupTableStatusTagged {
     Deactivating(LookupTableStatusDeactivating),
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone)]
-#[pyclass(module = "solders.address_lookup_table_account")]
+#[pyclass(module = "solders.address_lookup_table_account", eq, eq_int)]
 pub enum LookupTableStatusFieldless {
     Activated,
     Deactivated,
 }
 
-#[derive(Clone, PartialEq, Eq, Debug, Serialize, Deserialize, EnumIntoPy, FromPyObject)]
+#[derive(Clone, PartialEq, Eq, Debug, Serialize, Deserialize, IntoPyObject, FromPyObject)]
 #[serde(untagged)]
 pub enum LookupTableStatusType {
     Fieldless(LookupTableStatusFieldless),

@@ -1,6 +1,6 @@
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
-use solana_transaction_status::{
+use solana_transaction_status_client_types::{
     TransactionDetails as TransactionDetailsOriginal,
     UiTransactionEncoding as UiTransactionEncodingOriginal,
 };
@@ -9,7 +9,7 @@ use solders_macros::enum_original_mapping;
 /// Levels of transaction detail to return in RPC requests.
 #[derive(Debug, Clone, Copy, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-#[pyclass(module = "solders.transaction_status")]
+#[pyclass(module = "solders.transaction_status", eq, eq_int)]
 pub enum TransactionDetails {
     Full,
     Signatures,
@@ -47,7 +47,7 @@ impl From<TransactionDetailsOriginal> for TransactionDetails {
 }
 
 /// Encoding options for transaction data.
-#[pyclass(module = "solders.transaction_status")]
+#[pyclass(module = "solders.transaction_status", eq, eq_int)]
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 #[enum_original_mapping(UiTransactionEncodingOriginal)]

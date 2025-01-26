@@ -1,5 +1,5 @@
 use derive_more::{From, Into};
-use pyo3::{create_exception, exceptions::PyException, prelude::*, types::PyBytes};
+use pyo3::{create_exception, exceptions::PyException, prelude::*};
 use serde::{Deserialize, Serialize};
 use solana_program::{
     address_lookup_table::AddressLookupTableAccount as AddressLookupTableAccountOriginal,
@@ -16,7 +16,7 @@ use solana_program::{
     },
     pubkey::Pubkey as PubkeyOriginal,
 };
-use solders_macros::{common_methods, richcmp_eq_only, EnumIntoPy};
+use solders_macros::{common_methods, richcmp_eq_only};
 use solders_traits::{handle_py_err, PyErrWrapper};
 use solders_traits_core::{
     handle_py_value_err, impl_display, py_from_bytes_general_via_bincode,
@@ -174,6 +174,7 @@ pub struct Message(pub MessageOriginal);
 #[common_methods]
 #[pymethods]
 impl Message {
+    #[pyo3(signature = (instructions, payer=None))]
     #[new]
     pub fn new(instructions: Vec<Instruction>, payer: Option<&Pubkey>) -> Self {
         let instructions_inner = convert_instructions(instructions);
@@ -502,8 +503,8 @@ impl Message {
 
 impl RichcmpEqualityOnly for Message {}
 impl PyBytesGeneral for Message {
-    fn pybytes_general<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        PyBytes::new(py, &self.0.serialize())
+    fn pybytes_general(&self) -> Vec<u8> {
+        self.0.serialize().clone()
     }
 }
 impl_display!(Message);
@@ -556,14 +557,14 @@ impl MessageAddressTableLookup {
 
     /// bytes: List of u8 indexes used to load writable account addresses, represented as bytes.
     #[getter]
-    pub fn writable_indexes<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        PyBytes::new(py, &self.0.writable_indexes)
+    pub fn writable_indexes(&self) -> Vec<u8> {
+        self.0.writable_indexes.clone()
     }
 
     /// bytes: List of u8 indexes used to load readonly account addresses, represented as bytes.
     #[getter]
-    pub fn readonly_indexes<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        PyBytes::new(py, &self.0.readonly_indexes)
+    pub fn readonly_indexes(&self) -> Vec<u8> {
+        self.0.readonly_indexes.clone()
     }
 }
 
@@ -792,7 +793,7 @@ impl MessageV0 {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize, FromPyObject, EnumIntoPy)]
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize, FromPyObject, IntoPyObject)]
 #[serde(from = "VersionedMessageOriginal", into = "VersionedMessageOriginal")]
 pub enum VersionedMessage {
     Legacy(Message),
@@ -872,8 +873,8 @@ impl From<VersionedMessage> for MessageV0Original {
 /// Returns:
 ///     bytes: the serialized message.
 #[pyfunction]
-pub fn to_bytes_versioned(msg: VersionedMessage, py: Python<'_>) -> &PyBytes {
-    PyBytes::new(py, &VersionedMessageOriginal::from(msg).serialize())
+pub fn to_bytes_versioned(msg: VersionedMessage) -> Vec<u8> {
+    VersionedMessageOriginal::from(msg).serialize()
 }
 
 /// Deserialize a versioned message, where the first byte indicates whether or not it's a legacy message.

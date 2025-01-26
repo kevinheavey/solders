@@ -1,11 +1,11 @@
 #![allow(deprecated)]
 use camelpaste::paste;
-use pyo3::{exceptions::PyValueError, prelude::*, types::PyTuple, PyTypeInfo};
+use pyo3::{exceptions::PyValueError, prelude::*, IntoPyObject, IntoPyObjectExt};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use solders_commitment_config::{CommitmentConfig, CommitmentLevel};
 use solders_hash::Hash as SolderHash;
-use solders_macros::{common_methods, richcmp_eq_only, rpc_id_getter, EnumIntoPy};
+use solders_macros::{common_methods, richcmp_eq_only, rpc_id_getter};
 use solders_message::VersionedMessage;
 use solders_pubkey::Pubkey;
 use solders_signature::Signature;
@@ -2239,7 +2239,7 @@ impl SendRawTransaction {
         Self { base, params }
     }
 
-    /// List[int]: The raw signed transaction to send.
+    /// bytes: The raw signed transaction to send.
     #[getter]
     fn tx(&self) -> Vec<u8> {
         self.params.0.clone()
@@ -2675,7 +2675,7 @@ zero_param_req_def!(VoteSubscribe);
 
 macro_rules ! pyunion {
     ($name:ident, $($variant:ident),+) => {
-        #[derive(FromPyObject, Clone, Debug, PartialEq, Serialize, Deserialize, EnumIntoPy)]
+        #[derive(FromPyObject, Clone, Debug, PartialEq, Serialize, Deserialize)]
         #[serde(tag = "method", rename_all = "camelCase")]
         pub enum $name {
             $($variant($variant),)+
@@ -2689,6 +2689,23 @@ macro_rules ! pyunion {
             SimulateLegacyTransaction(SimulateLegacyTransaction),
             #[serde(rename = "simulateTransaction")]
             SimulateVersionedTransaction(SimulateVersionedTransaction),
+        }
+
+        impl<'py> IntoPyObject<'py> for $name {
+            type Target = PyAny; // the Python type
+            type Output = Bound<'py, Self::Target>; // in most cases this will be `Bound`
+            type Error = std::convert::Infallible;
+
+            fn into_pyobject(self, py: Python<'py>) -> Result<Self::Output, Self::Error> {
+                Ok(match self {
+                    Self::SendLegacyTransaction(x) => x.into_bound_py_any(py).unwrap(),
+                    Self::SendVersionedTransaction(x) => x.into_bound_py_any(py).unwrap(),
+                    Self::SendRawTransaction(x) => x.into_bound_py_any(py).unwrap(),
+                    Self::SimulateLegacyTransaction(x) => x.into_bound_py_any(py).unwrap(),
+                    Self::SimulateVersionedTransaction(x) => x.into_bound_py_any(py).unwrap(),
+                    $(Self::$variant(x) => x.into_bound_py_any(py).unwrap(),)+
+                })
+            }
         }
     }
 }
@@ -2765,215 +2782,103 @@ pyunion!(
     VoteUnsubscribe
 );
 
-/// Serialize a list of request objects into a single batch request JSON.
-///
-/// Args:
-///     reqs: A list of request objects.
-///
-/// Returns:
-///     str: The batch JSON string.
-///
-/// Example:
-///     >>> from solders.rpc.requests import batch_to_json, GetClusterNodes, GetEpochSchedule
-///     >>> batch_to_json([GetClusterNodes(0), GetEpochSchedule(1)])
-///     '[{"method":"getClusterNodes","jsonrpc":"2.0","id":0},{"method":"getEpochSchedule","jsonrpc":"2.0","id":1}]'
-///
 #[pyfunction]
-pub fn batch_to_json(reqs: Vec<Body>) -> String {
+pub fn batch_requests_to_json(reqs: Vec<Body>) -> String {
     serde_json::to_string(&reqs).unwrap()
 }
 
-/// Deserialize a batch request JSON string into a list of request objects.
-///
-/// Args:
-///     raw (str): The batch JSON string.
-///
-/// Returns:
-///     A list of request objects.
-///
-/// Example:
-///     >>> from solders.rpc.requests import batch_from_json
-///     >>> raw = '[{"jsonrpc":"2.0","id":0,"method":"getClusterNodes"},{"jsonrpc":"2.0","id":1,"method":"getEpochSchedule"}]'
-///     >>> batch_from_json(raw)
-///     [GetClusterNodes {
-///         base: RequestBase {
-///             jsonrpc: TwoPointOh,
-///             id: 0,
-///         },
-///     }, GetEpochSchedule {
-///         base: RequestBase {
-///             jsonrpc: TwoPointOh,
-///             id: 1,
-///         },
-///     }]
-///
 #[pyfunction]
-pub fn batch_from_json(py: Python<'_>, raw: &str) -> PyResult<Vec<PyObject>> {
+pub fn batch_requests_from_json<'py>(
+    py: Python<'py>,
+    raw: &str,
+) -> PyResult<Vec<Bound<'py, PyAny>>> {
     let deser: Vec<Body> = serde_json::from_str(raw).unwrap();
-    Ok(deser.into_iter().map(|x| x.into_py(py)).collect())
+    Ok(deser
+        .into_iter()
+        .map(|x| x.into_bound_py_any(py).unwrap())
+        .collect())
 }
 
-pub fn create_requests_mod(py: Python<'_>) -> PyResult<&PyModule> {
-    let typing = py.import("typing")?;
-    let union = typing.getattr("Union")?;
-    let alias_members = PyTuple::new(
-        py,
-        vec![
-            GetAccountInfo::type_object(py),
-            GetBalance::type_object(py),
-            GetBlock::type_object(py),
-            GetBlockHeight::type_object(py),
-            GetBlockProduction::type_object(py),
-            GetBlockCommitment::type_object(py),
-            GetBlocks::type_object(py),
-            GetBlocksWithLimit::type_object(py),
-            GetBlockTime::type_object(py),
-            GetClusterNodes::type_object(py),
-            GetEpochInfo::type_object(py),
-            GetEpochSchedule::type_object(py),
-            GetFeeForMessage::type_object(py),
-            GetFirstAvailableBlock::type_object(py),
-            GetGenesisHash::type_object(py),
-            GetHealth::type_object(py),
-            GetHighestSnapshotSlot::type_object(py),
-            GetIdentity::type_object(py),
-            GetInflationGovernor::type_object(py),
-            GetInflationRate::type_object(py),
-            GetInflationReward::type_object(py),
-            GetLargestAccounts::type_object(py),
-            GetLatestBlockhash::type_object(py),
-            GetLeaderSchedule::type_object(py),
-            GetMaxRetransmitSlot::type_object(py),
-            GetMaxShredInsertSlot::type_object(py),
-            GetMinimumBalanceForRentExemption::type_object(py),
-            GetMultipleAccounts::type_object(py),
-            GetProgramAccounts::type_object(py),
-            GetRecentPerformanceSamples::type_object(py),
-            GetSignaturesForAddress::type_object(py),
-            GetSignatureStatuses::type_object(py),
-            GetSlot::type_object(py),
-            GetSlotLeader::type_object(py),
-            GetSlotLeaders::type_object(py),
-            GetStakeActivation::type_object(py),
-            GetSupply::type_object(py),
-            GetTokenAccountBalance::type_object(py),
-            GetTokenAccountsByDelegate::type_object(py),
-            GetTokenAccountsByOwner::type_object(py),
-            GetTokenLargestAccounts::type_object(py),
-            GetTokenSupply::type_object(py),
-            GetTransaction::type_object(py),
-            GetTransactionCount::type_object(py),
-            GetVersion::type_object(py),
-            GetVoteAccounts::type_object(py),
-            IsBlockhashValid::type_object(py),
-            MinimumLedgerSlot::type_object(py),
-            RequestAirdrop::type_object(py),
-            SendRawTransaction::type_object(py),
-            SendLegacyTransaction::type_object(py),
-            ValidatorExit::type_object(py),
-            AccountSubscribe::type_object(py),
-            BlockSubscribe::type_object(py),
-            LogsSubscribe::type_object(py),
-            ProgramSubscribe::type_object(py),
-            SignatureSubscribe::type_object(py),
-            SlotSubscribe::type_object(py),
-            SlotsUpdatesSubscribe::type_object(py),
-            RootSubscribe::type_object(py),
-            VoteSubscribe::type_object(py),
-            AccountUnsubscribe::type_object(py),
-            BlockUnsubscribe::type_object(py),
-            LogsUnsubscribe::type_object(py),
-            ProgramUnsubscribe::type_object(py),
-            SignatureUnsubscribe::type_object(py),
-            SimulateLegacyTransaction::type_object(py),
-            SlotUnsubscribe::type_object(py),
-            SlotsUpdatesUnsubscribe::type_object(py),
-            RootUnsubscribe::type_object(py),
-            VoteUnsubscribe::type_object(py),
-        ],
-    );
-    let body_alias = union.get_item(alias_members)?;
-    let requests_mod = PyModule::new(py, "requests")?;
-    requests_mod.add_class::<GetAccountInfo>()?;
-    requests_mod.add_class::<GetBalance>()?;
-    requests_mod.add_class::<GetBlock>()?;
-    requests_mod.add_class::<GetBlockHeight>()?;
-    requests_mod.add_class::<GetBlockProduction>()?;
-    requests_mod.add_class::<GetBlockCommitment>()?;
-    requests_mod.add_class::<GetBlocks>()?;
-    requests_mod.add_class::<GetBlocksWithLimit>()?;
-    requests_mod.add_class::<GetBlockTime>()?;
-    requests_mod.add_class::<GetClusterNodes>()?;
-    requests_mod.add_class::<GetEpochInfo>()?;
-    requests_mod.add_class::<GetEpochSchedule>()?;
-    requests_mod.add_class::<GetFeeForMessage>()?;
-    requests_mod.add_class::<GetFirstAvailableBlock>()?;
-    requests_mod.add_class::<GetGenesisHash>()?;
-    requests_mod.add_class::<GetHealth>()?;
-    requests_mod.add_class::<GetHighestSnapshotSlot>()?;
-    requests_mod.add_class::<GetIdentity>()?;
-    requests_mod.add_class::<GetInflationGovernor>()?;
-    requests_mod.add_class::<GetInflationRate>()?;
-    requests_mod.add_class::<GetInflationReward>()?;
-    requests_mod.add_class::<GetLargestAccounts>()?;
-    requests_mod.add_class::<GetLatestBlockhash>()?;
-    requests_mod.add_class::<GetLeaderSchedule>()?;
-    requests_mod.add_class::<GetMaxRetransmitSlot>()?;
-    requests_mod.add_class::<GetMaxShredInsertSlot>()?;
-    requests_mod.add_class::<GetMinimumBalanceForRentExemption>()?;
-    requests_mod.add_class::<GetMultipleAccounts>()?;
-    requests_mod.add_class::<GetProgramAccounts>()?;
-    requests_mod.add_class::<GetRecentPerformanceSamples>()?;
-    requests_mod.add_class::<GetSignaturesForAddress>()?;
-    requests_mod.add_class::<GetSignatureStatuses>()?;
-    requests_mod.add_class::<GetSlot>()?;
-    requests_mod.add_class::<GetSlotLeader>()?;
-    requests_mod.add_class::<GetSlotLeaders>()?;
-    requests_mod.add_class::<GetStakeActivation>()?;
-    requests_mod.add_class::<GetSupply>()?;
-    requests_mod.add_class::<GetTokenAccountBalance>()?;
-    requests_mod.add_class::<GetTokenAccountsByDelegate>()?;
-    requests_mod.add_class::<GetTokenAccountsByOwner>()?;
-    requests_mod.add_class::<GetTokenLargestAccounts>()?;
-    requests_mod.add_class::<GetTokenSupply>()?;
-    requests_mod.add_class::<GetTransaction>()?;
-    requests_mod.add_class::<GetTransactionCount>()?;
-    requests_mod.add_class::<GetVersion>()?;
-    requests_mod.add_class::<GetVoteAccounts>()?;
-    requests_mod.add_class::<IsBlockhashValid>()?;
-    requests_mod.add_class::<MinimumLedgerSlot>()?;
-    requests_mod.add_class::<RequestAirdrop>()?;
-    requests_mod.add_class::<SendLegacyTransaction>()?;
-    requests_mod.add_class::<SendRawTransaction>()?;
-    requests_mod.add_class::<SendVersionedTransaction>()?;
-    requests_mod.add_class::<ValidatorExit>()?;
-    requests_mod.add_class::<AccountSubscribe>()?;
-    requests_mod.add_class::<BlockSubscribe>()?;
-    requests_mod.add_class::<LogsSubscribe>()?;
-    requests_mod.add_class::<ProgramSubscribe>()?;
-    requests_mod.add_class::<SignatureSubscribe>()?;
-    requests_mod.add_class::<SlotSubscribe>()?;
-    requests_mod.add_class::<SlotsUpdatesSubscribe>()?;
-    requests_mod.add_class::<RootSubscribe>()?;
-    requests_mod.add_class::<VoteSubscribe>()?;
-    requests_mod.add_class::<AccountUnsubscribe>()?;
-    requests_mod.add_class::<BlockUnsubscribe>()?;
-    requests_mod.add_class::<LogsUnsubscribe>()?;
-    requests_mod.add_class::<ProgramUnsubscribe>()?;
-    requests_mod.add_class::<SignatureUnsubscribe>()?;
-    requests_mod.add_class::<SimulateLegacyTransaction>()?;
-    requests_mod.add_class::<SimulateVersionedTransaction>()?;
-    requests_mod.add_class::<SlotUnsubscribe>()?;
-    requests_mod.add_class::<SlotsUpdatesUnsubscribe>()?;
-    requests_mod.add_class::<RootUnsubscribe>()?;
-    requests_mod.add_class::<VoteUnsubscribe>()?;
-    requests_mod.add("Body", body_alias)?;
+pub fn include_requests(m: &Bound<'_, PyModule>) -> PyResult<()> {
+    m.add_class::<GetAccountInfo>()?;
+    m.add_class::<GetBalance>()?;
+    m.add_class::<GetBlock>()?;
+    m.add_class::<GetBlockHeight>()?;
+    m.add_class::<GetBlockProduction>()?;
+    m.add_class::<GetBlockCommitment>()?;
+    m.add_class::<GetBlocks>()?;
+    m.add_class::<GetBlocksWithLimit>()?;
+    m.add_class::<GetBlockTime>()?;
+    m.add_class::<GetClusterNodes>()?;
+    m.add_class::<GetEpochInfo>()?;
+    m.add_class::<GetEpochSchedule>()?;
+    m.add_class::<GetFeeForMessage>()?;
+    m.add_class::<GetFirstAvailableBlock>()?;
+    m.add_class::<GetGenesisHash>()?;
+    m.add_class::<GetHealth>()?;
+    m.add_class::<GetHighestSnapshotSlot>()?;
+    m.add_class::<GetIdentity>()?;
+    m.add_class::<GetInflationGovernor>()?;
+    m.add_class::<GetInflationRate>()?;
+    m.add_class::<GetInflationReward>()?;
+    m.add_class::<GetLargestAccounts>()?;
+    m.add_class::<GetLatestBlockhash>()?;
+    m.add_class::<GetLeaderSchedule>()?;
+    m.add_class::<GetMaxRetransmitSlot>()?;
+    m.add_class::<GetMaxShredInsertSlot>()?;
+    m.add_class::<GetMinimumBalanceForRentExemption>()?;
+    m.add_class::<GetMultipleAccounts>()?;
+    m.add_class::<GetProgramAccounts>()?;
+    m.add_class::<GetRecentPerformanceSamples>()?;
+    m.add_class::<GetSignaturesForAddress>()?;
+    m.add_class::<GetSignatureStatuses>()?;
+    m.add_class::<GetSlot>()?;
+    m.add_class::<GetSlotLeader>()?;
+    m.add_class::<GetSlotLeaders>()?;
+    m.add_class::<GetStakeActivation>()?;
+    m.add_class::<GetSupply>()?;
+    m.add_class::<GetTokenAccountBalance>()?;
+    m.add_class::<GetTokenAccountsByDelegate>()?;
+    m.add_class::<GetTokenAccountsByOwner>()?;
+    m.add_class::<GetTokenLargestAccounts>()?;
+    m.add_class::<GetTokenSupply>()?;
+    m.add_class::<GetTransaction>()?;
+    m.add_class::<GetTransactionCount>()?;
+    m.add_class::<GetVersion>()?;
+    m.add_class::<GetVoteAccounts>()?;
+    m.add_class::<IsBlockhashValid>()?;
+    m.add_class::<MinimumLedgerSlot>()?;
+    m.add_class::<RequestAirdrop>()?;
+    m.add_class::<SendLegacyTransaction>()?;
+    m.add_class::<SendRawTransaction>()?;
+    m.add_class::<SendVersionedTransaction>()?;
+    m.add_class::<ValidatorExit>()?;
+    m.add_class::<AccountSubscribe>()?;
+    m.add_class::<BlockSubscribe>()?;
+    m.add_class::<LogsSubscribe>()?;
+    m.add_class::<ProgramSubscribe>()?;
+    m.add_class::<SignatureSubscribe>()?;
+    m.add_class::<SlotSubscribe>()?;
+    m.add_class::<SlotsUpdatesSubscribe>()?;
+    m.add_class::<RootSubscribe>()?;
+    m.add_class::<VoteSubscribe>()?;
+    m.add_class::<AccountUnsubscribe>()?;
+    m.add_class::<BlockUnsubscribe>()?;
+    m.add_class::<LogsUnsubscribe>()?;
+    m.add_class::<ProgramUnsubscribe>()?;
+    m.add_class::<SignatureUnsubscribe>()?;
+    m.add_class::<SimulateLegacyTransaction>()?;
+    m.add_class::<SimulateVersionedTransaction>()?;
+    m.add_class::<SlotUnsubscribe>()?;
+    m.add_class::<SlotsUpdatesUnsubscribe>()?;
+    m.add_class::<RootUnsubscribe>()?;
+    m.add_class::<VoteUnsubscribe>()?;
     let funcs = [
-        wrap_pyfunction!(batch_to_json, requests_mod)?,
-        wrap_pyfunction!(batch_from_json, requests_mod)?,
+        wrap_pyfunction!(batch_requests_to_json, m)?,
+        wrap_pyfunction!(batch_requests_from_json, m)?,
     ];
     for func in funcs {
-        requests_mod.add_function(func)?;
+        m.add_function(func)?;
     }
-    Ok(requests_mod)
+    Ok(())
 }

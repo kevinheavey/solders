@@ -5,7 +5,7 @@ use solana_sdk::{
     instruction::InstructionError as InstructionErrorOriginal,
     transaction::TransactionError as TransactionErrorOriginal,
 };
-use solders_macros::{common_methods, richcmp_eq_only, EnumIntoPy};
+use solders_macros::{common_methods, richcmp_eq_only};
 use solders_traits_core::transaction_status_boilerplate;
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
@@ -50,7 +50,7 @@ impl InstructionErrorBorshIO {
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone)]
-#[pyclass(module = "solders.transaction_status")]
+#[pyclass(module = "solders.transaction_status", eq, eq_int)]
 pub enum InstructionErrorFieldless {
     GenericError,
     InvalidArgument,
@@ -106,13 +106,13 @@ pub enum InstructionErrorFieldless {
     BuiltinProgramsMustConsumeComputeUnits,
 }
 
-#[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, EnumIntoPy)]
+#[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, IntoPyObject)]
 pub enum InstructionErrorTagged {
     Custom(InstructionErrorCustom),
     BorshIoError(InstructionErrorBorshIO),
 }
 
-#[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, EnumIntoPy)]
+#[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, IntoPyObject)]
 #[serde(untagged)]
 pub enum InstructionErrorType {
     Fieldless(InstructionErrorFieldless),
@@ -464,7 +464,7 @@ impl TransactionErrorProgramExecutionTemporarilyRestricted {
     }
 }
 
-#[pyclass(module = "solders.transaction_status")]
+#[pyclass(module = "solders.transaction_status", eq, eq_int)]
 #[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum TransactionErrorFieldless {
     AccountInUse,
@@ -503,7 +503,7 @@ pub enum TransactionErrorFieldless {
     ProgramCacheHitMaxLimit,
 }
 
-#[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, EnumIntoPy)]
+#[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, IntoPyObject)]
 pub enum TransactionErrorTypeTagged {
     InstructionError(TransactionErrorInstructionError),
     DuplicateInstruction(TransactionErrorDuplicateInstruction),
@@ -511,7 +511,7 @@ pub enum TransactionErrorTypeTagged {
     ProgramExecutionTemporarilyRestricted(TransactionErrorProgramExecutionTemporarilyRestricted),
 }
 
-#[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, EnumIntoPy)]
+#[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, IntoPyObject)]
 #[serde(untagged)]
 pub enum TransactionErrorType {
     Fieldless(TransactionErrorFieldless),

@@ -1,5 +1,5 @@
 use derive_more::{From, Into};
-use pyo3::{prelude::*, types::PyBytes};
+use pyo3::prelude::*;
 use solana_program::{program_option::COption, program_pack::Pack};
 use solders_macros::{common_methods_core, enum_original_mapping, richcmp_eq_only};
 use solders_pubkey::Pubkey;
@@ -16,10 +16,10 @@ macro_rules! token_boilerplate {
     ($typ:ident, $inner:ident) => {
         impl_display!($typ);
         impl PyBytesGeneral for $typ {
-            fn pybytes_general<'a>(&self, py: Python<'a>) -> &'a PyBytes {
+            fn pybytes_general(&self) -> Vec<u8> {
                 let mut inner = [0u8; $inner::LEN];
                 self.0.pack_into_slice(&mut inner);
-                PyBytes::new(py, &inner)
+                inner.to_vec()
             }
         }
 
@@ -119,7 +119,7 @@ impl Mint {
 token_boilerplate!(Mint, MintOriginal);
 
 /// Token account state.
-#[pyclass(module = "solders.token.state")]
+#[pyclass(module = "solders.token.state", eq, eq_int)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 #[enum_original_mapping(AccountState)]
 pub enum TokenAccountState {
@@ -311,11 +311,10 @@ impl Multisig {
 
 token_boilerplate!(Multisig, MultisigOriginal);
 
-pub fn create_state_mod(py: Python<'_>) -> PyResult<&PyModule> {
-    let m = PyModule::new(py, "state")?;
+pub fn include_state(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Mint>()?;
     m.add_class::<TokenAccountState>()?;
     m.add_class::<TokenAccount>()?;
     m.add_class::<Multisig>()?;
-    Ok(m)
+    Ok(())
 }

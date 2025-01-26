@@ -126,9 +126,9 @@ impl Signature {
     ///
     /// Example:
     ///      >>> from solders.signature import Signature
-    ///      >>> assert Signature.default().to_bytes_array() == [0] * 64
+    ///      >>> assert Signature.default().to_bytes() == bytes([0] * 64)
     ///
-    pub fn to_bytes_array(&self) -> [u8; 64] {
+    pub fn to_bytes(&self) -> [u8; 64] {
         self.0.into()
     }
 

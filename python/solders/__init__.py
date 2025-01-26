@@ -1,6 +1,8 @@
 import contextlib as __ctxlib
 
-from solders.solders import (  # type: ignore
+from . import (
+    account,
+    account_decoder,
     address_lookup_table_account,
     clock,
     commitment_config,
@@ -20,34 +22,31 @@ from solders.solders import (  # type: ignore
     signature,
     slot_history,
     stake_history,
+    system_program,
+    sysvar,
     token,
     transaction,
+    transaction_status,
 )
-
-from . import system_program, sysvar
-
-__has_bankrun = False
-with __ctxlib.suppress(ImportError):
-    from solders.solders import bankrun
-
-    __has_bankrun = True
 
 __has_litesvm = False
 with __ctxlib.suppress(ImportError):
-    from solders.solders import litesvm
+    from . import litesvm, transaction_metadata
 
     __has_litesvm = True
 
 __has_ring = False
 with __ctxlib.suppress(ImportError):
-    from solders.solders import account, account_decoder, rpc, transaction_status
+    from . import rpc
 
     __has_ring = True
 
 
-__ring_modules = ["account", "account_decoder", "rpc", "transaction_status"]
+__ring_modules = ["rpc"]
 
 __all_core = [
+    "account",
+    "account_decoder",
     "address_lookup_table_account",
     "commitment_config",
     "errors",
@@ -61,6 +60,7 @@ __all_core = [
     "signature",
     "token",
     "transaction",
+    "transaction_status",
     "system_program",
     "sysvar",
 ]
@@ -68,17 +68,12 @@ __all_core = [
 __with_ring_modules = [*__all_core, *__ring_modules]
 
 if __has_ring:
-    if __has_bankrun:
-        if __has_litesvm:
-            __all__ = [*__with_ring_modules, "bankrun", "litesvm"]  # noqa: PLE0604
-        else:
-            __all__ = [*__with_ring_modules, "bankrun"]  # noqa: PLE0604
-    elif __has_litesvm:
-        __all__ = [*__with_ring_modules, "litesvm"]  # noqa: PLE0604
+    if __has_litesvm:
+        __all__ = [*__with_ring_modules, "litesvm", "transaction_metadata"]
     else:
-        __all__ = __with_ring_modules  # noqa: PLE0605
+        __all__ = __with_ring_modules
 else:
-    __all__ = __all_core  # noqa: PLE0605
+    __all__ = __all_core
 
 
 __version__ = "0.24.1"

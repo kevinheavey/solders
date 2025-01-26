@@ -1,72 +1,72 @@
 from typing import cast, Tuple, Optional, List
 from typing_extensions import Final, TypedDict
 
-from solders._system_program import ID as _ID
-from solders._system_program import advance_nonce_account as _advance_nonce_account
-from solders._system_program import allocate as _allocate
-from solders._system_program import allocate_with_seed as _allocate_with_seed
-from solders._system_program import assign as _assign
-from solders._system_program import assign_with_seed as _assign_with_seed
-from solders._system_program import authorize_nonce_account as _authorize_nonce_account
-from solders._system_program import create_account as _create_account
-from solders._system_program import (
+from .solders import SYSTEM_PROGRAM_ID as _ID
+from .solders import advance_nonce_account as _advance_nonce_account
+from .solders import allocate as _allocate
+from .solders import allocate_with_seed as _allocate_with_seed
+from .solders import assign as _assign
+from .solders import assign_with_seed as _assign_with_seed
+from .solders import authorize_nonce_account as _authorize_nonce_account
+from .solders import create_account as _create_account
+from .solders import (
     create_account_with_seed as _create_account_with_seed,
 )
-from solders._system_program import (
+from .solders import (
     create_nonce_account,
     create_nonce_account_with_seed,
     transfer_many,
 )
-from solders._system_program import (
+from .solders import (
     decode_advance_nonce_account as _decode_advance_nonce_account,
 )
-from solders._system_program import decode_allocate as _decode_allocate
-from solders._system_program import (
+from .solders import decode_allocate as _decode_allocate
+from .solders import (
     decode_allocate_with_seed as _decode_allocate_with_seed,
 )
-from solders._system_program import decode_assign as _decode_assign
-from solders._system_program import decode_assign_with_seed as _decode_assign_with_seed
-from solders._system_program import (
+from .solders import decode_assign as _decode_assign
+from .solders import decode_assign_with_seed as _decode_assign_with_seed
+from .solders import (
     decode_authorize_nonce_account as _decode_authorize_nonce_account,
 )
-from solders._system_program import decode_create_account as _decode_create_account
-from solders._system_program import (
+from .solders import decode_create_account as _decode_create_account
+from .solders import (
     decode_create_account_with_seed as _decode_create_account_with_seed,
 )
-from solders._system_program import (
+from .solders import (
     decode_initialize_nonce_account as _decode_initialize_nonce_account,
 )
-from solders._system_program import decode_transfer as _decode_transfer
-from solders._system_program import (
+from .solders import decode_transfer as _decode_transfer
+from .solders import (
     decode_transfer_with_seed as _decode_transfer_with_seed,
 )
-from solders._system_program import (
+from .solders import (
     decode_withdraw_nonce_account as _decode_withdraw_nonce_account,
 )
-from solders._system_program import (
+from .solders import (
     initialize_nonce_account as _initialize_nonce_account,
 )
-from solders._system_program import (
+from .solders import (
     close_lookup_table as _close_lookup_table,
 )
-from solders._system_program import (
+from .solders import (
     create_lookup_table as _create_lookup_table,
 )
-from solders._system_program import (
+from .solders import (
     create_lookup_table_signed as _create_lookup_table_signed,
 )
-from solders._system_program import (
+from .solders import (
     deactivate_lookup_table as _deactivate_lookup_table,
 )
-from solders._system_program import (
+from .solders import (
     extend_lookup_table as _extend_lookup_table,
 )
-from solders._system_program import (
+from .solders import (
     freeze_lookup_table as _freeze_lookup_table,
 )
-from solders._system_program import transfer as _transfer
-from solders._system_program import transfer_with_seed as _transfer_with_seed
-from solders._system_program import withdraw_nonce_account as _withdraw_nonce_account
+from .solders import transfer as _transfer
+from .solders import transfer_with_seed as _transfer_with_seed
+from .solders import withdraw_nonce_account as _withdraw_nonce_account
 from solders.instruction import Instruction
 from solders.pubkey import Pubkey
 

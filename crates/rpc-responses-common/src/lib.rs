@@ -4,10 +4,10 @@ use std::str::FromStr;
 
 use camelpaste::paste;
 use derive_more::{From, Into};
-use pyo3::prelude::*;
+use pyo3::{prelude::*, IntoPyObject};
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, DisplayFromStr, TryFromInto};
-use solana_account_decoder::{UiAccount, UiAccountData};
+use solana_account_decoder_client_types::{UiAccount, UiAccountData};
 use solana_rpc_client_api::response::{
     RpcBlockhash as RpcBlockhashOriginal, RpcIdentity as RpcIdentityOriginal,
     RpcTokenAccountBalance as RpcTokenAccountBalanceOriginal,
@@ -18,7 +18,7 @@ use solana_sdk::clock::{Epoch, Slot};
 use solders_account::{Account, AccountJSON};
 use solders_account_decoder::UiTokenAmount;
 use solders_hash::Hash as SolderHash;
-use solders_macros::{common_methods, richcmp_eq_only, EnumIntoPy};
+use solders_macros::{common_methods, richcmp_eq_only};
 use solders_pubkey::Pubkey;
 use solders_transaction_error::TransactionErrorType;
 
@@ -39,6 +39,7 @@ pub struct RpcResponseContext {
 #[common_methods]
 #[pymethods]
 impl RpcResponseContext {
+    #[pyo3(signature = (slot, api_version=None))]
     #[new]
     pub fn new(slot: Slot, api_version: Option<String>) -> Self {
         Self { slot, api_version }
@@ -328,7 +329,7 @@ impl RpcBlockhash {
 }
 pub type RpcLeaderSchedule = Option<HashMap<Pubkey, Vec<usize>>>;
 
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromPyObject, EnumIntoPy)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromPyObject, IntoPyObject)]
 #[serde(untagged)]
 pub enum AccountMaybeJSON {
     Binary(Account),
@@ -439,7 +440,7 @@ impl RpcKeyedAccountJsonParsed {
     }
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromPyObject, EnumIntoPy)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromPyObject, IntoPyObject)]
 #[serde(untagged)]
 pub enum RpcKeyedAccountMaybeJSON {
     Binary(RpcKeyedAccount),
@@ -485,6 +486,7 @@ response_data_boilerplate!(RpcVersionInfo);
 #[common_methods]
 #[pymethods]
 impl RpcVersionInfo {
+    #[pyo3(signature = (solana_core, feature_set=None))]
     #[new]
     pub fn new(solana_core: String, feature_set: Option<u32>) -> Self {
         RpcVersionInfoOriginal {
@@ -623,6 +625,7 @@ response_data_boilerplate!(RpcSignatureResponse);
 #[common_methods]
 #[pymethods]
 impl RpcSignatureResponse {
+    #[pyo3(signature = (err=None))]
     #[new]
     pub fn new(err: Option<TransactionErrorType>) -> Self {
         Self { err }
@@ -630,7 +633,7 @@ impl RpcSignatureResponse {
 }
 
 #[derive(Clone, Deserialize, Serialize, Debug, Eq, PartialEq)]
-#[pyclass(module = "solders.rpc.responses")]
+#[pyclass(module = "solders.rpc.responses", eq, eq_int)]
 pub enum BlockStoreError {
     BlockStoreError,
 }
@@ -700,14 +703,14 @@ notification!(ProgramNotificationJsonParsed, RpcKeyedAccountJsonParsed);
 notification!(SignatureNotification, RpcSignatureResponse);
 notification_contextless!(RootNotification, u64);
 
-#[derive(FromPyObject, Serialize, Deserialize, Clone, Debug, PartialEq, Eq, EnumIntoPy)]
+#[derive(FromPyObject, Serialize, Deserialize, Clone, Debug, PartialEq, Eq, IntoPyObject)]
 #[serde(untagged)]
 pub enum AccountNotificationType {
     JsonParsed(AccountNotificationJsonParsed),
     Binary(AccountNotification),
 }
 
-#[derive(FromPyObject, Serialize, Deserialize, Clone, Debug, PartialEq, Eq, EnumIntoPy)]
+#[derive(FromPyObject, Serialize, Deserialize, Clone, Debug, PartialEq, Eq, IntoPyObject)]
 #[serde(untagged)]
 pub enum ProgramNotificationType {
     Binary(ProgramNotification),

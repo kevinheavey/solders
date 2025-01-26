@@ -7,8 +7,8 @@ use {
     solders_traits_core::transaction_status_boilerplate,
 };
 
-#[derive(Debug)]
-#[pyclass(module = "solders.slot_history")]
+#[derive(Debug, PartialEq)]
+#[pyclass(module = "solders.slot_history", eq, eq_int)]
 #[enum_original_mapping(Check)]
 pub enum SlotHistoryCheck {
     Future,
@@ -81,9 +81,8 @@ impl SlotHistory {
     }
 }
 
-pub fn create_slot_history_mod(py: Python<'_>) -> PyResult<&PyModule> {
-    let m = PyModule::new(py, "slot_history")?;
+pub fn include_slot_history(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<SlotHistoryCheck>()?;
     m.add_class::<SlotHistory>()?;
-    Ok(m)
+    Ok(())
 }

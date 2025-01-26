@@ -1,6 +1,6 @@
 #![allow(deprecated)]
 use derive_more::{From, Into};
-use pyo3::{prelude::*, types::PyBytes};
+use pyo3::{prelude::*, IntoPyObject};
 use serde::{Deserialize, Serialize};
 use solana_sdk::{
     pubkey::Pubkey as PubkeyOriginal,
@@ -12,7 +12,7 @@ use solana_sdk::{
         VersionedTransaction as VersionedTransactionOriginal,
     },
 };
-use solders_macros::{common_methods, richcmp_eq_only, EnumIntoPy};
+use solders_macros::{common_methods, richcmp_eq_only};
 use solders_pubkey::{convert_optional_pubkey, Pubkey};
 use solders_traits::handle_py_err;
 use solders_traits_core::{
@@ -498,8 +498,8 @@ impl Transaction {
     /// Returns:
     ///     bytes: The serialized message data.
     ///
-    pub fn message_data<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        PyBytes::new(py, &self.0.message_data())
+    pub fn message_data(&self) -> Vec<u8> {
+        self.0.message_data().clone()
     }
 
     /// Sign the transaction, returning any errors.
@@ -738,7 +738,7 @@ impl From<LegacyOriginal> for Legacy {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, FromPyObject, EnumIntoPy)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, FromPyObject, IntoPyObject)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum TransactionVersion {
     Legacy(Legacy),

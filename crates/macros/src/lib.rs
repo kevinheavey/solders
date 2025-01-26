@@ -95,22 +95,15 @@ pub fn richcmp_signer(_: TokenStream, item: TokenStream) -> TokenStream {
 
 fn add_core_methods(ast: &mut ItemImpl) {
     let mut methods = vec![
-        ImplItem::Verbatim(
-            quote! {pub fn __bytes__<'a>(&self, py: pyo3::prelude::Python<'a>) -> &'a pyo3::types::PyBytes  {
-                solders_traits_core::CommonMethodsCore::pybytes(self, py)
-            }},
-        ),
+        ImplItem::Verbatim(quote! {pub fn __bytes__<'a>(&self) -> Vec<u8>  {
+            solders_traits_core::CommonMethodsCore::pybytes(self)
+        }}),
         ImplItem::Verbatim(quote! { pub fn __str__(&self) -> String {
             solders_traits_core::CommonMethodsCore::pystr(self)
         } }),
         ImplItem::Verbatim(quote! { pub fn __repr__(&self) -> String {
             solders_traits_core::CommonMethodsCore::pyrepr(self)
         } }),
-        ImplItem::Verbatim(
-            quote! { pub fn __reduce__(&self) -> pyo3::prelude::PyResult<(pyo3::prelude::PyObject, pyo3::prelude::PyObject)> {
-                solders_traits_core::CommonMethodsCore::pyreduce(self)
-            } },
-        ),
     ];
     if !ast.items.iter().any(|item| match item {
         ImplItem::Method(m) => m.sig.ident == "from_bytes",
@@ -134,7 +127,7 @@ fn add_core_methods(ast: &mut ItemImpl) {
     ast.items.extend_from_slice(&methods);
 }
 
-/// Add `__bytes__`, `__str__`, `__repr__` and `__reduce__` using the `CommonMethodsCore` trait.
+/// Add `__bytes__`, `__str__`, and `__repr__` using the `CommonMethodsCore` trait.
 ///
 /// Also add `from_bytes` if not already defined.
 #[proc_macro_attribute]
@@ -144,7 +137,7 @@ pub fn common_methods_core(_: TokenStream, item: TokenStream) -> TokenStream {
     TokenStream::from(ast.to_token_stream())
 }
 
-/// Add `__bytes__`, `__str__`, `__repr__` and `__reduce__`, `to_json` and `from_json` using the `CommonMethods` trait.
+/// Add `__bytes__`, `__str__`, `__repr__`, `to_json` and `from_json` using the `CommonMethods` trait.
 ///
 /// Also add `from_bytes` if not already defined.
 #[proc_macro_attribute]
@@ -172,22 +165,15 @@ pub fn common_methods(_: TokenStream, item: TokenStream) -> TokenStream {
 pub fn common_methods_rpc_resp(_: TokenStream, item: TokenStream) -> TokenStream {
     let mut ast = parse_macro_input!(item as ItemImpl);
     let methods = vec![
-        ImplItem::Verbatim(
-            quote! {pub fn __bytes__<'a>(&self, py: pyo3::prelude::Python<'a>) -> &'a pyo3::types::PyBytes  {
-                CommonMethodsRpcResp::pybytes(self, py)
-            }},
-        ),
+        ImplItem::Verbatim(quote! {pub fn __bytes__(&self) -> Vec<u8>  {
+            CommonMethodsRpcResp::pybytes(self)
+        }}),
         ImplItem::Verbatim(quote! { pub fn __str__(&self) -> String {
             CommonMethodsRpcResp::pystr(self)
         } }),
         ImplItem::Verbatim(quote! { pub fn __repr__(&self) -> String {
             CommonMethodsRpcResp::pyrepr(self)
         } }),
-        ImplItem::Verbatim(
-            quote! { pub fn __reduce__(&self) -> pyo3::prelude::PyResult<(pyo3::prelude::PyObject, pyo3::prelude::PyObject)> {
-                CommonMethodsRpcResp::pyreduce(self)
-            } },
-        ),
         ImplItem::Verbatim(quote! {
         /// Convert to a JSON string.
         pub fn to_json(&self) -> String {
@@ -298,7 +284,7 @@ pub fn enum_original_mapping(original: TokenStream, item: TokenStream) -> TokenS
     TokenStream::from(new_stream)
 }
 
-/// Impl IntoPy<PyObject> for an ADT where each variant is a newtype.
+/// Impl IntoPyObject for an ADT where each variant is a newtype.
 ///
 /// # Example
 ///
@@ -317,11 +303,15 @@ pub fn enum_into_py(item: TokenStream) -> TokenStream {
     let enum_name = ast.ident;
     let variant_names: Vec<Ident> = ast.variants.into_iter().map(|v| v.ident).collect();
     let into_py_impl = quote! {
-        impl IntoPy<PyObject> for #enum_name {
-            fn into_py(self, py: Python<'_>) -> PyObject {
-                match self {
-                    #(Self::#variant_names(x) => x.into_py(py)),*,
-                }
+        impl<'py> IntoPyObject<'py> for #enum_name {
+            type Target = PyAny; // the Python type
+            type Output = Bound<'py, Self::Target>; // in most cases this will be `Bound`
+            type Error = std::convert::Infallible;
+
+            fn into_pyobject(self, py: Python<'py>) -> Result<Self::Output, Self::Error> {
+                Ok(match self {
+                    #(Self::#variant_names(x) => ::pyo3::conversion::IntoPyObjectExt::into_bound_py_any(&x, py).unwrap()),*,
+                })
             }
         }
     };

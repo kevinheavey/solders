@@ -1,5 +1,3 @@
-import pickle
-
 from based58 import b58decode, b58encode
 from pytest import fixture, raises
 from solders.keypair import Keypair
@@ -66,8 +64,8 @@ def test_off_curve_pubkey_verify_fails() -> None:
     assert not signature.verify(pubkey, bytes([0]))
 
 
-def test_to_bytes_array(signature: Signature) -> None:
-    assert bytes(signature.to_bytes_array()) == bytes(signature)
+def test_to_bytes(signature: Signature) -> None:
+    assert signature.to_bytes() == bytes(signature)
 
 
 def test_hash() -> None:
@@ -85,11 +83,6 @@ def test_hash() -> None:
 def test_from_bytes() -> None:
     raw = b"123".rjust(Signature.LENGTH)
     assert Signature(raw) == Signature.from_bytes(raw)
-
-
-def test_pickle() -> None:
-    obj = Signature.default()
-    assert pickle.loads(pickle.dumps(obj)) == obj
 
 
 def test_json() -> None:

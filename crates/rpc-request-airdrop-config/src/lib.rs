@@ -26,6 +26,7 @@ pyclass_boilerplate_with_default!(
 #[pymethods]
 impl RpcRequestAirdropConfig {
     #[new]
+    #[pyo3(signature = (recent_blockhash=None, commitment=None))]
     pub fn new(recent_blockhash: Option<SolderHash>, commitment: Option<CommitmentLevel>) -> Self {
         Self(rpc_config::RpcRequestAirdropConfig {
             recent_blockhash: recent_blockhash.map(|h| h.to_string()),

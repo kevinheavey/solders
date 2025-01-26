@@ -1,5 +1,5 @@
 use derive_more::{From, Into};
-use pyo3::{prelude::*, types::PyBytes};
+use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use solana_sdk::signer::{null_signer::NullSigner as NullSignerOriginal, Signer as SignerTrait};
 use solders_macros::{common_methods, pyhash, richcmp_signer};
@@ -105,8 +105,8 @@ impl_signer_hash!(NullSigner);
 impl PyHash for NullSigner {}
 
 impl PyBytesGeneral for NullSigner {
-    fn pybytes_general<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        self.py_pubkey().pybytes(py)
+    fn pybytes_general(&self) -> Vec<u8> {
+        self.py_pubkey().pybytes()
     }
 }
 

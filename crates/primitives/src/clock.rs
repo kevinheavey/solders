@@ -99,8 +99,7 @@ impl Clock {
     }
 }
 
-pub fn create_clock_mod(py: Python<'_>) -> PyResult<&PyModule> {
-    let m = PyModule::new(py, "clock")?;
+pub fn include_clock(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Clock>()?;
     m.add("DEFAULT_DEV_SLOTS_PER_EPOCH", DEFAULT_DEV_SLOTS_PER_EPOCH)?;
     m.add("DEFAULT_HASHES_PER_SECOND", DEFAULT_HASHES_PER_SECOND)?;
@@ -135,5 +134,5 @@ pub fn create_clock_mod(py: Python<'_>) -> PyResult<&PyModule> {
     m.add("NUM_CONSECUTIVE_LEADER_SLOTS", NUM_CONSECUTIVE_LEADER_SLOTS)?;
     m.add("SECONDS_PER_DAY", SECONDS_PER_DAY)?;
     m.add("TICKS_PER_DAY", TICKS_PER_DAY)?;
-    Ok(m)
+    Ok(())
 }

@@ -4,10 +4,10 @@ extern crate base64;
 use solders_pubkey::Pubkey;
 use solders_traits_core::transaction_status_boilerplate;
 
-use pyo3::{prelude::*, types::PyBytes};
+use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use solana_sdk::transaction_context::TransactionReturnData as TransactionReturnDataOriginal;
-use solana_transaction_status::UiTransactionReturnData;
+use solana_transaction_status_client_types::UiTransactionReturnData;
 use solders_macros::{common_methods, richcmp_eq_only};
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
@@ -34,8 +34,8 @@ impl TransactionReturnData {
     }
 
     #[getter]
-    pub fn data<'a>(&self, py: Python<'a>) -> &'a PyBytes {
-        PyBytes::new(py, &self.0.data)
+    pub fn data(&self) -> Vec<u8> {
+        self.0.data.clone()
     }
 }
 

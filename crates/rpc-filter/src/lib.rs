@@ -1,8 +1,4 @@
-use pyo3::{
-    prelude::*,
-    types::{PyLong, PyTuple},
-    PyTypeInfo,
-};
+use pyo3::{prelude::*, IntoPyObject};
 use serde::{Deserialize, Serialize};
 use solana_rpc_client_api::filter::{
     Memcmp as MemcmpOriginal, MemcmpEncodedBytes as MemcmpEncodedBytesOriginal,
@@ -10,14 +6,14 @@ use solana_rpc_client_api::filter::{
 };
 
 use derive_more::{From, Into};
-use solders_macros::{common_methods, richcmp_eq_only, EnumIntoPy};
+use solders_macros::{common_methods, richcmp_eq_only};
 
 use solders_traits_core::{
     impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
     RichcmpEqualityOnly,
 };
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, FromPyObject, EnumIntoPy)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, FromPyObject, IntoPyObject)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum MemcmpEncodedBytes {
     Base58(String),
@@ -77,12 +73,12 @@ impl RichcmpEqualityOnly for Memcmp {}
 solders_traits_core::common_methods_default!(Memcmp);
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone, Hash)]
-#[pyclass(module = "solders.transaction_status")]
+#[pyclass(module = "solders.transaction_status", eq, eq_int)]
 pub enum RpcFilterTypeFieldless {
     TokenAccountState,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, FromPyObject, EnumIntoPy)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, FromPyObject, IntoPyObject)]
 #[serde(rename_all = "camelCase")]
 pub enum RpcFilterType {
     DataSize(u64),
@@ -116,20 +112,8 @@ impl From<RpcFilterTypeOriginal> for RpcFilterType {
     }
 }
 
-pub fn create_filter_mod(py: Python<'_>) -> PyResult<&PyModule> {
-    let m = PyModule::new(py, "filter")?;
+pub fn include_filter(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Memcmp>()?;
     m.add_class::<RpcFilterTypeFieldless>()?;
-    let typing = py.import("typing")?;
-    let union = typing.getattr("Union")?;
-    let rpc_filter_type_members = vec![
-        Memcmp::type_object(py),
-        RpcFilterTypeFieldless::type_object(py),
-        PyLong::type_object(py),
-    ];
-    m.add(
-        "RpcFilterType",
-        union.get_item(PyTuple::new(py, rpc_filter_type_members.clone()))?,
-    )?;
-    Ok(m)
+    Ok(())
 }

@@ -1,4 +1,3 @@
-import pickle
 from base64 import b64decode, b64encode
 from typing import List, Optional, Tuple, Union
 
@@ -1345,11 +1344,6 @@ def test_sort_account_metas() -> None:
     assert tx_msg.account_keys[3] == sorted_receivers[0]
     assert tx_msg.account_keys[4] == sorted_receivers[1]
     assert tx_msg.account_keys[5] == sorted_receivers[2]
-
-
-def test_pickle() -> None:
-    obj = Transaction.default()
-    assert pickle.loads(pickle.dumps(obj)) == obj
 
 
 def test_json() -> None:
