@@ -68,7 +68,6 @@ __all__ = [
     "UiRawMessage",
     "ParsedAccountSource",
     "ParsedAccount",
-    "VersionedTransaction",
     "UiTransaction",
     "UiAccountsList",
     "UiInnerInstructions",
