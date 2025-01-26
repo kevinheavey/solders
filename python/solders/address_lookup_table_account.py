@@ -1,17 +1,22 @@
+from typing import Final, Union
+
 from .solders import (
-    LookupTableStatusFieldless,
-    LookupTableStatusDeactivating,
-    Pubkey,
     ADDRESS_LOOKUP_TABLE_ID,
-    LOOKUP_TABLE_MAX_ADDRESSES as _LOOKUP_TABLE_MAX_ADDRESSES,
-    LOOKUP_TABLE_META_SIZE as _LOOKUP_TABLE_META_SIZE,
-    AddressLookupTableAccount,
     AddressLookupTable,
+    AddressLookupTableAccount,
     LookupTableMeta,
+    LookupTableStatusDeactivating,
+    LookupTableStatusFieldless,
+    Pubkey,
     SlotHashes,
     derive_lookup_table_address,
 )
-from typing import Final, Union
+from .solders import (
+    LOOKUP_TABLE_MAX_ADDRESSES as _LOOKUP_TABLE_MAX_ADDRESSES,
+)
+from .solders import (
+    LOOKUP_TABLE_META_SIZE as _LOOKUP_TABLE_META_SIZE,
+)
 
 ID: Final[Pubkey] = ADDRESS_LOOKUP_TABLE_ID
 """Address lookup table program ID."""

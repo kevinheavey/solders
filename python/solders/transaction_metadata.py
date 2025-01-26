@@ -1,10 +1,11 @@
-from .solders import (
-    InnerInstruction,
-    TransactionMetadata,
-    FailedTransactionMetadata,
-    SimulatedTransactionInfo,
-)
 from typing import Union
+
+from .solders import (
+    FailedTransactionMetadata,
+    InnerInstruction,
+    SimulatedTransactionInfo,
+    TransactionMetadata,
+)
 
 SimulateResult = Union[SimulatedTransactionInfo, FailedTransactionMetadata]
 TransactionResult = Union[TransactionMetadata, FailedTransactionMetadata]

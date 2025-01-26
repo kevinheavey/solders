@@ -12,6 +12,7 @@ from typing import (
     TypeVar,
     Union,
 )
+
 from jsonalias import Json
 
 class Hash:

@@ -1,14 +1,15 @@
+from typing import Union
+
 from .solders import (
     Keypair,
-    Presigner,
-    NullSigner,
     Legacy,
-    Transaction,
-    VersionedTransaction,
+    NullSigner,
+    Presigner,
     SanitizeError,
+    Transaction,
     TransactionError,
+    VersionedTransaction,
 )
-from typing import Union
 
 Signer = Union[Keypair, Presigner, NullSigner]
 TransactionVersion = Union[Legacy, int]

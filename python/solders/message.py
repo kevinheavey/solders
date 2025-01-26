@@ -1,12 +1,13 @@
+from typing import Union
+
 from .solders import (
     Message,
     MessageAddressTableLookup,
     MessageHeader,
     MessageV0,
-    to_bytes_versioned,
     from_bytes_versioned,
+    to_bytes_versioned,
 )
-from typing import Union
 
 VersionedMessage = Union[Message, MessageV0]
 

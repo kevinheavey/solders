@@ -1,8 +1,9 @@
 """Synthetic accounts that allow programs to access certain network states."""
 from typing_extensions import Final
 
-from . import solders as sv
 from solders.pubkey import Pubkey
+
+from . import solders as sv
 
 CLOCK: Final[Pubkey] = sv.CLOCK
 """Pubkey of the synthetic account that serves the current network time."""
