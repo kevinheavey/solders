@@ -1,5 +1,14 @@
 # Changelog
 
+# [0.25.0] -2025-01-27
+
+### Changed
+
+- Remove `solders.bankrun` in favour of `solders.litesvm`
+- Update to pyo3 0.23
+- Remove pickle support
+- Rename `to_bytes_array` methods to `to_bytes` to reflect changed type
+
 # [0.24.1] - 2025-01-25
 
 ### Fixed
