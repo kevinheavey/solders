@@ -30,7 +30,7 @@ HOLD_TRANSACTIONS_SLOT_OFFSET: Final[int] = sd.HOLD_TRANSACTIONS_SLOT_OFFSET
 INITIAL_RENT_EPOCH: Final[int] = sd.INITIAL_RENT_EPOCH
 """"""
 MAX_HASH_AGE_IN_SECONDS: Final[int] = sd.MAX_HASH_AGE_IN_SECONDS
-"""The time window of recent block hash values over which the bank will track signatures."""
+"""The window of recent blockhashes over which the bank will track signatures."""
 MAX_PROCESSING_AGE: Final[int] = sd.MAX_PROCESSING_AGE
 """The maximum age of a blockhash that will be accepted by the leader"""
 MAX_RECENT_BLOCKHASHES: Final[int] = sd.MAX_RECENT_BLOCKHASHES

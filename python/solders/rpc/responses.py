@@ -286,7 +286,7 @@ def batch_to_json(resps: Sequence[RPCResult]) -> str:
         >>> batch_to_json([GetBlockHeightResp(1233), GetFirstAvailableBlockResp(1)])
         '[{"id":0,"jsonrpc":"2.0","result":1233},{"id":0,"jsonrpc":"2.0","result":1}]'
 
-    """
+    """  # noqa: E501
     return _batch_to_json(resps)
 
 
@@ -310,7 +310,7 @@ def batch_from_json(raw: str, parsers: Sequence[Any]) -> List[RPCResult]:
             111,
         )]
 
-    """
+    """  # noqa: E501
     return _batch_from_json(raw, parsers)
 
 

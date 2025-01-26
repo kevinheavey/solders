@@ -172,7 +172,7 @@ def batch_to_json(reqs: Sequence[Body]) -> str:
         >>> from solders.rpc.requests import batch_to_json, GetClusterNodes, GetEpochSchedule
         >>> batch_to_json([GetClusterNodes(0), GetEpochSchedule(1)])
         '[{"method":"getClusterNodes","jsonrpc":"2.0","id":0},{"method":"getEpochSchedule","jsonrpc":"2.0","id":1}]'
-    """
+    """  # noqa: E501
     return _batch_to_json(reqs)
 
 
@@ -201,7 +201,7 @@ def batch_from_json(raw: str) -> List[Body]:
             },
         }]
 
-    """
+    """  # noqa: E501
     return _batch_from_json(raw)
 
 
