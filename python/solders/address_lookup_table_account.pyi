@@ -125,7 +125,7 @@ class SlotHashes:
     @staticmethod
     def from_json(raw: str) -> "SlotHashes": ...
 
-LookupTableStatusType = Union[LookupTableStatusFieldless, LookupTableStatusDeactivating]
+
 
 def derive_lookup_table_address(
     authority_address: Pubkey, recent_block_slot: int
