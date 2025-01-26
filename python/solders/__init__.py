@@ -26,13 +26,12 @@ from . import (
     sysvar,
     token,
     transaction,
-    transaction_metadata,
     transaction_status,
 )
 
 __has_litesvm = False
 with __ctxlib.suppress(ImportError):
-    from . import litesvm
+    from . import litesvm, transaction_metadata
 
     __has_litesvm = True
 
@@ -70,7 +69,7 @@ __with_ring_modules = [*__all_core, *__ring_modules]
 
 if __has_ring:
     if __has_litesvm:
-        __all__ = [*__with_ring_modules, "litesvm"]
+        __all__ = [*__with_ring_modules, "litesvm", "transaction_metadata"]
     else:
         __all__ = __with_ring_modules
 else:
