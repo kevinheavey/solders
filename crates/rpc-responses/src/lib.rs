@@ -101,7 +101,7 @@ pub trait CommonMethodsRpcResp<'a>:
 where
     for<'py> Self: pyo3::IntoPyObject<'py>,
 {
-    fn pybytes<'b>(&self) -> Vec<u8> {
+    fn pybytes(&self) -> Vec<u8> {
         PyBytesBincode::pybytes_bincode(self)
     }
 
