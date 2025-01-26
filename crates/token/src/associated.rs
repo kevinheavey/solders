@@ -28,7 +28,6 @@ pub fn get_associated_token_address(
 }
 
 pub fn include_associated(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    
     m.add_function(wrap_pyfunction!(get_associated_token_address, m)?)?;
     Ok(())
 }

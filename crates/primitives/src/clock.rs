@@ -100,7 +100,6 @@ impl Clock {
 }
 
 pub fn include_clock(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    
     m.add_class::<Clock>()?;
     m.add("DEFAULT_DEV_SLOTS_PER_EPOCH", DEFAULT_DEV_SLOTS_PER_EPOCH)?;
     m.add("DEFAULT_HASHES_PER_SECOND", DEFAULT_HASHES_PER_SECOND)?;

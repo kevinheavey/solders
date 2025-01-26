@@ -42,6 +42,7 @@ def test_from_bytes() -> None:
 def test_hashable() -> None:
     assert isinstance(hash(Hash.default()), int)
 
+
 def test_json() -> None:
     obj = Hash.default()
     assert Hash.from_json(obj.to_json()) == obj

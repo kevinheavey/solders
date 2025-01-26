@@ -34,7 +34,6 @@ pub enum RpcCustomError {
 }
 
 pub fn include_errors(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    
     m.add_class::<RpcCustomErrorFieldless>()?;
     m.add_class::<BlockCleanedUp>()?;
     m.add_class::<SendTransactionPreflightFailure>()?;

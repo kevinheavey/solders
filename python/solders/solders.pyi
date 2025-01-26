@@ -1,5 +1,17 @@
 from pathlib import Path
-from typing import Any, ClassVar, Dict, Final, List, Optional, Sequence, Set, Tuple, TypeVar, Union
+from typing import (
+    Any,
+    ClassVar,
+    Dict,
+    Final,
+    List,
+    Optional,
+    Sequence,
+    Set,
+    Tuple,
+    TypeVar,
+    Union,
+)
 from jsonalias import Json
 
 class Hash:
@@ -297,12 +309,9 @@ class SlotHashes:
     @staticmethod
     def from_json(raw: str) -> "SlotHashes": ...
 
-
-
 def derive_lookup_table_address(
     authority_address: Pubkey, recent_block_slot: int
 ) -> Tuple[Pubkey, int]: ...
-
 
 class MessageHeader:
     LENGTH: ClassVar[int]
@@ -470,7 +479,6 @@ EPOCH_SCHEDULE: Final[Pubkey]
 INSTRUCTIONS: Final[Pubkey]
 SLOT_HASHES: Final[Pubkey]
 
-
 class UiDataSliceConfig:
     def __init__(self, offset: int, length: int) -> None: ...
     @property
@@ -604,7 +612,6 @@ def get_associated_token_address(
     token_program_id: Optional[Pubkey] = None,
 ) -> Pubkey: ...
 
-
 class Mint:
     decimals: int
     freeze_authority: Optional[Pubkey]
@@ -716,7 +723,6 @@ class CommitmentConfig:
     def is_confirmed(self) -> bool: ...
     def is_at_least_confirmed(self) -> bool: ...
 
-
 class EpochInfo:
     epoch: int
     slot_index: int
@@ -743,7 +749,6 @@ class EpochInfo:
     def __eq__(self, o: object) -> bool: ...
     def __bytes__(self) -> bytes: ...
     def __hash__(self) -> int: ...
-
 
 class EpochRewards:
     def __init__(
@@ -793,7 +798,6 @@ class EpochRewards:
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
     def __richcmp__(self, other: "EpochRewards", op: int) -> bool: ...
-
 
 class EpochSchedule:
     def __init__(self, slots_per_epoch: int) -> None: ...
@@ -857,7 +861,6 @@ class Signature:
     def to_json(self) -> str: ...
     @staticmethod
     def from_json(raw: str) -> "Signature": ...
-
 
 class Keypair:
     LENGTH: ClassVar[int]
@@ -951,7 +954,6 @@ class SlotHistory:
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
     def __richcmp__(self, other: "SlotHistory", op: int) -> bool: ...
-
 
 class StakeHistoryEntry:
     def __init__(
@@ -1123,7 +1125,6 @@ class SanitizeError(Exception): ...
 class TransactionError(Exception): ...
 
 TransactionVersion = Union[Legacy, int]
-
 
 class UiTransactionEncoding:
     Binary: "UiTransactionEncoding"
@@ -1961,7 +1962,6 @@ class UiConfirmedBlock:
     def __bytes__(self) -> bytes: ...
     def __hash__(self) -> int: ...
 
-
 class InnerInstruction:
     def instruction(self) -> CompiledInstruction: ...
     @staticmethod
@@ -2271,7 +2271,6 @@ class ComputeBudget:
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
     def __richcmp__(self, other: "ComputeBudget", op: int) -> bool: ...
-
 
 class Memcmp:
     def __init__(
@@ -2834,7 +2833,6 @@ class RpcContextConfig:
     def from_json(raw: str) -> "RpcContextConfig": ...
     @staticmethod
     def default() -> "RpcContextConfig": ...
-
 
 RPCError = Union[
     RpcCustomErrorFieldless,
@@ -5058,7 +5056,6 @@ def batch_responses_from_json(raw: str, parsers: Sequence[Any]) -> List[RPCResul
 def parse_notification(raw: str) -> Notification: ...
 def parse_websocket_message(raw: str) -> List[WebsocketMessage]: ...
 
-
 class BlockCleanedUp:
     slot: int
     first_available_block: int
@@ -5482,7 +5479,6 @@ class InternalErrorMessage:
     def __eq__(self, o: object) -> bool: ...
     def __bytes__(self) -> bytes: ...
     def __hash__(self) -> int: ...
-
 
 class GetAccountInfo:
     def __init__(
@@ -7052,7 +7048,6 @@ Body = Union[
 def batch_requests_to_json(reqs: Sequence[Body]) -> str: ...
 def batch_requests_from_json(raw: str) -> List[Body]: ...
 
-
 ACCOUNT_STORAGE_OVERHEAD: Final[int]
 DEFAULT_BURN_PERCENT: Final[int]
 DEFAULT_EXEMPTION_THRESHOLD: Final[float]
@@ -7089,7 +7084,6 @@ class Rent:
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
     def __richcmp__(self, other: "Rent", op: int) -> bool: ...
-
 
 class FeatureSet:
     def __init__(self, active: Dict[Pubkey, int], inactive: Set[Pubkey]) -> None: ...

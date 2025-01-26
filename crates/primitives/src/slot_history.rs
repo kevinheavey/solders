@@ -82,7 +82,6 @@ impl SlotHistory {
 }
 
 pub fn include_slot_history(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    
     m.add_class::<SlotHistoryCheck>()?;
     m.add_class::<SlotHistory>()?;
     Ok(())

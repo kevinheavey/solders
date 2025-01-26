@@ -95,11 +95,9 @@ pub fn richcmp_signer(_: TokenStream, item: TokenStream) -> TokenStream {
 
 fn add_core_methods(ast: &mut ItemImpl) {
     let mut methods = vec![
-        ImplItem::Verbatim(
-            quote! {pub fn __bytes__<'a>(&self) -> Vec<u8>  {
-                solders_traits_core::CommonMethodsCore::pybytes(self)
-            }},
-        ),
+        ImplItem::Verbatim(quote! {pub fn __bytes__<'a>(&self) -> Vec<u8>  {
+            solders_traits_core::CommonMethodsCore::pybytes(self)
+        }}),
         ImplItem::Verbatim(quote! { pub fn __str__(&self) -> String {
             solders_traits_core::CommonMethodsCore::pystr(self)
         } }),
@@ -167,11 +165,9 @@ pub fn common_methods(_: TokenStream, item: TokenStream) -> TokenStream {
 pub fn common_methods_rpc_resp(_: TokenStream, item: TokenStream) -> TokenStream {
     let mut ast = parse_macro_input!(item as ItemImpl);
     let methods = vec![
-        ImplItem::Verbatim(
-            quote! {pub fn __bytes__(&self) -> Vec<u8>  {
-                CommonMethodsRpcResp::pybytes(self)
-            }},
-        ),
+        ImplItem::Verbatim(quote! {pub fn __bytes__(&self) -> Vec<u8>  {
+            CommonMethodsRpcResp::pybytes(self)
+        }}),
         ImplItem::Verbatim(quote! { pub fn __str__(&self) -> String {
             CommonMethodsRpcResp::pystr(self)
         } }),
@@ -311,7 +307,7 @@ pub fn enum_into_py(item: TokenStream) -> TokenStream {
             type Target = PyAny; // the Python type
             type Output = Bound<'py, Self::Target>; // in most cases this will be `Bound`
             type Error = std::convert::Infallible;
-        
+
             fn into_pyobject(self, py: Python<'py>) -> Result<Self::Output, Self::Error> {
                 Ok(match self {
                     #(Self::#variant_names(x) => ::pyo3::conversion::IntoPyObjectExt::into_bound_py_any(&x, py).unwrap()),*,

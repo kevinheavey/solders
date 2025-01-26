@@ -84,6 +84,7 @@ def test_from_bytes() -> None:
     raw = b"123".rjust(Signature.LENGTH)
     assert Signature(raw) == Signature.from_bytes(raw)
 
+
 def test_json() -> None:
     obj = Signature.default()
     assert Signature.from_json(obj.to_json()) == obj

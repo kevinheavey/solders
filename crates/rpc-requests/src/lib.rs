@@ -2695,7 +2695,7 @@ macro_rules ! pyunion {
             type Target = PyAny; // the Python type
             type Output = Bound<'py, Self::Target>; // in most cases this will be `Bound`
             type Error = std::convert::Infallible;
-        
+
             fn into_pyobject(self, py: Python<'py>) -> Result<Self::Output, Self::Error> {
                 Ok(match self {
                     Self::SendLegacyTransaction(x) => x.into_bound_py_any(py).unwrap(),
@@ -2788,9 +2788,15 @@ pub fn batch_requests_to_json(reqs: Vec<Body>) -> String {
 }
 
 #[pyfunction]
-pub fn batch_requests_from_json<'py>(py: Python<'py>, raw: &str) -> PyResult<Vec<Bound<'py, PyAny>>> {
+pub fn batch_requests_from_json<'py>(
+    py: Python<'py>,
+    raw: &str,
+) -> PyResult<Vec<Bound<'py, PyAny>>> {
     let deser: Vec<Body> = serde_json::from_str(raw).unwrap();
-    Ok(deser.into_iter().map(|x| x.into_bound_py_any(py).unwrap()).collect())
+    Ok(deser
+        .into_iter()
+        .map(|x| x.into_bound_py_any(py).unwrap())
+        .collect())
 }
 
 pub fn include_requests(m: &Bound<'_, PyModule>) -> PyResult<()> {

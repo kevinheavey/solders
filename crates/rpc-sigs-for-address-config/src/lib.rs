@@ -28,7 +28,7 @@ pyclass_boilerplate_with_default!(
 #[common_methods]
 #[pymethods]
 impl RpcSignaturesForAddressConfig {
-#[pyo3(signature = (before=None, until=None, limit=None, commitment=None, min_context_slot=None))]
+    #[pyo3(signature = (before=None, until=None, limit=None, commitment=None, min_context_slot=None))]
     #[new]
     fn new(
         before: Option<&Signature>,

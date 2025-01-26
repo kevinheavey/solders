@@ -4,7 +4,7 @@ use std::str::FromStr;
 
 use camelpaste::paste;
 use derive_more::{From, Into};
-use pyo3::{IntoPyObject, prelude::*};
+use pyo3::{prelude::*, IntoPyObject};
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, DisplayFromStr, TryFromInto};
 use solana_account_decoder::{UiAccount, UiAccountData};
@@ -39,7 +39,7 @@ pub struct RpcResponseContext {
 #[common_methods]
 #[pymethods]
 impl RpcResponseContext {
-#[pyo3(signature = (slot, api_version=None))]
+    #[pyo3(signature = (slot, api_version=None))]
     #[new]
     pub fn new(slot: Slot, api_version: Option<String>) -> Self {
         Self { slot, api_version }
@@ -486,7 +486,7 @@ response_data_boilerplate!(RpcVersionInfo);
 #[common_methods]
 #[pymethods]
 impl RpcVersionInfo {
-#[pyo3(signature = (solana_core, feature_set=None))]
+    #[pyo3(signature = (solana_core, feature_set=None))]
     #[new]
     pub fn new(solana_core: String, feature_set: Option<u32>) -> Self {
         RpcVersionInfoOriginal {
@@ -625,7 +625,7 @@ response_data_boilerplate!(RpcSignatureResponse);
 #[common_methods]
 #[pymethods]
 impl RpcSignatureResponse {
-#[pyo3(signature = (err=None))]
+    #[pyo3(signature = (err=None))]
     #[new]
     pub fn new(err: Option<TransactionErrorType>) -> Self {
         Self { err }

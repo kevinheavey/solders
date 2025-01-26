@@ -1,6 +1,6 @@
 #![allow(deprecated)]
 use derive_more::{From, Into};
-use pyo3::{IntoPyObject, prelude::*};
+use pyo3::{prelude::*, IntoPyObject};
 use serde::{Deserialize, Serialize};
 use solana_sdk::{
     pubkey::Pubkey as PubkeyOriginal,
@@ -12,7 +12,7 @@ use solana_sdk::{
         VersionedTransaction as VersionedTransactionOriginal,
     },
 };
-use solders_macros::{common_methods, richcmp_eq_only, };
+use solders_macros::{common_methods, richcmp_eq_only};
 use solders_pubkey::{convert_optional_pubkey, Pubkey};
 use solders_traits::handle_py_err;
 use solders_traits_core::{

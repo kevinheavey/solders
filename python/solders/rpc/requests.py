@@ -1,77 +1,77 @@
 from ..solders import (
-GetAccountInfo,
-GetBalance,
-GetBlock,
-GetBlockHeight,
-GetBlockProduction,
-GetBlockCommitment,
-GetBlocks,
-GetBlocksWithLimit,
-GetBlockTime,
-GetEpochInfo,
-GetFeeForMessage,
-GetIdentity,
-GetInflationGovernor,
-GetInflationReward,
-GetLargestAccounts,
-GetLatestBlockhash,
-GetLeaderSchedule,
-GetMinimumBalanceForRentExemption,
-GetMultipleAccounts,
-GetProgramAccounts,
-GetRecentPerformanceSamples,
-GetSignaturesForAddress,
-GetSignatureStatuses,
-GetSlot,
-GetSlotLeader,
-GetSlotLeaders,
-GetStakeActivation,
-GetSupply,
-GetTokenAccountBalance,
-GetTokenAccountsByDelegate,
-GetTokenAccountsByOwner,
-GetTokenLargestAccounts,
-GetTokenSupply,
-GetTransaction,
-GetTransactionCount,
-GetVoteAccounts,
-IsBlockhashValid,
-RequestAirdrop,
-SendLegacyTransaction,
-SendRawTransaction,
-SendVersionedTransaction,
-SimulateLegacyTransaction,
-SimulateVersionedTransaction,
-ValidatorExit,
-AccountSubscribe,
-BlockSubscribe,
-LogsSubscribe,
-ProgramSubscribe,
-SignatureSubscribe,
-GetClusterNodes,
-GetEpochSchedule,
-GetFirstAvailableBlock,
-GetGenesisHash,
-GetHealth,
-GetHighestSnapshotSlot,
-GetInflationRate,
-GetMaxRetransmitSlot,
-GetMaxShredInsertSlot,
-GetVersion,
-MinimumLedgerSlot,
-SlotSubscribe,
-SlotsUpdatesSubscribe,
-RootSubscribe,
-VoteSubscribe,
-AccountUnsubscribe,
-BlockUnsubscribe,
-LogsUnsubscribe,
-ProgramUnsubscribe,
-SignatureUnsubscribe,
-SlotUnsubscribe,
-SlotsUpdatesUnsubscribe,
-RootUnsubscribe,
-VoteUnsubscribe,
+    GetAccountInfo,
+    GetBalance,
+    GetBlock,
+    GetBlockHeight,
+    GetBlockProduction,
+    GetBlockCommitment,
+    GetBlocks,
+    GetBlocksWithLimit,
+    GetBlockTime,
+    GetEpochInfo,
+    GetFeeForMessage,
+    GetIdentity,
+    GetInflationGovernor,
+    GetInflationReward,
+    GetLargestAccounts,
+    GetLatestBlockhash,
+    GetLeaderSchedule,
+    GetMinimumBalanceForRentExemption,
+    GetMultipleAccounts,
+    GetProgramAccounts,
+    GetRecentPerformanceSamples,
+    GetSignaturesForAddress,
+    GetSignatureStatuses,
+    GetSlot,
+    GetSlotLeader,
+    GetSlotLeaders,
+    GetStakeActivation,
+    GetSupply,
+    GetTokenAccountBalance,
+    GetTokenAccountsByDelegate,
+    GetTokenAccountsByOwner,
+    GetTokenLargestAccounts,
+    GetTokenSupply,
+    GetTransaction,
+    GetTransactionCount,
+    GetVoteAccounts,
+    IsBlockhashValid,
+    RequestAirdrop,
+    SendLegacyTransaction,
+    SendRawTransaction,
+    SendVersionedTransaction,
+    SimulateLegacyTransaction,
+    SimulateVersionedTransaction,
+    ValidatorExit,
+    AccountSubscribe,
+    BlockSubscribe,
+    LogsSubscribe,
+    ProgramSubscribe,
+    SignatureSubscribe,
+    GetClusterNodes,
+    GetEpochSchedule,
+    GetFirstAvailableBlock,
+    GetGenesisHash,
+    GetHealth,
+    GetHighestSnapshotSlot,
+    GetInflationRate,
+    GetMaxRetransmitSlot,
+    GetMaxShredInsertSlot,
+    GetVersion,
+    MinimumLedgerSlot,
+    SlotSubscribe,
+    SlotsUpdatesSubscribe,
+    RootSubscribe,
+    VoteSubscribe,
+    AccountUnsubscribe,
+    BlockUnsubscribe,
+    LogsUnsubscribe,
+    ProgramUnsubscribe,
+    SignatureUnsubscribe,
+    SlotUnsubscribe,
+    SlotsUpdatesUnsubscribe,
+    RootUnsubscribe,
+    VoteUnsubscribe,
     batch_requests_from_json as _batch_from_json,
     batch_requests_to_json as _batch_to_json,
 )
@@ -153,123 +153,126 @@ Body = Union[
     VoteUnsubscribe,
 ]
 
+
 def batch_to_json(reqs: Sequence[Body]) -> str:
     """Serialize a list of request objects into a single batch request JSON.
-        
-        Args:
-            reqs: A list of request objects.
-        
-        Returns:
-            str: The batch JSON string.
-        
-        Example:
-            >>> from solders.rpc.requests import batch_to_json, GetClusterNodes, GetEpochSchedule
-            >>> batch_to_json([GetClusterNodes(0), GetEpochSchedule(1)])
-            '[{"method":"getClusterNodes","jsonrpc":"2.0","id":0},{"method":"getEpochSchedule","jsonrpc":"2.0","id":1}]'
+
+    Args:
+        reqs: A list of request objects.
+
+    Returns:
+        str: The batch JSON string.
+
+    Example:
+        >>> from solders.rpc.requests import batch_to_json, GetClusterNodes, GetEpochSchedule
+        >>> batch_to_json([GetClusterNodes(0), GetEpochSchedule(1)])
+        '[{"method":"getClusterNodes","jsonrpc":"2.0","id":0},{"method":"getEpochSchedule","jsonrpc":"2.0","id":1}]'
     """
     return _batch_to_json(reqs)
 
+
 def batch_from_json(raw: str) -> List[Body]:
     """Deserialize a batch request JSON string into a list of request objects.
-       
-        Args:
-            raw (str): The batch JSON string.
-       
-        Returns:
-            A list of request objects.
-       
-        Example:
-            >>> from solders.rpc.requests import batch_from_json
-            >>> raw = '[{"jsonrpc":"2.0","id":0,"method":"getClusterNodes"},{"jsonrpc":"2.0","id":1,"method":"getEpochSchedule"}]'
-            >>> batch_from_json(raw)
-            [GetClusterNodes {
-                base: RequestBase {
-                    jsonrpc: TwoPointOh,
-                    id: 0,
-                },
-            }, GetEpochSchedule {
-                base: RequestBase {
-                    jsonrpc: TwoPointOh,
-                    id: 1,
-                },
-            }]
-       
+
+    Args:
+        raw (str): The batch JSON string.
+
+    Returns:
+        A list of request objects.
+
+    Example:
+        >>> from solders.rpc.requests import batch_from_json
+        >>> raw = '[{"jsonrpc":"2.0","id":0,"method":"getClusterNodes"},{"jsonrpc":"2.0","id":1,"method":"getEpochSchedule"}]'
+        >>> batch_from_json(raw)
+        [GetClusterNodes {
+            base: RequestBase {
+                jsonrpc: TwoPointOh,
+                id: 0,
+            },
+        }, GetEpochSchedule {
+            base: RequestBase {
+                jsonrpc: TwoPointOh,
+                id: 1,
+            },
+        }]
+
     """
     return _batch_from_json(raw)
 
+
 __all__ = [
     "Body",
-"GetAccountInfo",
-"GetBalance",
-"GetBlock",
-"GetBlockHeight",
-"GetBlockProduction",
-"GetBlockCommitment",
-"GetBlocks",
-"GetBlocksWithLimit",
-"GetBlockTime",
-"GetEpochInfo",
-"GetFeeForMessage",
-"GetIdentity",
-"GetInflationGovernor",
-"GetInflationReward",
-"GetLargestAccounts",
-"GetLatestBlockhash",
-"GetLeaderSchedule",
-"GetMinimumBalanceForRentExemption",
-"GetMultipleAccounts",
-"GetProgramAccounts",
-"GetRecentPerformanceSamples",
-"GetSignaturesForAddress",
-"GetSignatureStatuses",
-"GetSlot",
-"GetSlotLeader",
-"GetSlotLeaders",
-"GetStakeActivation",
-"GetSupply",
-"GetTokenAccountBalance",
-"GetTokenAccountsByDelegate",
-"GetTokenAccountsByOwner",
-"GetTokenLargestAccounts",
-"GetTokenSupply",
-"GetTransaction",
-"GetTransactionCount",
-"GetVoteAccounts",
-"IsBlockhashValid",
-"RequestAirdrop",
-"SendLegacyTransaction",
-"SendRawTransaction",
-"SendVersionedTransaction",
-"SimulateLegacyTransaction",
-"SimulateVersionedTransaction",
-"ValidatorExit",
-"AccountSubscribe",
-"BlockSubscribe",
-"LogsSubscribe",
-"ProgramSubscribe",
-"SignatureSubscribe",
-"GetClusterNodes",
-"GetEpochSchedule",
-"GetFirstAvailableBlock",
-"GetGenesisHash",
-"GetHealth",
-"GetHighestSnapshotSlot",
-"GetInflationRate",
-"GetMaxRetransmitSlot",
-"GetMaxShredInsertSlot",
-"GetVersion",
-"MinimumLedgerSlot",
-"SlotSubscribe",
-"SlotsUpdatesSubscribe",
-"RootSubscribe",
-"VoteSubscribe",
-"AccountUnsubscribe",
-"BlockUnsubscribe",
-"LogsUnsubscribe",
-"ProgramUnsubscribe",
-"SignatureUnsubscribe",
-"SlotUnsubscribe",
-"SlotsUpdatesUnsubscribe",
-"RootUnsubscribe",
-"VoteUnsubscribe",
+    "GetAccountInfo",
+    "GetBalance",
+    "GetBlock",
+    "GetBlockHeight",
+    "GetBlockProduction",
+    "GetBlockCommitment",
+    "GetBlocks",
+    "GetBlocksWithLimit",
+    "GetBlockTime",
+    "GetEpochInfo",
+    "GetFeeForMessage",
+    "GetIdentity",
+    "GetInflationGovernor",
+    "GetInflationReward",
+    "GetLargestAccounts",
+    "GetLatestBlockhash",
+    "GetLeaderSchedule",
+    "GetMinimumBalanceForRentExemption",
+    "GetMultipleAccounts",
+    "GetProgramAccounts",
+    "GetRecentPerformanceSamples",
+    "GetSignaturesForAddress",
+    "GetSignatureStatuses",
+    "GetSlot",
+    "GetSlotLeader",
+    "GetSlotLeaders",
+    "GetStakeActivation",
+    "GetSupply",
+    "GetTokenAccountBalance",
+    "GetTokenAccountsByDelegate",
+    "GetTokenAccountsByOwner",
+    "GetTokenLargestAccounts",
+    "GetTokenSupply",
+    "GetTransaction",
+    "GetTransactionCount",
+    "GetVoteAccounts",
+    "IsBlockhashValid",
+    "RequestAirdrop",
+    "SendLegacyTransaction",
+    "SendRawTransaction",
+    "SendVersionedTransaction",
+    "SimulateLegacyTransaction",
+    "SimulateVersionedTransaction",
+    "ValidatorExit",
+    "AccountSubscribe",
+    "BlockSubscribe",
+    "LogsSubscribe",
+    "ProgramSubscribe",
+    "SignatureSubscribe",
+    "GetClusterNodes",
+    "GetEpochSchedule",
+    "GetFirstAvailableBlock",
+    "GetGenesisHash",
+    "GetHealth",
+    "GetHighestSnapshotSlot",
+    "GetInflationRate",
+    "GetMaxRetransmitSlot",
+    "GetMaxShredInsertSlot",
+    "GetVersion",
+    "MinimumLedgerSlot",
+    "SlotSubscribe",
+    "SlotsUpdatesSubscribe",
+    "RootSubscribe",
+    "VoteSubscribe",
+    "AccountUnsubscribe",
+    "BlockUnsubscribe",
+    "LogsUnsubscribe",
+    "ProgramUnsubscribe",
+    "SignatureUnsubscribe",
+    "SlotUnsubscribe",
+    "SlotsUpdatesUnsubscribe",
+    "RootUnsubscribe",
+    "VoteUnsubscribe",
 ]

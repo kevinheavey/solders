@@ -75,7 +75,7 @@ transaction_status_boilerplate!(NodeUnhealthy);
 #[common_methods]
 #[pymethods]
 impl NodeUnhealthy {
-#[pyo3(signature = (num_slots_behind=None))]
+    #[pyo3(signature = (num_slots_behind=None))]
     #[new]
     pub fn new(num_slots_behind: Option<Slot>) -> Self {
         num_slots_behind.into()

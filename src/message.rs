@@ -5,7 +5,6 @@ use solders_message::{
 };
 
 pub(crate) fn include_message(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    
     m.add_class::<Message>()?;
     m.add_class::<MessageHeader>()?;
     m.add_class::<MessageV0>()?;

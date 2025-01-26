@@ -229,8 +229,7 @@ pub trait CommonMethodsCore:
     }
 }
 
-pub trait CommonMethods<'a>: CommonMethodsCore + Serialize + Deserialize<'a>
-{
+pub trait CommonMethods<'a>: CommonMethodsCore + Serialize + Deserialize<'a> {
     fn py_to_json(&self) -> String {
         serde_json::to_string(self).unwrap()
     }

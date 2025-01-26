@@ -134,7 +134,6 @@ impl Rent {
 }
 
 pub fn include_rent(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    
     m.add_class::<Rent>()?;
     m.add(
         "DEFAULT_LAMPORTS_PER_BYTE_YEAR",

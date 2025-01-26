@@ -174,8 +174,7 @@ pub struct Message(pub MessageOriginal);
 #[common_methods]
 #[pymethods]
 impl Message {
-
-#[pyo3(signature = (instructions, payer=None))]
+    #[pyo3(signature = (instructions, payer=None))]
     #[new]
     pub fn new(instructions: Vec<Instruction>, payer: Option<&Pubkey>) -> Self {
         let instructions_inner = convert_instructions(instructions);

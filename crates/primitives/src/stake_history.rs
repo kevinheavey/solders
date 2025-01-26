@@ -87,7 +87,6 @@ impl StakeHistory {
 }
 
 pub fn include_stake_history(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    
     m.add_class::<StakeHistoryEntry>()?;
     m.add_class::<StakeHistory>()?;
     Ok(())

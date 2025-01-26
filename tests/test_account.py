@@ -11,6 +11,7 @@ def account() -> Account:
 def test_bytes(account: Account) -> None:
     assert Account.from_bytes(bytes(account))
 
+
 def test_json(account: Account) -> None:
     assert Account.from_json(account.to_json()) == account
 

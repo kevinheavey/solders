@@ -312,7 +312,6 @@ impl Multisig {
 token_boilerplate!(Multisig, MultisigOriginal);
 
 pub fn include_state(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    
     m.add_class::<Mint>()?;
     m.add_class::<TokenAccountState>()?;
     m.add_class::<TokenAccount>()?;

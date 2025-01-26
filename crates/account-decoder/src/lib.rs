@@ -169,7 +169,6 @@ impl UiTokenAmount {
 }
 
 pub fn include_account_decoder(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    
     m.add_class::<UiDataSliceConfig>()?;
     m.add_class::<UiAccountEncoding>()?;
     m.add_class::<ParsedAccount>()?;

@@ -14,7 +14,10 @@ use solders_traits_core::{
 };
 use solders_transaction_confirmation_status::TransactionConfirmationStatus;
 use solders_transaction_error::{
-    InstructionErrorBorshIO, InstructionErrorCustom, InstructionErrorFieldless, TransactionErrorDuplicateInstruction, TransactionErrorFieldless, TransactionErrorInstructionError, TransactionErrorInsufficientFundsForRent, TransactionErrorProgramExecutionTemporarilyRestricted, TransactionErrorType
+    InstructionErrorBorshIO, InstructionErrorCustom, InstructionErrorFieldless,
+    TransactionErrorDuplicateInstruction, TransactionErrorFieldless,
+    TransactionErrorInstructionError, TransactionErrorInsufficientFundsForRent,
+    TransactionErrorProgramExecutionTemporarilyRestricted, TransactionErrorType,
 };
 use solders_transaction_return_data::TransactionReturnData;
 use solders_transaction_status_enums::{TransactionDetails, UiTransactionEncoding};
@@ -22,11 +25,7 @@ use solders_transaction_status_struct::TransactionStatus;
 
 use std::str::FromStr;
 
-use pyo3::{
-    IntoPyObject,
-    prelude::*,
-    pyclass::CompareOp,
-};
+use pyo3::{prelude::*, pyclass::CompareOp, IntoPyObject};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use solana_sdk::{clock::UnixTimestamp, slot_history::Slot};
@@ -72,7 +71,7 @@ transaction_status_boilerplate!(UiCompiledInstruction);
 #[common_methods]
 #[pymethods]
 impl UiCompiledInstruction {
-#[pyo3(signature = (program_id_index, accounts, data, stack_height=None))]
+    #[pyo3(signature = (program_id_index, accounts, data, stack_height=None))]
     #[new]
     fn new(
         program_id_index: u8,
@@ -157,7 +156,7 @@ transaction_status_boilerplate!(UiRawMessage);
 #[common_methods]
 #[pymethods]
 impl UiRawMessage {
-#[pyo3(signature = (header, account_keys, recent_blockhash, instructions, address_table_lookups=None))]
+    #[pyo3(signature = (header, account_keys, recent_blockhash, instructions, address_table_lookups=None))]
     #[new]
     fn new(
         header: MessageHeader,
@@ -234,7 +233,7 @@ transaction_status_boilerplate!(ParsedAccountTxStatus);
 #[common_methods]
 #[pymethods]
 impl ParsedAccountTxStatus {
-#[pyo3(signature = (pubkey, writable, signer, source=None))]
+    #[pyo3(signature = (pubkey, writable, signer, source=None))]
     #[new]
     fn new(
         pubkey: Pubkey,
@@ -282,7 +281,7 @@ transaction_status_boilerplate!(ParsedInstruction);
 #[common_methods]
 #[pymethods]
 impl ParsedInstruction {
-#[pyo3(signature = (program, program_id, parsed, stack_height=None))]
+    #[pyo3(signature = (program, program_id, parsed, stack_height=None))]
     #[new]
     fn new(
         program: String,
@@ -331,7 +330,7 @@ transaction_status_boilerplate!(UiPartiallyDecodedInstruction);
 #[common_methods]
 #[pymethods]
 impl UiPartiallyDecodedInstruction {
-#[pyo3(signature = (program_id, accounts, data, stack_height=None))]
+    #[pyo3(signature = (program_id, accounts, data, stack_height=None))]
     #[new]
     fn new(
         program_id: Pubkey,
@@ -436,7 +435,7 @@ transaction_status_boilerplate!(UiParsedMessage);
 #[common_methods]
 #[pymethods]
 impl UiParsedMessage {
-#[pyo3(signature = (account_keys, recent_blockhash, instructions, address_table_lookups=None))]
+    #[pyo3(signature = (account_keys, recent_blockhash, instructions, address_table_lookups=None))]
     #[new]
     fn new(
         account_keys: Vec<ParsedAccountTxStatus>,
@@ -746,7 +745,7 @@ transaction_status_boilerplate!(UiTransactionTokenBalance);
 #[common_methods]
 #[pymethods]
 impl UiTransactionTokenBalance {
-#[pyo3(signature = (account_index, mint, ui_token_amount, owner=None, program_id=None))]
+    #[pyo3(signature = (account_index, mint, ui_token_amount, owner=None, program_id=None))]
     #[new]
     pub fn new(
         account_index: u8,
@@ -964,7 +963,7 @@ transaction_status_boilerplate!(EncodedTransactionWithStatusMeta);
 #[common_methods]
 #[pymethods]
 impl EncodedTransactionWithStatusMeta {
-#[pyo3(signature = (transaction, meta=None, version=None))]
+    #[pyo3(signature = (transaction, meta=None, version=None))]
     #[new]
     pub fn new(
         transaction: EncodedVersionedTransaction,
@@ -1005,7 +1004,7 @@ transaction_status_boilerplate!(Reward);
 #[common_methods]
 #[pymethods]
 impl Reward {
-#[pyo3(signature = (pubkey, lamports, post_balance, reward_type=None, commission=None))]
+    #[pyo3(signature = (pubkey, lamports, post_balance, reward_type=None, commission=None))]
     #[new]
     pub fn new(
         pubkey: Pubkey,
@@ -1072,7 +1071,7 @@ transaction_status_boilerplate!(EncodedConfirmedTransactionWithStatusMeta);
 #[common_methods]
 #[pymethods]
 impl EncodedConfirmedTransactionWithStatusMeta {
-#[pyo3(signature = (slot, transaction, block_time=None))]
+    #[pyo3(signature = (slot, transaction, block_time=None))]
     #[new]
     pub fn new(
         slot: Slot,
@@ -1097,7 +1096,7 @@ transaction_status_boilerplate!(UiConfirmedBlock);
 #[common_methods]
 #[pymethods]
 impl UiConfirmedBlock {
-#[pyo3(signature = (previous_blockhash, blockhash, parent_slot, transactions=None, signatures=None, rewards=None, block_time=None, block_height=None, num_reward_partitions=None))]
+    #[pyo3(signature = (previous_blockhash, blockhash, parent_slot, transactions=None, signatures=None, rewards=None, block_time=None, block_height=None, num_reward_partitions=None))]
     #[new]
     pub fn new(
         previous_blockhash: SolderHash,
@@ -1171,7 +1170,6 @@ impl UiConfirmedBlock {
 }
 
 pub fn include_transaction_status(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    
     m.add_class::<TransactionDetails>()?;
     m.add_class::<UiTransactionEncoding>()?;
     m.add_class::<TransactionBinaryEncoding>()?;

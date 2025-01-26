@@ -121,6 +121,7 @@ def test_from_seed_phrase_and_passphrase() -> None:
     keypair = Keypair.from_seed_phrase_and_passphrase(mnemonic.phrase, passphrase)
     assert keypair.pubkey() == expected_keypair.pubkey()
 
+
 def test_json() -> None:
     obj = Keypair()
     assert Keypair.from_json(obj.to_json()) == obj

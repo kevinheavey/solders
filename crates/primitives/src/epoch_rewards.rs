@@ -125,7 +125,6 @@ impl EpochRewards {
 }
 
 pub fn include_epoch_rewards(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    
     m.add_class::<EpochRewards>()?;
     Ok(())
 }

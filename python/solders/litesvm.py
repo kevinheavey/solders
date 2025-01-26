@@ -428,7 +428,5 @@ class LiteSVM:
         """
         self._inner.set_stake_history(history)
 
-__all__ = [
-    "FeatureSet",
-    "LiteSVM"
-]
+
+__all__ = ["FeatureSet", "LiteSVM"]

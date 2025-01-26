@@ -18,6 +18,7 @@ def test_attributes() -> None:
     assert am.is_signer
     assert am.is_writable
 
+
 def test_json() -> None:
     obj = AccountMeta(PUBKEY, True, True)
     assert AccountMeta.from_json(obj.to_json()) == obj

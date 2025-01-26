@@ -33,8 +33,8 @@ use solders_hash::Hash as SolderHash;
 use solders_keypair::{null_signer::NullSigner, presigner::Presigner, Keypair};
 use solders_primitives::{
     clock::include_clock, epoch_rewards::include_epoch_rewards,
-    epoch_schedule::include_epoch_schedule, rent::include_rent,
-    slot_history::include_slot_history, stake_history::include_stake_history,
+    epoch_schedule::include_epoch_schedule, rent::include_rent, slot_history::include_slot_history,
+    stake_history::include_stake_history,
 };
 use solders_pubkey::Pubkey;
 use solders_signature::Signature;

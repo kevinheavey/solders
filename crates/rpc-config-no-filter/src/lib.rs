@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use pyo3::{IntoPyObject, prelude::*};
+use pyo3::{prelude::*, IntoPyObject};
 use serde::{Deserialize, Serialize};
 use solana_rpc_client_api::config as rpc_config;
 use solders_commitment_config::CommitmentLevel;
@@ -32,7 +32,7 @@ pyclass_boilerplate_with_default!(
 #[common_methods]
 #[pymethods]
 impl RpcLeaderScheduleConfig {
-#[pyo3(signature = (identity=None, commitment=None))]
+    #[pyo3(signature = (identity=None, commitment=None))]
     #[new]
     pub fn new(identity: Option<&Pubkey>, commitment: Option<CommitmentLevel>) -> Self {
         Self(rpc_config::RpcLeaderScheduleConfig {
@@ -68,7 +68,7 @@ pyclass_boilerplate_with_default!(
 #[common_methods]
 #[pymethods]
 impl RpcBlockProductionConfigRange {
-#[pyo3(signature = (first_slot, last_slot=None))]
+    #[pyo3(signature = (first_slot, last_slot=None))]
     #[new]
     pub fn new(first_slot: u64, last_slot: Option<u64>) -> Self {
         Self(rpc_config::RpcBlockProductionConfigRange {
@@ -113,7 +113,7 @@ rpc_config_impls!(RpcBlockProductionConfig);
 #[common_methods]
 #[pymethods]
 impl RpcBlockProductionConfig {
-#[pyo3(signature = (identity=None, range=None, commitment=None))]
+    #[pyo3(signature = (identity=None, range=None, commitment=None))]
     #[new]
     pub fn new(
         identity: Option<&Pubkey>,
@@ -174,7 +174,7 @@ pyclass_boilerplate_with_default!(
 #[common_methods]
 #[pymethods]
 impl RpcGetVoteAccountsConfig {
-#[pyo3(signature = (vote_pubkey=None, commitment=None, keep_unstaked_delinquents=None, delinquent_slot_distance=None))]
+    #[pyo3(signature = (vote_pubkey=None, commitment=None, keep_unstaked_delinquents=None, delinquent_slot_distance=None))]
     #[new]
     pub fn new(
         vote_pubkey: Option<&Pubkey>,
@@ -273,7 +273,7 @@ pyclass_boilerplate_with_default!(
 #[common_methods]
 #[pymethods]
 impl RpcLargestAccountsConfig {
-#[pyo3(signature = (commitment=None, filter=None, sort_results=None))]
+    #[pyo3(signature = (commitment=None, filter=None, sort_results=None))]
     #[new]
     pub fn new(
         commitment: Option<CommitmentLevel>,
@@ -322,7 +322,7 @@ pyclass_boilerplate_with_default!(
 #[common_methods]
 #[pymethods]
 impl RpcSupplyConfig {
-#[pyo3(signature = (exclude_non_circulating_accounts_list, commitment=None))]
+    #[pyo3(signature = (exclude_non_circulating_accounts_list, commitment=None))]
     #[new]
     pub fn new(
         exclude_non_circulating_accounts_list: bool,
@@ -370,7 +370,7 @@ pyclass_boilerplate_with_default!(
 #[common_methods]
 #[pymethods]
 impl RpcEpochConfig {
-#[pyo3(signature = (epoch=None, commitment=None, min_context_slot=None))]
+    #[pyo3(signature = (epoch=None, commitment=None, min_context_slot=None))]
     #[new]
     pub fn new(
         epoch: Option<u64>,
@@ -465,7 +465,7 @@ pyclass_boilerplate!(
 #[common_methods]
 #[pymethods]
 impl RpcTransactionLogsConfig {
-#[pyo3(signature = (commitment=None))]
+    #[pyo3(signature = (commitment=None))]
     #[new]
     pub fn new(commitment: Option<CommitmentLevel>) -> Self {
         Self(rpc_config::RpcTransactionLogsConfig {
@@ -520,7 +520,7 @@ pyclass_boilerplate_with_default!(
 #[common_methods]
 #[pymethods]
 impl RpcSignatureSubscribeConfig {
-#[pyo3(signature = (commitment=None, enable_received_notification=None))]
+    #[pyo3(signature = (commitment=None, enable_received_notification=None))]
     #[new]
     fn new(
         commitment: Option<CommitmentLevel>,
@@ -606,7 +606,7 @@ pyclass_boilerplate_with_default!(
 #[common_methods]
 #[pymethods]
 impl RpcBlockSubscribeConfig {
-#[pyo3(signature = (commitment=None, encoding=None, transaction_details=None, show_rewards=None, max_supported_transaction_version=None))]
+    #[pyo3(signature = (commitment=None, encoding=None, transaction_details=None, show_rewards=None, max_supported_transaction_version=None))]
     #[new]
     fn new(
         commitment: Option<CommitmentLevel>,
@@ -678,7 +678,7 @@ pyclass_boilerplate_with_default!(
 #[common_methods]
 #[pymethods]
 impl RpcBlockConfig {
-#[pyo3(signature = (encoding=None, transaction_details=None, rewards=None, commitment=None, max_supported_transaction_version=None))]
+    #[pyo3(signature = (encoding=None, transaction_details=None, rewards=None, commitment=None, max_supported_transaction_version=None))]
     #[new]
     pub fn new(
         encoding: Option<UiTransactionEncoding>,
@@ -741,7 +741,7 @@ impl RpcBlockConfig {
 
     /// Create a new instance for only showing rewards, with a specified commitment level.
     #[staticmethod]
-#[pyo3(signature = (commitment=None))]
+    #[pyo3(signature = (commitment=None))]
     pub fn rewards_with_commitment(commitment: Option<CommitmentLevel>) -> Self {
         rpc_config::RpcBlockConfig::rewards_with_commitment(commitment.map(|c| c.into())).into()
     }
@@ -762,7 +762,7 @@ pyclass_boilerplate_with_default!(
 #[common_methods]
 #[pymethods]
 impl RpcTransactionConfig {
-#[pyo3(signature = (encoding=None, commitment=None, max_supported_transaction_version=None))]
+    #[pyo3(signature = (encoding=None, commitment=None, max_supported_transaction_version=None))]
     #[new]
     pub fn new(
         encoding: Option<UiTransactionEncoding>,
@@ -817,7 +817,7 @@ pyclass_boilerplate_with_default!(
 #[common_methods]
 #[pymethods]
 impl RpcContextConfig {
-#[pyo3(signature = (commitment=None, min_context_slot=None))]
+    #[pyo3(signature = (commitment=None, min_context_slot=None))]
     #[new]
     pub fn new(commitment: Option<CommitmentLevel>, min_context_slot: Option<u64>) -> Self {
         rpc_config::RpcContextConfig {

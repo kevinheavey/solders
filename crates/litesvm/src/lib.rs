@@ -164,7 +164,7 @@ impl LiteSVM {
         self.0.set_sysvars()
     }
 
-#[pyo3(signature = (feature_set=None))]
+    #[pyo3(signature = (feature_set=None))]
     pub fn set_builtins(&mut self, feature_set: Option<&FeatureSet>) {
         self.0.set_builtins(feature_set.map(|x| x.0.clone()));
     }
@@ -182,12 +182,12 @@ impl LiteSVM {
         self.0.set_transaction_history(capacity)
     }
 
-#[pyo3(signature = (limit=None))]
+    #[pyo3(signature = (limit=None))]
     pub fn set_log_bytes_limit(&mut self, limit: Option<usize>) {
         self.0.set_log_bytes_limit(limit);
     }
 
-#[pyo3(signature = (feature_set=None))]
+    #[pyo3(signature = (feature_set=None))]
     pub fn set_precompiles(&mut self, feature_set: Option<&FeatureSet>) {
         self.0.set_precompiles(feature_set.map(|x| x.0.clone()));
     }
@@ -337,7 +337,6 @@ impl LiteSVM {
 }
 
 pub fn include_litesvm(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    
     m.add_class::<FeatureSet>()?;
     m.add_class::<LiteSVM>()?;
     Ok(())

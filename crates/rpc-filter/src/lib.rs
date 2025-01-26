@@ -1,4 +1,4 @@
-use pyo3::{IntoPyObject, prelude::*};
+use pyo3::{prelude::*, IntoPyObject};
 use serde::{Deserialize, Serialize};
 use solana_rpc_client_api::filter::{
     Memcmp as MemcmpOriginal, MemcmpEncodedBytes as MemcmpEncodedBytesOriginal,
@@ -113,7 +113,6 @@ impl From<RpcFilterTypeOriginal> for RpcFilterType {
 }
 
 pub fn include_filter(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    
     m.add_class::<Memcmp>()?;
     m.add_class::<RpcFilterTypeFieldless>()?;
     Ok(())

@@ -25,7 +25,7 @@ response_data_boilerplate!(RpcSimulateTransactionResult);
 #[common_methods]
 #[pymethods]
 impl RpcSimulateTransactionResult {
-#[pyo3(signature = (err=None, logs=None, accounts=None, units_consumed=None, return_data=None, inner_instructions=None, replacement_blockhash=None))]
+    #[pyo3(signature = (err=None, logs=None, accounts=None, units_consumed=None, return_data=None, inner_instructions=None, replacement_blockhash=None))]
     #[new]
     pub fn new(
         err: Option<TransactionErrorType>,

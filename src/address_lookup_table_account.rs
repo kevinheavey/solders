@@ -9,7 +9,6 @@ use solders_address_lookup_table_account::{
 };
 
 pub(crate) fn include_address_lookup_table_account(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    
     m.add_class::<AddressLookupTableAccount>()?;
     m.add_class::<AddressLookupTable>()?;
     m.add_class::<LookupTableMeta>()?;

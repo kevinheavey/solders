@@ -150,6 +150,7 @@ def test_new_with_nonce() -> None:
     Transaction.new_unsigned(message)
     # just check that no exceptions are raised
 
+
 def test_json_msg_header() -> None:
     obj = MessageHeader.default()
     assert MessageHeader.from_json(obj.to_json()) == obj
@@ -158,6 +159,7 @@ def test_json_msg_header() -> None:
 def test_json_msg() -> None:
     obj = Message.default()
     assert Message.from_json(obj.to_json()) == obj
+
 
 def test_json_msg_v0() -> None:
     obj = MessageV0.default()

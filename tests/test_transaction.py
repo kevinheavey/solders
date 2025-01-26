@@ -1345,6 +1345,7 @@ def test_sort_account_metas() -> None:
     assert tx_msg.account_keys[4] == sorted_receivers[1]
     assert tx_msg.account_keys[5] == sorted_receivers[2]
 
+
 def test_json() -> None:
     obj = Transaction.default()
     assert Transaction.from_json(obj.to_json()) == obj

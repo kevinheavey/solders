@@ -262,7 +262,6 @@ impl From<AccountJSON> for UiAccount {
 }
 
 pub fn include_account(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    
     m.add_class::<Account>()?;
     m.add_class::<AccountJSON>()?;
     Ok(())

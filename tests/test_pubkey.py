@@ -131,6 +131,7 @@ def test_set_operations() -> None:
     assert hash(public_key_secondary) == hash(public_key_duplicate)
     assert len(public_key_set) == 2
 
+
 def test_json() -> None:
     key = Pubkey.new_unique()
     ser = key.to_json()

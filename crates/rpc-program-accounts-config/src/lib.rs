@@ -60,11 +60,11 @@ impl RpcProgramAccountsConfig {
     pub fn filters<'a>(&self, py: Python<'a>) -> Option<Vec<Bound<'a, PyAny>>> {
         let cloned = self.0.filters.clone();
         cloned.map(|v| {
-                v.into_iter()
-                    .map(|f| RpcFilterType::from(f).into_pyobject(py).unwrap())
-                    .collect()
-            })
-        }
+            v.into_iter()
+                .map(|f| RpcFilterType::from(f).into_pyobject(py).unwrap())
+                .collect()
+        })
+    }
 
     #[getter]
     pub fn with_context(&self) -> Option<bool> {

@@ -7,12 +7,7 @@ use camelpaste::paste;
 use derive_more::{From, Into};
 use pyo3::exceptions::PyValueError;
 use pyo3::types::PyType;
-use pyo3::{
-    IntoPyObject,
-    IntoPyObjectExt,
-    prelude::*,
-    PyClass,
-};
+use pyo3::{prelude::*, IntoPyObject, IntoPyObjectExt, PyClass};
 use serde::{de::Error, Deserialize, Serialize, Serializer};
 use serde_json::Value;
 use serde_with::{serde_as, DisplayFromStr, FromInto, OneOrMany, TryFromInto};
@@ -103,7 +98,8 @@ pub trait CommonMethodsRpcResp<'a>:
     + Serialize
     + Deserialize<'a>
     + PyClass
-    where for<'py> Self: pyo3::IntoPyObject<'py>
+where
+    for<'py> Self: pyo3::IntoPyObject<'py>,
 {
     fn pybytes<'b>(&self) -> Vec<u8> {
         PyBytesBincode::pybytes_bincode(self)
@@ -570,7 +566,10 @@ impl Serialize for RPCError {
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 #[serde(untagged)]
-pub enum Resp<T> where T: for<'py> IntoPyObject<'py> {
+pub enum Resp<T>
+where
+    T: for<'py> IntoPyObject<'py>,
+{
     Result {
         #[serde(skip_deserializing)]
         jsonrpc: solders_rpc_version::V2,
@@ -587,12 +586,18 @@ pub enum Resp<T> where T: for<'py> IntoPyObject<'py> {
     },
 }
 
-impl<'py, T> IntoPyObject<'py> for Resp<T> where T: for<'py2> IntoPyObject<'py2>{
+impl<'py, T> IntoPyObject<'py> for Resp<T>
+where
+    T: for<'py2> IntoPyObject<'py2>,
+{
     type Target = PyAny; // the Python type
     type Output = Bound<'py, Self::Target>; // in most cases this will be `Bound`
     type Error = std::convert::Infallible;
 
-    fn into_pyobject(self, py: Python<'py>) -> Result<Self::Output, <Resp<T> as IntoPyObject>::Error> {
+    fn into_pyobject(
+        self,
+        py: Python<'py>,
+    ) -> Result<Self::Output, <Resp<T> as IntoPyObject>::Error> {
         Ok(match self {
             Self::Error { error: e, .. } => e.into_bound_py_any(py).unwrap(),
             Self::Result { result: r, .. } => r.into_bound_py_any(py).unwrap(),
@@ -666,7 +671,8 @@ impl<'py> IntoPyObject<'py> for Notification {
             Self::SlotsUpdatesNotification { params: p, .. } => p.into_bound_py_any(py),
             Self::RootNotification { params: p, .. } => p.into_bound_py_any(py),
             Self::VoteNotification { params: p, .. } => p.into_bound_py_any(py),
-        }).unwrap())
+        })
+        .unwrap())
     }
 }
 
@@ -877,7 +883,7 @@ response_data_boilerplate!(RpcContactInfo);
 #[common_methods]
 #[pymethods]
 impl RpcContactInfo {
-#[pyo3(signature = (pubkey, gossip=None, tpu=None, tpu_quic=None, rpc=None, pubsub=None, version=None, feature_set=None, shred_version=None, tvu=None, tpu_forwards=None, tpu_forwards_quic=None, tpu_vote=None, serve_repair=None))]
+    #[pyo3(signature = (pubkey, gossip=None, tpu=None, tpu_quic=None, rpc=None, pubsub=None, version=None, feature_set=None, shred_version=None, tvu=None, tpu_forwards=None, tpu_forwards_quic=None, tpu_vote=None, serve_repair=None))]
     #[new]
     pub fn new(
         pubkey: Pubkey,
@@ -943,7 +949,7 @@ response_data_boilerplate!(RpcSnapshotSlotInfo);
 #[common_methods]
 #[pymethods]
 impl RpcSnapshotSlotInfo {
-#[pyo3(signature = (full, incremental=None))]
+    #[pyo3(signature = (full, incremental=None))]
     #[new]
     pub fn new(full: Slot, incremental: Option<Slot>) -> Self {
         RpcSnapshotSlotInfoOriginal { full, incremental }.into()
@@ -1066,7 +1072,7 @@ response_data_boilerplate!(RpcInflationReward);
 #[common_methods]
 #[pymethods]
 impl RpcInflationReward {
-#[pyo3(signature = (epoch, effective_slot, amount, post_balance, commission=None))]
+    #[pyo3(signature = (epoch, effective_slot, amount, post_balance, commission=None))]
     #[new]
     pub fn new(
         epoch: Epoch,
@@ -1203,7 +1209,7 @@ response_data_boilerplate!(RpcPerfSample);
 #[common_methods]
 #[pymethods]
 impl RpcPerfSample {
-#[pyo3(signature = (slot, num_transactions, num_slots, sample_period_secs, num_non_vote_transactions=None))]
+    #[pyo3(signature = (slot, num_transactions, num_slots, sample_period_secs, num_non_vote_transactions=None))]
     #[new]
     pub fn new(
         slot: Slot,
@@ -1333,8 +1339,14 @@ contextful_resp_eq!(
 
 contextful_resp_no_eq!(GetTokenLargestAccountsResp, Vec<RpcTokenAccountBalance>);
 contextful_resp_no_eq!(GetTokenSupplyResp, UiTokenAmount);
-contextless_struct_def_no_eq!(GetTransactionResp, Option<EncodedConfirmedTransactionWithStatusMeta>);
-contextless_resp_methods_clone_nullable!(GetTransactionResp, Option<EncodedConfirmedTransactionWithStatusMeta>);
+contextless_struct_def_no_eq!(
+    GetTransactionResp,
+    Option<EncodedConfirmedTransactionWithStatusMeta>
+);
+contextless_resp_methods_clone_nullable!(
+    GetTransactionResp,
+    Option<EncodedConfirmedTransactionWithStatusMeta>
+);
 contextless_resp_eq!(GetTransactionCountResp, u64);
 contextless_resp_eq!(GetVersionResp, RpcVersionInfo, clone);
 
@@ -1710,7 +1722,7 @@ response_data_boilerplate!(RpcBlockUpdate);
 #[common_methods]
 #[pymethods]
 impl RpcBlockUpdate {
-#[pyo3(signature = (slot, block=None, err=None))]
+    #[pyo3(signature = (slot, block=None, err=None))]
     #[new]
     pub fn new(
         slot: Slot,
@@ -1811,7 +1823,7 @@ macro_rules ! pyunion_resp {
             type Target = PyAny; // the Python type
             type Output = Bound<'py, Self::Target>; // in most cases this will be `Bound`
             type Error = std::convert::Infallible;
-        
+
             fn into_pyobject(self, py: Python<'py>) -> Result<Self::Output, Self::Error> {
                 Ok(match self {
                     Self::$err_variant(x) => x.into_bound_py_any(py).unwrap(),
@@ -1931,7 +1943,11 @@ pub fn batch_responses_to_json(resps: Vec<RPCResult>) -> String {
 ///     )]
 ///
 #[pyfunction]
-pub fn batch_responses_from_json<'py>(raw: &str, parsers: Vec<Bound<'_, PyType>>, py: Python<'py>) -> PyResult<Vec<Bound<'py, PyAny>>> {
+pub fn batch_responses_from_json<'py>(
+    raw: &str,
+    parsers: Vec<Bound<'_, PyType>>,
+    py: Python<'py>,
+) -> PyResult<Vec<Bound<'py, PyAny>>> {
     let raw_objects: Vec<serde_json::Map<String, Value>> =
         serde_json::from_str(raw).map_err(to_py_err)?;
     let raw_objects_len = raw_objects.len();
@@ -1942,12 +1958,11 @@ pub fn batch_responses_from_json<'py>(raw: &str, parsers: Vec<Bound<'_, PyType>>
     } else {
         let parsed = raw_objects.iter().zip(parsers.iter()).map(|(res, parser)| {
             let name = parser.qualname().unwrap();
-            RPCResult::from_json(
-                &serde_json::to_string(res).unwrap(),
-                &name.to_string(),
-            )
+            RPCResult::from_json(&serde_json::to_string(res).unwrap(), &name.to_string())
         });
-        parsed.map(|obj| obj.map(|o| o.into_pyobject(py).unwrap())).collect()
+        parsed
+            .map(|obj| obj.map(|o| o.into_pyobject(py).unwrap()))
+            .collect()
     }
 }
 
