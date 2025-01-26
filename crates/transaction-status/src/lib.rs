@@ -23,6 +23,7 @@ use solders_transaction_status_struct::TransactionStatus;
 use std::str::FromStr;
 
 use pyo3::{
+    IntoPyObject,
     prelude::*,
     pyclass::CompareOp,
 };
@@ -49,7 +50,7 @@ use solana_transaction_status::{
     UiTransactionReturnData, UiTransactionStatusMeta as UiTransactionStatusMetaOriginal,
     UiTransactionTokenBalance as UiTransactionTokenBalanceOriginal,
 };
-use solders_macros::{common_methods, enum_original_mapping, richcmp_eq_only, EnumIntoPy};
+use solders_macros::{common_methods, enum_original_mapping, richcmp_eq_only};
 use solders_transaction::{TransactionVersion, VersionedTransaction};
 
 #[derive(Serialize, Deserialize, Clone, Copy, Debug, Eq, Hash, PartialEq)]
@@ -225,14 +226,14 @@ pub enum ParsedAccountSource {
 /// A duplicate representation of a Message, in raw format, for pretty JSON serialization
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.transaction_status", subclass)]
-pub struct ParsedAccount(ParsedAccountOriginal);
+pub struct ParsedAccountTxStatus(ParsedAccountOriginal);
 
-transaction_status_boilerplate!(ParsedAccount);
+transaction_status_boilerplate!(ParsedAccountTxStatus);
 
 #[richcmp_eq_only]
 #[common_methods]
 #[pymethods]
-impl ParsedAccount {
+impl ParsedAccountTxStatus {
 #[pyo3(signature = (pubkey, writable, signer, source=None))]
     #[new]
     fn new(
@@ -242,7 +243,7 @@ impl ParsedAccount {
         source: Option<ParsedAccountSource>,
     ) -> Self {
         ParsedAccountOriginal {
-            pubkey: pubkey.to_string(),
+            pubkey: pubkey.0.to_string(),
             writable,
             signer,
             source: source.map(Into::into),
@@ -373,7 +374,7 @@ impl UiPartiallyDecodedInstruction {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, FromPyObject, EnumIntoPy)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, FromPyObject, IntoPyObject)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum UiParsedInstruction {
     Parsed(ParsedInstruction),
@@ -399,7 +400,7 @@ impl From<UiParsedInstructionOriginal> for UiParsedInstruction {
 }
 
 /// A duplicate representation of an Instruction for pretty JSON serialization
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, FromPyObject, EnumIntoPy)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, FromPyObject, IntoPyObject)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum UiInstruction {
     Compiled(UiCompiledInstruction),
@@ -438,7 +439,7 @@ impl UiParsedMessage {
 #[pyo3(signature = (account_keys, recent_blockhash, instructions, address_table_lookups=None))]
     #[new]
     fn new(
-        account_keys: Vec<ParsedAccount>,
+        account_keys: Vec<ParsedAccountTxStatus>,
         recent_blockhash: SolderHash,
         instructions: Vec<UiInstruction>,
         address_table_lookups: Option<Vec<UiAddressTableLookup>>,
@@ -454,7 +455,7 @@ impl UiParsedMessage {
     }
 
     #[getter]
-    pub fn account_keys(&self) -> Vec<ParsedAccount> {
+    pub fn account_keys(&self) -> Vec<ParsedAccountTxStatus> {
         self.0
             .account_keys
             .clone()
@@ -487,7 +488,7 @@ impl UiParsedMessage {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, FromPyObject, EnumIntoPy)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, FromPyObject, IntoPyObject)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum UiMessage {
     Parsed(UiParsedMessage),
@@ -546,7 +547,7 @@ impl UiTransaction {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, FromPyObject, EnumIntoPy)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, FromPyObject, IntoPyObject)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum EncodedVersionedTransaction {
     Binary(VersionedTransaction),
@@ -602,7 +603,7 @@ transaction_status_boilerplate!(UiAccountsList);
 #[pymethods]
 impl UiAccountsList {
     #[new]
-    pub fn new(signatures: Vec<Signature>, account_keys: Vec<ParsedAccount>) -> Self {
+    pub fn new(signatures: Vec<Signature>, account_keys: Vec<ParsedAccountTxStatus>) -> Self {
         UiAccountsListOriginal {
             signatures: signatures.into_iter().map(|s| s.to_string()).collect(),
             account_keys: account_keys.into_iter().map(Into::into).collect(),
@@ -621,7 +622,7 @@ impl UiAccountsList {
     }
 
     #[getter]
-    pub fn account_keys(&self) -> Vec<ParsedAccount> {
+    pub fn account_keys(&self) -> Vec<ParsedAccountTxStatus> {
         self.0
             .account_keys
             .clone()
@@ -1178,7 +1179,7 @@ pub fn include_transaction_status(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<UiAddressTableLookup>()?;
     m.add_class::<UiRawMessage>()?;
     m.add_class::<ParsedAccountSource>()?;
-    m.add_class::<ParsedAccount>()?;
+    m.add_class::<ParsedAccountTxStatus>()?;
     m.add_class::<ParsedInstruction>()?;
     m.add_class::<UiPartiallyDecodedInstruction>()?;
     m.add_class::<UiParsedMessage>()?;

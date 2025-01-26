@@ -1,3 +1,4 @@
+#![allow(deprecated)]
 use dict_derive::{FromPyObject, IntoPyObject};
 use pyo3::{exceptions::PyValueError, prelude::*};
 use solana_program::address_lookup_table::instruction::{

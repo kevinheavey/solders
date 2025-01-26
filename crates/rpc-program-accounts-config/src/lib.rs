@@ -25,7 +25,7 @@ pyclass_boilerplate_with_default!(
 #[common_methods]
 #[pymethods]
 impl RpcProgramAccountsConfig {
-#[pyo3(signature = (account_config, filters=None, with_context=None, sort_results=None))]
+    #[pyo3(signature = (account_config, filters=None, with_context=None, sort_results=None))]
     #[new]
     pub fn new(
         account_config: RpcAccountInfoConfig,
@@ -57,16 +57,14 @@ impl RpcProgramAccountsConfig {
     }
 
     #[getter]
-    pub fn filters(&self) -> Option<Vec<PyObject>> {
+    pub fn filters<'a>(&self, py: Python<'a>) -> Option<Vec<Bound<'a, PyAny>>> {
         let cloned = self.0.filters.clone();
-        Python::with_gil(|py| {
-            cloned.map(|v| {
+        cloned.map(|v| {
                 v.into_iter()
-                    .map(|f| RpcFilterType::from(f).into_py(py))
+                    .map(|f| RpcFilterType::from(f).into_pyobject(py).unwrap())
                     .collect()
             })
-        })
-    }
+        }
 
     #[getter]
     pub fn with_context(&self) -> Option<bool> {

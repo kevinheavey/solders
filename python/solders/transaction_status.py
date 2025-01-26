@@ -10,7 +10,7 @@ from .solders import (
     UiParsedMessage,
     UiRawMessage,
     ParsedAccountSource,
-    ParsedAccount,
+    ParsedAccountTxStatus as ParsedAccount,
     VersionedTransaction, 
     UiTransaction,
     UiAccountsList,
@@ -65,7 +65,7 @@ __all__ = [
 "UiRawMessage",
 "ParsedAccountSource",
 "ParsedAccount",
-"VersionedTransaction," 
+"VersionedTransaction",
 "UiTransaction",
 "UiAccountsList",
 "UiInnerInstructions",

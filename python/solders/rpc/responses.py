@@ -1,4 +1,4 @@
-from typing import Union, TypeVar
+from typing import Any, List, Sequence, Union, TypeVar
 from .errors import (UnsupportedTransactionVersion, RpcCustomErrorFieldless,
     BlockCleanedUpMessage,
     SendTransactionPreflightFailureMessage,
@@ -137,8 +137,8 @@ SubscriptionError,
 BlockStoreError,
 RpcBlockUpdate,
 UnsubscribeResult,
-batch_to_json,
-batch_from_json,
+batch_responses_to_json as _batch_to_json,
+batch_responses_from_json as _batch_from_json,
 parse_notification,
 parse_websocket_message
 )
@@ -262,6 +262,47 @@ RPCResult = Union[
     SendTransactionResp,
     SimulateTransactionResp,
 ]
+
+def batch_to_json(resps: Sequence[RPCResult]) -> str:
+    """
+        Serialize a list of response objects into a single batch response JSON.
+       
+        Args:
+            resps: A list of response objects.
+       
+        Returns:
+            str: The batch JSON string.
+       
+        Example:
+            >>> from solders.rpc.responses import batch_to_json, GetBlockHeightResp, GetFirstAvailableBlockResp
+            >>> batch_to_json([GetBlockHeightResp(1233), GetFirstAvailableBlockResp(1)])
+            '[{"id":0,"jsonrpc":"2.0","result":1233},{"id":0,"jsonrpc":"2.0","result":1}]'
+       
+    """
+    return _batch_to_json(resps)
+def batch_from_json(raw: str, parsers: Sequence[Any]) -> List[RPCResult]:
+    """
+        Deserialize a batch request JSON string into a list of request objects.
+       
+        Args:
+            raw (str): The batch JSON string.
+            parsers (Sequence): The classes to parse.
+       
+        Returns:
+            A list of response objects.
+       
+        Example:
+            >>> from solders.rpc.responses import batch_from_json, GetBlockHeightResp, GetFirstAvailableBlockResp
+            >>> raw = '[{ "jsonrpc": "2.0", "result": 1233, "id": 1 },{ "jsonrpc": "2.0", "result": 111, "id": 1 }]'
+            >>> batch_from_json(raw, [GetBlockHeightResp, GetFirstAvailableBlockResp])
+            [GetBlockHeightResp(
+                1233,
+            ), GetFirstAvailableBlockResp(
+                111,
+            )]
+       
+    """
+    return _batch_from_json(raw, parsers)
 
 __all__ = [
 "RpcResponseContext",

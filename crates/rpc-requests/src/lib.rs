@@ -1,11 +1,11 @@
 #![allow(deprecated)]
 use camelpaste::paste;
-use pyo3::{exceptions::PyValueError, prelude::*};
+use pyo3::{exceptions::PyValueError, prelude::*, IntoPyObject, IntoPyObjectExt};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use solders_commitment_config::{CommitmentConfig, CommitmentLevel};
 use solders_hash::Hash as SolderHash;
-use solders_macros::{common_methods, richcmp_eq_only, rpc_id_getter, EnumIntoPy};
+use solders_macros::{common_methods, richcmp_eq_only, rpc_id_getter};
 use solders_message::VersionedMessage;
 use solders_pubkey::Pubkey;
 use solders_signature::Signature;
@@ -2239,7 +2239,7 @@ impl SendRawTransaction {
         Self { base, params }
     }
 
-    /// List[int]: The raw signed transaction to send.
+    /// bytes: The raw signed transaction to send.
     #[getter]
     fn tx(&self) -> Vec<u8> {
         self.params.0.clone()
@@ -2675,7 +2675,7 @@ zero_param_req_def!(VoteSubscribe);
 
 macro_rules ! pyunion {
     ($name:ident, $($variant:ident),+) => {
-        #[derive(FromPyObject, Clone, Debug, PartialEq, Serialize, Deserialize, EnumIntoPy)]
+        #[derive(FromPyObject, Clone, Debug, PartialEq, Serialize, Deserialize)]
         #[serde(tag = "method", rename_all = "camelCase")]
         pub enum $name {
             $($variant($variant),)+
@@ -2689,6 +2689,23 @@ macro_rules ! pyunion {
             SimulateLegacyTransaction(SimulateLegacyTransaction),
             #[serde(rename = "simulateTransaction")]
             SimulateVersionedTransaction(SimulateVersionedTransaction),
+        }
+
+        impl<'py> IntoPyObject<'py> for $name {
+            type Target = PyAny; // the Python type
+            type Output = Bound<'py, Self::Target>; // in most cases this will be `Bound`
+            type Error = std::convert::Infallible;
+        
+            fn into_pyobject(self, py: Python<'py>) -> Result<Self::Output, Self::Error> {
+                Ok(match self {
+                    Self::SendLegacyTransaction(x) => x.into_bound_py_any(py).unwrap(),
+                    Self::SendVersionedTransaction(x) => x.into_bound_py_any(py).unwrap(),
+                    Self::SendRawTransaction(x) => x.into_bound_py_any(py).unwrap(),
+                    Self::SimulateLegacyTransaction(x) => x.into_bound_py_any(py).unwrap(),
+                    Self::SimulateVersionedTransaction(x) => x.into_bound_py_any(py).unwrap(),
+                    $(Self::$variant(x) => x.into_bound_py_any(py).unwrap(),)+
+                })
+            }
         }
     }
 }
@@ -2765,52 +2782,15 @@ pyunion!(
     VoteUnsubscribe
 );
 
-/// Serialize a list of request objects into a single batch request JSON.
-///
-/// Args:
-///     reqs: A list of request objects.
-///
-/// Returns:
-///     str: The batch JSON string.
-///
-/// Example:
-///     >>> from solders.rpc.requests import batch_to_json, GetClusterNodes, GetEpochSchedule
-///     >>> batch_to_json([GetClusterNodes(0), GetEpochSchedule(1)])
-///     '[{"method":"getClusterNodes","jsonrpc":"2.0","id":0},{"method":"getEpochSchedule","jsonrpc":"2.0","id":1}]'
-///
 #[pyfunction]
-pub fn batch_to_json(reqs: Vec<Body>) -> String {
+pub fn batch_requests_to_json(reqs: Vec<Body>) -> String {
     serde_json::to_string(&reqs).unwrap()
 }
 
-/// Deserialize a batch request JSON string into a list of request objects.
-///
-/// Args:
-///     raw (str): The batch JSON string.
-///
-/// Returns:
-///     A list of request objects.
-///
-/// Example:
-///     >>> from solders.rpc.requests import batch_from_json
-///     >>> raw = '[{"jsonrpc":"2.0","id":0,"method":"getClusterNodes"},{"jsonrpc":"2.0","id":1,"method":"getEpochSchedule"}]'
-///     >>> batch_from_json(raw)
-///     [GetClusterNodes {
-///         base: RequestBase {
-///             jsonrpc: TwoPointOh,
-///             id: 0,
-///         },
-///     }, GetEpochSchedule {
-///         base: RequestBase {
-///             jsonrpc: TwoPointOh,
-///             id: 1,
-///         },
-///     }]
-///
 #[pyfunction]
-pub fn batch_from_json(py: Python<'_>, raw: &str) -> PyResult<Vec<PyObject>> {
+pub fn batch_requests_from_json<'py>(py: Python<'py>, raw: &str) -> PyResult<Vec<Bound<'py, PyAny>>> {
     let deser: Vec<Body> = serde_json::from_str(raw).unwrap();
-    Ok(deser.into_iter().map(|x| x.into_py(py)).collect())
+    Ok(deser.into_iter().map(|x| x.into_bound_py_any(py).unwrap()).collect())
 }
 
 pub fn include_requests(m: &Bound<'_, PyModule>) -> PyResult<()> {
@@ -2888,8 +2868,8 @@ pub fn include_requests(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<RootUnsubscribe>()?;
     m.add_class::<VoteUnsubscribe>()?;
     let funcs = [
-        wrap_pyfunction!(batch_to_json, m)?,
-        wrap_pyfunction!(batch_from_json, m)?,
+        wrap_pyfunction!(batch_requests_to_json, m)?,
+        wrap_pyfunction!(batch_requests_from_json, m)?,
     ];
     for func in funcs {
         m.add_function(func)?;

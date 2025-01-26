@@ -8,6 +8,8 @@ use derive_more::{From, Into};
 use pyo3::exceptions::PyValueError;
 use pyo3::types::PyType;
 use pyo3::{
+    IntoPyObject,
+    IntoPyObjectExt,
     prelude::*,
     PyClass,
 };
@@ -55,7 +57,7 @@ use solders_account::{Account, AccountJSON};
 use solders_account_decoder::UiTokenAmount;
 use solders_epoch_info::EpochInfo;
 use solders_hash::Hash as SolderHash;
-use solders_macros::{common_methods, common_methods_rpc_resp, richcmp_eq_only, EnumIntoPy};
+use solders_macros::{common_methods, common_methods_rpc_resp, richcmp_eq_only};
 use solders_primitives::epoch_schedule::EpochSchedule;
 use solders_pubkey::Pubkey;
 use solders_signature::Signature;
@@ -97,11 +99,11 @@ pub trait CommonMethodsRpcResp<'a>:
     + std::fmt::Debug
     + PyBytesBincode
     + PyFromBytesBincode<'a>
-    + IntoPy<PyObject>
     + Clone
     + Serialize
     + Deserialize<'a>
     + PyClass
+    where for<'py> Self: pyo3::IntoPyObject<'py>
 {
     fn pybytes<'b>(&self) -> Vec<u8> {
         PyBytesBincode::pybytes_bincode(self)
@@ -116,14 +118,6 @@ pub trait CommonMethodsRpcResp<'a>:
 
     fn py_from_bytes(raw: &'a [u8]) -> PyResult<Self> {
         <Self as PyFromBytesBincode>::py_from_bytes_bincode(raw)
-    }
-
-    fn pyreduce(&self) -> PyResult<(PyObject, PyObject)> {
-        let cloned = self.clone();
-        Python::with_gil(|py| {
-            let constructor = cloned.into_py(py).getattr(py, "from_bytes")?;
-            Ok((constructor, (self.pybytes().to_object(py),).to_object(py)))
-        })
     }
 
     fn py_to_json(&self) -> String {
@@ -283,7 +277,7 @@ macro_rules! contextless_resp_no_eq {
     };
 }
 
-#[derive(FromPyObject, Clone, Debug, PartialEq, Eq, EnumIntoPy)]
+#[derive(FromPyObject, Clone, Debug, PartialEq, Eq, IntoPyObject)]
 pub enum RPCError {
     Fieldless(RpcCustomErrorFieldless),
     BlockCleanedUpMessage(BlockCleanedUpMessage),
@@ -576,7 +570,7 @@ impl Serialize for RPCError {
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 #[serde(untagged)]
-pub enum Resp<T: IntoPy<PyObject>> {
+pub enum Resp<T> where T: for<'py> IntoPyObject<'py> {
     Result {
         #[serde(skip_deserializing)]
         jsonrpc: solders_rpc_version::V2,
@@ -593,12 +587,16 @@ pub enum Resp<T: IntoPy<PyObject>> {
     },
 }
 
-impl<T: PyClass + IntoPy<PyObject>> IntoPy<PyObject> for Resp<T> {
-    fn into_py(self, py: Python<'_>) -> PyObject {
-        match self {
-            Self::Error { error: e, .. } => e.into_py(py),
-            Self::Result { result: r, .. } => r.into_py(py),
-        }
+impl<'py, T> IntoPyObject<'py> for Resp<T> where T: for<'py2> IntoPyObject<'py2>{
+    type Target = PyAny; // the Python type
+    type Output = Bound<'py, Self::Target>; // in most cases this will be `Bound`
+    type Error = std::convert::Infallible;
+
+    fn into_pyobject(self, py: Python<'py>) -> Result<Self::Output, <Resp<T> as IntoPyObject>::Error> {
+        Ok(match self {
+            Self::Error { error: e, .. } => e.into_bound_py_any(py).unwrap(),
+            Self::Result { result: r, .. } => r.into_bound_py_any(py).unwrap(),
+        })
     }
 }
 
@@ -652,23 +650,27 @@ pub enum Notification {
     },
 }
 
-impl IntoPy<PyObject> for Notification {
-    fn into_py(self, py: Python<'_>) -> PyObject {
-        match self {
-            Self::AccountNotification { params: p, .. } => p.into_py(py),
-            Self::BlockNotification { params: p, .. } => p.into_py(py),
-            Self::LogsNotification { params: p, .. } => p.into_py(py),
-            Self::ProgramNotification { params: p, .. } => p.into_py(py),
-            Self::SignatureNotification { params: p, .. } => p.into_py(py),
-            Self::SlotNotification { params: p, .. } => p.into_py(py),
-            Self::SlotsUpdatesNotification { params: p, .. } => p.into_py(py),
-            Self::RootNotification { params: p, .. } => p.into_py(py),
-            Self::VoteNotification { params: p, .. } => p.into_py(py),
-        }
+impl<'py> IntoPyObject<'py> for Notification {
+    type Target = PyAny; // the Python type
+    type Output = Bound<'py, Self::Target>; // in most cases this will be `Bound`
+    type Error = std::convert::Infallible;
+
+    fn into_pyobject(self, py: Python<'py>) -> Result<Self::Output, Self::Error> {
+        Ok((match self {
+            Self::AccountNotification { params: p, .. } => p.into_bound_py_any(py),
+            Self::BlockNotification { params: p, .. } => p.into_bound_py_any(py),
+            Self::LogsNotification { params: p, .. } => p.into_bound_py_any(py),
+            Self::ProgramNotification { params: p, .. } => p.into_bound_py_any(py),
+            Self::SignatureNotification { params: p, .. } => p.into_bound_py_any(py),
+            Self::SlotNotification { params: p, .. } => p.into_bound_py_any(py),
+            Self::SlotsUpdatesNotification { params: p, .. } => p.into_bound_py_any(py),
+            Self::RootNotification { params: p, .. } => p.into_bound_py_any(py),
+            Self::VoteNotification { params: p, .. } => p.into_bound_py_any(py),
+        }).unwrap())
     }
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, EnumIntoPy)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, IntoPyObject)]
 #[serde(untagged)]
 pub enum WebsocketMessage {
     Notification(Notification),
@@ -681,9 +683,13 @@ pub enum WebsocketMessage {
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct WebsocketMessages(#[serde_as(deserialize_as = "OneOrMany<_>")] Vec<WebsocketMessage>);
 
-impl IntoPy<PyObject> for WebsocketMessages {
-    fn into_py(self, py: Python<'_>) -> PyObject {
-        self.0.into_py(py)
+impl<'py> IntoPyObject<'py> for WebsocketMessages {
+    type Target = PyAny; // the Python type
+    type Output = Bound<'py, Self::Target>; // in most cases this will be `Bound`
+    type Error = std::convert::Infallible;
+
+    fn into_pyobject(self, py: Python<'py>) -> Result<Self::Output, Self::Error> {
+        Ok(self.0.into_bound_py_any(py).unwrap())
     }
 }
 
@@ -1539,7 +1545,7 @@ impl From<SlotUpdateFrozen> for SlotUpdateOriginal {
     }
 }
 
-#[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, EnumIntoPy)]
+#[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, IntoPyObject)]
 #[serde(rename_all = "camelCase", tag = "type")]
 pub enum SlotUpdate {
     FirstShredReceived(SlotUpdateFirstShredReceived),
@@ -1663,7 +1669,7 @@ impl RpcVote {
     }
 }
 
-#[derive(FromPyObject, Serialize, Deserialize, Clone, Debug, PartialEq, Eq, EnumIntoPy)]
+#[derive(FromPyObject, Serialize, Deserialize, Clone, Debug, PartialEq, Eq, IntoPyObject)]
 #[serde(untagged)]
 pub enum RpcBlockUpdateError {
     BlockStoreError(BlockStoreError),
@@ -1801,12 +1807,16 @@ macro_rules ! pyunion_resp {
             }
         }
 
-        impl IntoPy<PyObject> for $name {
-            fn into_py(self, py: Python<'_>) -> PyObject {
-                match self {
-                    Self::$err_variant(x) => x.into_py(py),
-                    $(Self::$variant(x) => x.into_py(py),)+
-                }
+        impl<'py> IntoPyObject<'py> for $name {
+            type Target = PyAny; // the Python type
+            type Output = Bound<'py, Self::Target>; // in most cases this will be `Bound`
+            type Error = std::convert::Infallible;
+        
+            fn into_pyobject(self, py: Python<'py>) -> Result<Self::Output, Self::Error> {
+                Ok(match self {
+                    Self::$err_variant(x) => x.into_bound_py_any(py).unwrap(),
+                    $(Self::$variant(x) => x.into_bound_py_any(py).unwrap(),)+
+                })
             }
         }
     }
@@ -1893,7 +1903,7 @@ pyunion_resp!(
 ///     '[{"id":0,"jsonrpc":"2.0","result":1233},{"id":0,"jsonrpc":"2.0","result":1}]'
 ///
 #[pyfunction]
-pub fn batch_to_json(resps: Vec<RPCResult>) -> String {
+pub fn batch_responses_to_json(resps: Vec<RPCResult>) -> String {
     let objects: Vec<serde_json::Map<String, Value>> = resps
         .iter()
         .map(|r| serde_json::from_str(&r.to_json()).unwrap())
@@ -1921,7 +1931,7 @@ pub fn batch_to_json(resps: Vec<RPCResult>) -> String {
 ///     )]
 ///
 #[pyfunction]
-pub fn batch_from_json(raw: &str, parsers: Vec<Bound<'_, PyType>>) -> PyResult<Vec<PyObject>> {
+pub fn batch_responses_from_json<'py>(raw: &str, parsers: Vec<Bound<'_, PyType>>, py: Python<'py>) -> PyResult<Vec<Bound<'py, PyAny>>> {
     let raw_objects: Vec<serde_json::Map<String, Value>> =
         serde_json::from_str(raw).map_err(to_py_err)?;
     let raw_objects_len = raw_objects.len();
@@ -1937,7 +1947,7 @@ pub fn batch_from_json(raw: &str, parsers: Vec<Bound<'_, PyType>>) -> PyResult<V
                 &name.to_string(),
             )
         });
-        Python::with_gil(|py| parsed.map(|obj| obj.map(|o| o.into_py(py))).collect())
+        parsed.map(|obj| obj.map(|o| o.into_pyobject(py).unwrap())).collect()
     }
 }
 
@@ -2118,8 +2128,8 @@ pub fn include_responses(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<BlockStoreError>()?;
     m.add_class::<UnsubscribeResult>()?;
     let funcs = [
-        wrap_pyfunction!(batch_to_json, m)?,
-        wrap_pyfunction!(batch_from_json, m)?,
+        wrap_pyfunction!(batch_responses_to_json, m)?,
+        wrap_pyfunction!(batch_responses_from_json, m)?,
         wrap_pyfunction!(parse_websocket_message, m)?,
         wrap_pyfunction!(parse_notification, m)?,
     ];

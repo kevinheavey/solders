@@ -156,19 +156,10 @@ impl SimulatedTransactionInfo {
     }
 }
 
-#[derive(FromPyObject, Clone, PartialEq, Debug)]
+#[derive(FromPyObject, Clone, PartialEq, Debug, IntoPyObject)]
 pub enum TransactionResult {
     Ok(TransactionMetadata),
     Err(FailedTransactionMetadata),
-}
-
-impl IntoPy<PyObject> for TransactionResult {
-    fn into_py(self, py: Python<'_>) -> PyObject {
-        match self {
-            Self::Ok(x) => x.into_py(py),
-            Self::Err(e) => e.into_py(py),
-        }
-    }
 }
 
 impl From<TransactionResultOriginal> for TransactionResult {
@@ -180,19 +171,10 @@ impl From<TransactionResultOriginal> for TransactionResult {
     }
 }
 
-#[derive(FromPyObject, Clone, PartialEq, Debug)]
+#[derive(FromPyObject, Clone, PartialEq, Debug, IntoPyObject)]
 pub enum SimulateResult {
     Ok(SimulatedTransactionInfo),
     Err(FailedTransactionMetadata),
-}
-
-impl IntoPy<PyObject> for SimulateResult {
-    fn into_py(self, py: Python<'_>) -> PyObject {
-        match self {
-            Self::Ok(x) => x.into_py(py),
-            Self::Err(e) => e.into_py(py),
-        }
-    }
 }
 
 type SimResultOriginal =
@@ -208,7 +190,6 @@ impl From<SimResultOriginal> for SimulateResult {
 }
 
 pub fn include_transaction_metadata(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    
     m.add_class::<InnerInstruction>()?;
     m.add_class::<TransactionMetadata>()?;
     m.add_class::<FailedTransactionMetadata>()?;

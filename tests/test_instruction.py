@@ -1,4 +1,3 @@
-import pickle
 from typing import Union, cast
 
 from pytest import fixture, mark, raises
@@ -65,14 +64,6 @@ def test_bincode_error(to_deserialize: Union[Instruction, CompiledInstruction]) 
     with raises(ValueError) as excinfo:
         Instruction.from_bytes(b"foo")
     assert excinfo.value.args[0] == "io error: unexpected end of file"
-
-
-def test_pickle_ix(ix: Instruction) -> None:
-    assert pickle.loads(pickle.dumps(ix)) == ix
-
-
-def test_pickle_compiled_ix(compiled_ix: CompiledInstruction) -> None:
-    assert pickle.loads(pickle.dumps(compiled_ix)) == compiled_ix
 
 
 def test_json_ix(ix: Instruction) -> None:

@@ -1,6 +1,5 @@
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
-use solders_macros::EnumIntoPy;
 use solders_rpc_errors_no_tx_status::{
     BlockCleanedUp, BlockCleanedUpMessage, BlockNotAvailable, BlockNotAvailableMessage,
     BlockStatusNotAvailableYet, BlockStatusNotAvailableYetMessage, InternalErrorMessage,
@@ -16,7 +15,7 @@ use solders_rpc_errors_tx_status::{
     SendTransactionPreflightFailure, SendTransactionPreflightFailureMessage,
 };
 
-#[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, EnumIntoPy)]
+#[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, IntoPyObject)]
 #[serde(untagged)]
 pub enum RpcCustomError {
     Fieldless(RpcCustomErrorFieldless),

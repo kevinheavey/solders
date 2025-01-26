@@ -16,7 +16,7 @@ use solana_program::{
     },
     pubkey::Pubkey as PubkeyOriginal,
 };
-use solders_macros::{common_methods, richcmp_eq_only, EnumIntoPy};
+use solders_macros::{common_methods, richcmp_eq_only};
 use solders_traits::{handle_py_err, PyErrWrapper};
 use solders_traits_core::{
     handle_py_value_err, impl_display, py_from_bytes_general_via_bincode,
@@ -794,7 +794,7 @@ impl MessageV0 {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize, FromPyObject, EnumIntoPy)]
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize, FromPyObject, IntoPyObject)]
 #[serde(from = "VersionedMessageOriginal", into = "VersionedMessageOriginal")]
 pub enum VersionedMessage {
     Legacy(Message),

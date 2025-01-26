@@ -1,10 +1,10 @@
 use std::str::FromStr;
 
-use pyo3::prelude::*;
+use pyo3::{IntoPyObject, prelude::*};
 use serde::{Deserialize, Serialize};
 use solana_rpc_client_api::config as rpc_config;
 use solders_commitment_config::CommitmentLevel;
-use solders_macros::{common_methods, richcmp_eq_only, EnumIntoPy};
+use solders_macros::{common_methods, richcmp_eq_only};
 use solders_pubkey::Pubkey;
 use solders_traits_core::{
     impl_display, py_from_bytes_general_via_cbor, pybytes_general_via_cbor, RichcmpEqualityOnly,
@@ -410,7 +410,7 @@ impl RpcEpochConfig {
     }
 }
 
-#[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, EnumIntoPy)]
+#[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, IntoPyObject)]
 pub enum TransactionLogsFilterWrapper {
     Plain(RpcTransactionLogsFilter),
     Mentions(RpcTransactionLogsFilterMentions),
@@ -479,7 +479,7 @@ impl RpcTransactionLogsConfig {
     }
 }
 
-#[derive(FromPyObject, Clone, Debug, PartialEq, Eq, Serialize, Deserialize, EnumIntoPy)]
+#[derive(FromPyObject, Clone, Debug, PartialEq, Eq, Serialize, Deserialize, IntoPyObject)]
 pub enum RpcTokenAccountsFilterWrapper {
     Mint(RpcTokenAccountsFilterMint),
     ProgramId(RpcTokenAccountsFilterProgramId),
@@ -555,7 +555,7 @@ impl RpcSignatureSubscribeConfig {
     }
 }
 
-#[derive(FromPyObject, Serialize, Deserialize, Clone, Debug, PartialEq, Eq, EnumIntoPy)]
+#[derive(FromPyObject, Serialize, Deserialize, Clone, Debug, PartialEq, Eq, IntoPyObject)]
 pub enum RpcBlockSubscribeFilterWrapper {
     All(RpcBlockSubscribeFilter),
     MentionsAccountOrProgram(RpcBlockSubscribeFilterMentions),

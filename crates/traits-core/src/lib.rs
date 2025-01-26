@@ -88,9 +88,7 @@ macro_rules! pybytes_general_for_pybytes_slice {
 macro_rules! pybytes_general_for_pybytes_bincode {
     ($ident:ident) => {
         impl $crate::PyBytesGeneral for $ident {
-            fn pybytes_general<'a>(
-                &self,
-            ) -> Vec<u8> {
+            fn pybytes_general<'a>(&self) -> Vec<u8> {
                 $crate::PyBytesBincode::pybytes_bincode(self)
             }
         }
@@ -101,9 +99,7 @@ macro_rules! pybytes_general_for_pybytes_bincode {
 macro_rules! pybytes_general_for_pybytes_cbor {
     ($ident:ident) => {
         impl $crate::PyBytesGeneral for $ident {
-            fn pybytes_general<'a>(
-                &self,
-            ) -> Vec<u8> {
+            fn pybytes_general<'a>(&self) -> Vec<u8> {
                 $crate::PyBytesCbor::pybytes_cbor(self)
             }
         }
@@ -215,7 +211,7 @@ pub trait PyFromBytesGeneral: Sized {
 }
 
 pub trait CommonMethodsCore:
-    fmt::Display + fmt::Debug + PyBytesGeneral + PyFromBytesGeneral + IntoPy<PyObject> + Clone
+    fmt::Display + fmt::Debug + PyBytesGeneral + PyFromBytesGeneral + Clone
 {
     fn pybytes(&self) -> Vec<u8> {
         PyBytesGeneral::pybytes_general(self)
@@ -231,20 +227,10 @@ pub trait CommonMethodsCore:
     fn py_from_bytes(raw: &[u8]) -> PyResult<Self> {
         <Self as PyFromBytesGeneral>::py_from_bytes_general(raw)
     }
-
-    fn pyreduce(&self) -> PyResult<(PyObject, PyObject)> {
-        let cloned = self.clone();
-        Python::with_gil(|py| {
-            let constructor = cloned.into_py(py).getattr(py, "from_bytes")?;
-            Ok((
-                constructor,
-                (PyBytesGeneral::pybytes_general(self).to_object(py),).to_object(py),
-            ))
-        })
-    }
 }
 
-pub trait CommonMethods<'a>: CommonMethodsCore + Serialize + Deserialize<'a> {
+pub trait CommonMethods<'a>: CommonMethodsCore + Serialize + Deserialize<'a>
+{
     fn py_to_json(&self) -> String {
         serde_json::to_string(self).unwrap()
     }

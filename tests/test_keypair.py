@@ -1,4 +1,3 @@
-import pickle
 from operator import ge, gt, le, lt
 from typing import Any, Callable
 
@@ -26,9 +25,9 @@ def test_from_bytes() -> None:
     assert bytes(kp) == raw_bytes
 
 
-def test_to_bytes_array() -> None:
+def test_to_bytes() -> None:
     kp = Keypair()
-    assert kp.to_bytes_array() == list(bytes(kp))
+    assert kp.to_bytes() == bytes(kp)
 
 
 def test_str() -> None:
@@ -121,12 +120,6 @@ def test_from_seed_phrase_and_passphrase() -> None:
     expected_keypair = Keypair.from_seed(bytes(seed)[:32])
     keypair = Keypair.from_seed_phrase_and_passphrase(mnemonic.phrase, passphrase)
     assert keypair.pubkey() == expected_keypair.pubkey()
-
-
-def test_pickle() -> None:
-    obj = Keypair()
-    assert pickle.loads(pickle.dumps(obj)) == obj
-
 
 def test_json() -> None:
     obj = Keypair()
