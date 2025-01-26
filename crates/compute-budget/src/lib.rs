@@ -416,7 +416,7 @@ impl ComputeBudget {
 
 pub fn include_compute_budget(m: &Bound<'_, PyModule>) -> PyResult<()> {
     
-    m.add("ID", Pubkey(ID))?;
+    m.add("COMPUTE_BUDGET_ID", Pubkey(ID))?;
     let funcs = [
         wrap_pyfunction!(request_heap_frame, m)?,
         wrap_pyfunction!(set_compute_unit_limit, m)?,

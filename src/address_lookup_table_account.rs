@@ -16,7 +16,7 @@ pub(crate) fn include_address_lookup_table_account(m: &Bound<'_, PyModule>) -> P
     m.add_class::<LookupTableStatusFieldless>()?;
     m.add_class::<LookupTableStatusDeactivating>()?;
     m.add_class::<SlotHashes>()?;
-    m.add("ID", solders_pubkey::Pubkey(ID))?;
+    m.add("ADDRESS_LOOKUP_TABLE_ID", solders_pubkey::Pubkey(ID))?;
     m.add("LOOKUP_TABLE_MAX_ADDRESSES", LOOKUP_TABLE_MAX_ADDRESSES)?;
     m.add("LOOKUP_TABLE_META_SIZE", LOOKUP_TABLE_META_SIZE)?;
     m.add_function(wrap_pyfunction!(derive_lookup_table_address, m)?)?;
