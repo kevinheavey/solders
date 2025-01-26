@@ -14,10 +14,7 @@ use solders_traits_core::{
 };
 use solders_transaction_confirmation_status::TransactionConfirmationStatus;
 use solders_transaction_error::{
-    InstructionErrorBorshIO, InstructionErrorCustom, InstructionErrorFieldless,
-    TransactionErrorDuplicateInstruction, TransactionErrorFieldless,
-    TransactionErrorInstructionError, TransactionErrorInsufficientFundsForRent,
-    TransactionErrorType,
+    InstructionErrorBorshIO, InstructionErrorCustom, InstructionErrorFieldless, TransactionErrorDuplicateInstruction, TransactionErrorFieldless, TransactionErrorInstructionError, TransactionErrorInsufficientFundsForRent, TransactionErrorProgramExecutionTemporarilyRestricted, TransactionErrorType
 };
 use solders_transaction_return_data::TransactionReturnData;
 use solders_transaction_status_enums::{TransactionDetails, UiTransactionEncoding};
@@ -1200,6 +1197,7 @@ pub fn include_transaction_status(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<TransactionErrorInstructionError>()?;
     m.add_class::<TransactionErrorDuplicateInstruction>()?;
     m.add_class::<TransactionErrorInsufficientFundsForRent>()?;
+    m.add_class::<TransactionErrorProgramExecutionTemporarilyRestricted>()?;
     m.add_class::<TransactionErrorFieldless>()?;
     m.add_class::<Reward>()?;
     m.add_class::<TransactionConfirmationStatus>()?;

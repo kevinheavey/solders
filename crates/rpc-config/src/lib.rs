@@ -1,10 +1,7 @@
 use pyo3::prelude::*;
 use solders_rpc_account_info_config::RpcAccountInfoConfig;
 use solders_rpc_config_no_filter::{
-    RpcBlockConfig, RpcBlockProductionConfig, RpcBlockProductionConfigRange,
-    RpcBlockSubscribeConfig, RpcContextConfig, RpcEpochConfig, RpcGetVoteAccountsConfig,
-    RpcLargestAccountsFilter, RpcLeaderScheduleConfig, RpcSignatureSubscribeConfig,
-    RpcSupplyConfig, RpcTransactionConfig, RpcTransactionLogsConfig,
+    RpcBlockConfig, RpcBlockProductionConfig, RpcBlockProductionConfigRange, RpcBlockSubscribeConfig, RpcContextConfig, RpcEpochConfig, RpcGetVoteAccountsConfig, RpcLargestAccountsConfig, RpcLargestAccountsFilter, RpcLeaderScheduleConfig, RpcSignatureSubscribeConfig, RpcSupplyConfig, RpcTransactionConfig, RpcTransactionLogsConfig
 };
 use solders_rpc_config_no_rpc_api::{
     RpcBlockSubscribeFilter, RpcBlockSubscribeFilterMentions, RpcTransactionLogsFilter,
@@ -29,6 +26,7 @@ pub fn include_config(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<RpcBlockProductionConfigRange>()?;
     m.add_class::<RpcBlockProductionConfig>()?;
     m.add_class::<RpcGetVoteAccountsConfig>()?;
+    m.add_class::<RpcLargestAccountsConfig>()?;
     m.add_class::<RpcLargestAccountsFilter>()?;
     m.add_class::<RpcSupplyConfig>()?;
     m.add_class::<RpcEpochConfig>()?;

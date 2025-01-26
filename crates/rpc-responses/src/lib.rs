@@ -2089,6 +2089,7 @@ pub fn include_responses(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<SlotUpdateCompleted>()?;
     m.add_class::<SlotUpdateCreatedBank>()?;
     m.add_class::<SlotUpdateDead>()?;
+    m.add_class::<SlotUpdateFrozen>()?;
     m.add_class::<SlotUpdateOptimisticConfirmation>()?;
     m.add_class::<SlotUpdateRoot>()?;
     m.add_class::<RpcVote>()?;
