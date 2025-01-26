@@ -28,15 +28,13 @@ use std::str::FromStr;
 use pyo3::{prelude::*, pyclass::CompareOp, IntoPyObject};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use solana_sdk::{clock::UnixTimestamp, slot_history::Slot};
-use solana_transaction_status::{
-    parse_accounts::{
+use solana_sdk::{clock::UnixTimestamp, reward_type::RewardType as RewardTypeOriginal, slot_history::Slot};
+use solana_transaction_status_client_types::{
         ParsedAccount as ParsedAccountOriginal, ParsedAccountSource as ParsedAccountSourceOriginal,
-    },
-    parse_instruction::ParsedInstruction as ParsedInstructionOriginal,
+    ParsedInstruction as ParsedInstructionOriginal,
     EncodedTransaction as EncodedTransactionOriginal,
     EncodedTransactionWithStatusMeta as EncodedTransactionWithStatusMetaOriginal,
-    Reward as RewardOriginal, RewardType as RewardTypeOriginal,
+    Reward as RewardOriginal,
     TransactionBinaryEncoding as TransactionBinaryEncodingOriginal,
     UiAccountsList as UiAccountsListOriginal, UiAddressTableLookup as UiAddressTableLookupOriginal,
     UiCompiledInstruction as UiCompiledInstructionOriginal,

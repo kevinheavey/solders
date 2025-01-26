@@ -1,6 +1,6 @@
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
-use solana_transaction_status::{
+use solana_transaction_status_client_types::{
     TransactionDetails as TransactionDetailsOriginal,
     UiTransactionEncoding as UiTransactionEncodingOriginal,
 };

@@ -17,5 +17,5 @@ solders-rpc-config-macros = { workspace = true }
 solders-rpc-simulate-tx-accounts-config = { workspace = true }
 solders-commitment-config = { workspace = true }
 solders-traits-core = { workspace = true }
-solana-transaction-status = { workspace = true }
+solana-transaction-status-client-types = { workspace = true }
 solders-transaction-status-enums = { workspace = true }

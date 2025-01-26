@@ -11,7 +11,7 @@ use solders_traits_core::{
     py_from_bytes_general_via_bincode, pybytes_general_via_bincode, RichcmpEqualityOnly,
 };
 
-use solana_account_decoder::{UiAccount, UiAccountData, UiAccountEncoding};
+use solana_account_decoder_client_types::{UiAccount, UiAccountData, UiAccountEncoding};
 use solders_account_decoder::ParsedAccount;
 
 // The Account from solana_sdk doesn't serialize the owner pubkey as base58,

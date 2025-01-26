@@ -2,9 +2,9 @@ use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use serde_with::serde_as;
 
-use solana_account_decoder::UiAccount;
+use solana_account_decoder_client_types::UiAccount;
 use solana_rpc_client_api::response::RpcSimulateTransactionResult as RpcSimulateTransactionResultOriginal;
-use solana_transaction_status::UiInnerInstructions as UiInnerInstructionsOriginal;
+use solana_transaction_status_client_types::UiInnerInstructions as UiInnerInstructionsOriginal;
 use solders_account::Account;
 use solders_macros::{common_methods, richcmp_eq_only};
 use solders_rpc_response_data_boilerplate::response_data_boilerplate;

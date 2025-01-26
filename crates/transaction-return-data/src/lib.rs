@@ -7,7 +7,7 @@ use solders_traits_core::transaction_status_boilerplate;
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use solana_sdk::transaction_context::TransactionReturnData as TransactionReturnDataOriginal;
-use solana_transaction_status::UiTransactionReturnData;
+use solana_transaction_status_client_types::UiTransactionReturnData;
 use solders_macros::{common_methods, richcmp_eq_only};
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]

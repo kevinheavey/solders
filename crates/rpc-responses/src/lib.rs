@@ -11,7 +11,7 @@ use pyo3::{prelude::*, IntoPyObject, IntoPyObjectExt, PyClass};
 use serde::{de::Error, Deserialize, Serialize, Serializer};
 use serde_json::Value;
 use serde_with::{serde_as, DisplayFromStr, FromInto, OneOrMany, TryFromInto};
-use solana_account_decoder::UiAccount;
+use solana_account_decoder_client_types::UiAccount;
 use solana_rpc_client_api::{
     custom_error::{
         JSON_RPC_SCAN_ERROR, JSON_RPC_SERVER_ERROR_BLOCK_CLEANED_UP,
@@ -47,7 +47,7 @@ use solana_rpc_client_api::{
     },
 };
 use solana_sdk::clock::{Epoch, Slot, UnixTimestamp};
-use solana_transaction_status::TransactionStatus as TransactionStatusOriginal;
+use solana_transaction_status_client_types::TransactionStatus as TransactionStatusOriginal;
 use solders_account::{Account, AccountJSON};
 use solders_account_decoder::UiTokenAmount;
 use solders_epoch_info::EpochInfo;

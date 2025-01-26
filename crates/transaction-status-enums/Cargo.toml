@@ -11,5 +11,5 @@ description = "Solders transaction status enums crate."
 [dependencies]
 serde = { workspace = true }
 pyo3 = { workspace = true, features = ["macros"] }
-solana-transaction-status = { workspace = true }
+solana-transaction-status-client-types = { workspace = true }
 solders-macros = { workspace = true }

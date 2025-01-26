@@ -7,7 +7,7 @@ use solders_transaction_error::TransactionErrorType;
 
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
-use solana_transaction_status::TransactionStatus as TransactionStatusOriginal;
+use solana_transaction_status_client_types::TransactionStatus as TransactionStatusOriginal;
 use solders_macros::{common_methods, richcmp_eq_only};
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]

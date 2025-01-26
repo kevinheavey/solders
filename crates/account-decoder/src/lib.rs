@@ -9,9 +9,9 @@ use pyo3::prelude::*;
 use pythonize::{depythonize, pythonize};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use solana_account_decoder::{
-    parse_account_data::ParsedAccount as ParsedAccountOriginal,
-    parse_token::UiTokenAmount as UiTokenAmountOriginal,
+use solana_account_decoder_client_types::{
+    ParsedAccount as ParsedAccountOriginal,
+    token::UiTokenAmount as UiTokenAmountOriginal,
     UiAccountEncoding as UiAccountEncodingOriginal, UiDataSliceConfig as UiDataSliceConfigOriginal,
 };
 use solders_macros::{common_methods, enum_original_mapping, richcmp_eq_only};

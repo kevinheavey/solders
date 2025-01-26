@@ -12,4 +12,4 @@ description = "Solders transaction confirmation status crate."
 pyo3 = { workspace = true, features = ["macros"] }
 serde = { workspace = true }
 solders-macros = { workspace = true }
-solana-transaction-status = { workspace = true }
+solana-transaction-status-client-types = { workspace = true }

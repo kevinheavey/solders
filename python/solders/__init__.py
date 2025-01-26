@@ -1,6 +1,8 @@
 import contextlib as __ctxlib
 
 from . import (
+    account,
+    account_decoder,
     address_lookup_table_account,
     clock,
     commitment_config,
@@ -25,6 +27,7 @@ from . import (
     token,
     transaction,
     transaction_metadata,
+    transaction_status,
 )
 
 __has_litesvm = False
@@ -35,14 +38,16 @@ with __ctxlib.suppress(ImportError):
 
 __has_ring = False
 with __ctxlib.suppress(ImportError):
-    from . import account, account_decoder, rpc, transaction_status
+    from . import rpc
 
     __has_ring = True
 
 
-__ring_modules = ["account", "account_decoder", "rpc", "transaction_status"]
+__ring_modules = ["rpc"]
 
 __all_core = [
+    "account",
+    "account_decoder",
     "address_lookup_table_account",
     "commitment_config",
     "errors",
@@ -56,6 +61,7 @@ __all_core = [
     "signature",
     "token",
     "transaction",
+    "transaction_status",
     "system_program",
     "sysvar",
 ]
