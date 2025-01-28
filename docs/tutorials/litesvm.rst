@@ -78,7 +78,7 @@ Other things you can do with ``litesvm`` include:
 
 * Changing the max compute units and other compute budget behaviour using the ``with_compute_budget`` method.
 * Disable transaction signature checking using ``svm.with_sigverify(false)``.
-* Find previous transactions using the ``get_ransaction`` method.
+* Find previous transactions using the ``get_transaction`` method.
 
 --------------------------------------------
 When should I use ``solana-test-validator``?
