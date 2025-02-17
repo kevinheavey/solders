@@ -12,7 +12,8 @@ description = "Solders SPL Token crate."
 pyo3 = { workspace = true, features = ["macros"] }
 serde = { workspace = true }
 derive_more = { workspace = true }
-solana-program = { workspace = true }
+solana-program-option = { workspace = true }
+solana-program-pack = { workspace = true }
 solders-macros = { workspace = true }
 solders-pubkey = { workspace = true }
 solders-traits-core = { workspace = true }

@@ -3,7 +3,7 @@ use std::{hash::Hash, str::FromStr};
 use derive_more::{From, Into};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
-use solana_program::pubkey::{ParsePubkeyError, Pubkey as PubkeyOriginal, PUBKEY_BYTES};
+use solana_pubkey::{ParsePubkeyError, Pubkey as PubkeyOriginal, PUBKEY_BYTES};
 use solders_macros::{common_methods, pyhash, richcmp_full};
 use solders_traits::handle_py_err;
 use solders_traits_core::{

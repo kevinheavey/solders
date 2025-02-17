@@ -1,7 +1,7 @@
 use {
     pyo3::prelude::*,
     serde::{Deserialize, Serialize},
-    solana_program::epoch_rewards::EpochRewards as EpochRewardsOriginal,
+    solana_epoch_rewards::EpochRewards as EpochRewardsOriginal,
     solders_hash::Hash as Blockhash,
     solders_traits_core::transaction_status_boilerplate,
 };

@@ -1,7 +1,6 @@
 use derive_more::{From, Into};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
-use solana_program::clock::Epoch;
 use solana_sdk::epoch_info::EpochInfo as EpochInfoOriginal;
 use solders_macros::{common_methods, richcmp_eq_only};
 
@@ -31,7 +30,7 @@ impl EpochInfo {
     #[pyo3(signature = (epoch, slot_index, slots_in_epoch, absolute_slot, block_height, transaction_count=None))]
     #[new]
     pub fn new(
-        epoch: Epoch,
+        epoch: u64,
         slot_index: u64,
         slots_in_epoch: u64,
         absolute_slot: u64,
@@ -51,7 +50,7 @@ impl EpochInfo {
 
     /// int: The current epoch
     #[getter]
-    pub fn epoch(&self) -> Epoch {
+    pub fn epoch(&self) -> u64 {
         self.0.epoch
     }
 

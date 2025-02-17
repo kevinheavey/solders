@@ -1,7 +1,7 @@
 use {
     pyo3::prelude::*,
     serde::{Deserialize, Serialize},
-    solana_program::stake_history::{
+    solana_stake_interface::stake_history::{
         StakeHistory as StakeHistoryOriginal, StakeHistoryEntry as StakeHistoryEntryOriginal,
     },
     solders_traits_core::transaction_status_boilerplate,

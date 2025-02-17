@@ -13,7 +13,9 @@ pyo3 = { workspace = true, features = ["macros"] }
 solders-traits-core = { workspace = true }
 solders-traits = { workspace = true }
 solders-macros = { workspace = true }
-solana-program = { workspace = true }
+solana-instruction = { workspace = true }
+solana-message = { workspace = true }
+solana-pubkey = { workspace = true }
 serde = { workspace = true }
 derive_more = { workspace = true }
 solders-address-lookup-table-account = { workspace = true }

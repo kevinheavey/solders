@@ -10,9 +10,11 @@ description = "Solders instruction crate."
 
 [dependencies]
 pyo3 = { workspace = true, features = ["macros"] }
+solana-instruction = { workspace = true }
+solana-message = { workspace = true }
+solana-pubkey = { workspace = true }
 solders-traits-core = { workspace = true }
 solders-macros = { workspace = true }
 solders-pubkey = { workspace = true }
-solana-program = { workspace = true }
 serde = { workspace = true }
 derive_more = { workspace = true }

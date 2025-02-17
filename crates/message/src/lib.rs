@@ -1,11 +1,11 @@
 use derive_more::{From, Into};
 use pyo3::{create_exception, exceptions::PyException, prelude::*};
 use serde::{Deserialize, Serialize};
-use solana_program::{
-    address_lookup_table::AddressLookupTableAccount as AddressLookupTableAccountOriginal,
-    instruction::CompiledInstruction as CompiledInstructionOriginal,
-    instruction::Instruction as InstructionOriginal,
-    message::{
+use {
+    solana_instruction::Instruction as InstructionOriginal,
+    solana_message::{
+        AddressLookupTableAccount as AddressLookupTableAccountOriginal,
+        compiled_instruction::CompiledInstruction as CompiledInstructionOriginal,
         legacy::Message as MessageOriginal,
         v0::{
             Message as MessageV0Original,
@@ -14,7 +14,7 @@ use solana_program::{
         MessageHeader as MessageHeaderOriginal, VersionedMessage as VersionedMessageOriginal,
         MESSAGE_HEADER_LENGTH,
     },
-    pubkey::Pubkey as PubkeyOriginal,
+    solana_pubkey::Pubkey as PubkeyOriginal,
 };
 use solders_macros::{common_methods, richcmp_eq_only};
 use solders_traits::{handle_py_err, PyErrWrapper};

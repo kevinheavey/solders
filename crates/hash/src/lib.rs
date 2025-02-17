@@ -3,9 +3,10 @@ use std::str::FromStr;
 use derive_more::{From, Into};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
-use solana_program::hash::{
-    hash, Hash as HashOriginal, ParseHashError as ParseHashErrorOriginal, HASH_BYTES,
+use solana_hash::{
+    Hash as HashOriginal, ParseHashError as ParseHashErrorOriginal, HASH_BYTES,
 };
+use solana_sha256_hasher::hash;
 use solders_macros::{common_methods, pyhash, richcmp_full};
 
 use solders_traits::handle_py_err;

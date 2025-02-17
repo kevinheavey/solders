@@ -1,7 +1,7 @@
 #![allow(deprecated)]
 use dict_derive::{FromPyObject, IntoPyObject};
 use pyo3::{exceptions::PyValueError, prelude::*};
-use solana_program::address_lookup_table::instruction::{
+use solana_address_lookup_table_interface::instruction::{
     close_lookup_table as close_lookup_table_original,
     create_lookup_table as create_lookup_table_original,
     create_lookup_table_signed as create_lookup_table_signed_original,
