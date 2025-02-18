@@ -7,7 +7,7 @@ jobs:
   release_pypi:
     runs-on: ubuntu-latest
     steps:
-      - uses: dawidd6/download-artifact@v4
+      - uses: dawidd6/action-download-artifact@v8
         with:
           workflow: build.yml
           name: wheels-.*
