@@ -13,7 +13,7 @@ base64 = { workspace = true }
 derive_more = { workspace = true }
 pyo3 = { workspace = true, features = ["macros"] }
 serde = { workspace = true }
-solana-transaction-context = { workspace = true }
+solana-transaction-context = { workspace = true, features = ["serde"] }
 solana-transaction-status-client-types = { workspace = true }
 solders-macros = { workspace = true }
 solders-pubkey = { workspace = true }
