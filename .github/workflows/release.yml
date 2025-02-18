@@ -7,10 +7,11 @@ jobs:
   release_pypi:
     runs-on: ubuntu-latest
     steps:
-      - uses: dawidd6/action-download-artifact@v2
+      - uses: dawidd6/action-download-artifact@v4
         with:
           workflow: build.yml
-          name: wheels
+          name: wheels-*
+          merge-multiple: true
       - name: Publish to PyPi
         env:
           MATURIN_PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}

@@ -65,9 +65,9 @@ jobs:
           pip install ${{ env.name }} --no-index --no-dependencies --find-links dist --force-reinstall
           pytest
       - name: Upload wheels
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
-          name: wheels
+          name: wheels-macos_universal2
           path: dist
 
   windows:
@@ -96,9 +96,9 @@ jobs:
           python -m pip install ${{ env.name }} --no-index --no-dependencies --find-links dist --force-reinstall
           python -m pytest --ignore=tests/litesvm
       - name: Upload wheels
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
-          name: wheels
+          name: wheels-windows
           path: dist
 
   linux-x86_64:
@@ -138,9 +138,9 @@ jobs:
           pip install ${{ env.name }} --no-index --no-dependencies --find-links dist --force-reinstall
           pytest
       - name: Upload wheels
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
-          name: wheels
+          name: wheels-linux-matrix-${{ matrix.target }}
           path: dist
 
   linux-i686:
@@ -176,9 +176,9 @@ jobs:
                 fi
             fi
       - name: Upload wheels
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
-          name: wheels
+          name: wheels-linux-i686
           path: dist
 
   musllinux-x86_64:
@@ -213,9 +213,9 @@ jobs:
             pip3 install ${{ env.name }} --find-links /io/dist/ --force-reinstall --no-index --no-dependencies --break-system-packages
             python3 -m pytest --ignore=tests/litesvm
       - name: Upload wheels
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
-          name: wheels
+          name: wheels-musllinux-x86_64
           path: dist
 
   musllinux-i686:
@@ -242,9 +242,9 @@ jobs:
           args: --release --no-default-features -F ring --out dist
           maturin-version: ${{ env.maturin_version }}
       - name: Upload wheels
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
-          name: wheels
+          name: wheels-musllinux-i686
           path: dist
 
   linux-aarch64:
@@ -268,9 +268,9 @@ jobs:
           args: --release --no-default-features -F ring --out dist
           maturin-version: ${{ env.maturin_version }}
       - name: Upload wheels
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
-          name: wheels
+          name: wheels-linux-aarch64
           path: dist
 
   linux-armv7:
@@ -294,9 +294,9 @@ jobs:
           args: --release --no-default-features -F ring --out dist
           maturin-version: ${{ env.maturin_version }}
       - name: Upload wheels
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
-          name: wheels
+          name: wheels-linux-armv7
           path: dist
 
   sdist:
@@ -313,7 +313,7 @@ jobs:
           args: --out dist
           maturin-version: ${{ env.maturin_version }}
       - name: Upload sdist
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
-          name: wheels
+          name: wheels-sdist
           path: dist
