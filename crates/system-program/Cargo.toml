@@ -9,15 +9,18 @@ repository = { workspace = true }
 description = "Solders system program crate."
 
 [dependencies]
-pyo3 = { workspace = true, features = ["macros"] }
-dict_derive = "0.6.0"
-solders-traits-core = { workspace = true }
-solders-traits = { workspace = true }
-solders-instruction = { workspace = true }
-solders-pubkey = { workspace = true }
-solders-macros = { workspace = true }
-solana-program = { workspace = true }
-serde = { workspace = true }
-derive_more = { workspace = true }
 bincode = { workspace = true }
-solana-sdk = { workspace = true }
+derive_more = { workspace = true }
+dict_derive = "0.6.0"
+pyo3 = { workspace = true, features = ["macros"] }
+serde = { workspace = true }
+solana-address-lookup-table-interface = { workspace = true }
+solana-instruction = { workspace = true }
+solana-pubkey = { workspace = true }
+solana-sdk-ids = { workspace = true }
+solana-system-interface = { workspace = true }
+solders-instruction = { workspace = true }
+solders-macros = { workspace = true }
+solders-pubkey = { workspace = true }
+solders-traits = { workspace = true }
+solders-traits-core = { workspace = true }

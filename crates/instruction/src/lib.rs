@@ -3,15 +3,15 @@ use std::hash::Hasher;
 use derive_more::{From, Into};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
-use solana_program::{
-    instruction::{
-        AccountMeta as AccountMetaOriginal, CompiledInstruction as CompiledInstructionOriginal,
-        Instruction as InstructionOriginal,
-    },
-    pubkey::Pubkey as PubkeyOriginal,
-};
 use solders_macros::{common_methods, pyhash, richcmp_eq_only};
 use solders_pubkey::Pubkey;
+use {
+    solana_instruction::{
+        account_meta::AccountMeta as AccountMetaOriginal, Instruction as InstructionOriginal,
+    },
+    solana_message::compiled_instruction::CompiledInstruction as CompiledInstructionOriginal,
+    solana_pubkey::Pubkey as PubkeyOriginal,
+};
 
 use solders_traits_core::{
     impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,

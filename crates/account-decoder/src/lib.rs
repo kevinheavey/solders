@@ -10,8 +10,7 @@ use pythonize::{depythonize, pythonize};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use solana_account_decoder_client_types::{
-    ParsedAccount as ParsedAccountOriginal,
-    token::UiTokenAmount as UiTokenAmountOriginal,
+    token::UiTokenAmount as UiTokenAmountOriginal, ParsedAccount as ParsedAccountOriginal,
     UiAccountEncoding as UiAccountEncodingOriginal, UiDataSliceConfig as UiDataSliceConfigOriginal,
 };
 use solders_macros::{common_methods, enum_original_mapping, richcmp_eq_only};

@@ -3,7 +3,7 @@ use std::str::FromStr;
 use derive_more::{From, Into};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
-use solana_sdk::commitment_config::{
+use solana_commitment_config::{
     CommitmentConfig as CommitmentConfigOriginal, CommitmentLevel as CommitmentLevelOriginal,
 };
 

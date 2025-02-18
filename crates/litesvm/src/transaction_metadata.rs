@@ -7,10 +7,8 @@ use {
     },
     pyo3::prelude::*,
     serde::{Deserialize, Serialize},
-    solana_sdk::{
-        account::Account as AccountOriginal,
-        inner_instruction::InnerInstruction as InnerInstructionOriginal,
-    },
+    solana_account::Account as AccountOriginal,
+    solana_message::inner_instruction::InnerInstruction as InnerInstructionOriginal,
     solders_account::Account,
     solders_instruction::CompiledInstruction,
     solders_pubkey::Pubkey,

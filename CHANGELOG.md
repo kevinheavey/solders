@@ -1,6 +1,13 @@
 # Changelog
 
-# [0.25.0] -2025-01-27
+# Unreleased 
+
+### Changed
+
+- Upgrade to Solana 2.2 crates [(#137)](https://github.com/kevinheavey/solders/pull/137)
+- Remove `from_json` methods in `solders.rpc.requests` [(#137)](https://github.com/kevinheavey/solders/pull/137)
+
+# [0.25.0] - 2025-01-27
 
 ### Changed
 

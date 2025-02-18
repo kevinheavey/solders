@@ -9,12 +9,12 @@ repository = { workspace = true }
 description = "Solders TransactionStatus struct crate."
 
 [dependencies]
+derive_more = { workspace = true }
 pyo3 = { workspace = true, features = ["macros"] }
 serde = { workspace = true }
-derive_more = { workspace = true }
+solana-transaction-status-client-types = { workspace = true }
+solders-commitment-config = { workspace = true }
 solders-macros = { workspace = true }
 solders-traits-core = { workspace = true }
-solana-transaction-status-client-types = { workspace = true }
-solders-transaction-error = { workspace = true }
 solders-transaction-confirmation-status = { workspace = true }
-solders-commitment-config = { workspace = true }
+solders-transaction-error = { workspace = true }

@@ -9,10 +9,10 @@ repository = { workspace = true }
 description = "Solders pubkey crate."
 
 [dependencies]
-pyo3 = { workspace = true, features = ["macros"] }
-solders-traits-core = { workspace = true }
-solders-traits = { workspace = true }
-solders-macros = { workspace = true }
-solana-program = { workspace = true }
-serde = { workspace = true }
 derive_more = { workspace = true }
+pyo3 = { workspace = true, features = ["macros"] }
+serde = { workspace = true }
+solana-pubkey = { workspace = true }
+solders-macros = { workspace = true }
+solders-traits = { workspace = true }
+solders-traits-core = { workspace = true }

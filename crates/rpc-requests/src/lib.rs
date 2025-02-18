@@ -1,15 +1,14 @@
 #![allow(deprecated)]
 use camelpaste::paste;
-use pyo3::{exceptions::PyValueError, prelude::*, IntoPyObject, IntoPyObjectExt};
+use pyo3::{prelude::*, IntoPyObject, IntoPyObjectExt};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use solders_commitment_config::{CommitmentConfig, CommitmentLevel};
 use solders_hash::Hash as SolderHash;
-use solders_macros::{common_methods, richcmp_eq_only, rpc_id_getter};
+use solders_macros::{common_methods_ser_only, richcmp_eq_only, rpc_id_getter};
 use solders_message::VersionedMessage;
 use solders_pubkey::Pubkey;
 use solders_signature::Signature;
-use solders_traits::to_py_err;
 use solders_traits_core::{
     py_from_bytes_general_via_cbor, pybytes_general_via_cbor, RichcmpEqualityOnly,
 };
@@ -56,21 +55,10 @@ macro_rules! request_boilerplate {
     ($name:ident) => {
         rpc_impl_display!($name);
         impl solders_traits_core::CommonMethodsCore for $name {}
-        impl solders_traits_core::CommonMethods<'_> for $name {
+        impl solders_traits_core::CommonMethodsSerOnly<'_> for $name {
             fn py_to_json(&self) -> String {
                 let wrapped = Body::from(self.clone());
                 serde_json::to_string(&wrapped).unwrap()
-            }
-
-            fn py_from_json(raw: &str) -> PyResult<Self> {
-                let parsed = serde_json::from_str::<Body>(raw).map_err(to_py_err)?;
-                match parsed {
-                    Body::$name(x) => Ok(x),
-                    _ => Err(PyValueError::new_err(format!(
-                        "Deserialized to wrong type: {:?}",
-                        parsed
-                    ))),
-                }
             }
         }
         impl RichcmpEqualityOnly for $name {}
@@ -107,7 +95,7 @@ Example:
                 }
 
                 #[richcmp_eq_only]
-                #[common_methods]
+                #[common_methods_ser_only]
                 #[rpc_id_getter]
                 #[pymethods]
                 impl $name {
@@ -150,7 +138,7 @@ Example:
                 }
 
                 #[richcmp_eq_only]
-                #[common_methods]
+                #[common_methods_ser_only]
                 #[rpc_id_getter]
                 #[pymethods]
                 impl $name {
@@ -200,7 +188,7 @@ pub struct GetAccountInfo {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl GetAccountInfo {
@@ -249,7 +237,7 @@ pub struct GetBalance {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl GetBalance {
@@ -299,7 +287,7 @@ pub struct GetBlock {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl GetBlock {
@@ -349,7 +337,7 @@ pub struct GetBlockHeight {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl GetBlockHeight {
@@ -395,7 +383,7 @@ pub struct GetBlockProduction {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl GetBlockProduction {
@@ -435,7 +423,7 @@ pub struct GetBlockCommitment {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl GetBlockCommitment {
@@ -478,7 +466,7 @@ pub struct GetBlocks {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl GetBlocks {
@@ -538,7 +526,7 @@ pub struct GetBlocksWithLimit {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl GetBlocksWithLimit {
@@ -595,7 +583,7 @@ pub struct GetBlockTime {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl GetBlockTime {
@@ -642,7 +630,7 @@ pub struct GetEpochInfo {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl GetEpochInfo {
@@ -687,7 +675,7 @@ pub struct GetFeeForMessage {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl GetFeeForMessage {
@@ -747,7 +735,7 @@ pub struct GetInflationGovernor {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl GetInflationGovernor {
@@ -793,7 +781,7 @@ pub struct GetInflationReward {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl GetInflationReward {
@@ -846,7 +834,7 @@ pub struct GetLargestAccounts {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl GetLargestAccounts {
@@ -905,7 +893,7 @@ pub struct GetLatestBlockhash {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl GetLatestBlockhash {
@@ -951,7 +939,7 @@ pub struct GetLeaderSchedule {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl GetLeaderSchedule {
@@ -1004,7 +992,7 @@ pub struct GetMinimumBalanceForRentExemption {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl GetMinimumBalanceForRentExemption {
@@ -1059,7 +1047,7 @@ pub struct GetMultipleAccounts {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl GetMultipleAccounts {
@@ -1111,7 +1099,7 @@ pub struct GetProgramAccounts {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl GetProgramAccounts {
@@ -1159,7 +1147,7 @@ pub struct GetRecentPerformanceSamples {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl GetRecentPerformanceSamples {
@@ -1202,7 +1190,7 @@ pub struct GetSignaturesForAddress {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl GetSignaturesForAddress {
@@ -1256,7 +1244,7 @@ pub struct GetSignatureStatuses {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl GetSignatureStatuses {
@@ -1310,7 +1298,7 @@ pub struct GetSlot {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl GetSlot {
@@ -1354,7 +1342,7 @@ pub struct GetSlotLeader {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl GetSlotLeader {
@@ -1395,7 +1383,7 @@ pub struct GetSlotLeaders {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl GetSlotLeaders {
@@ -1445,7 +1433,7 @@ pub struct GetStakeActivation {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl GetStakeActivation {
@@ -1495,7 +1483,7 @@ pub struct GetSupply {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl GetSupply {
@@ -1538,7 +1526,7 @@ pub struct GetTokenAccountBalance {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl GetTokenAccountBalance {
@@ -1596,7 +1584,7 @@ pub struct GetTokenAccountsByDelegate {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl GetTokenAccountsByDelegate {
@@ -1666,7 +1654,7 @@ pub struct GetTokenAccountsByOwner {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl GetTokenAccountsByOwner {
@@ -1725,7 +1713,7 @@ pub struct GetTokenLargestAccounts {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl GetTokenLargestAccounts {
@@ -1773,7 +1761,7 @@ pub struct GetTokenSupply {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl GetTokenSupply {
@@ -1823,7 +1811,7 @@ pub struct GetTransaction {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl GetTransaction {
@@ -1873,7 +1861,7 @@ pub struct GetTransactionCount {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl GetTransactionCount {
@@ -1918,7 +1906,7 @@ pub struct GetVoteAccounts {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl GetVoteAccounts {
@@ -1960,7 +1948,7 @@ pub struct IsBlockhashValid {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl IsBlockhashValid {
@@ -2013,7 +2001,7 @@ pub struct RequestAirdrop {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl RequestAirdrop {
@@ -2091,7 +2079,7 @@ pub struct SendVersionedTransaction {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl SendVersionedTransaction {
@@ -2162,7 +2150,7 @@ pub struct SendLegacyTransaction {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl SendLegacyTransaction {
@@ -2228,7 +2216,7 @@ pub struct SendRawTransaction {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl SendRawTransaction {
@@ -2297,7 +2285,7 @@ pub struct SimulateLegacyTransaction {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl SimulateLegacyTransaction {
@@ -2366,7 +2354,7 @@ pub struct SimulateVersionedTransaction {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl SimulateVersionedTransaction {
@@ -2421,7 +2409,7 @@ pub struct AccountSubscribe {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl AccountSubscribe {
@@ -2475,7 +2463,7 @@ pub struct BlockSubscribe {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl BlockSubscribe {
@@ -2532,7 +2520,7 @@ pub struct LogsSubscribe {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl LogsSubscribe {
@@ -2589,7 +2577,7 @@ pub struct ProgramSubscribe {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl ProgramSubscribe {
@@ -2639,7 +2627,7 @@ pub struct SignatureSubscribe {
 }
 
 #[richcmp_eq_only]
-#[common_methods]
+#[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
 impl SignatureSubscribe {
@@ -2675,7 +2663,7 @@ zero_param_req_def!(VoteSubscribe);
 
 macro_rules ! pyunion {
     ($name:ident, $($variant:ident),+) => {
-        #[derive(FromPyObject, Clone, Debug, PartialEq, Serialize, Deserialize)]
+        #[derive(FromPyObject, Clone, Debug, PartialEq, Serialize)]
         #[serde(tag = "method", rename_all = "camelCase")]
         pub enum $name {
             $($variant($variant),)+
@@ -2787,18 +2775,6 @@ pub fn batch_requests_to_json(reqs: Vec<Body>) -> String {
     serde_json::to_string(&reqs).unwrap()
 }
 
-#[pyfunction]
-pub fn batch_requests_from_json<'py>(
-    py: Python<'py>,
-    raw: &str,
-) -> PyResult<Vec<Bound<'py, PyAny>>> {
-    let deser: Vec<Body> = serde_json::from_str(raw).unwrap();
-    Ok(deser
-        .into_iter()
-        .map(|x| x.into_bound_py_any(py).unwrap())
-        .collect())
-}
-
 pub fn include_requests(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<GetAccountInfo>()?;
     m.add_class::<GetBalance>()?;
@@ -2873,10 +2849,7 @@ pub fn include_requests(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<SlotsUpdatesUnsubscribe>()?;
     m.add_class::<RootUnsubscribe>()?;
     m.add_class::<VoteUnsubscribe>()?;
-    let funcs = [
-        wrap_pyfunction!(batch_requests_to_json, m)?,
-        wrap_pyfunction!(batch_requests_from_json, m)?,
-    ];
+    let funcs = [wrap_pyfunction!(batch_requests_to_json, m)?];
     for func in funcs {
         m.add_function(func)?;
     }

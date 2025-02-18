@@ -2,7 +2,7 @@ use {
     bv::BitVec,
     pyo3::prelude::*,
     serde::{Deserialize, Serialize},
-    solana_program::slot_history::{Check, SlotHistory as SlotHistoryOriginal},
+    solana_slot_history::{Check, SlotHistory as SlotHistoryOriginal},
     solders_macros::enum_original_mapping,
     solders_traits_core::transaction_status_boilerplate,
 };

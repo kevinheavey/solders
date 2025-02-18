@@ -1,26 +1,26 @@
 use derive_more::{From, Into};
 use pyo3::{create_exception, exceptions::PyException, prelude::*};
 use serde::{Deserialize, Serialize};
-use solana_program::{
-    address_lookup_table::AddressLookupTableAccount as AddressLookupTableAccountOriginal,
-    instruction::CompiledInstruction as CompiledInstructionOriginal,
-    instruction::Instruction as InstructionOriginal,
-    message::{
-        legacy::Message as MessageOriginal,
-        v0::{
-            Message as MessageV0Original,
-            MessageAddressTableLookup as MessageAddressTableLookupOriginal,
-        },
-        MessageHeader as MessageHeaderOriginal, VersionedMessage as VersionedMessageOriginal,
-        MESSAGE_HEADER_LENGTH,
-    },
-    pubkey::Pubkey as PubkeyOriginal,
-};
 use solders_macros::{common_methods, richcmp_eq_only};
 use solders_traits::{handle_py_err, PyErrWrapper};
 use solders_traits_core::{
     handle_py_value_err, impl_display, py_from_bytes_general_via_bincode,
     pybytes_general_via_bincode, CommonMethodsCore, PyBytesGeneral, RichcmpEqualityOnly,
+};
+use {
+    solana_instruction::Instruction as InstructionOriginal,
+    solana_message::{
+        compiled_instruction::CompiledInstruction as CompiledInstructionOriginal,
+        legacy::Message as MessageOriginal,
+        v0::{
+            Message as MessageV0Original,
+            MessageAddressTableLookup as MessageAddressTableLookupOriginal,
+        },
+        AddressLookupTableAccount as AddressLookupTableAccountOriginal,
+        MessageHeader as MessageHeaderOriginal, VersionedMessage as VersionedMessageOriginal,
+        MESSAGE_HEADER_LENGTH,
+    },
+    solana_pubkey::Pubkey as PubkeyOriginal,
 };
 
 use solders_address_lookup_table_account::AddressLookupTableAccount;

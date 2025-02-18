@@ -3,7 +3,7 @@ use std::str::FromStr;
 use derive_more::{From, Into};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
-use solana_sdk::signature::{ParseSignatureError, Signature as SignatureOriginal, SIGNATURE_BYTES};
+use solana_signature::{ParseSignatureError, Signature as SignatureOriginal, SIGNATURE_BYTES};
 use solders_macros::{common_methods, pyhash, richcmp_full};
 use solders_pubkey::Pubkey;
 

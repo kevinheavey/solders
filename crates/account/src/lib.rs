@@ -4,7 +4,7 @@ use std::str::FromStr;
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, DisplayFromStr};
-use solana_sdk::{account::Account as AccountOriginal, clock::Epoch};
+use solana_account::Account as AccountOriginal;
 use solders_macros::{common_methods, richcmp_eq_only};
 use solders_pubkey::Pubkey;
 use solders_traits_core::{
@@ -45,7 +45,7 @@ pub struct Account {
     pub executable: bool,
     /// the epoch at which this account will next owe rent
     #[pyo3(get)]
-    pub rent_epoch: Epoch,
+    pub rent_epoch: u64,
 }
 
 impl From<AccountOriginal> for Account {
@@ -91,13 +91,13 @@ impl From<Account> for AccountOriginal {
 #[pymethods]
 impl Account {
     #[new]
-    #[pyo3(signature = (lamports, data, owner, executable = false, rent_epoch = Epoch::default()))]
+    #[pyo3(signature = (lamports, data, owner, executable = false, rent_epoch = u64::default()))]
     pub fn new(
         lamports: u64,
         data: &[u8],
         owner: Pubkey,
         executable: bool,
-        rent_epoch: Epoch,
+        rent_epoch: u64,
     ) -> Self {
         AccountOriginal {
             lamports,
@@ -190,7 +190,7 @@ pub struct AccountJSON {
     pub executable: bool,
     /// int: The epoch at which this account will next owe rent.
     #[pyo3(get)]
-    pub rent_epoch: Epoch,
+    pub rent_epoch: u64,
 }
 
 #[richcmp_eq_only]
@@ -198,13 +198,13 @@ pub struct AccountJSON {
 #[pymethods]
 impl AccountJSON {
     #[new]
-    #[pyo3(signature = (lamports, data, owner, executable=false, rent_epoch=Epoch::default()))]
+    #[pyo3(signature = (lamports, data, owner, executable=false, rent_epoch=u64::default()))]
     pub fn new(
         lamports: u64,
         data: ParsedAccount,
         owner: Pubkey,
         executable: bool,
-        rent_epoch: Epoch,
+        rent_epoch: u64,
     ) -> Self {
         Self {
             lamports,

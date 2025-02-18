@@ -2,10 +2,11 @@ use solders_message::VersionedMessage;
 use solders_transaction::{Transaction, VersionedTransaction};
 extern crate base64;
 use serde::{Deserialize, Serialize};
-use solana_sdk::{
-    message::VersionedMessage as VersionedMessageOriginal,
-    transaction::{
-        Transaction as TransactionOriginal, VersionedTransaction as VersionedTransactionOriginal,
+use {
+    solana_message::VersionedMessage as VersionedMessageOriginal,
+    solana_transaction::{
+        versioned::VersionedTransaction as VersionedTransactionOriginal,
+        Transaction as TransactionOriginal,
     },
 };
 

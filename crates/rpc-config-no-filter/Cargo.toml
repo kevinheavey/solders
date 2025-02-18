@@ -11,13 +11,12 @@ description = "Solders RPC config-no-filter crate."
 [dependencies]
 pyo3 = { workspace = true, features = ["macros"] }
 serde = { workspace = true }
-solders-macros = { workspace = true }
-solders-traits-core = { workspace = true }
 solana-account-decoder-client-types = { workspace = true }
-solders-pubkey = { workspace = true }
-solders-transaction-status-enums = { workspace = true }
 solana-rpc-client-api = { workspace = true }
+solders-commitment-config = { workspace = true }
+solders-macros = { workspace = true }
+solders-pubkey = { workspace = true }
 solders-rpc-config-macros = { workspace = true }
 solders-rpc-config-no-rpc-api = { workspace = true }
-solders-commitment-config = { workspace = true }
-solana-sdk = { workspace = true }
+solders-traits-core = { workspace = true }
+solders-transaction-status-enums = { workspace = true }

@@ -12,5 +12,5 @@ description = "Solders RPC config-no-rpc-api crate."
 pyo3 = { workspace = true, features = ["macros"] }
 serde = { workspace = true }
 solders-macros = { workspace = true }
-solders-traits-core = { workspace = true }
 solders-pubkey = { workspace = true }
+solders-traits-core = { workspace = true }

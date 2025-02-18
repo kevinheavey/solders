@@ -1,8 +1,8 @@
 use pyo3::prelude::*;
-use solana_sdk::address_lookup_table::{
-    program::ID,
-    state::{LOOKUP_TABLE_MAX_ADDRESSES, LOOKUP_TABLE_META_SIZE},
+use solana_address_lookup_table_interface::state::{
+    LOOKUP_TABLE_MAX_ADDRESSES, LOOKUP_TABLE_META_SIZE,
 };
+use solana_sdk_ids::address_lookup_table::ID;
 use solders_address_lookup_table_account::{
     derive_lookup_table_address, AddressLookupTable, AddressLookupTableAccount, LookupTableMeta,
     LookupTableStatusDeactivating, LookupTableStatusFieldless, SlotHashes,

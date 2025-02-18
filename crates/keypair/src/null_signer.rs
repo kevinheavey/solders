@@ -1,7 +1,7 @@
 use derive_more::{From, Into};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
-use solana_sdk::signer::{null_signer::NullSigner as NullSignerOriginal, Signer as SignerTrait};
+use solana_signer::{null_signer::NullSigner as NullSignerOriginal, Signer as SignerTrait};
 use solders_macros::{common_methods, pyhash, richcmp_signer};
 use solders_pubkey::Pubkey;
 use solders_signature::Signature;
@@ -13,9 +13,9 @@ use solders_traits_core::{
 
 mod null_signer_serde {
     use serde::{self, Deserialize, Deserializer, Serializer};
-    use solana_sdk::{
-        pubkey::Pubkey as PubkeyOriginal, signature::Signer,
-        signer::null_signer::NullSigner as NullSignerOriginal,
+    use {
+        solana_pubkey::Pubkey as PubkeyOriginal,
+        solana_signer::{null_signer::NullSigner as NullSignerOriginal, Signer},
     };
 
     pub fn serialize<S>(ns: &NullSignerOriginal, serializer: S) -> Result<S::Ok, S::Error>

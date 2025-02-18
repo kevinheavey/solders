@@ -1,15 +1,6 @@
 use {
     litesvm::LiteSVM as LiteSVMOriginal,
     pyo3::{exceptions::PyFileNotFoundError, prelude::*},
-    solana_sdk::{
-        account::Account as AccountOriginal, clock::Clock as ClockOriginal,
-        epoch_rewards::EpochRewards as EpochRewardsOriginal,
-        epoch_schedule::EpochSchedule as EpochScheduleOriginal,
-        feature_set::FeatureSet as FeatureSetOriginal, rent::Rent as RentOriginal,
-        slot_hashes::SlotHashes, slot_history::SlotHistory as SlotHistoryOriginal,
-        stake_history::StakeHistory as StakeHistoryOriginal,
-        sysvar::last_restart_slot::LastRestartSlot,
-    },
     solders_account::Account,
     solders_compute_budget::ComputeBudget,
     solders_hash::Hash as Blockhash,
@@ -27,6 +18,15 @@ use {
         path::PathBuf,
     },
     transaction_metadata::{SimulateResult, TransactionResult},
+    {
+        solana_account::Account as AccountOriginal, solana_clock::Clock as ClockOriginal,
+        solana_epoch_rewards::EpochRewards as EpochRewardsOriginal,
+        solana_epoch_schedule::EpochSchedule as EpochScheduleOriginal,
+        solana_feature_set::FeatureSet as FeatureSetOriginal,
+        solana_last_restart_slot::LastRestartSlot, solana_rent::Rent as RentOriginal,
+        solana_slot_hashes::SlotHashes, solana_slot_history::SlotHistory as SlotHistoryOriginal,
+        solana_stake_interface::stake_history::StakeHistory as StakeHistoryOriginal,
+    },
 };
 pub mod transaction_metadata;
 
@@ -310,7 +310,7 @@ impl LiteSVM {
     }
 
     pub fn set_slot_hashes(&mut self, hashes: Vec<(u64, Blockhash)>) {
-        let mut intermediate: Vec<(u64, solana_sdk::hash::Hash)> = Vec::with_capacity(hashes.len());
+        let mut intermediate: Vec<(u64, solana_hash::Hash)> = Vec::with_capacity(hashes.len());
         for h in hashes {
             let converted_hash = h.1 .0;
             intermediate.push((h.0, converted_hash));

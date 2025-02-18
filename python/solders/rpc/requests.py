@@ -1,4 +1,4 @@
-from typing import List, Sequence, Union
+from typing import Sequence, Union
 
 from ..solders import (
     AccountSubscribe,
@@ -74,9 +74,6 @@ from ..solders import (
     ValidatorExit,
     VoteSubscribe,
     VoteUnsubscribe,
-)
-from ..solders import (
-    batch_requests_from_json as _batch_from_json,
 )
 from ..solders import (
     batch_requests_to_json as _batch_to_json,
@@ -174,35 +171,6 @@ def batch_to_json(reqs: Sequence[Body]) -> str:
         '[{"method":"getClusterNodes","jsonrpc":"2.0","id":0},{"method":"getEpochSchedule","jsonrpc":"2.0","id":1}]'
     """  # noqa: E501
     return _batch_to_json(reqs)
-
-
-def batch_from_json(raw: str) -> List[Body]:
-    """Deserialize a batch request JSON string into a list of request objects.
-
-    Args:
-        raw (str): The batch JSON string.
-
-    Returns:
-        A list of request objects.
-
-    Example:
-        >>> from solders.rpc.requests import batch_from_json
-        >>> raw = '[{"jsonrpc":"2.0","id":0,"method":"getClusterNodes"},{"jsonrpc":"2.0","id":1,"method":"getEpochSchedule"}]'
-        >>> batch_from_json(raw)
-        [GetClusterNodes {
-            base: RequestBase {
-                jsonrpc: TwoPointOh,
-                id: 0,
-            },
-        }, GetEpochSchedule {
-            base: RequestBase {
-                jsonrpc: TwoPointOh,
-                id: 1,
-            },
-        }]
-
-    """  # noqa: E501
-    return _batch_from_json(raw)
 
 
 __all__ = [

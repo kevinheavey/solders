@@ -1,12 +1,12 @@
 use derive_more::{From, Into};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
-use solana_sdk::{
-    instruction::InstructionError as InstructionErrorOriginal,
-    transaction::TransactionError as TransactionErrorOriginal,
-};
 use solders_macros::{common_methods, richcmp_eq_only};
 use solders_traits_core::transaction_status_boilerplate;
+use {
+    solana_instruction::error::InstructionError as InstructionErrorOriginal,
+    solana_transaction_error::TransactionError as TransactionErrorOriginal,
+};
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.transaction_status", subclass)]
@@ -501,6 +501,7 @@ pub enum TransactionErrorFieldless {
     InvalidLoadedAccountsDataSizeLimit,
     UnbalancedTransaction,
     ProgramCacheHitMaxLimit,
+    CommitCancelled,
 }
 
 #[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, IntoPyObject)]
@@ -608,6 +609,7 @@ impl From<TransactionErrorType> for TransactionErrorOriginal {
                 }
                 TransactionErrorFieldless::UnbalancedTransaction => Self::UnbalancedTransaction,
                 TransactionErrorFieldless::ProgramCacheHitMaxLimit => Self::ProgramCacheHitMaxLimit,
+                TransactionErrorFieldless::CommitCancelled => Self::CommitCancelled,
             },
         }
     }
@@ -739,6 +741,9 @@ impl From<TransactionErrorOriginal> for TransactionErrorType {
             }
             TransactionErrorOriginal::ProgramCacheHitMaxLimit => {
                 Self::Fieldless(TransactionErrorFieldless::ProgramCacheHitMaxLimit)
+            }
+            TransactionErrorOriginal::CommitCancelled => {
+                Self::Fieldless(TransactionErrorFieldless::CommitCancelled)
             }
         }
     }

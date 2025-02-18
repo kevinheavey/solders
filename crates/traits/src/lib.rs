@@ -4,17 +4,16 @@ use litesvm::error::LiteSVMError as LiteSVMErrorOriginal;
 use pyo3::{create_exception, exceptions::PyException, prelude::*, pyclass::CompareOp};
 #[cfg(feature = "banks-client")]
 use solana_banks_client::BanksClientError as BanksClientErrorOriginal;
-use solana_sdk::{
-    commitment_config::ParseCommitmentLevelError as ParseCommitmentLevelErrorOriginal,
-    hash::ParseHashError as ParseHashErrorOriginal,
-    pubkey::Pubkey as PubkeyOriginal,
-    pubkey::PubkeyError as PubkeyErrorOriginal,
-    sanitize::SanitizeError as SanitizeErrorOriginal,
-    signature::Signature as SignatureOriginal,
-    signer::{Signer as SignerTrait, SignerError as SignerErrorOriginal},
-    transaction::TransactionError as TransactionErrorOriginal,
-};
 use solders_traits_core::richcmp_type_error;
+use {
+    solana_commitment_config::ParseCommitmentLevelError as ParseCommitmentLevelErrorOriginal,
+    solana_hash::ParseHashError as ParseHashErrorOriginal,
+    solana_pubkey::{Pubkey as PubkeyOriginal, PubkeyError as PubkeyErrorOriginal},
+    solana_sanitize::SanitizeError as SanitizeErrorOriginal,
+    solana_signature::Signature as SignatureOriginal,
+    solana_signer::{Signer as SignerTrait, SignerError as SignerErrorOriginal},
+    solana_transaction_error::TransactionError as TransactionErrorOriginal,
+};
 pub struct PyErrWrapper(pub PyErr);
 
 impl From<PyErrWrapper> for PyErr {

@@ -1,7 +1,7 @@
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
+use solana_commitment_config::CommitmentLevel as CommitmentLevelOriginal;
 use solana_rpc_client_api::config as rpc_config;
-use solana_sdk::commitment_config::CommitmentLevel as CommitmentLevelOriginal;
 use solana_transaction_status_client_types::UiTransactionEncoding as UiTransactionEncodingOriginal;
 use solders_commitment_config::CommitmentLevel;
 use solders_macros::{common_methods, richcmp_eq_only};

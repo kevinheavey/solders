@@ -9,18 +9,18 @@ repository = { workspace = true }
 description = "Solders RPC common crate."
 
 [dependencies]
+derive_more = { workspace = true }
 pyo3 = { workspace = true, features = ["macros"] }
 serde = { workspace = true }
-derive_more = { workspace = true }
-solders-macros = { workspace = true }
-solders-traits-core = { workspace = true }
+serde_with = { workspace = true }
 solana-account-decoder-client-types = { workspace = true }
-solana-transaction-status-client-types = { workspace = true }
 solana-rpc-client-api = { workspace = true }
+solana-transaction-status-client-types = { workspace = true }
 solders-account = { workspace = true }
+solders-macros = { workspace = true }
 solders-rpc-response-data-boilerplate = { workspace = true }
 solders-rpc-responses-common = { workspace = true }
-solders-transaction-return-data = { workspace = true }
+solders-traits-core = { workspace = true }
 solders-transaction-error = { workspace = true }
+solders-transaction-return-data = { workspace = true }
 solders-transaction-status = { workspace = true }
-serde_with = { workspace = true }

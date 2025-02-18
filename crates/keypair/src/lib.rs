@@ -1,19 +1,17 @@
 use derive_more::{From, Into};
 use pyo3::{exceptions::PyValueError, prelude::*};
 use serde::{Deserialize, Serialize};
-use solana_sdk::{
-    derivation_path::DerivationPath,
-    signature::keypair_from_seed_and_derivation_path,
-    signer::{
-        keypair::{
-            keypair_from_seed, keypair_from_seed_phrase_and_passphrase, Keypair as KeypairOriginal,
-        },
-        Signer as SignerTrait,
-    },
-};
 use solders_macros::{common_methods, pyhash, richcmp_signer};
 use solders_pubkey::Pubkey;
 use solders_signature::Signature;
+use {
+    solana_derivation_path::DerivationPath,
+    solana_keypair::{
+        keypair_from_seed, keypair_from_seed_phrase_and_passphrase,
+        seed_derivable::keypair_from_seed_and_derivation_path, Keypair as KeypairOriginal,
+    },
+    solana_signer::Signer as SignerTrait,
+};
 
 use solders_traits::{impl_signer_hash, RichcmpSigner, SignerTraitWrapper, ToSignerOriginal};
 use solders_traits_core::{
@@ -27,7 +25,7 @@ pub mod signer;
 
 mod keypair_serde {
     use serde::{self, Deserialize, Deserializer, Serializer};
-    use solana_sdk::signer::keypair::Keypair as KeypairOriginal;
+    use solana_keypair::Keypair as KeypairOriginal;
 
     pub fn serialize<S>(kp: &KeypairOriginal, serializer: S) -> Result<S::Ok, S::Error>
     where
@@ -121,10 +119,10 @@ impl Keypair {
     ///     >>> assert str(kp) == base58_str
     ///     
     pub fn from_base58_string(s: &str) -> PyResult<Self> {
-        let decoded = solana_sdk::bs58::decode(s)
-            .into_vec()
+        let mut buf = [0u8; 64];
+        five8::decode_64(s, &mut buf)
             .map_err(|e| PyErr::new::<PyValueError, _>(format!("{:?}", e)))?;
-        Self::py_from_bytes_general(&decoded)
+        Self::py_from_bytes_general(&buf)
     }
     /// Gets this ``Keypair``'s secret key.
     ///

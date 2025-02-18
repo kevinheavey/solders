@@ -2,20 +2,16 @@ use derive_more::{From, Into};
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
-use solana_program::clock::Slot;
-use solana_program::slot_hashes::SlotHashes as SlotHashesOriginal;
-use solana_program::{
-    address_lookup_table::{
-        instruction::derive_lookup_table_address as derive_lookup_table_address_original,
-        state::{
-            AddressLookupTable as AddressLookupTableOriginal,
-            LookupTableMeta as LookupTableMetaOriginal,
-            LookupTableStatus as LookupTableStatusOriginal,
-        },
-        AddressLookupTableAccount as AddressLookupTableAccountOriginal,
+use solana_address_lookup_table_interface::{
+    instruction::derive_lookup_table_address as derive_lookup_table_address_original,
+    state::{
+        AddressLookupTable as AddressLookupTableOriginal,
+        LookupTableMeta as LookupTableMetaOriginal, LookupTableStatus as LookupTableStatusOriginal,
     },
-    pubkey::Pubkey as PubkeyOriginal,
 };
+use solana_message::AddressLookupTableAccount as AddressLookupTableAccountOriginal;
+use solana_pubkey::Pubkey as PubkeyOriginal;
+use solana_slot_hashes::SlotHashes as SlotHashesOriginal;
 use solders_hash::Hash;
 use solders_macros::{common_methods, richcmp_eq_only};
 use solders_pubkey::Pubkey;
@@ -173,7 +169,7 @@ impl_defaults!(SlotHashes);
 #[pymethods]
 impl SlotHashes {
     #[new]
-    pub fn new(slot_hashes: Vec<(Slot, Hash)>) -> Self {
+    pub fn new(slot_hashes: Vec<(u64, Hash)>) -> Self {
         SlotHashes(SlotHashesOriginal::new(
             &slot_hashes
                 .into_iter()
@@ -182,7 +178,7 @@ impl SlotHashes {
         ))
     }
     #[getter]
-    pub fn slot_hashes(&self) -> Vec<(Slot, Hash)> {
+    pub fn slot_hashes(&self) -> Vec<(u64, Hash)> {
         self.0
             .slot_hashes()
             .iter()
@@ -245,11 +241,11 @@ impl LookupTableMeta {
         self.0._padding
     }
 
-    pub fn is_active(&self, current_slot: Slot, slot_hashes: SlotHashes) -> bool {
+    pub fn is_active(&self, current_slot: u64, slot_hashes: SlotHashes) -> bool {
         self.0.is_active(current_slot, &slot_hashes.into())
     }
 
-    pub fn status(&self, current_slot: Slot, slot_hashes: SlotHashes) -> LookupTableStatusType {
+    pub fn status(&self, current_slot: u64, slot_hashes: SlotHashes) -> LookupTableStatusType {
         self.0.status(current_slot, &slot_hashes.into()).into()
     }
 }
@@ -294,7 +290,7 @@ impl AddressLookupTable {
 
     pub fn get_active_addresses_len(
         &self,
-        current_slot: Slot,
+        current_slot: u64,
         slot_hashes: SlotHashes,
     ) -> PyResult<usize> {
         handle_py_value_err(
@@ -305,7 +301,7 @@ impl AddressLookupTable {
 
     pub fn lookup(
         &self,
-        current_slot: Slot,
+        current_slot: u64,
         indexes: Vec<u8>,
         slot_hashes: SlotHashes,
     ) -> PyResult<Vec<Pubkey>> {

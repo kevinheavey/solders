@@ -1,6 +1,7 @@
 use pyo3::prelude::*;
 use solana_compute_budget::compute_budget::ComputeBudget as ComputeBudgetOriginal;
-use solana_sdk::compute_budget::{ComputeBudgetInstruction, ID};
+use solana_compute_budget_interface::ComputeBudgetInstruction;
+use solana_sdk_ids::compute_budget::ID;
 use solders_instruction::Instruction;
 use solders_pubkey::Pubkey;
 use solders_traits_core::RichcmpEqualityOnly;

@@ -1,11 +1,11 @@
 use derive_more::{From, Into};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
-use solana_program::{
-    clock::{Epoch, Slot},
-    epoch_schedule::EpochSchedule as EpochScheduleOriginal,
-};
 use solders_macros::{common_methods, richcmp_eq_only};
+use {
+    solana_clock::{Epoch, Slot},
+    solana_epoch_schedule::EpochSchedule as EpochScheduleOriginal,
+};
 
 use solders_traits_core::{
     impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
