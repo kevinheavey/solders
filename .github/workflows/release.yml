@@ -12,8 +12,8 @@ jobs:
           workflow: build.yml
           name: wheels-.*
           name_is_regexp: true
-      - name: Move files into working dir
-        run: find . -mindepth 2 -type f -exec mv -t . {} + && find . -mindepth 1 -type d -empty -delete && ls -R
+      - name: Remove dup and ove files into working dir
+        run: rm -rf wheels-linux-matrix-i686 && find . -mindepth 2 -type f -exec mv -t . {} + && find . -mindepth 1 -type d -empty -delete && ls -R
       - name: Publish to PyPi
         env:
           MATURIN_PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
