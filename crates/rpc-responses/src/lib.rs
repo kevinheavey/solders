@@ -79,12 +79,13 @@ use solders_rpc_responses_common::{
     notification_struct_def, notification_struct_def_contextless, notification_struct_def_no_eq,
     notification_struct_def_outer, notification_struct_def_outer_no_eq, AccountMaybeJSON,
     AccountNotification, AccountNotificationJsonParsed, AccountNotificationJsonParsedResult,
-    AccountNotificationResult, BlockStoreError, ProgramNotification, ProgramNotificationJsonParsed,
-    ProgramNotificationJsonParsedResult, ProgramNotificationResult, ProgramNotificationType,
-    RootNotification, RpcBlockhash, RpcIdentity, RpcKeyedAccount, RpcKeyedAccountJsonParsed,
-    RpcKeyedAccountMaybeJSON, RpcLeaderSchedule, RpcResponseContext, RpcSignatureResponse,
-    RpcTokenAccountBalance, RpcVersionInfo, RpcVoteAccountInfo, RpcVoteAccountStatus,
-    SignatureNotification, SignatureNotificationResult, SubscriptionResult, UnsubscribeResult,
+    AccountNotificationResult, AccountNotificationType, BlockStoreError, ProgramNotification,
+    ProgramNotificationJsonParsed, ProgramNotificationJsonParsedResult, ProgramNotificationResult,
+    ProgramNotificationType, RootNotification, RpcBlockhash, RpcIdentity, RpcKeyedAccount,
+    RpcKeyedAccountJsonParsed, RpcKeyedAccountMaybeJSON, RpcLeaderSchedule, RpcResponseContext,
+    RpcSignatureResponse, RpcTokenAccountBalance, RpcVersionInfo, RpcVoteAccountInfo,
+    RpcVoteAccountStatus, SignatureNotification, SignatureNotificationResult, SubscriptionResult,
+    UnsubscribeResult,
 };
 use solders_rpc_responses_tx_status::RpcConfirmedTransactionStatusWithSignature;
 type Slot = u64;
@@ -611,7 +612,7 @@ pub enum Notification {
     AccountNotification {
         #[serde(skip_deserializing)]
         jsonrpc: solders_rpc_version::V2,
-        params: AccountNotification,
+        params: AccountNotificationType,
     },
     BlockNotification {
         #[serde(skip_deserializing)]
@@ -662,7 +663,10 @@ impl<'py> IntoPyObject<'py> for Notification {
 
     fn into_pyobject(self, py: Python<'py>) -> Result<Self::Output, Self::Error> {
         Ok((match self {
-            Self::AccountNotification { params: p, .. } => p.into_bound_py_any(py),
+            Self::AccountNotification { params: p, .. } => match p {
+                AccountNotificationType::JsonParsed(x) => x.into_bound_py_any(py),
+                AccountNotificationType::Binary(x) => x.into_bound_py_any(py),
+            },
             Self::BlockNotification { params: p, .. } => p.into_bound_py_any(py),
             Self::LogsNotification { params: p, .. } => p.into_bound_py_any(py),
             Self::ProgramNotification { params: p, .. } => p.into_bound_py_any(py),

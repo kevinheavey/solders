@@ -2233,6 +2233,12 @@ def test_account_notification_json_parsed() -> None:
     assert isinstance(parsed_sub, AccountNotificationJsonParsed)
 
 
+def test_parse_websocket_message_account_notification_json_parsed() -> None:
+    raw = '{"jsonrpc":"2.0","method":"accountNotification","params":{"result":{"context":{"slot":317644540},"value":{"lamports":3171111071114,"data":{"program":"spl-token","parsed":{"info":{"isNative":true,"mint":"So11111111111111111111111111111111111111112","owner":"5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1","rentExemptReserve":{"amount":"2039280","decimals":9,"uiAmount":0.00203928,"uiAmountString":"0.00203928"},"state":"initialized","tokenAmount":{"amount":"3171109031834","decimals":9,"uiAmount":3171.109031834,"uiAmountString":"3171.109031834"}},"type":"account"},"space":165},"owner":"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA","executable":false,"rentEpoch":18446744073709551615,"space":165}},"subscription":227181}}'
+    parsed = parse_websocket_message(raw)
+    assert isinstance(parsed[0], AccountNotificationJsonParsed)
+
+
 def test_block_notification() -> None:
     raw = """{
   "jsonrpc": "2.0",
