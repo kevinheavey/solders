@@ -5126,7 +5126,6 @@ dependencies = [
  "solders-rpc-sim-transaction-config",
  "solders-rpc-version",
  "solders-signature",
- "solders-traits",
  "solders-traits-core",
  "solders-transaction",
 ]
