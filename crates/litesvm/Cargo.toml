@@ -20,6 +20,8 @@ solana-feature-set = { workspace = true }
 solana-hash = { workspace = true }
 solana-last-restart-slot = { workspace = true }
 solana-message = { workspace = true }
+# add the precopmiles crate to ensure openssl-vendored is activated
+solana-precompiles = { workspace = true, features = ["openssl-vendored"] }
 solana-rent = { workspace = true }
 solana-slot-hashes = { workspace = true }
 solana-slot-history = { workspace = true }

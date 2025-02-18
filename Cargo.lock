@@ -1890,6 +1890,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "openssl-src"
+version = "300.4.2+3.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "168ce4e058f975fe43e89d9ccf78ca668601887ae736090aacc23ae353c298e2"
+dependencies = [
+ "cc",
+]
+
+[[package]]
 name = "openssl-sys"
 version = "0.9.104"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1897,6 +1906,7 @@ checksum = "45abf306cbf99debc8195b66b7346498d7b10c210de50418b5ccd7ceba08c741"
 dependencies = [
  "cc",
  "libc",
+ "openssl-src",
  "pkg-config",
  "vcpkg",
 ]
@@ -4812,6 +4822,7 @@ dependencies = [
  "solana-hash",
  "solana-last-restart-slot",
  "solana-message",
+ "solana-precompiles",
  "solana-rent",
  "solana-slot-hashes",
  "solana-slot-history",
