@@ -1,17 +1,17 @@
 use derive_more::{From, Into};
 use pyo3::{exceptions::PyValueError, prelude::*};
 use serde::{Deserialize, Serialize};
-use {
-    solana_derivation_path::DerivationPath,
-    solana_signer::Signer as SignerTrait,
-    solana_keypair::{
-        keypair_from_seed, keypair_from_seed_phrase_and_passphrase, Keypair as KeypairOriginal,
-        seed_derivable::keypair_from_seed_and_derivation_path
-    },
-};
 use solders_macros::{common_methods, pyhash, richcmp_signer};
 use solders_pubkey::Pubkey;
 use solders_signature::Signature;
+use {
+    solana_derivation_path::DerivationPath,
+    solana_keypair::{
+        keypair_from_seed, keypair_from_seed_phrase_and_passphrase,
+        seed_derivable::keypair_from_seed_and_derivation_path, Keypair as KeypairOriginal,
+    },
+    solana_signer::Signer as SignerTrait,
+};
 
 use solders_traits::{impl_signer_hash, RichcmpSigner, SignerTraitWrapper, ToSignerOriginal};
 use solders_traits_core::{
@@ -120,7 +120,8 @@ impl Keypair {
     ///     
     pub fn from_base58_string(s: &str) -> PyResult<Self> {
         let mut buf = [0u8; 64];
-        five8::decode_64(s, &mut buf).map_err(|e| PyErr::new::<PyValueError, _>(format!("{:?}", e)))?;
+        five8::decode_64(s, &mut buf)
+            .map_err(|e| PyErr::new::<PyValueError, _>(format!("{:?}", e)))?;
         Self::py_from_bytes_general(&buf)
     }
     /// Gets this ``Keypair``'s secret key.

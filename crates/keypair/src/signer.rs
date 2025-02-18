@@ -1,12 +1,12 @@
 use pyo3::prelude::*;
 
 use crate::{null_signer::NullSigner, presigner::Presigner, Keypair};
+use solders_traits::{SignerTraitWrapper, ToSignerOriginal};
 use {
     solana_pubkey::Pubkey as PubkeyOriginal,
     solana_signature::Signature as SignatureOriginal,
     solana_signer::{signers::Signers, Signer as SignerTrait, SignerError as SignerErrorOriginal},
 };
-use solders_traits::{SignerTraitWrapper, ToSignerOriginal};
 
 #[derive(FromPyObject, Debug)]
 pub enum Signer {

@@ -2849,9 +2849,7 @@ pub fn include_requests(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<SlotsUpdatesUnsubscribe>()?;
     m.add_class::<RootUnsubscribe>()?;
     m.add_class::<VoteUnsubscribe>()?;
-    let funcs = [
-        wrap_pyfunction!(batch_requests_to_json, m)?,
-    ];
+    let funcs = [wrap_pyfunction!(batch_requests_to_json, m)?];
     for func in funcs {
         m.add_function(func)?;
     }

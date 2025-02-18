@@ -2,17 +2,16 @@ use derive_more::{From, Into};
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
-use solana_message::AddressLookupTableAccount as AddressLookupTableAccountOriginal;
-use solana_pubkey::Pubkey as PubkeyOriginal;
-use solana_slot_hashes::SlotHashes as SlotHashesOriginal;
 use solana_address_lookup_table_interface::{
     instruction::derive_lookup_table_address as derive_lookup_table_address_original,
     state::{
         AddressLookupTable as AddressLookupTableOriginal,
-        LookupTableMeta as LookupTableMetaOriginal,
-        LookupTableStatus as LookupTableStatusOriginal,
+        LookupTableMeta as LookupTableMetaOriginal, LookupTableStatus as LookupTableStatusOriginal,
     },
 };
+use solana_message::AddressLookupTableAccount as AddressLookupTableAccountOriginal;
+use solana_pubkey::Pubkey as PubkeyOriginal;
+use solana_slot_hashes::SlotHashes as SlotHashesOriginal;
 use solders_hash::Hash;
 use solders_macros::{common_methods, richcmp_eq_only};
 use solders_pubkey::Pubkey;

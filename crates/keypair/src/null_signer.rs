@@ -15,7 +15,7 @@ mod null_signer_serde {
     use serde::{self, Deserialize, Deserializer, Serializer};
     use {
         solana_pubkey::Pubkey as PubkeyOriginal,
-        solana_signer::{Signer, null_signer::NullSigner as NullSignerOriginal},
+        solana_signer::{null_signer::NullSigner as NullSignerOriginal, Signer},
     };
 
     pub fn serialize<S>(ns: &NullSignerOriginal, serializer: S) -> Result<S::Ok, S::Error>

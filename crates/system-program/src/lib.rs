@@ -12,6 +12,7 @@ use solana_address_lookup_table_interface::instruction::{
 use {
     solana_instruction::Instruction as InstructionOriginal,
     solana_pubkey::Pubkey as PubkeyOriginal,
+    solana_sdk_ids::system_program,
     solana_system_interface::instruction::{
         advance_nonce_account as advance_nonce_account_original, allocate as allocate_original,
         allocate_with_seed as allocate_with_seed_original, assign as assign_original,
@@ -26,7 +27,6 @@ use {
         withdraw_nonce_account as withdraw_nonce_account_original,
         SystemInstruction as SystemInstructionOriginal,
     },
-    solana_sdk_ids::system_program,
 };
 
 use solders_instruction::Instruction;

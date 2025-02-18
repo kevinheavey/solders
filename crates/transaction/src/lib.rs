@@ -2,20 +2,25 @@
 use derive_more::{From, Into};
 use pyo3::{prelude::*, IntoPyObject};
 use serde::{Deserialize, Serialize};
-use {
-    solana_pubkey::Pubkey as PubkeyOriginal,
-    solana_sanitize::Sanitize,
-    solana_signature::Signature as SignatureOriginal,
-    solana_transaction::{
-        uses_durable_nonce, Transaction as TransactionOriginal,
-        versioned::{Legacy as LegacyOriginal, VersionedTransaction as VersionedTransactionOriginal, TransactionVersion as TransactionVersionOriginal},
-    }};
 use solders_macros::{common_methods, richcmp_eq_only};
 use solders_pubkey::{convert_optional_pubkey, Pubkey};
 use solders_traits::handle_py_err;
 use solders_traits_core::{
     impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
     CommonMethodsCore, RichcmpEqualityOnly,
+};
+use {
+    solana_pubkey::Pubkey as PubkeyOriginal,
+    solana_sanitize::Sanitize,
+    solana_signature::Signature as SignatureOriginal,
+    solana_transaction::{
+        uses_durable_nonce,
+        versioned::{
+            Legacy as LegacyOriginal, TransactionVersion as TransactionVersionOriginal,
+            VersionedTransaction as VersionedTransactionOriginal,
+        },
+        Transaction as TransactionOriginal,
+    },
 };
 
 use solders_hash::Hash as SolderHash;

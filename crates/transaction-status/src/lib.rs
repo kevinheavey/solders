@@ -30,11 +30,10 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use solana_reward_info::RewardType as RewardTypeOriginal;
 use solana_transaction_status_client_types::{
-        ParsedAccount as ParsedAccountOriginal, ParsedAccountSource as ParsedAccountSourceOriginal,
-    ParsedInstruction as ParsedInstructionOriginal,
     EncodedTransaction as EncodedTransactionOriginal,
     EncodedTransactionWithStatusMeta as EncodedTransactionWithStatusMetaOriginal,
-    Reward as RewardOriginal,
+    ParsedAccount as ParsedAccountOriginal, ParsedAccountSource as ParsedAccountSourceOriginal,
+    ParsedInstruction as ParsedInstructionOriginal, Reward as RewardOriginal,
     TransactionBinaryEncoding as TransactionBinaryEncodingOriginal,
     UiAccountsList as UiAccountsListOriginal, UiAddressTableLookup as UiAddressTableLookupOriginal,
     UiCompiledInstruction as UiCompiledInstructionOriginal,

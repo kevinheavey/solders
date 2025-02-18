@@ -167,13 +167,11 @@ pub fn common_methods(_: TokenStream, item: TokenStream) -> TokenStream {
 pub fn common_methods_ser_only(_: TokenStream, item: TokenStream) -> TokenStream {
     let mut ast = parse_macro_input!(item as ItemImpl);
     add_core_methods(&mut ast);
-    let methods = vec![
-        ImplItem::Verbatim(quote! {
-        /// Convert to a JSON string.
-        pub fn to_json(&self) -> String {
-            solders_traits_core::CommonMethodsSerOnly::py_to_json(self)
-        } }),
-    ];
+    let methods = vec![ImplItem::Verbatim(quote! {
+    /// Convert to a JSON string.
+    pub fn to_json(&self) -> String {
+        solders_traits_core::CommonMethodsSerOnly::py_to_json(self)
+    } })];
     ast.items.extend_from_slice(&methods);
     TokenStream::from(ast.to_token_stream())
 }

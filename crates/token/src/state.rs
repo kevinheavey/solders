@@ -1,6 +1,7 @@
 use derive_more::{From, Into};
 use pyo3::prelude::*;
-use solana_program_option::COption; use solana_program_pack::Pack;
+use solana_program_option::COption;
+use solana_program_pack::Pack;
 use solders_macros::{common_methods_core, enum_original_mapping, richcmp_eq_only};
 use solders_pubkey::Pubkey;
 use solders_traits_core::{

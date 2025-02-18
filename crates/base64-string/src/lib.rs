@@ -5,7 +5,8 @@ use serde::{Deserialize, Serialize};
 use {
     solana_message::VersionedMessage as VersionedMessageOriginal,
     solana_transaction::{
-        Transaction as TransactionOriginal, versioned::VersionedTransaction as VersionedTransactionOriginal,
+        versioned::VersionedTransaction as VersionedTransactionOriginal,
+        Transaction as TransactionOriginal,
     },
 };
 
