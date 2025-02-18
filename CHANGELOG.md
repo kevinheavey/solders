@@ -1,6 +1,10 @@
 # Changelog
 
-# Unreleased 
+# [0.26.0] - 2025-02-18
+
+### Fixed
+
+- Fix `parse_websocket_message` when the message is a `jsonParsed` account notification [(#138)](https://github.com/kevinheavey/solders/pull/138)
 
 ### Changed
 
