@@ -597,7 +597,7 @@ where
     fn into_pyobject(
         self,
         py: Python<'py>,
-    ) -> Result<Self::Output, <Resp<T> as IntoPyObject>::Error> {
+    ) -> Result<Self::Output, <Resp<T> as IntoPyObject<'py>>::Error> {
         Ok(match self {
             Self::Error { error: e, .. } => e.into_bound_py_any(py).unwrap(),
             Self::Result { result: r, .. } => r.into_bound_py_any(py).unwrap(),
