@@ -15,10 +15,11 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 pyo3 = { workspace = true, features = ["macros", "extension-module", "abi3-py37"] }
-solana-sdk = { workspace = true }
 bincode = { workspace = true }
 serde = { workspace = true }
 derive_more = { workspace = true }
+solana-address-lookup-table-interface = { workspace = true }
+solana-sdk-ids = { workspace = true }
 solders-account = { workspace = true }
 solders-account-decoder = { workspace = true }
 solders-address-lookup-table-account = { workspace = true }
@@ -69,6 +70,7 @@ edition = "2021"
 
 [workspace.dependencies]
 chrono-humanize = "0.2.3"
+five8 = "0.2.1"
 log = "0.4"
 pyo3 = { version = "0.23", default-features = false }
 solana-compute-budget = "2.1.10"
@@ -127,31 +129,49 @@ solders-transaction-error = { path = "./crates/transaction-error", version = "=0
 solders-account = { path = "./crates/account", version = "=0.23.0" }
 solders-hash = { path = "./crates/hash", version = "=0.23.0" }
 serde_with = { version = "^1.14.0", features = ["base64"] }
-solana-sdk = { version = "2.1.0", features = ["openssl-vendored"] }
+solana-account = "2.2.1"
 solana-account-decoder-client-types = { version = "2.1.0", features = ["zstd"] }
 solana-address-lookup-table-interface = "2.2.1"
 solana-banks-interface = "2.1.0"
 solana-clock = "2.2.1"
+solana-commitment-config = "2.2.1"
+solana-compute-budget-interface = "2.2.1"
+solana-derivation-path = "2.2.1"
+solana-epoch-info = "2.2.1"
 solana-epoch-rewards = "2.2.1"
 solana-epoch-schedule = "2.2.1"
+solana-feature-set = "2.2.1"
 solana-hash = "2.2.1"
 solana-instruction = "2.2.1"
+solana-last-restart-slot = "2.2.1"
+solana-keypair = "2.2.1"
 solana-message = "2.2.1"
+solana-presigner = "2.2.1"
 solana-program-option = "2.2.1"
 solana-program-pack = "2.2.1"
 solana-pubkey = "2.2.1"
 solana-rent = "2.2.1"
+solana-reward-info = "2.2.1"
+solana-sanitize = "2.2.1"
+solana-sdk-ids = "2.2.1"
 solana-sha256-hasher = "2.2.1"
+solana-signature = "2.2.1"
+solana-signer = "2.2.1"
 solana-slot-hashes = "2.2.1"
 solana-slot-history = "2.2.1"
 solana-stake-interface = "1.2.1"
+solana-system-interface = "1.0.0"
+solana-sysvar = "2.2.1"
+solana-transaction = "2.2.1"
+solana-transaction-context = "2.2.1"
 solana-transaction-status-client-types = "2.1.0"
+solana-transaction-error = "2.2.1"
 solana-rpc-client-api = "2.1.0"
 spl-associated-token-account-client = "2.0"
 spl-token = "7.0"
 bincode = "1.3.3"
 base64 = "0.13.0"
-litesvm = "0.5.0"
+litesvm = { git = "https://github.com/LiteSVM/litesvm.git", rev = "7e3d9a8" }
 serde = "^1.0.188"
 serde_bytes = "0.11.12"
 serde_json = "^1.0.106"

@@ -12,6 +12,6 @@ description = "Solders epoch info crate."
 pyo3 = { workspace = true, features = ["macros"] }
 solders-traits-core = { workspace = true }
 solders-macros = { workspace = true }
-solana-sdk = { workspace = true }
+solana-epoch-info = { workspace = true, features = ["serde"] }
 serde = { workspace = true }
 derive_more = { workspace = true }

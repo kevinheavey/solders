@@ -1,7 +1,7 @@
 use derive_more::{From, Into};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
-use solana_sdk::epoch_info::EpochInfo as EpochInfoOriginal;
+use solana_epoch_info::EpochInfo as EpochInfoOriginal;
 use solders_macros::{common_methods, richcmp_eq_only};
 
 use solders_traits_core::{

@@ -11,6 +11,6 @@ description = "Solders commitment config crate."
 [dependencies]
 pyo3 = { workspace = true, features = ["macros"] }
 solders-traits = { workspace = true }
-solana-sdk = { workspace = true }
+solana-commitment-config = { workspace = true }
 serde = { workspace = true }
 derive_more = { workspace = true }

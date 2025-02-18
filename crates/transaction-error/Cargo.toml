@@ -10,7 +10,8 @@ description = "Solders transaction error crate."
 
 [dependencies]
 serde = { workspace = true }
-solana-sdk = { workspace = true }
+solana-instruction = { workspace = true }
+solana-transaction-error = { workspace = true }
 solders-traits-core = { workspace = true }
 solders-macros = { workspace = true }
 derive_more = { workspace = true }

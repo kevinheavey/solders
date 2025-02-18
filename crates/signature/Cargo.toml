@@ -13,6 +13,6 @@ pyo3 = { workspace = true, features = ["macros"] }
 solders-traits-core = { workspace = true }
 solders-macros = { workspace = true }
 solders-pubkey = { workspace = true }
-solana-sdk = { workspace = true }
+solana-signature = { workspace = true, features = ["rand"] }
 serde = { workspace = true }
 derive_more = { workspace = true }

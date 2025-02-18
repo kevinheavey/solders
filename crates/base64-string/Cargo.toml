@@ -10,8 +10,9 @@ description = "Solders base64 string crate."
 
 [dependencies]
 serde = { workspace = true }
+solana-message = { workspace = true }
+solana-transaction = { workspace = true }
 solders-message = { workspace = true }
 solders-transaction = { workspace = true }
-solana-sdk = { workspace = true }
 base64 = { workspace = true }
 bincode = { workspace = true }

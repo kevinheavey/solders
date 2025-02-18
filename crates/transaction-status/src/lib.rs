@@ -28,7 +28,7 @@ use std::str::FromStr;
 use pyo3::{prelude::*, pyclass::CompareOp, IntoPyObject};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use solana_sdk::{clock::UnixTimestamp, reward_type::RewardType as RewardTypeOriginal, slot_history::Slot};
+use solana_reward_info::RewardType as RewardTypeOriginal;
 use solana_transaction_status_client_types::{
         ParsedAccount as ParsedAccountOriginal, ParsedAccountSource as ParsedAccountSourceOriginal,
     ParsedInstruction as ParsedInstructionOriginal,
@@ -1055,12 +1055,12 @@ pub type Rewards = Vec<Reward>;
 #[pyclass(module = "solders.transaction_status", subclass)]
 pub struct EncodedConfirmedTransactionWithStatusMeta {
     #[pyo3(get)]
-    pub slot: Slot,
+    pub slot: u64,
     #[serde(flatten)]
     #[pyo3(get)]
     pub transaction: EncodedTransactionWithStatusMeta,
     #[pyo3(get)]
-    pub block_time: Option<UnixTimestamp>,
+    pub block_time: Option<i64>,
 }
 
 transaction_status_boilerplate!(EncodedConfirmedTransactionWithStatusMeta);
@@ -1072,9 +1072,9 @@ impl EncodedConfirmedTransactionWithStatusMeta {
     #[pyo3(signature = (slot, transaction, block_time=None))]
     #[new]
     pub fn new(
-        slot: Slot,
+        slot: u64,
         transaction: EncodedTransactionWithStatusMeta,
-        block_time: Option<UnixTimestamp>,
+        block_time: Option<i64>,
     ) -> Self {
         Self {
             slot,
@@ -1099,11 +1099,11 @@ impl UiConfirmedBlock {
     pub fn new(
         previous_blockhash: SolderHash,
         blockhash: SolderHash,
-        parent_slot: Slot,
+        parent_slot: u64,
         transactions: Option<Vec<EncodedTransactionWithStatusMeta>>,
         signatures: Option<Vec<Signature>>,
         rewards: Option<Rewards>,
-        block_time: Option<UnixTimestamp>,
+        block_time: Option<i64>,
         block_height: Option<u64>,
         num_reward_partitions: Option<u64>,
     ) -> Self {
@@ -1132,7 +1132,7 @@ impl UiConfirmedBlock {
     }
 
     #[getter]
-    pub fn parent_slot(&self) -> Slot {
+    pub fn parent_slot(&self) -> u64 {
         self.0.parent_slot
     }
 
@@ -1158,7 +1158,7 @@ impl UiConfirmedBlock {
             .map(|v| v.into_iter().map(|r| r.into()).collect())
     }
     #[getter]
-    pub fn block_time(&self) -> Option<UnixTimestamp> {
+    pub fn block_time(&self) -> Option<i64> {
         self.0.block_time
     }
     #[getter]

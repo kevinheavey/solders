@@ -24,5 +24,4 @@ solders-transaction-error = { workspace = true }
 solders-rpc-response-data-boilerplate = { workspace = true }
 solders-rpc-version = { workspace = true }
 solders-pubkey = { workspace = true }
-solana-sdk = { workspace = true }
 camelpaste = { workspace = true }

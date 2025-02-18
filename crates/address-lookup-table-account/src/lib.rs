@@ -170,7 +170,7 @@ impl_defaults!(SlotHashes);
 #[pymethods]
 impl SlotHashes {
     #[new]
-    pub fn new(slot_hashes: Vec<(Slot, Hash)>) -> Self {
+    pub fn new(slot_hashes: Vec<(u64, Hash)>) -> Self {
         SlotHashes(SlotHashesOriginal::new(
             &slot_hashes
                 .into_iter()
@@ -179,7 +179,7 @@ impl SlotHashes {
         ))
     }
     #[getter]
-    pub fn slot_hashes(&self) -> Vec<(Slot, Hash)> {
+    pub fn slot_hashes(&self) -> Vec<(u64, Hash)> {
         self.0
             .slot_hashes()
             .iter()
@@ -242,11 +242,11 @@ impl LookupTableMeta {
         self.0._padding
     }
 
-    pub fn is_active(&self, current_slot: Slot, slot_hashes: SlotHashes) -> bool {
+    pub fn is_active(&self, current_slot: u64, slot_hashes: SlotHashes) -> bool {
         self.0.is_active(current_slot, &slot_hashes.into())
     }
 
-    pub fn status(&self, current_slot: Slot, slot_hashes: SlotHashes) -> LookupTableStatusType {
+    pub fn status(&self, current_slot: u64, slot_hashes: SlotHashes) -> LookupTableStatusType {
         self.0.status(current_slot, &slot_hashes.into()).into()
     }
 }
@@ -291,7 +291,7 @@ impl AddressLookupTable {
 
     pub fn get_active_addresses_len(
         &self,
-        current_slot: Slot,
+        current_slot: u64,
         slot_hashes: SlotHashes,
     ) -> PyResult<usize> {
         handle_py_value_err(
@@ -302,7 +302,7 @@ impl AddressLookupTable {
 
     pub fn lookup(
         &self,
-        current_slot: Slot,
+        current_slot: u64,
         indexes: Vec<u8>,
         slot_hashes: SlotHashes,
     ) -> PyResult<Vec<Pubkey>> {

@@ -1,6 +1,6 @@
 use crate::Pubkey;
 use pyo3::prelude::*;
-use solana_sdk::sysvar as sysvar_original;
+use solana_sdk_ids::sysvar as sysvar_original;
 
 pub fn include_sysvar(m: &Bound<'_, PyModule>) -> PyResult<()> {
     let sysvars = vec![

@@ -11,7 +11,8 @@ description = "Solders compute budget crate."
 [dependencies]
 pyo3 = { workspace = true, features = ["macros"] }
 solana-compute-budget = { workspace = true }
-solana-sdk = { workspace = true }
+solana-compute-budget-interface = { workspace = true }
+solana-sdk-ids = { workspace = true }
 solders-macros = { workspace = true }
 solders-pubkey = { workspace = true }
 solders-instruction = { workspace = true }

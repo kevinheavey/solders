@@ -9,10 +9,10 @@ use solana_address_lookup_table_interface::instruction::{
     extend_lookup_table as extend_lookup_table_original,
     freeze_lookup_table as freeze_lookup_table_original,
 };
-use solana_sdk::{
-    instruction::Instruction as InstructionOriginal,
-    pubkey::Pubkey as PubkeyOriginal,
-    system_instruction::{
+use {
+    solana_instruction::Instruction as InstructionOriginal,
+    solana_pubkey::Pubkey as PubkeyOriginal,
+    solana_system_interface::instruction::{
         advance_nonce_account as advance_nonce_account_original, allocate as allocate_original,
         allocate_with_seed as allocate_with_seed_original, assign as assign_original,
         assign_with_seed as assign_with_seed_original,
@@ -26,7 +26,7 @@ use solana_sdk::{
         withdraw_nonce_account as withdraw_nonce_account_original,
         SystemInstruction as SystemInstructionOriginal,
     },
-    system_program,
+    solana_sdk_ids::system_program,
 };
 
 use solders_instruction::Instruction;

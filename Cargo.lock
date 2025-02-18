@@ -18,22 +18,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "512761e0bb2578dd7380c6baaa0f4ce03e84f95e960231d1dec8bf4d7d6e2627"
 
 [[package]]
-name = "agave-transaction-view"
-version = "2.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4778fd549144e8776fb7ac04e7dac598546f0d4cb0b25e336cb0a7d93120ddb9"
-dependencies = [
- "solana-hash",
- "solana-message",
- "solana-packet",
- "solana-pubkey",
- "solana-sdk-ids",
- "solana-short-vec",
- "solana-signature",
- "solana-svm-transaction",
-]
-
-[[package]]
 name = "ahash"
 version = "0.8.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -83,6 +67,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "819e7219dbd41043ac279b19830f2efc897156490d7fd6ea916720117ee66311"
 dependencies = [
  "libc",
+]
+
+[[package]]
+name = "ansi_term"
+version = "0.12.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d52a9bb7ec0cf484c551830a7ce27bd20d67eac647e1befb56b0be4ee39a55d2"
+dependencies = [
+ "winapi",
 ]
 
 [[package]]
@@ -996,6 +989,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "28dea519a9695b9977216879a3ebfddf92f1c08c05d984f8996aecd6ecdc811d"
 
 [[package]]
+name = "five8"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a75b8549488b4715defcb0d8a8a1c1c76a80661b5fa106b4ca0e7fce59d7d875"
+dependencies = [
+ "five8_core",
+]
+
+[[package]]
 name = "five8_const"
 version = "0.1.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1581,32 +1583,66 @@ dependencies = [
 [[package]]
 name = "litesvm"
 version = "0.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e89818484130353695dfdee963fc818c808dfa9a5be6ff8070964bfc810579b3"
+source = "git+https://github.com/LiteSVM/litesvm.git?rev=7e3d9a8#7e3d9a84e019cb50b535d398770f49fe685c66c2"
 dependencies = [
+ "ansi_term",
  "bincode",
  "indexmap",
  "itertools 0.14.0",
  "log",
  "qualifier_attr",
  "serde",
+ "solana-account",
+ "solana-address-lookup-table-interface",
  "solana-address-lookup-table-program",
  "solana-bpf-loader-program",
+ "solana-clock",
  "solana-compute-budget",
+ "solana-compute-budget-instruction",
  "solana-compute-budget-program",
  "solana-config-program",
+ "solana-epoch-rewards",
+ "solana-epoch-schedule",
+ "solana-feature-set",
  "solana-fee",
+ "solana-fee-structure",
+ "solana-hash",
+ "solana-instruction",
+ "solana-instructions-sysvar",
+ "solana-keypair",
+ "solana-last-restart-slot",
+ "solana-loader-v3-interface",
+ "solana-loader-v4-interface",
  "solana-loader-v4-program",
  "solana-log-collector",
- "solana-program",
+ "solana-measure",
+ "solana-message",
+ "solana-native-token",
+ "solana-nonce",
+ "solana-nonce-account",
+ "solana-precompiles",
+ "solana-program-error",
  "solana-program-runtime",
- "solana-runtime-transaction",
- "solana-sdk",
+ "solana-pubkey",
+ "solana-rent",
+ "solana-reserved-account-keys",
+ "solana-sdk-ids",
+ "solana-sha256-hasher",
+ "solana-signature",
+ "solana-signer",
+ "solana-slot-hashes",
+ "solana-slot-history",
+ "solana-stake-interface",
  "solana-stake-program",
- "solana-svm",
  "solana-svm-transaction",
+ "solana-system-interface",
  "solana-system-program",
+ "solana-sysvar",
+ "solana-sysvar-id",
  "solana-timings",
+ "solana-transaction",
+ "solana-transaction-context",
+ "solana-transaction-error",
  "solana-vote-program",
  "thiserror 2.0.11",
 ]
@@ -1854,15 +1890,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "openssl-src"
-version = "300.4.1+3.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "faa4eac4138c62414b5622d1b31c5c304f34b406b013c079c2bbc652fdd6678c"
-dependencies = [
- "cc",
-]
-
-[[package]]
 name = "openssl-sys"
 version = "0.9.104"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1870,7 +1897,6 @@ checksum = "45abf306cbf99debc8195b66b7346498d7b10c210de50418b5ccd7ceba08c741"
 dependencies = [
  "cc",
  "libc",
- "openssl-src",
  "pkg-config",
  "vcpkg",
 ]
@@ -3931,27 +3957,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "solana-runtime-transaction"
-version = "2.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "053c37fec5b3d291b382a6b21aac6df461da8cc2d733b3d095596129a78d72f7"
-dependencies = [
- "agave-transaction-view",
- "log",
- "solana-compute-budget",
- "solana-compute-budget-instruction",
- "solana-hash",
- "solana-message",
- "solana-pubkey",
- "solana-sdk-ids",
- "solana-signature",
- "solana-svm-transaction",
- "solana-transaction",
- "solana-transaction-error",
- "thiserror 2.0.11",
-]
-
-[[package]]
 name = "solana-sanitize"
 version = "2.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4303,60 +4308,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "solana-svm"
-version = "2.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "83e74fc2cd71d75f3e311bb568604184b51e90c280040efabaa3ab3c8a2c4d85"
-dependencies = [
- "ahash",
- "itertools 0.12.1",
- "log",
- "percentage",
- "serde",
- "serde_derive",
- "solana-account",
- "solana-bpf-loader-program",
- "solana-clock",
- "solana-compute-budget",
- "solana-compute-budget-instruction",
- "solana-feature-set",
- "solana-fee-structure",
- "solana-hash",
- "solana-instruction",
- "solana-instructions-sysvar",
- "solana-loader-v4-program",
- "solana-log-collector",
- "solana-measure",
- "solana-message",
- "solana-nonce",
- "solana-nonce-account",
- "solana-precompiles",
- "solana-program",
- "solana-program-runtime",
- "solana-pubkey",
- "solana-rent",
- "solana-rent-debits",
- "solana-sdk",
- "solana-sdk-ids",
- "solana-svm-rent-collector",
- "solana-svm-transaction",
- "solana-timings",
- "solana-transaction-context",
- "solana-transaction-error",
- "solana-type-overrides",
- "thiserror 2.0.11",
-]
-
-[[package]]
-name = "solana-svm-rent-collector"
-version = "2.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0f4387d97a27730ef97b52b81f814e3e31f869f001ede75fb53f2fcbc335c03e"
-dependencies = [
- "solana-sdk",
-]
-
-[[package]]
 name = "solana-svm-transaction"
 version = "2.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4666,7 +4617,8 @@ dependencies = [
  "derive_more",
  "pyo3",
  "serde",
- "solana-sdk",
+ "solana-address-lookup-table-interface",
+ "solana-sdk-ids",
  "solders-account",
  "solders-account-decoder",
  "solders-address-lookup-table-account",
@@ -4703,8 +4655,8 @@ dependencies = [
  "serde",
  "serde_bytes",
  "serde_with 1.14.0",
+ "solana-account",
  "solana-account-decoder-client-types",
- "solana-sdk",
  "solders-account-decoder",
  "solders-macros",
  "solders-pubkey",
@@ -4723,7 +4675,6 @@ dependencies = [
  "serde",
  "serde_json",
  "solana-account-decoder-client-types",
- "solana-sdk",
  "solders-macros",
  "solders-traits-core",
  "zstd 0.11.2+zstd.1.5.2",
@@ -4753,7 +4704,8 @@ dependencies = [
  "base64 0.13.1",
  "bincode",
  "serde",
- "solana-sdk",
+ "solana-message",
+ "solana-transaction",
  "solders-message",
  "solders-transaction",
 ]
@@ -4765,7 +4717,7 @@ dependencies = [
  "derive_more",
  "pyo3",
  "serde",
- "solana-sdk",
+ "solana-commitment-config",
  "solders-traits",
 ]
 
@@ -4775,7 +4727,8 @@ version = "0.23.0"
 dependencies = [
  "pyo3",
  "solana-compute-budget",
- "solana-sdk",
+ "solana-compute-budget-interface",
+ "solana-sdk-ids",
  "solders-instruction",
  "solders-macros",
  "solders-pubkey",
@@ -4789,7 +4742,7 @@ dependencies = [
  "derive_more",
  "pyo3",
  "serde",
- "solana-sdk",
+ "solana-epoch-info",
  "solders-macros",
  "solders-traits-core",
 ]
@@ -4828,9 +4781,15 @@ name = "solders-keypair"
 version = "0.23.0"
 dependencies = [
  "derive_more",
+ "five8",
  "pyo3",
  "serde",
- "solana-sdk",
+ "solana-derivation-path",
+ "solana-keypair",
+ "solana-presigner",
+ "solana-pubkey",
+ "solana-signature",
+ "solana-signer",
  "solders-macros",
  "solders-pubkey",
  "solders-signature",
@@ -4845,7 +4804,18 @@ dependencies = [
  "litesvm",
  "pyo3",
  "serde",
- "solana-sdk",
+ "solana-account",
+ "solana-clock",
+ "solana-epoch-rewards",
+ "solana-epoch-schedule",
+ "solana-feature-set",
+ "solana-hash",
+ "solana-last-restart-slot",
+ "solana-message",
+ "solana-rent",
+ "solana-slot-hashes",
+ "solana-slot-history",
+ "solana-stake-interface",
  "solders-account",
  "solders-compute-budget",
  "solders-hash",
@@ -4988,7 +4958,6 @@ dependencies = [
  "serde",
  "solana-account-decoder-client-types",
  "solana-rpc-client-api",
- "solana-sdk",
  "solders-commitment-config",
  "solders-macros",
  "solders-pubkey",
@@ -5178,7 +5147,6 @@ dependencies = [
  "serde_with 1.14.0",
  "solana-account-decoder-client-types",
  "solana-rpc-client-api",
- "solana-sdk",
  "solana-transaction-status-client-types",
  "solders-account",
  "solders-account-decoder",
@@ -5214,7 +5182,6 @@ dependencies = [
  "serde_with 1.14.0",
  "solana-account-decoder-client-types",
  "solana-rpc-client-api",
- "solana-sdk",
  "solders-account",
  "solders-account-decoder",
  "solders-hash",
@@ -5248,8 +5215,8 @@ version = "0.23.0"
 dependencies = [
  "pyo3",
  "serde",
+ "solana-commitment-config",
  "solana-rpc-client-api",
- "solana-sdk",
  "solana-transaction-status-client-types",
  "solders-commitment-config",
  "solders-macros",
@@ -5328,7 +5295,7 @@ dependencies = [
  "derive_more",
  "pyo3",
  "serde",
- "solana-sdk",
+ "solana-signature",
  "solders-macros",
  "solders-pubkey",
  "solders-traits-core",
@@ -5344,7 +5311,10 @@ dependencies = [
  "pyo3",
  "serde",
  "solana-address-lookup-table-interface",
- "solana-sdk",
+ "solana-instruction",
+ "solana-pubkey",
+ "solana-sdk-ids",
+ "solana-system-interface",
  "solders-instruction",
  "solders-macros",
  "solders-pubkey",
@@ -5378,7 +5348,13 @@ dependencies = [
  "serde_cbor",
  "serde_json",
  "solana-banks-client",
- "solana-sdk",
+ "solana-commitment-config",
+ "solana-hash",
+ "solana-pubkey",
+ "solana-sanitize",
+ "solana-signature",
+ "solana-signer",
+ "solana-transaction-error",
  "solders-traits-core",
 ]
 
@@ -5400,7 +5376,11 @@ dependencies = [
  "derive_more",
  "pyo3",
  "serde",
- "solana-sdk",
+ "solana-message",
+ "solana-pubkey",
+ "solana-sanitize",
+ "solana-signature",
+ "solana-transaction",
  "solders-hash",
  "solders-instruction",
  "solders-keypair",
@@ -5429,7 +5409,8 @@ dependencies = [
  "derive_more",
  "pyo3",
  "serde",
- "solana-sdk",
+ "solana-instruction",
+ "solana-transaction-error",
  "solders-macros",
  "solders-traits-core",
 ]
@@ -5442,7 +5423,7 @@ dependencies = [
  "derive_more",
  "pyo3",
  "serde",
- "solana-sdk",
+ "solana-transaction-context",
  "solana-transaction-status-client-types",
  "solders-macros",
  "solders-pubkey",
@@ -5462,7 +5443,7 @@ dependencies = [
  "serde",
  "serde_json",
  "solana-account-decoder-client-types",
- "solana-sdk",
+ "solana-reward-info",
  "solana-transaction-status-client-types",
  "solders-account-decoder",
  "solders-hash",

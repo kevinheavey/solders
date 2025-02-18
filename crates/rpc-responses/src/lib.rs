@@ -46,7 +46,6 @@ use solana_rpc_client_api::{
         SlotTransactionStats as SlotTransactionStatsOriginal, SlotUpdate as SlotUpdateOriginal,
     },
 };
-use solana_sdk::clock::{Epoch, Slot, UnixTimestamp};
 use solana_transaction_status_client_types::TransactionStatus as TransactionStatusOriginal;
 use solders_account::{Account, AccountJSON};
 use solders_account_decoder::UiTokenAmount;
@@ -88,6 +87,7 @@ use solders_rpc_responses_common::{
     SignatureNotification, SignatureNotificationResult, SubscriptionResult, UnsubscribeResult,
 };
 use solders_rpc_responses_tx_status::RpcConfirmedTransactionStatusWithSignature;
+type Slot = u64;
 
 pub trait CommonMethodsRpcResp<'a>:
     std::fmt::Display
@@ -1032,7 +1032,7 @@ response_data_boilerplate!(RpcInflationRate);
 #[pymethods]
 impl RpcInflationRate {
     #[new]
-    pub fn new(total: f64, validator: f64, foundation: f64, epoch: Epoch) -> Self {
+    pub fn new(total: f64, validator: f64, foundation: f64, epoch: u64) -> Self {
         RpcInflationRateOriginal {
             total,
             validator,
@@ -1055,7 +1055,7 @@ impl RpcInflationRate {
         self.0.foundation
     }
     #[getter]
-    pub fn epoch(&self) -> Epoch {
+    pub fn epoch(&self) -> u64 {
         self.0.epoch
     }
 }
@@ -1075,7 +1075,7 @@ impl RpcInflationReward {
     #[pyo3(signature = (epoch, effective_slot, amount, post_balance, commission=None))]
     #[new]
     pub fn new(
-        epoch: Epoch,
+        epoch: u64,
         effective_slot: Slot,
         amount: u64,
         post_balance: u64,
@@ -1091,7 +1091,7 @@ impl RpcInflationReward {
         .into()
     }
     #[getter]
-    pub fn epoch(&self) -> Epoch {
+    pub fn epoch(&self) -> u64 {
         self.0.epoch
     }
     #[getter]
@@ -1647,7 +1647,7 @@ impl RpcVote {
         vote_pubkey: Pubkey,
         slots: Vec<Slot>,
         hash: SolderHash,
-        timestamp: Option<UnixTimestamp>,
+        timestamp: Option<i64>,
         signature: Signature,
     ) -> Self {
         RpcVoteOriginal {
@@ -1672,7 +1672,7 @@ impl RpcVote {
         self.0.hash.parse().unwrap()
     }
     #[getter]
-    pub fn timestamp(&self) -> Option<UnixTimestamp> {
+    pub fn timestamp(&self) -> Option<i64> {
         self.0.timestamp
     }
     #[getter]

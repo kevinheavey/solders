@@ -14,7 +14,7 @@ serde = { workspace = true }
 serde_bytes.workspace = true
 serde_with.workspace = true
 derive_more = { workspace = true }
-solana-sdk = { workspace = true }
+solana-account = { workspace = true }
 solders-macros = { workspace = true }
 solders-pubkey = { workspace = true }
 solders-traits-core = { workspace = true }

@@ -10,7 +10,7 @@ description = "Solders transaction return data crate."
 
 [dependencies]
 pyo3 = { workspace = true, features = ["macros"] }
-solana-sdk = { workspace = true }
+solana-transaction-context = { workspace = true }
 serde = { workspace = true }
 derive_more = { workspace = true }
 solders-pubkey = { workspace = true }

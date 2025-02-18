@@ -20,4 +20,3 @@ solana-rpc-client-api = { workspace = true }
 solders-rpc-config-macros = { workspace = true }
 solders-rpc-config-no-rpc-api = { workspace = true }
 solders-commitment-config = { workspace = true }
-solana-sdk = { workspace = true }

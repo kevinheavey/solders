@@ -9,11 +9,17 @@ repository = { workspace = true }
 description = "Solders keypair crate."
 
 [dependencies]
+five8 = { workspace = true }
 pyo3 = { workspace = true, features = ["macros"] }
+solana-derivation-path = { workspace = true }
+solana-keypair = { workspace = true, features = ["seed-derivable"] }
+solana-presigner = { workspace = true }
+solana-pubkey = { workspace = true }
+solana-signature = { workspace = true }
+solana-signer = { workspace = true }
 solders-traits-core = { workspace = true }
 solders-traits = { workspace = true }
 solders-macros = { workspace = true }
-solana-sdk = { workspace = true }
 serde = { workspace = true }
 derive_more = { workspace = true }
 solders-pubkey = { workspace = true }

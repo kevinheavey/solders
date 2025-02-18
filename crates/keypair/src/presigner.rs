@@ -1,5 +1,6 @@
 use pyo3::prelude::*;
-use solana_sdk::signer::{presigner::Presigner as PresignerOriginal, Signer as SignerTrait};
+use solana_presigner::Presigner as PresignerOriginal;
+use solana_signer::Signer as SignerTrait;
 use solders_macros::{pyhash, richcmp_signer};
 use solders_pubkey::Pubkey;
 use solders_signature::Signature;

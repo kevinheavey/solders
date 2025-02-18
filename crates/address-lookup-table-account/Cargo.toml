@@ -10,10 +10,10 @@ description = "Solders address lookup table account crate."
 
 [dependencies]
 pyo3 = { workspace = true, features = ["macros"] }
-solana-address-lookup-table-interface = { workspace = true }
+solana-address-lookup-table-interface = { workspace = true, features = ["bincode", "bytemuck"] }
 solana-message = { workspace = true }
 solana-pubkey = { workspace = true }
-solana-slot-hashes = { workspace = true }
+solana-slot-hashes = { workspace = true, features = ["serde"] }
 solders-traits-core = { workspace = true }
 solders-macros = { workspace = true }
 serde = { workspace = true }

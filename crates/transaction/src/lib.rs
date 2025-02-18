@@ -2,16 +2,14 @@
 use derive_more::{From, Into};
 use pyo3::{prelude::*, IntoPyObject};
 use serde::{Deserialize, Serialize};
-use solana_sdk::{
-    pubkey::Pubkey as PubkeyOriginal,
-    sanitize::Sanitize,
-    signature::Signature as SignatureOriginal,
-    transaction::{
-        uses_durable_nonce, Legacy as LegacyOriginal, Transaction as TransactionOriginal,
-        TransactionVersion as TransactionVersionOriginal,
-        VersionedTransaction as VersionedTransactionOriginal,
-    },
-};
+use {
+    solana_pubkey::Pubkey as PubkeyOriginal,
+    solana_sanitize::Sanitize,
+    solana_signature::Signature as SignatureOriginal,
+    solana_transaction::{
+        uses_durable_nonce, Transaction as TransactionOriginal,
+        versioned::{Legacy as LegacyOriginal, VersionedTransaction as VersionedTransactionOriginal, TransactionVersion as TransactionVersionOriginal},
+    }};
 use solders_macros::{common_methods, richcmp_eq_only};
 use solders_pubkey::{convert_optional_pubkey, Pubkey};
 use solders_traits::handle_py_err;
@@ -385,7 +383,7 @@ impl Transaction {
             program_ids.into_iter().map(PubkeyOriginal::from).collect();
         let converted_instructions = instructions
             .into_iter()
-            .map(solana_sdk::instruction::CompiledInstruction::from)
+            .map(solana_message::compiled_instruction::CompiledInstruction::from)
             .collect();
         TransactionOriginal::new_with_compiled_instructions(
             &SignerVec(from_keypairs),

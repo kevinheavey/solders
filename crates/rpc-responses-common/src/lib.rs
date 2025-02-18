@@ -14,7 +14,6 @@ use solana_rpc_client_api::response::{
     RpcVersionInfo as RpcVersionInfoOriginal, RpcVoteAccountInfo as RpcVoteAccountInfoOriginal,
     RpcVoteAccountStatus as RpcVoteAccountStatusOriginal,
 };
-use solana_sdk::clock::{Epoch, Slot};
 use solders_account::{Account, AccountJSON};
 use solders_account_decoder::UiTokenAmount;
 use solders_hash::Hash as SolderHash;
@@ -29,7 +28,7 @@ use solders_rpc_response_data_boilerplate::response_data_boilerplate;
 #[pyclass(module = "solders.rpc.responses", subclass)]
 pub struct RpcResponseContext {
     #[pyo3(get)]
-    pub slot: Slot,
+    pub slot: u64,
     #[pyo3(get)]
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub api_version: Option<String>,
@@ -41,7 +40,7 @@ pub struct RpcResponseContext {
 impl RpcResponseContext {
     #[pyo3(signature = (slot, api_version=None))]
     #[new]
-    pub fn new(slot: Slot, api_version: Option<String>) -> Self {
+    pub fn new(slot: u64, api_version: Option<String>) -> Self {
         Self { slot, api_version }
     }
 }
@@ -523,9 +522,9 @@ impl RpcVoteAccountInfo {
         activated_stake: u64,
         commission: u8,
         epoch_vote_account: bool,
-        epoch_credits: Vec<(Epoch, u64, u64)>,
+        epoch_credits: Vec<(u64, u64, u64)>,
         last_vote: u64,
-        root_slot: Slot,
+        root_slot: u64,
     ) -> Self {
         RpcVoteAccountInfoOriginal {
             vote_pubkey: vote_pubkey.to_string(),
@@ -560,7 +559,7 @@ impl RpcVoteAccountInfo {
         self.0.epoch_vote_account
     }
     #[getter]
-    pub fn epoch_credits(&self) -> Vec<(Epoch, u64, u64)> {
+    pub fn epoch_credits(&self) -> Vec<(u64, u64, u64)> {
         self.0.epoch_credits.clone()
     }
     #[getter]
@@ -568,7 +567,7 @@ impl RpcVoteAccountInfo {
         self.0.last_vote
     }
     #[getter]
-    pub fn root_slot(&self) -> Slot {
+    pub fn root_slot(&self) -> u64 {
         self.0.root_slot
     }
 }
