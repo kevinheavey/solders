@@ -1,4 +1,4 @@
-from typing import List, Sequence, Union
+from typing import Sequence, Union
 
 from ..solders import (
     AccountSubscribe,
