@@ -12,5 +12,5 @@ description = "Solders RPC errors crate."
 pyo3 = { workspace = true, features = ["macros"] }
 serde = { workspace = true }
 solders-macros = { workspace = true }
-solders-rpc-errors-tx-status = { workspace = true }
 solders-rpc-errors-no-tx-status = { workspace = true }
+solders-rpc-errors-tx-status = { workspace = true }

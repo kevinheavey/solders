@@ -11,9 +11,9 @@ description = "Solders RPC simulate transaction accounts crate."
 [dependencies]
 pyo3 = { workspace = true, features = ["macros"] }
 serde = { workspace = true }
+solana-rpc-client-api = { workspace = true }
 solders-account-decoder = { workspace = true }
 solders-macros = { workspace = true }
 solders-pubkey = { workspace = true }
-solana-rpc-client-api = { workspace = true }
 solders-rpc-config-macros = { workspace = true }
 solders-traits-core = { workspace = true }

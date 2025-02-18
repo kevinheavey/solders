@@ -11,9 +11,9 @@ description = "Solders RPC signature for address config crate."
 [dependencies]
 pyo3 = { workspace = true, features = ["macros"] }
 serde = { workspace = true }
-solders-macros = { workspace = true }
 solana-rpc-client-api = { workspace = true }
-solders-rpc-config-macros = { workspace = true }
 solders-commitment-config = { workspace = true }
+solders-macros = { workspace = true }
+solders-rpc-config-macros = { workspace = true }
 solders-signature = { workspace = true }
 solders-traits-core = { workspace = true }

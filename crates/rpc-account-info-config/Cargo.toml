@@ -11,10 +11,10 @@ description = "Solders RPC account info crate."
 [dependencies]
 pyo3 = { workspace = true, features = ["macros"] }
 serde = { workspace = true }
-solders-macros = { workspace = true }
-solders-traits-core = { workspace = true }
-solders-account-decoder = { workspace = true }
 solana-account-decoder-client-types = { workspace = true }
-solders-rpc-config-macros = { workspace = true }
 solana-rpc-client-api = { workspace = true }
+solders-account-decoder = { workspace = true }
 solders-commitment-config = { workspace = true }
+solders-macros = { workspace = true }
+solders-rpc-config-macros = { workspace = true }
+solders-traits-core = { workspace = true }

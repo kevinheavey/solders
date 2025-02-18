@@ -9,8 +9,8 @@ repository = { workspace = true }
 description = "Solders commitment config crate."
 
 [dependencies]
-pyo3 = { workspace = true, features = ["macros"] }
-solders-traits = { workspace = true }
-solana-commitment-config = { workspace = true }
-serde = { workspace = true }
 derive_more = { workspace = true }
+pyo3 = { workspace = true, features = ["macros"] }
+serde = { workspace = true }
+solana-commitment-config = { workspace = true }
+solders-traits = { workspace = true }

@@ -9,21 +9,21 @@ repository = { workspace = true }
 description = "Solders LiteSVM crate."
 
 [dependencies]
+litesvm = { workspace = true, features = ["nodejs-internal", "serde"] }
 pyo3 = { workspace = true, features = ["macros"] }
 serde = { workspace = true }
-litesvm = { workspace = true, features = ["nodejs-internal", "serde"] }
 solana-account = { workspace = true }
 solana-clock = { workspace = true }
 solana-epoch-rewards = { workspace = true }
 solana-epoch-schedule = { workspace = true }
 solana-feature-set = { workspace = true }
 solana-hash = { workspace = true }
+solana-last-restart-slot = { workspace = true }
 solana-message = { workspace = true }
 solana-rent = { workspace = true }
 solana-slot-hashes = { workspace = true }
 solana-slot-history = { workspace = true }
 solana-stake-interface = { workspace = true }
-solana-last-restart-slot = { workspace = true }
 solders-account = { workspace = true }
 solders-compute-budget = { workspace = true }
 solders-hash = { workspace = true }

@@ -9,10 +9,10 @@ repository = { workspace = true }
 description = "Solders RPC errors-no-tx-status crate."
 
 [dependencies]
+derive_more = { workspace = true }
 pyo3 = { workspace = true, features = ["macros"] }
 serde = { workspace = true }
-derive_more = { workspace = true }
 solders-macros = { workspace = true }
+solders-rpc-errors-common = { workspace = true }
 solders-traits-core = { workspace = true }
 solders-transaction-error = { workspace = true }
-solders-rpc-errors-common = { workspace = true }

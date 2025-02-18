@@ -9,13 +9,13 @@ repository = { workspace = true }
 description = "Solders RPC responses-tx-status crate."
 
 [dependencies]
+derive_more = { workspace = true }
 pyo3 = { workspace = true, features = ["macros"] }
 serde = { workspace = true }
-derive_more = { workspace = true }
-solders-macros = { workspace = true }
-solders-traits-core = { workspace = true }
-solders-transaction-error = { workspace = true }
 solana-rpc-client-api = { workspace = true }
-solders-transaction-confirmation-status = { workspace = true }
+solders-macros = { workspace = true }
 solders-rpc-response-data-boilerplate = { workspace = true }
 solders-signature = { workspace = true }
+solders-traits-core = { workspace = true }
+solders-transaction-confirmation-status = { workspace = true }
+solders-transaction-error = { workspace = true }

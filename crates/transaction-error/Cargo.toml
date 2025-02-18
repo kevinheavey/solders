@@ -9,10 +9,10 @@ repository = { workspace = true }
 description = "Solders transaction error crate."
 
 [dependencies]
+derive_more = { workspace = true }
+pyo3 = { workspace = true, features = ["macros"] }
 serde = { workspace = true }
 solana-instruction = { workspace = true }
 solana-transaction-error = { workspace = true }
-solders-traits-core = { workspace = true }
 solders-macros = { workspace = true }
-derive_more = { workspace = true }
-pyo3 = { workspace = true, features = ["macros"] }
+solders-traits-core = { workspace = true }

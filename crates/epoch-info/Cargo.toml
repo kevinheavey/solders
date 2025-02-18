@@ -9,9 +9,9 @@ repository = { workspace = true }
 description = "Solders epoch info crate."
 
 [dependencies]
-pyo3 = { workspace = true, features = ["macros"] }
-solders-traits-core = { workspace = true }
-solders-macros = { workspace = true }
-solana-epoch-info = { workspace = true, features = ["serde"] }
-serde = { workspace = true }
 derive_more = { workspace = true }
+pyo3 = { workspace = true, features = ["macros"] }
+serde = { workspace = true }
+solana-epoch-info = { workspace = true, features = ["serde"] }
+solders-macros = { workspace = true }
+solders-traits-core = { workspace = true }

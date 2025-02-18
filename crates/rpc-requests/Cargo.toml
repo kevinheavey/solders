@@ -9,27 +9,27 @@ repository = { workspace = true }
 description = "Solders RPC requests crate."
 
 [dependencies]
+camelpaste = { workspace = true }
 pyo3 = { workspace = true, features = ["macros"] }
 serde = { workspace = true }
-serde_with = { workspace = true }
 serde_json = { workspace = true }
+serde_with = { workspace = true }
+solders-commitment-config = { workspace = true }
 solders-hash = { workspace = true }
 solders-macros = { workspace = true }
-solders-traits-core = { workspace = true }
-solders-commitment-config = { workspace = true }
-solders-rpc-config-no-filter = { workspace = true }
+solders-message = { workspace = true }
+solders-pubkey = { workspace = true }
 solders-rpc-account-info-config = { workspace = true }
+solders-rpc-config-no-filter = { workspace = true }
 solders-rpc-program-accounts-config = { workspace = true }
 solders-rpc-request-airdrop-config = { workspace = true }
+solders-rpc-request-params = { workspace = true }
+solders-rpc-request-params-no-config = { workspace = true }
 solders-rpc-send-transaction-config = { workspace = true }
 solders-rpc-sig-status-config = { workspace = true }
 solders-rpc-sigs-for-address-config = { workspace = true }
 solders-rpc-sim-transaction-config = { workspace = true }
-solders-rpc-request-params = { workspace = true }
-solders-rpc-request-params-no-config = { workspace = true }
 solders-rpc-version = { workspace = true }
-solders-message = { workspace = true }
-solders-transaction = { workspace = true }
-solders-pubkey = { workspace = true }
 solders-signature = { workspace = true }
-camelpaste = { workspace = true }
+solders-traits-core = { workspace = true }
+solders-transaction = { workspace = true }

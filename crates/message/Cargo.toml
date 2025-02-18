@@ -9,17 +9,17 @@ repository = { workspace = true }
 description = "Solders message crate."
 
 [dependencies]
+bincode = { workspace = true }
+derive_more = { workspace = true }
 pyo3 = { workspace = true, features = ["macros"] }
-solders-traits-core = { workspace = true }
-solders-traits = { workspace = true }
-solders-macros = { workspace = true }
+serde = { workspace = true }
 solana-instruction = { workspace = true }
 solana-message = { workspace = true, features = ["bincode", "blake3"] }
 solana-pubkey = { workspace = true }
-serde = { workspace = true }
-derive_more = { workspace = true }
 solders-address-lookup-table-account = { workspace = true }
-solders-pubkey = { workspace = true }
 solders-hash = { workspace = true }
 solders-instruction = { workspace = true }
-bincode = { workspace = true }
+solders-macros = { workspace = true }
+solders-pubkey = { workspace = true }
+solders-traits = { workspace = true }
+solders-traits-core = { workspace = true }

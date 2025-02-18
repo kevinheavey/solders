@@ -11,11 +11,11 @@ description = "Solders RPC send transaction config crate."
 [dependencies]
 pyo3 = { workspace = true, features = ["macros"] }
 serde = { workspace = true }
-solders-macros = { workspace = true }
 solana-commitment-config = { workspace = true }
 solana-rpc-client-api = { workspace = true }
-solders-rpc-config-macros = { workspace = true }
-solders-commitment-config = { workspace = true }
-solders-traits-core = { workspace = true }
 solana-transaction-status-client-types = { workspace = true }
+solders-commitment-config = { workspace = true }
+solders-macros = { workspace = true }
+solders-rpc-config-macros = { workspace = true }
+solders-traits-core = { workspace = true }
 solders-transaction-status-enums = { workspace = true }

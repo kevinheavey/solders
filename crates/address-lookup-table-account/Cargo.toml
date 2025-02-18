@@ -9,14 +9,14 @@ repository = { workspace = true }
 description = "Solders address lookup table account crate."
 
 [dependencies]
+derive_more = { workspace = true }
 pyo3 = { workspace = true, features = ["macros"] }
+serde = { workspace = true }
 solana-address-lookup-table-interface = { workspace = true, features = ["bincode", "bytemuck"] }
 solana-message = { workspace = true }
 solana-pubkey = { workspace = true }
 solana-slot-hashes = { workspace = true, features = ["serde"] }
-solders-traits-core = { workspace = true }
-solders-macros = { workspace = true }
-serde = { workspace = true }
-derive_more = { workspace = true }
-solders-pubkey = { workspace = true }
 solders-hash = { workspace = true }
+solders-macros = { workspace = true }
+solders-pubkey = { workspace = true }
+solders-traits-core = { workspace = true }

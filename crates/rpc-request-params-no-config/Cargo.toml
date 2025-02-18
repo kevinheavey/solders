@@ -12,8 +12,8 @@ description = "Solders RPC request-params-no-config crate."
 bincode = { workspace = true }
 serde = { workspace = true }
 serde_with = { workspace = true }
+solders-base64-string = { workspace = true }
 solders-commitment-config = { workspace = true }
-solders-rpc-version = { workspace = true }
 solders-message = { workspace = true }
 solders-pubkey = { workspace = true }
-solders-base64-string = { workspace = true }
+solders-rpc-version = { workspace = true }
