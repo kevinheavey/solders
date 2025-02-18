@@ -11,6 +11,7 @@ jobs:
         with:
           workflow: build.yml
           name: wheels-.*
+          name_is_regexp: true
       - name: Publish to PyPi
         env:
           MATURIN_PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
