@@ -1167,6 +1167,30 @@ impl GetRecentPerformanceSamples {
 
 request_boilerplate!(GetRecentPerformanceSamples);
 
+/// Parameter struct for getRecentPrioritizationFees that properly serializes Pubkeys
+#[skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize)]
+pub struct GetRecentPrioritizationFeesParams(pub Vec<Pubkey>);
+
+// Ensure we get a nested array structure in JSON output with Base58-encoded Pubkeys
+impl Serialize for GetRecentPrioritizationFeesParams {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        use serde::ser::SerializeSeq;
+
+        // First create array of Base58-encoded strings
+        let base58_addresses: Vec<String> =
+            self.0.iter().map(|pubkey| pubkey.to_string()).collect();
+
+        // Then wrap that in an outer array
+        let mut seq = serializer.serialize_seq(Some(1))?;
+        seq.serialize_element(&base58_addresses)?;
+        seq.end()
+    }
+}
+
 /// A ``getRecentPrioritizationFees`` request.
 ///
 /// Args:
@@ -1187,7 +1211,7 @@ pub struct GetRecentPrioritizationFees {
     #[serde(flatten)]
     base: RequestBase,
     #[serde(default)]
-    params: Option<(Vec<Pubkey>,)>,
+    params: Option<GetRecentPrioritizationFeesParams>,
 }
 
 #[richcmp_eq_only]
@@ -1197,7 +1221,7 @@ pub struct GetRecentPrioritizationFees {
 impl GetRecentPrioritizationFees {
     #[new]
     fn new(addresses: Option<Vec<Pubkey>>, id: Option<u64>) -> Self {
-        let params = addresses.map(|x| (x,));
+        let params = addresses.map(GetRecentPrioritizationFeesParams);
         let base = RequestBase::new(id);
         Self { base, params }
     }
