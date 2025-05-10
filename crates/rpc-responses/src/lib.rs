@@ -41,6 +41,7 @@ use solana_rpc_client_api::{
         RpcInflationRate as RpcInflationRateOriginal,
         RpcInflationReward as RpcInflationRewardOriginal,
         RpcLogsResponse as RpcLogsResponseOriginal, RpcPerfSample as RpcPerfSampleOriginal,
+        RpcPrioritizationFee as RpcPrioritizationFeeOriginal,
         RpcSnapshotSlotInfo as RpcSnapshotSlotInfoOriginal, RpcSupply as RpcSupplyOriginal,
         RpcVote as RpcVoteOriginal, SlotInfo as SlotInfoOriginal,
         SlotTransactionStats as SlotTransactionStatsOriginal, SlotUpdate as SlotUpdateOriginal,
@@ -1256,6 +1257,43 @@ impl RpcPerfSample {
 
 contextless_resp_eq!(GetRecentPerformanceSamplesResp, Vec<RpcPerfSample>, clone);
 
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
+#[pyclass(module = "solders.rpc.responses", subclass)]
+pub struct RpcPrioritizationFee(RpcPrioritizationFeeOriginal);
+
+response_data_boilerplate!(RpcPrioritizationFee);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl RpcPrioritizationFee {
+    #[pyo3(signature = (slot, prioritization_fee))]
+    #[new]
+    pub fn new(slot: Slot, prioritization_fee: u64) -> Self {
+        RpcPrioritizationFeeOriginal {
+            slot,
+            prioritization_fee,
+        }
+        .into()
+    }
+
+    #[getter]
+    pub fn slot(&self) -> Slot {
+        self.0.slot
+    }
+
+    #[getter]
+    pub fn prioritization_fee(&self) -> u64 {
+        self.0.prioritization_fee
+    }
+}
+
+contextless_resp_eq!(
+    GetRecentPrioritizationFeesResp,
+    Vec<RpcPrioritizationFee>,
+    clone
+);
+
 contextless_resp_eq!(
     GetSignaturesForAddressResp,
     Vec<RpcConfirmedTransactionStatusWithSignature>,
@@ -1880,6 +1918,7 @@ pyunion_resp!(
     GetProgramAccountsWithContextMaybeJsonParsedResp,
     GetProgramAccountsMaybeJsonParsedResp,
     GetRecentPerformanceSamplesResp,
+    GetRecentPrioritizationFeesResp,
     GetSignaturesForAddressResp,
     GetSignatureStatusesResp,
     GetSlotResp,
@@ -2082,6 +2121,8 @@ pub fn include_responses(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<GetProgramAccountsMaybeJsonParsedResp>()?;
     m.add_class::<RpcPerfSample>()?;
     m.add_class::<GetRecentPerformanceSamplesResp>()?;
+    m.add_class::<RpcPrioritizationFee>()?;
+    m.add_class::<GetRecentPrioritizationFeesResp>()?;
     m.add_class::<RpcConfirmedTransactionStatusWithSignature>()?;
     m.add_class::<GetSignaturesForAddressResp>()?;
     m.add_class::<GetSignatureStatusesResp>()?;

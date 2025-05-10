@@ -64,6 +64,7 @@ from solders.rpc.responses import (
     GetProgramAccountsWithContextMaybeJsonParsedResp,
     GetProgramAccountsWithContextResp,
     GetRecentPerformanceSamplesResp,
+    GetRecentPrioritizationFeesResp,
     GetSignaturesForAddressResp,
     GetSignatureStatusesResp,
     GetSlotLeaderResp,
@@ -105,6 +106,7 @@ from solders.rpc.responses import (
     RpcKeyedAccountJsonParsed,
     RpcLogsResponse,
     RpcPerfSample,
+    RpcPrioritizationFee,
     RpcResponseContext,
     RpcSignatureResponse,
     RpcSimulateTransactionResult,
@@ -1407,6 +1409,43 @@ def test_get_recent_performance_samples() -> None:
     assert parsed.value[0] == RpcPerfSample(
         num_slots=126, num_transactions=126, sample_period_secs=60, slot=348125
     )
+
+
+def test_get_recent_prioritization_fees() -> None:
+    raw = """{
+  "jsonrpc": "2.0",
+  "result": [
+    {
+      "slot": 348125,
+      "prioritizationFee": 0
+    },
+    {
+      "slot": 348126,
+      "prioritizationFee": 1000
+    },
+    {
+      "slot": 348127,
+      "prioritizationFee": 500
+    },
+    {
+      "slot": 348128,
+      "prioritizationFee": 0
+    },
+    {
+      "slot": 348129,
+      "prioritizationFee": 1234
+    }
+  ],
+  "id": 1
+}"""
+    parsed = GetRecentPrioritizationFeesResp.from_json(raw)
+    assert isinstance(parsed, GetRecentPrioritizationFeesResp)
+    assert len(parsed.value) == 5
+    assert parsed.value[0] == RpcPrioritizationFee(slot=348125, prioritization_fee=0)
+    assert parsed.value[1] == RpcPrioritizationFee(slot=348126, prioritization_fee=1000)
+    assert parsed.value[2] == RpcPrioritizationFee(slot=348127, prioritization_fee=500)
+    assert parsed.value[3] == RpcPrioritizationFee(slot=348128, prioritization_fee=0)
+    assert parsed.value[4] == RpcPrioritizationFee(slot=348129, prioritization_fee=1234)
 
 
 def test_get_signatures_for_address() -> None:
