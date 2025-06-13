@@ -1,5 +1,5 @@
 =====================
-Transsaction Metadata
+Transaction Metadata
 =====================
 
 .. automodule:: solders.transaction_metadata
