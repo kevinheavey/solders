@@ -82,4 +82,14 @@ impl RpcSimulateTransactionResult {
     pub fn return_data(&self) -> Option<TransactionReturnData> {
         self.0.return_data.clone().map(Into::into)
     }
+
+    #[getter]
+    pub fn inner_instructions(&self) -> Option<Vec<UiInnerInstructions>> {
+        self.0.inner_instructions.clone().map(|ixns| ixns.into_iter().map(Into::into).collect())
+    }
+
+    #[getter]
+    pub fn replacement_blockhash(&self) -> Option<RpcBlockhash> {
+        self.0.replacement_blockhash.clone().map(Into::into)
+    }
 }

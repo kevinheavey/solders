@@ -2174,7 +2174,7 @@ def test_simulate_transaction() -> None:
             "replacementBlockhash": {
               "blockhash":"EY27AeAA65b3Qe45S5EKAHaUN28k1FBRieMvKppLxrqy",
               "lastValidBlockHeight":147616000
-            },
+            }
         }
     },
     "id": "00f783f3-2ab0-42cd-80c8-8cdd14732f45"
