@@ -3246,6 +3246,7 @@ class RpcSimulateTransactionResult:
     units_consumed: Optional[int]
     return_data: Optional[TransactionReturnData]
     inner_instructions: Optional[List[UiInnerInstructions]]
+    replacement_blockhash: Optional[RpcBlockhash]
     def __init__(
         self,
         err: Optional[TransactionErrorType] = None,
@@ -3254,6 +3255,7 @@ class RpcSimulateTransactionResult:
         units_consumed: Optional[int] = None,
         return_data: Optional[TransactionReturnData] = None,
         inner_instructions: Optional[List[UiInnerInstructions]] = None,
+        replacement_blockhash: Optional[RpcBlockhash] = None,
     ) -> None: ...
     def to_json(self) -> str: ...
     @staticmethod
