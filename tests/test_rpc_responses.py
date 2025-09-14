@@ -2188,6 +2188,10 @@ def test_simulate_transaction() -> None:
             "Program Vote111111111111111111111111111111111111111 failed: custom program error: 0x0",
         ],
         units_consumed=0,
+        replacement_blockhash=RpcBlockhash(
+            blockhash=Hash.from_string("EY27AeAA65b3Qe45S5EKAHaUN28k1FBRieMvKppLxrqy"),
+            last_valid_block_height=147616000,
+        ),
     )
 
 
