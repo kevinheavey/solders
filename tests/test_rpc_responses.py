@@ -2195,6 +2195,7 @@ def test_simulate_transaction() -> None:
         },
         "value": {
             "accounts": null,
+            "innerInstructions": null,
             "err": {
                 "InstructionError": [
                     0,
@@ -2208,7 +2209,11 @@ def test_simulate_transaction() -> None:
                 "Program Vote111111111111111111111111111111111111111 failed: custom program error: 0x0"
             ],
             "unitsConsumed": 0,
-            "returnData": null
+            "returnData": null,
+            "replacementBlockhash": {
+              "blockhash":"EY27AeAA65b3Qe45S5EKAHaUN28k1FBRieMvKppLxrqy",
+              "lastValidBlockHeight":147616000
+            }
         }
     },
     "id": "00f783f3-2ab0-42cd-80c8-8cdd14732f45"
@@ -2222,6 +2227,10 @@ def test_simulate_transaction() -> None:
             "Program Vote111111111111111111111111111111111111111 failed: custom program error: 0x0",
         ],
         units_consumed=0,
+        replacement_blockhash=RpcBlockhash(
+            blockhash=Hash.from_string("EY27AeAA65b3Qe45S5EKAHaUN28k1FBRieMvKppLxrqy"),
+            last_valid_block_height=147616000,
+        ),
     )
 
 
