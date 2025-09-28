@@ -15,6 +15,11 @@ pub fn request_heap_frame(bytes_: u32) -> Instruction {
     ComputeBudgetInstruction::request_heap_frame(bytes_).into()
 }
 
+#[pyfunction]
+pub fn set_loaded_accounts_data_size_limit(bytes_: u32) -> Instruction {
+    ComputeBudgetInstruction::set_loaded_accounts_data_size_limit(bytes_).into()
+}
+
 /// Set a specific compute unit limit that the transaction is allowed to consume.
 #[pyfunction]
 pub fn set_compute_unit_limit(units: u32) -> Instruction {
@@ -421,6 +426,7 @@ pub fn include_compute_budget(m: &Bound<'_, PyModule>) -> PyResult<()> {
         wrap_pyfunction!(request_heap_frame, m)?,
         wrap_pyfunction!(set_compute_unit_limit, m)?,
         wrap_pyfunction!(set_compute_unit_price, m)?,
+        wrap_pyfunction!(set_loaded_accounts_data_size_limit, m)?,
     ];
     for func in funcs {
         m.add_function(func)?;
