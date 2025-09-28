@@ -6,7 +6,7 @@ use solders_rpc_common::RpcSimulateTransactionResult;
 use solders_rpc_errors_common::error_message;
 use solders_traits_core::transaction_status_boilerplate;
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
 #[pyclass(module = "solders.rpc.errors", subclass)]
 pub struct SendTransactionPreflightFailure {
     #[pyo3(get)]

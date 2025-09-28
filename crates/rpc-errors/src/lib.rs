@@ -15,8 +15,9 @@ use solders_rpc_errors_tx_status::{
     SendTransactionPreflightFailure, SendTransactionPreflightFailureMessage,
 };
 
-#[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, IntoPyObject)]
+#[derive(FromPyObject, Clone, PartialEq, Serialize, Deserialize, Debug, IntoPyObject)]
 #[serde(untagged)]
+#[allow(clippy::large_enum_variant)]
 pub enum RpcCustomError {
     Fieldless(RpcCustomErrorFieldless),
     BlockCleanedUp(BlockCleanedUp),

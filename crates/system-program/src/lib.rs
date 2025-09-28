@@ -4,7 +4,6 @@ use pyo3::{exceptions::PyValueError, prelude::*};
 use solana_address_lookup_table_interface::instruction::{
     close_lookup_table as close_lookup_table_original,
     create_lookup_table as create_lookup_table_original,
-    create_lookup_table_signed as create_lookup_table_signed_original,
     deactivate_lookup_table as deactivate_lookup_table_original,
     extend_lookup_table as extend_lookup_table_original,
     freeze_lookup_table as freeze_lookup_table_original,
@@ -70,7 +69,6 @@ pub fn include_system_program(m: &Bound<'_, PyModule>) -> PyResult<()> {
         // address_lookup_table_program
         wrap_pyfunction!(close_lookup_table, m)?,
         wrap_pyfunction!(create_lookup_table, m)?,
-        wrap_pyfunction!(create_lookup_table_signed, m)?,
         wrap_pyfunction!(deactivate_lookup_table, m)?,
         wrap_pyfunction!(extend_lookup_table, m)?,
         wrap_pyfunction!(freeze_lookup_table, m)?,
@@ -689,16 +687,6 @@ pub struct CreateLookupTableSignedParams {
     authority_address: Pubkey,
     payer_address: Pubkey,
     recent_slot: u64,
-}
-
-#[pyfunction]
-pub fn create_lookup_table_signed(params: CreateLookupTableSignedParams) -> (Instruction, Pubkey) {
-    let (instruction, lookup_table_address) = create_lookup_table_signed_original(
-        params.authority_address.into(),
-        params.payer_address.into(),
-        params.recent_slot,
-    );
-    (instruction.into(), lookup_table_address.into())
 }
 
 #[derive(FromPyObject, IntoPyObject)]

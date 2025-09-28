@@ -19,6 +19,7 @@ serde = { workspace = true }
 serde_json = { workspace = true }
 solana-account-decoder-client-types = { workspace = true }
 solana-reward-info = { workspace = true }
+solana-transaction-error = { workspace = true }
 solana-transaction-status-client-types = { workspace = true }
 solders-account-decoder = { workspace = true }
 solders-hash = { workspace = true }

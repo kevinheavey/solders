@@ -8,7 +8,7 @@ use pyo3::{prelude::*, IntoPyObject};
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, DisplayFromStr, TryFromInto};
 use solana_account_decoder_client_types::{UiAccount, UiAccountData};
-use solana_rpc_client_api::response::{
+use solana_rpc_client_types::response::{
     RpcBlockhash as RpcBlockhashOriginal, RpcIdentity as RpcIdentityOriginal,
     RpcTokenAccountBalance as RpcTokenAccountBalanceOriginal,
     RpcVersionInfo as RpcVersionInfoOriginal, RpcVoteAccountInfo as RpcVoteAccountInfoOriginal,
@@ -50,7 +50,7 @@ response_data_boilerplate!(RpcResponseContext);
 #[macro_export]
 macro_rules! contextful_struct_def_eq {
     ($name:ident, $inner:ty) => {
-        #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+        #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
         #[pyclass(module = "solders.rpc.responses", subclass)]
         pub struct $name {
             #[pyo3(get)]

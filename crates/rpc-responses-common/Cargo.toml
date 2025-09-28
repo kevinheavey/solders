@@ -15,7 +15,7 @@ pyo3 = { workspace = true, features = ["macros"] }
 serde = { workspace = true }
 serde_with = { workspace = true }
 solana-account-decoder-client-types = { workspace = true }
-solana-rpc-client-api = { workspace = true }
+solana-rpc-client-types = { workspace = true }
 solders-account = { workspace = true }
 solders-account-decoder = { workspace = true }
 solders-hash = { workspace = true }

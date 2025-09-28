@@ -73,7 +73,7 @@ def test_from_bytes_wrong_size(test_input: bytes) -> None:
 def test_from_bytes_invalid_input() -> None:
     with raises(ValueError) as excinfo:
         Keypair.from_bytes(b"a" * 64)
-    assert excinfo.value.args[0] == "signature error: Cannot decompress Edwards point"
+    assert excinfo.value.args[0] == "signature error"
 
 
 def test_set_operations() -> None:

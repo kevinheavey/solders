@@ -53,9 +53,6 @@ from .solders import (
     create_lookup_table as _create_lookup_table,
 )
 from .solders import (
-    create_lookup_table_signed as _create_lookup_table_signed,
-)
-from .solders import (
     deactivate_lookup_table as _deactivate_lookup_table,
 )
 from .solders import (
@@ -626,25 +623,6 @@ class CreateLookupTableSignedParams(TypedDict):
     payer_address: Pubkey
     recent_slot: int
 
-
-def create_lookup_table_signed(
-    params: CreateLookupTableSignedParams,
-) -> Tuple[Instruction, Pubkey]:
-    """Constructs an instruction to create a table account.
-
-     Returns the instruction and the table account`s derived address.
-
-
-    Args:
-        params (CreateLookupTableSignedParams): The CreateLookupTableSigned params.
-
-    Returns:
-        Tuple[Instruction, PubKey]: The CreateLookupTableSigned instruction
-        and the table account's derived address
-    """
-    return _create_lookup_table_signed(dict(params))
-
-
 class DeactivateLookupTableParams(TypedDict):
     """Deactivate lookup table system transaction params."""
 
@@ -757,7 +735,6 @@ __all__ = [
     "CreateLookupTableParams",
     "create_lookup_table",
     "CreateLookupTableSignedParams",
-    "create_lookup_table_signed",
     "DeactivateLookupTableParams",
     "deactivate_lookup_table",
     "ExtendLookupTableParams",

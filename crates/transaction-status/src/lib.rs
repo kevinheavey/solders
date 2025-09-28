@@ -29,6 +29,7 @@ use pyo3::{prelude::*, pyclass::CompareOp, IntoPyObject};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use solana_reward_info::RewardType as RewardTypeOriginal;
+use solana_transaction_error::TransactionError as TransactionErrorOriginal;
 use solana_transaction_status_client_types::{
     EncodedTransaction as EncodedTransactionOriginal,
     EncodedTransactionWithStatusMeta as EncodedTransactionWithStatusMetaOriginal,
@@ -847,7 +848,7 @@ common_methods_default!(UiTransactionStatusMeta);
 #[pymethods]
 impl UiTransactionStatusMeta {
     #[pyo3(
-        signature = (err, fee, pre_balances, post_balances, inner_instructions=None, log_messages=None, pre_token_balances=None, post_token_balances=None, rewards=None, loaded_addresses=None, return_data=None, compute_units_consumed=None)
+        signature = (err, fee, pre_balances, post_balances, inner_instructions=None, log_messages=None, pre_token_balances=None, post_token_balances=None, rewards=None, loaded_addresses=None, return_data=None, compute_units_consumed=None, cost_units=None)
     )]
     #[new]
     pub fn new(
@@ -863,9 +864,13 @@ impl UiTransactionStatusMeta {
         loaded_addresses: Option<UiLoadedAddresses>,
         return_data: Option<TransactionReturnData>,
         compute_units_consumed: Option<u64>,
+        cost_units: Option<u64>,
     ) -> Self {
         UiTransactionStatusMetaOriginal {
-            err: err.map(|e| e.into()),
+            err: err.map(|e| {
+                let orig = TransactionErrorOriginal::from(e);
+                orig.into()
+            }),
             status: Ok(()),
             fee,
             pre_balances,
@@ -886,13 +891,17 @@ impl UiTransactionStatusMeta {
             loaded_addresses: loaded_addresses.map(|a| a.into()).into(),
             return_data: return_data.map(|r| r.into()).into(),
             compute_units_consumed: compute_units_consumed.into(),
+            cost_units: cost_units.into(),
         }
         .into()
     }
 
     #[getter]
     pub fn err(&self) -> Option<TransactionErrorType> {
-        self.0.err.clone().map(|e| e.into())
+        self.0.err.clone().map(|e| {
+            let orig = TransactionErrorOriginal::from(e);
+            orig.into()
+        })
     }
     #[getter]
     pub fn fee(&self) -> u64 {
@@ -947,6 +956,10 @@ impl UiTransactionStatusMeta {
     #[getter]
     pub fn compute_units_consumed(&self) -> Option<u64> {
         self.0.compute_units_consumed.clone().into()
+    }
+    #[getter]
+    pub fn cost_units(&self) -> Option<u64> {
+        self.0.cost_units.clone().into()
     }
 }
 
