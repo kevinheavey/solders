@@ -50,7 +50,7 @@ response_data_boilerplate!(RpcResponseContext);
 #[macro_export]
 macro_rules! contextful_struct_def_eq {
     ($name:ident, $inner:ty) => {
-        #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+        #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
         #[pyclass(module = "solders.rpc.responses", subclass)]
         pub struct $name {
             #[pyo3(get)]

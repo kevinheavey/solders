@@ -1,6 +1,6 @@
 use pyo3::prelude::*;
 use solders_pubkey::Pubkey;
-use spl_associated_token_account_client::address::get_associated_token_address_with_program_id as get_ata;
+use spl_associated_token_account_interface::address::get_associated_token_address_with_program_id as get_ata;
 
 /// Derives the associated token account address for the given wallet address and token mint.
 ///
@@ -22,7 +22,7 @@ pub fn get_associated_token_address(
     get_ata(
         wallet_address.as_ref(),
         token_mint_address.as_ref(),
-        token_program_id.map_or(&spl_token::ID, |x| x.as_ref()),
+        token_program_id.map_or(&spl_token_interface::ID, |x| x.as_ref()),
     )
     .into()
 }

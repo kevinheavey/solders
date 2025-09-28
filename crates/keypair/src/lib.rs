@@ -39,7 +39,7 @@ mod keypair_serde {
         D: Deserializer<'de>,
     {
         let b = Vec::deserialize(deserializer)?;
-        KeypairOriginal::from_bytes(&b).map_err(serde::de::Error::custom)
+        KeypairOriginal::try_from(b.as_ref()).map_err(serde::de::Error::custom)
     }
 }
 
@@ -135,7 +135,7 @@ impl Keypair {
     ///     >>> assert kp.secret() == bytes(kp)[:32]
     ///
     pub fn secret(&self) -> &[u8] {
-        self.0.secret().as_ref()
+        self.0.secret_bytes().as_ref()
     }
 
     #[pyo3(name = "pubkey")]
@@ -267,7 +267,7 @@ impl PyHash for Keypair {}
 
 impl PyFromBytesGeneral for Keypair {
     fn py_from_bytes_general(raw: &[u8]) -> PyResult<Self> {
-        handle_py_value_err(KeypairOriginal::from_bytes(raw))
+        handle_py_value_err(KeypairOriginal::try_from(raw))
     }
 }
 

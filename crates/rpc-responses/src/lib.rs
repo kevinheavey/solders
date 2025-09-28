@@ -47,6 +47,7 @@ use solana_rpc_client_api::{
         SlotTransactionStats as SlotTransactionStatsOriginal, SlotUpdate as SlotUpdateOriginal,
     },
 };
+use solana_transaction_error::TransactionError as TransactionErrorOriginal;
 use solana_transaction_status_client_types::TransactionStatus as TransactionStatusOriginal;
 use solders_account::{Account, AccountJSON};
 use solders_account_decoder::UiTokenAmount;
@@ -275,7 +276,7 @@ macro_rules! contextless_resp_no_eq {
     };
 }
 
-#[derive(FromPyObject, Clone, Debug, PartialEq, Eq, IntoPyObject)]
+#[derive(FromPyObject, Clone, Debug, PartialEq, IntoPyObject)]
 pub enum RPCError {
     Fieldless(RpcCustomErrorFieldless),
     BlockCleanedUpMessage(BlockCleanedUpMessage),
@@ -566,7 +567,7 @@ impl Serialize for RPCError {
     }
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 #[serde(untagged)]
 pub enum Resp<T>
 where
@@ -1409,7 +1410,10 @@ impl RpcLogsResponse {
     pub fn new(signature: Signature, err: Option<TransactionErrorType>, logs: Vec<String>) -> Self {
         RpcLogsResponseOriginal {
             signature: signature.to_string(),
-            err: err.map(|e| e.into()),
+            err: err.map(|e| {
+                let orig = TransactionErrorOriginal::from(e);
+                orig.into()
+            }),
             logs,
         }
         .into()
@@ -1421,7 +1425,10 @@ impl RpcLogsResponse {
     }
     #[getter]
     pub fn err(&self) -> Option<TransactionErrorType> {
-        self.0.err.clone().map(|e| e.into())
+        self.0.err.clone().map(|e| {
+            let orig = TransactionErrorOriginal::from(e);
+            orig.into()
+        })
     }
     #[getter]
     pub fn logs(&self) -> Vec<String> {
@@ -1792,7 +1799,7 @@ impl RpcBlockUpdate {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
 pub struct SubscriptionError {
     #[serde(skip_deserializing)]

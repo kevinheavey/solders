@@ -51,8 +51,8 @@ impl ComputeBudget {
 
     #[allow(clippy::new_without_default)]
     #[new]
-    pub fn new() -> Self {
-        Self(ComputeBudgetOriginal::default())
+    pub fn new(simd_0296_active: bool) -> Self {
+        Self(ComputeBudgetOriginal::new_with_defaults(simd_0296_active))
     }
 
     #[getter]
@@ -152,14 +152,6 @@ impl ComputeBudget {
     #[getter]
     pub fn log_pubkey_units(&self) -> u64 {
         self.0.log_pubkey_units
-    }
-    #[setter]
-    pub fn set_max_cpi_instruction_size(&mut self, val: usize) {
-        self.0.max_cpi_instruction_size = val
-    }
-    #[getter]
-    pub fn max_cpi_instruction_size(&self) -> usize {
-        self.0.max_cpi_instruction_size
     }
     #[setter]
     pub fn set_cpi_bytes_per_unit(&mut self, val: u64) {

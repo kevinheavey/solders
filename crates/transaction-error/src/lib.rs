@@ -104,19 +104,14 @@ pub enum InstructionErrorFieldless {
     MaxAccountsExceeded,
     MaxInstructionTraceLengthExceeded,
     BuiltinProgramsMustConsumeComputeUnits,
-}
-
-#[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, IntoPyObject)]
-pub enum InstructionErrorTagged {
-    Custom(InstructionErrorCustom),
-    BorshIoError(InstructionErrorBorshIO),
+    BorshIoError,
 }
 
 #[derive(FromPyObject, Clone, PartialEq, Eq, Serialize, Deserialize, Debug, IntoPyObject)]
 #[serde(untagged)]
 pub enum InstructionErrorType {
     Fieldless(InstructionErrorFieldless),
-    Tagged(InstructionErrorTagged),
+    Tagged(InstructionErrorCustom),
 }
 
 impl Default for InstructionErrorType {
@@ -128,10 +123,7 @@ impl Default for InstructionErrorType {
 impl From<InstructionErrorType> for InstructionErrorOriginal {
     fn from(w: InstructionErrorType) -> Self {
         match w {
-            InstructionErrorType::Tagged(t) => match t {
-                InstructionErrorTagged::Custom(custom) => Self::Custom(custom.0),
-                InstructionErrorTagged::BorshIoError(borsh_io) => Self::BorshIoError(borsh_io.0),
-            },
+            InstructionErrorType::Tagged(custom) => Self::Custom(custom.0),
             InstructionErrorType::Fieldless(f) => match f {
                 InstructionErrorFieldless::GenericError => Self::GenericError,
                 InstructionErrorFieldless::InvalidArgument => Self::InvalidArgument,
@@ -209,6 +201,7 @@ impl From<InstructionErrorType> for InstructionErrorOriginal {
                 InstructionErrorFieldless::BuiltinProgramsMustConsumeComputeUnits => {
                     Self::BuiltinProgramsMustConsumeComputeUnits
                 }
+                InstructionErrorFieldless::BorshIoError => Self::BorshIoError,
             },
         }
     }
@@ -217,12 +210,10 @@ impl From<InstructionErrorType> for InstructionErrorOriginal {
 impl From<InstructionErrorOriginal> for InstructionErrorType {
     fn from(e: InstructionErrorOriginal) -> Self {
         match e {
-            InstructionErrorOriginal::Custom(code) => {
-                Self::Tagged(InstructionErrorTagged::Custom(InstructionErrorCustom(code)))
+            InstructionErrorOriginal::Custom(code) => Self::Tagged(InstructionErrorCustom(code)),
+            InstructionErrorOriginal::BorshIoError => {
+                Self::Fieldless(InstructionErrorFieldless::BorshIoError)
             }
-            InstructionErrorOriginal::BorshIoError(val) => Self::Tagged(
-                InstructionErrorTagged::BorshIoError(InstructionErrorBorshIO(val)),
-            ),
             InstructionErrorOriginal::GenericError => {
                 Self::Fieldless(InstructionErrorFieldless::GenericError)
             }

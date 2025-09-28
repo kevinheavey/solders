@@ -4,6 +4,7 @@ use derive_more::{From, Into};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use solana_rpc_client_api::response::RpcConfirmedTransactionStatusWithSignature as RpcConfirmedTransactionStatusWithSignatureOriginal;
+use solana_transaction_error::TransactionError as TransactionErrorOriginal;
 use solders_macros::{common_methods, richcmp_eq_only};
 use solders_rpc_response_data_boilerplate::response_data_boilerplate;
 use solders_signature::Signature;
@@ -35,7 +36,10 @@ impl RpcConfirmedTransactionStatusWithSignature {
         RpcConfirmedTransactionStatusWithSignatureOriginal {
             signature: signature.to_string(),
             slot,
-            err: err.map(|e| e.into()),
+            err: err.map(|e| {
+                let orig = TransactionErrorOriginal::from(e);
+                orig.into()
+            }),
             memo,
             block_time,
             confirmation_status: confirmation_status.map(|c| c.into()),
@@ -53,7 +57,10 @@ impl RpcConfirmedTransactionStatusWithSignature {
     }
     #[getter]
     pub fn err(&self) -> Option<TransactionErrorType> {
-        self.0.err.clone().map(|e| e.into())
+        self.0.err.clone().map(|e| {
+            let orig = TransactionErrorOriginal::from(e);
+            orig.into()
+        })
     }
     #[getter]
     pub fn memo(&self) -> Option<String> {

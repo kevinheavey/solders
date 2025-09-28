@@ -5,7 +5,10 @@ pub mod state;
 pub fn include_token(m: &Bound<'_, PyModule>) -> PyResult<()> {
     state::include_state(m)?;
     associated::include_associated(m)?;
-    m.add("TOKEN_PROGRAM_ID", solders_pubkey::Pubkey(spl_token::ID))
-        .unwrap();
+    m.add(
+        "TOKEN_PROGRAM_ID",
+        solders_pubkey::Pubkey(spl_token_interface::ID),
+    )
+    .unwrap();
     Ok(())
 }

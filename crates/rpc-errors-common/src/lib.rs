@@ -22,7 +22,7 @@ macro_rules! error_message {
         }
     };
     ($name:ident, $data_type:ty) => {
-        #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
+        #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
         #[pyclass(module = "solders.rpc.errors", subclass)]
         #[serde(rename_all = "camelCase")]
         pub struct $name {

@@ -8,7 +8,7 @@ use solders_traits_core::{
     impl_display, to_py_value_err, CommonMethodsCore, PyBytesGeneral, PyFromBytesGeneral,
     RichcmpEqualityOnly,
 };
-use spl_token::state::{
+use spl_token_interface::state::{
     Account as TokenAccountOriginal, AccountState, Mint as MintOriginal,
     Multisig as MultisigOriginal,
 };

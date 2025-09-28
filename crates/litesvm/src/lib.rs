@@ -19,10 +19,10 @@ use {
     },
     transaction_metadata::{SimulateResult, TransactionResult},
     {
+        agave_feature_set::FeatureSet as FeatureSetOriginal,
         solana_account::Account as AccountOriginal, solana_clock::Clock as ClockOriginal,
         solana_epoch_rewards::EpochRewards as EpochRewardsOriginal,
         solana_epoch_schedule::EpochSchedule as EpochScheduleOriginal,
-        solana_feature_set::FeatureSet as FeatureSetOriginal,
         solana_last_restart_slot::LastRestartSlot, solana_rent::Rent as RentOriginal,
         solana_slot_hashes::SlotHashes, solana_slot_history::SlotHistory as SlotHistoryOriginal,
         solana_stake_interface::stake_history::StakeHistory as StakeHistoryOriginal,
@@ -51,10 +51,7 @@ impl FeatureSet {
     pub fn new(active: HashMap<Pubkey, u64>, inactive: HashSet<Pubkey>) -> Self {
         let active_inner = active.into_iter().map(|x| (x.0 .0, x.1)).collect();
         let inactive_inner = inactive.into_iter().map(|x| x.0).collect();
-        Self(FeatureSetOriginal {
-            active: active_inner,
-            inactive: inactive_inner,
-        })
+        Self(FeatureSetOriginal::new(active_inner, inactive_inner))
     }
 
     /// Create a new FeatureSet with no featues enabled.
@@ -104,7 +101,7 @@ impl FeatureSet {
     #[getter]
     pub fn active(&self) -> HashMap<Pubkey, u64> {
         self.0
-            .active
+            .active()
             .clone()
             .into_iter()
             .map(|x| (Pubkey::from(x.0), x.1))
@@ -114,19 +111,21 @@ impl FeatureSet {
     #[setter]
     pub fn set_active(&mut self, val: HashMap<Pubkey, u64>) {
         let inner = val.into_iter().map(|x| (x.0 .0, x.1)).collect();
-        self.0.active = inner;
+        let to_set = self.0.active_mut();
+        *to_set = inner;
     }
 
     /// Set[Pubkey]: The inactive feature IDs.
     #[getter]
     pub fn inactive(&self) -> HashSet<Pubkey> {
-        self.0.inactive.clone().into_iter().map(Pubkey).collect()
+        self.0.inactive().clone().into_iter().map(Pubkey).collect()
     }
 
     #[setter]
     pub fn set_inactive(&mut self, val: HashSet<Pubkey>) {
         let inner = val.into_iter().map(|x| x.0).collect();
-        self.0.inactive = inner;
+        let to_set = self.0.inactive_mut();
+        *to_set = inner;
     }
 }
 
@@ -164,9 +163,8 @@ impl LiteSVM {
         self.0.set_sysvars()
     }
 
-    #[pyo3(signature = (feature_set=None))]
-    pub fn set_builtins(&mut self, feature_set: Option<&FeatureSet>) {
-        self.0.set_builtins(feature_set.map(|x| x.0.clone()));
+    pub fn set_builtins(&mut self) {
+        self.0.set_builtins()
     }
 
     pub fn set_lamports(&mut self, lamports: u64) {
@@ -174,8 +172,8 @@ impl LiteSVM {
     }
 
     /// Includes the standard SPL programs
-    pub fn set_spl_programs(&mut self) {
-        self.0.set_spl_programs();
+    pub fn set_default_programs(&mut self) {
+        self.0.set_default_programs();
     }
 
     pub fn set_transaction_history(&mut self, capacity: usize) {
@@ -187,9 +185,8 @@ impl LiteSVM {
         self.0.set_log_bytes_limit(limit);
     }
 
-    #[pyo3(signature = (feature_set=None))]
-    pub fn set_precompiles(&mut self, feature_set: Option<&FeatureSet>) {
-        self.0.set_precompiles(feature_set.map(|x| x.0.clone()));
+    pub fn set_precompiles(&mut self) {
+        self.0.set_precompiles();
     }
 
     pub fn minimum_balance_for_rent_exemption(&self, data_len: usize) -> u64 {
@@ -232,8 +229,10 @@ impl LiteSVM {
     }
 
     /// Adds am SBF program to the test environment.
-    pub fn add_program(&mut self, program_id: Pubkey, program_bytes: &[u8]) {
-        self.0.add_program(program_id.0, program_bytes)
+    pub fn add_program(&mut self, program_id: Pubkey, program_bytes: &[u8]) -> PyResult<()> {
+        self.0
+            .add_program(program_id.0, program_bytes)
+            .map_err(to_py_err)
     }
 
     pub fn send_transaction(&mut self, tx: TransactionType) -> TransactionResult {
