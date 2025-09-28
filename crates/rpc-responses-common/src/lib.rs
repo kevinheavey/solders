@@ -8,7 +8,7 @@ use pyo3::{prelude::*, IntoPyObject};
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, DisplayFromStr, TryFromInto};
 use solana_account_decoder_client_types::{UiAccount, UiAccountData};
-use solana_rpc_client_api::response::{
+use solana_rpc_client_types::response::{
     RpcBlockhash as RpcBlockhashOriginal, RpcIdentity as RpcIdentityOriginal,
     RpcTokenAccountBalance as RpcTokenAccountBalanceOriginal,
     RpcVersionInfo as RpcVersionInfoOriginal, RpcVoteAccountInfo as RpcVoteAccountInfoOriginal,

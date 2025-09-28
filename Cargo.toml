@@ -33,10 +33,10 @@ solders-litesvm = { workspace = true, optional = true }
 solders-message = { workspace = true }
 solders-primitives = { workspace = true }
 solders-pubkey = { workspace = true }
-solders-rpc-config = { workspace = true, optional = true }
-solders-rpc-errors = { workspace = true, optional = true }
-solders-rpc-filter = { workspace = true, optional = true }
-solders-rpc-requests = { workspace = true, optional = true }
+solders-rpc-config = { workspace = true }
+solders-rpc-errors = { workspace = true }
+solders-rpc-filter = { workspace = true }
+solders-rpc-requests = { workspace = true }
 solders-rpc-responses = { workspace = true, optional = true }
 solders-signature = { workspace = true }
 solders-system-program = { workspace = true }
@@ -48,13 +48,7 @@ solders-transaction-status = { workspace = true }
 [features]
 default = ["litesvm", "ring"]
 litesvm = ["dep:solders-litesvm"]
-ring = [
-    "dep:solders-rpc-config",
-    "dep:solders-rpc-errors",
-    "dep:solders-rpc-filter",
-    "dep:solders-rpc-requests",
-    "dep:solders-rpc-responses"
-]
+ring = ["dep:solders-rpc-responses"]
 
 [workspace]
 members = [".", "crates/*"]
@@ -107,6 +101,7 @@ solana-pubkey = "3"
 solana-rent = "3"
 solana-reward-info = "3"
 solana-rpc-client-api = "3"
+solana-rpc-client-types = "3"
 solana-sanitize = "3"
 solana-sdk-ids = "3"
 solana-sha256-hasher = "3"

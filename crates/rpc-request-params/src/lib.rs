@@ -6,7 +6,7 @@ use solders_hash::Hash as SolderHash;
 use solders_pubkey::Pubkey;
 use solders_signature::Signature;
 
-use solana_rpc_client_api::config::{
+use solana_rpc_client_types::config::{
     RpcBlockSubscribeFilter, RpcTokenAccountsFilter, RpcTransactionLogsFilter,
 };
 use solders_rpc_account_info_config::RpcAccountInfoConfig;

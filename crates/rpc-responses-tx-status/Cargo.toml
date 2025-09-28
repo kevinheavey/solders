@@ -12,7 +12,7 @@ description = "Solders RPC responses-tx-status crate."
 derive_more = { workspace = true }
 pyo3 = { workspace = true, features = ["macros"] }
 serde = { workspace = true }
-solana-rpc-client-api = { workspace = true }
+solana-rpc-client-types = { workspace = true }
 solana-transaction-error = { workspace = true }
 solders-macros = { workspace = true }
 solders-rpc-response-data-boilerplate = { workspace = true }

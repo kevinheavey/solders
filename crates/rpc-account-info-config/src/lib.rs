@@ -1,6 +1,6 @@
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
-use solana_rpc_client_api::config as rpc_config;
+use solana_rpc_client_types::config as rpc_config;
 use solders_account_decoder::{UiAccountEncoding, UiDataSliceConfig};
 use solders_commitment_config::CommitmentLevel;
 use solders_macros::{common_methods, richcmp_eq_only};

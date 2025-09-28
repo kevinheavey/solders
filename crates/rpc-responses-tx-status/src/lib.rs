@@ -3,7 +3,7 @@ use std::str::FromStr;
 use derive_more::{From, Into};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
-use solana_rpc_client_api::response::RpcConfirmedTransactionStatusWithSignature as RpcConfirmedTransactionStatusWithSignatureOriginal;
+use solana_rpc_client_types::response::RpcConfirmedTransactionStatusWithSignature as RpcConfirmedTransactionStatusWithSignatureOriginal;
 use solana_transaction_error::TransactionError as TransactionErrorOriginal;
 use solders_macros::{common_methods, richcmp_eq_only};
 use solders_rpc_response_data_boilerplate::response_data_boilerplate;

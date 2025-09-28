@@ -1,6 +1,6 @@
 use pyo3::{prelude::*, IntoPyObject};
 use serde::{Deserialize, Serialize};
-use solana_rpc_client_api::filter::{
+use solana_rpc_client_types::filter::{
     Memcmp as MemcmpOriginal, MemcmpEncodedBytes as MemcmpEncodedBytesOriginal,
     RpcFilterType as RpcFilterTypeOriginal,
 };

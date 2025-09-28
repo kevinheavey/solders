@@ -14,7 +14,7 @@ bs58 = { workspace = true }
 derive_more = { workspace = true }
 pyo3 = { workspace = true, features = ["macros"] }
 serde = { workspace = true }
-solana-rpc-client-api = { workspace = true }
+solana-rpc-client-types = { workspace = true }
 solders-macros = { workspace = true }
 solders-traits-core = { workspace = true }
 thiserror = { workspace = true }

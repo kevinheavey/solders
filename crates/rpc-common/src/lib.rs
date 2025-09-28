@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use serde_with::serde_as;
 
 use solana_account_decoder_client_types::UiAccount;
-use solana_rpc_client_api::response::RpcSimulateTransactionResult as RpcSimulateTransactionResultOriginal;
+use solana_rpc_client_types::response::RpcSimulateTransactionResult as RpcSimulateTransactionResultOriginal;
 use solana_transaction_error::TransactionError as TransactionErrorOriginal;
 use solana_transaction_status_client_types::UiInnerInstructions as UiInnerInstructionsOriginal;
 use solders_account::Account;

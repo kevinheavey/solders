@@ -11,7 +11,7 @@ description = "Solders RPC program accounts config crate."
 [dependencies]
 pyo3 = { workspace = true, features = ["macros"] }
 serde = { workspace = true }
-solana-rpc-client-api = { workspace = true }
+solana-rpc-client-types = { workspace = true }
 solders-macros = { workspace = true }
 solders-rpc-account-info-config = { workspace = true }
 solders-rpc-config-macros = { workspace = true }
