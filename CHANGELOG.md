@@ -1,5 +1,11 @@
 # Changelog
 
+# [0.27.0] - Unreleased
+
+### Changed
+
+- Remove program-test support [(#155)](https://github.com/kevinheavey/solders/pull/155)
+
 # [0.26.0] - 2025-02-18
 
 ### Fixed
