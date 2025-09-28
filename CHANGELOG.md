@@ -4,6 +4,7 @@
 
 ### Changed
 
+- Upgrade solana deps to 3.0 [(#156)](https://github.com/kevinheavey/solders/pull/156)
 - Remove old unused program-test code [(#155)](https://github.com/kevinheavey/solders/pull/155)
 
 # [0.26.0] - 2025-02-18
