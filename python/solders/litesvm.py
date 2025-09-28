@@ -111,13 +111,13 @@ class LiteSVM:
         self._inner.set_lamports(lamports)
         return self
 
-    def with_spl_programs(self) -> "LiteSVM":
-        """Adds the standard SPL programs.
+    def with_default_programs(self) -> "LiteSVM":
+        """Adds the default programs.
 
         Returns:
             The modified LiteSVM instance
         """
-        self._inner.set_spl_programs()
+        self._inner.set_default_programs()
         return self
 
     def with_transaction_history(self, capacity: int) -> "LiteSVM":
@@ -144,19 +144,6 @@ class LiteSVM:
             The modified LiteSVM instance
         """
         self._inner.set_log_bytes_limit(limit)
-        return self
-
-    def with_precompiles(self, feature_set: Optional[FeatureSet] = None) -> "LiteSVM":
-        """Adds the standard precompiles.
-
-        Args:
-            feature_set: if provided, decides what precompiles to add based on what
-                features are active
-
-        Returns:
-            The modified LiteSVM instance
-        """
-        self._inner.set_precompiles(feature_set)
         return self
 
     def minimum_balance_for_rent_exemption(self, data_len: int) -> int:

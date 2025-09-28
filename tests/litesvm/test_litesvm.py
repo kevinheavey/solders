@@ -23,7 +23,7 @@ def helloworld_program(
     greeted_pubkey = Pubkey.new_unique()
     svm = LiteSVM()
     if compute_max_units is not None:
-        compute_budget = ComputeBudget()
+        compute_budget = ComputeBudget(False)
         compute_budget.compute_unit_limit = compute_max_units
         svm = svm.with_compute_budget(compute_budget)
     svm.set_account(
@@ -40,7 +40,7 @@ def helloworld_program_via_set_account(
     greeted_pubkey = Pubkey.from_string("4ivLcnNLhe4cKdpV9b4jyEmxgbYWFgktHcTyyBvYavsD")
     svm = LiteSVM()
     if compute_max_units is not None:
-        compute_budget = ComputeBudget()
+        compute_budget = ComputeBudget(False)
         compute_budget.compute_unit_limit = compute_max_units
         svm = svm.with_compute_budget(compute_budget)
     svm.set_account(
