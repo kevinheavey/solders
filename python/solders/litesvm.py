@@ -86,7 +86,7 @@ class LiteSVM:
         self._inner.set_sysvars()
         return self
 
-    def with_builtins(self, feature_set: Optional[FeatureSet] = None) -> "LiteSVM":
+    def with_builtins(self) -> "LiteSVM":
         """Adds the standard builtin programs.
 
         Args:
@@ -96,7 +96,7 @@ class LiteSVM:
         Returns:
             The modified LiteSVM instance
         """
-        self._inner.set_builtins(feature_set)
+        self._inner.set_builtins()
         return self
 
     def with_lamports(self, lamports: int) -> "LiteSVM":
