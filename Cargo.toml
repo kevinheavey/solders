@@ -85,8 +85,6 @@ serde_with = { version = "^1.14.0", features = ["base64"] }
 solana-account = "2.2.1"
 solana-account-decoder-client-types = { version = "2.1.0", features = ["zstd"] }
 solana-address-lookup-table-interface = "2.2.1"
-solana-banks-client = "2.1.0"
-solana-banks-interface = "2.1.0"
 solana-clock = "2.2.1"
 solana-commitment-config = "2.2.1"
 solana-compute-budget = "2.1.10"
@@ -105,7 +103,6 @@ solana-precompiles = "2.2.1"
 solana-presigner = "2.2.1"
 solana-program-option = "2.2.1"
 solana-program-pack = "2.2.1"
-solana-program-test = "2.1.10"
 solana-pubkey = "2.2.1"
 solana-rent = "2.2.1"
 solana-reward-info = "2.2.1"
@@ -127,7 +124,6 @@ solana-transaction-status-client-types = "2.1.0"
 solders-account = { path = "./crates/account", version = "=0.23.0" }
 solders-account-decoder = { path = "./crates/account-decoder", version = "=0.23.0" }
 solders-address-lookup-table-account = { path = "./crates/address-lookup-table-account", version = "=0.23.0" }
-solders-banks-interface = { path = "./crates/banks-interface", version = "=0.23.0" }
 solders-base64-string = { path = "./crates/base64-string", version = "=0.23.0" }
 solders-commitment-config = { path = "./crates/commitment-config", version = "=0.23.0" }
 solders-compute-budget = { path = "./crates/compute-budget", version = "=0.23.0" }

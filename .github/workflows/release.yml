@@ -186,9 +186,6 @@ jobs:
   #     - run: cd crates/rpc-responses && cargo publish
   #       env:
   #         CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-  #     - run: cd crates/banks-interface && cargo publish
-  #       env:
-  #         CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
   #     - run: cargo publish
   #       env:
   #         CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}

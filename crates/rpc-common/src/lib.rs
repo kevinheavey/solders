@@ -85,7 +85,10 @@ impl RpcSimulateTransactionResult {
 
     #[getter]
     pub fn inner_instructions(&self) -> Option<Vec<UiInnerInstructions>> {
-        self.0.inner_instructions.clone().map(|ixns| ixns.into_iter().map(Into::into).collect())
+        self.0
+            .inner_instructions
+            .clone()
+            .map(|ixns| ixns.into_iter().map(Into::into).collect())
     }
 
     #[getter]
