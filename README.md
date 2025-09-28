@@ -60,20 +60,20 @@ Note: Requires Python >= 3.7.
 
 ### Setup
 
-1. Install [poetry](https://python-poetry.org/)
-2. Install dev dependencies:
+1. Install [uv](https://docs.astral.sh/uv/getting-started/installation/).
+2. Install the project dependencies (including dev tools):
 
 ```
-poetry install
+uv sync --dev
 ```
 
-3. Activate the poetry shell:
+3. Activate the virtual environment (optional, `uv run` works without activation):
 
 ```sh
-poetry shell
+source .venv/bin/activate
 ```
 
 ### Testing
 
-1. Run `maturin develop` to compile the Rust code.
-2. Run `make fmt`, `make lint`, and `make test`.
+1. Run `uv run maturin develop` to compile the Rust code.
+2. Run `uv run make fmt`, `uv run make lint`, and `uv run make test`.
