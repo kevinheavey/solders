@@ -3,9 +3,7 @@
 //! If you're viewing them on docs.rs, the formatting won't make much sense.
 use address_lookup_table_account::include_address_lookup_table_account;
 use pyo3::prelude::*;
-#[cfg(feature = "ring")]
 use rpc::include_rpc;
-#[cfg(feature = "ring")]
 use solders_account::include_account;
 use solders_instruction::{AccountMeta, CompiledInstruction, Instruction};
 #[cfg(feature = "litesvm")]
@@ -13,17 +11,14 @@ use solders_litesvm::{include_litesvm, transaction_metadata::include_transaction
 use solders_system_program::include_system_program;
 use solders_token::include_token;
 use solders_traits::{BincodeError, CborError, ParseHashError, SerdeJSONError, SignerError};
-#[cfg(feature = "ring")]
 use solders_transaction_status::include_transaction_status;
 use sysvar::include_sysvar;
 pub mod message;
 use message::include_message;
 pub mod transaction;
-#[cfg(feature = "ring")]
 use solders_account_decoder::include_account_decoder;
 use transaction::include_transaction;
 pub mod address_lookup_table_account;
-#[cfg(feature = "ring")]
 pub mod rpc;
 pub mod sysvar;
 use solders_commitment_config::{CommitmentConfig, CommitmentLevel};
@@ -59,15 +54,11 @@ fn solders(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add("SignerError", py.get_type::<SignerError>())?;
     m.add("CborError", py.get_type::<CborError>())?;
     m.add("SerdeJSONError", py.get_type::<SerdeJSONError>())?;
-    #[cfg(feature = "ring")]
     include_rpc(m)?;
     m.add_class::<CommitmentConfig>()?;
     m.add_class::<CommitmentLevel>()?;
-    #[cfg(feature = "ring")]
     include_transaction_status(m)?;
-    #[cfg(feature = "ring")]
     include_account_decoder(m)?;
-    #[cfg(feature = "ring")]
     include_account(m)?;
     include_epoch_schedule(m)?;
     include_address_lookup_table_account(m)?;
