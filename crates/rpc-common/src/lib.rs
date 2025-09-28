@@ -30,6 +30,7 @@ response_data_boilerplate!(RpcSimulateTransactionResult);
 impl RpcSimulateTransactionResult {
     #[pyo3(signature = (err=None, logs=None, accounts=None, units_consumed=None, return_data=None, inner_instructions=None, replacement_blockhash=None, fee=None, loaded_accounts_data_size=None, pre_balances=None, post_balances=None, pre_token_balances=None, post_token_balances=None, loaded_addresses=None))]
     #[new]
+    #[allow(clippy::too_many_arguments)]
     pub fn new(
         err: Option<TransactionErrorType>,
         logs: Option<Vec<String>>,
