@@ -9,6 +9,7 @@ from .solders import (
     request_heap_frame,
     set_compute_unit_limit,
     set_compute_unit_price,
+    set_loaded_accounts_data_size_limit,
 )
 
 ID: Final[Pubkey] = _ID
@@ -19,5 +20,6 @@ __all__ = [
     "request_heap_frame",
     "set_compute_unit_limit",
     "set_compute_unit_price",
+    "set_loaded_accounts_data_size_limit",
     "ID",
 ]
