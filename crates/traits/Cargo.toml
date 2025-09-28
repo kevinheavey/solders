@@ -14,7 +14,6 @@ litesvm = { workspace = true, optional = true }
 pyo3 = { workspace = true }
 serde_cbor = { workspace = true }
 serde_json = { workspace = true }
-solana-banks-client = { workspace = true, optional = true }
 solana-commitment-config = { workspace = true }
 solana-hash = { workspace = true }
 solana-pubkey = { workspace = true }
@@ -25,5 +24,4 @@ solana-transaction-error = { workspace = true }
 solders-traits-core = { workspace = true }
 
 [features]
-banks-client = ["dep:solana-banks-client"]
 litesvm = ["dep:litesvm"]

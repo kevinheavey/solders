@@ -2,8 +2,6 @@ use bincode::ErrorKind;
 #[cfg(feature = "litesvm")]
 use litesvm::error::LiteSVMError as LiteSVMErrorOriginal;
 use pyo3::{create_exception, exceptions::PyException, prelude::*, pyclass::CompareOp};
-#[cfg(feature = "banks-client")]
-use solana_banks_client::BanksClientError as BanksClientErrorOriginal;
 use solders_traits_core::richcmp_type_error;
 use {
     solana_commitment_config::ParseCommitmentLevelError as ParseCommitmentLevelErrorOriginal,
@@ -147,21 +145,6 @@ impl From<Box<ErrorKind>> for PyErrWrapper {
 impl From<serde_cbor::Error> for PyErrWrapper {
     fn from(e: serde_cbor::Error) -> Self {
         Self(CborError::new_err(e.to_string()))
-    }
-}
-
-#[cfg(feature = "banks-client")]
-create_exception!(
-    solders,
-    BanksClientError,
-    PyException,
-    "Raised when BanksClient encounters an error."
-);
-
-#[cfg(feature = "banks-client")]
-impl From<BanksClientErrorOriginal> for PyErrWrapper {
-    fn from(e: BanksClientErrorOriginal) -> Self {
-        Self(BanksClientError::new_err(e.to_string()))
     }
 }
 
