@@ -1,0 +1,16 @@
+[package]
+name = "dict_derive"
+version = "0.6.0"
+edition = "2018"
+authors = ["Guilherme Perinazzo <gperinazzo@gmail.com>"]
+description = "Derive macros for some PyO3 traits to convert python dicts into rust structs"
+license = "Apache-2.0"
+repository = "https://github.com/gperinazzo/dict-derive"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+proc-macro2 = "1"
+quote = "1"
+syn = { version = "1", features = ["full"] }

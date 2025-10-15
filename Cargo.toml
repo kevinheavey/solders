@@ -16,7 +16,7 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 bincode = { workspace = true }
 derive_more = { workspace = true }
-pyo3 = { workspace = true, features = ["macros", "extension-module", "abi3-py37"] }
+pyo3 = { workspace = true, features = ["macros", "extension-module", "abi3-py38"] }
 serde = { workspace = true }
 solana-address-lookup-table-interface = { workspace = true }
 solana-sdk-ids = { workspace = true }
@@ -71,8 +71,8 @@ derive_more = "0.99.17"
 five8 = "0.2.1"
 litesvm = "0.8"
 log = "0.4"
-pyo3 = { version = "0.23", default-features = false }
-pythonize = "0.23"
+pyo3 = { version = "0.26", default-features = false }
+pythonize = "0.26"
 serde = "^1.0.188"
 serde_bytes = "0.11.12"
 serde_cbor = "^0.11.2"
@@ -174,3 +174,6 @@ spl-token-interface = "2"
 thiserror = "^1.0.31"
 time = "0.3.35"
 zeroize = "1.7"
+
+[patch.crates-io]
+dict_derive = { path = "crates/dict-derive" }

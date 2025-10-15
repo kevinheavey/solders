@@ -308,8 +308,8 @@ impl ParsedInstruction {
     }
 
     #[getter]
-    pub fn parsed(&self, py: Python<'_>) -> PyResult<PyObject> {
-        handle_py_value_err(pythonize(py, &self.0.parsed))
+    pub fn parsed(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        handle_py_value_err(pythonize(py, &self.0.parsed).map(Bound::unbind))
     }
 
     #[getter]
