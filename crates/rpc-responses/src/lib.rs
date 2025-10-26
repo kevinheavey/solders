@@ -934,6 +934,63 @@ impl RpcContactInfo {
             serve_repair,
         }))
     }
+
+    #[getter]
+    pub fn pubkey(&self) -> Pubkey {
+        self.0.pubkey.parse().unwrap()
+    }
+    #[getter]
+    pub fn gossip(&self) -> Option<String> {
+        self.0.gossip.map(|x| x.to_string())
+    }
+    #[getter]
+    pub fn tpu(&self) -> Option<String> {
+        self.0.tpu.map(|x| x.to_string())
+    }
+    #[getter]
+    pub fn tpu_quic(&self) -> Option<String> {
+        self.0.tpu_quic.map(|x| x.to_string())
+    }
+    #[getter]
+    pub fn rpc(&self) -> Option<String> {
+        self.0.rpc.map(|x| x.to_string())
+    }
+    #[getter]
+    pub fn pubsub(&self) -> Option<String> {
+        self.0.pubsub.map(|x| x.to_string())
+    }
+    #[getter]
+    pub fn version(&self) -> Option<String> {
+        self.0.version.clone().map(|x| x.to_string())
+    }
+    #[getter]
+    pub fn feature_set(&self) -> Option<u32> {
+        self.0.feature_set
+    }
+    #[getter]
+    pub fn shred_version(&self) -> Option<u16> {
+        self.0.shred_version
+    }
+    #[getter]
+    pub fn tvu(&self) -> Option<String> {
+        self.0.tvu.map(|x| x.to_string())
+    }
+    #[getter]
+    pub fn tpu_forwards(&self) -> Option<String> {
+        self.0.tpu_forwards.map(|x| x.to_string())
+    }
+    #[getter]
+    pub fn tpu_forwards_quic(&self) -> Option<String> {
+        self.0.tpu_forwards_quic.map(|x| x.to_string())
+    }
+    #[getter]
+    pub fn tpu_vote(&self) -> Option<String> {
+        self.0.tpu_vote.map(|x| x.to_string())
+    }
+    #[getter]
+    pub fn serve_repair(&self) -> Option<String> {
+        self.0.serve_repair.map(|x| x.to_string())
+    }
 }
 
 contextless_resp_eq!(GetClusterNodesResp, Vec<RpcContactInfo>, clone);
