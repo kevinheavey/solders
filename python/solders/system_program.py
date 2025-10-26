@@ -623,6 +623,7 @@ class CreateLookupTableSignedParams(TypedDict):
     payer_address: Pubkey
     recent_slot: int
 
+
 class DeactivateLookupTableParams(TypedDict):
     """Deactivate lookup table system transaction params."""
 
