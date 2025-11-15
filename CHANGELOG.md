@@ -4,7 +4,7 @@
 
 ### Fixed
 
-- Back to not requiring ID params for GetClusterNodes and others.
+- Back to not requiring ID params for GetClusterNodes and others [(#164)](https://github.com/kevinheavey/solders/pull/164)
 
 # [0.27.0] - 2025-10-26
 
