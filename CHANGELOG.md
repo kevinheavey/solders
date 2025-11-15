@@ -1,5 +1,11 @@
 # Changelog
 
+# [0.27.1] 2025-11-15
+
+### Fixed
+
+- Back to not requiring ID params for GetClusterNodes and others.
+
 # [0.27.0] - 2025-10-26
 
 ### Changed
