@@ -26,8 +26,8 @@ changelog = "https://github.com/kevinheavey/solders/blob/main/CHANGELOG.md"
 [tool.maturin]
 python-source = "python"
 
-[tool.uv]
-dev-dependencies = [
+[dependency-groups]
+dev = [
     "based58==0.1.1",
     "bumpversion==0.6.0",
     "jsonalias==0.1.1",
@@ -36,7 +36,7 @@ dev-dependencies = [
     "mypy==0.991",
     "myst-parser>=1.0.0,<2.0.0",
     "pybip39==0.1.0",
-    "pytest==7.2.1",
+    "pytest==7.4.4",
     "ruff==0.1.6",
     "sphinx==6.2.1",
     "sphinx-rtd-theme==1.2.0",

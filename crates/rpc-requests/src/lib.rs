@@ -143,6 +143,7 @@ Example:
                 #[pymethods]
                 impl $name {
                     #[new]
+                    #[pyo3(signature = (id=None))]
                     fn new(id: Option<u64>) -> Self {
                         let base = RequestBase::new(id);
                         Self { base }
