@@ -144,6 +144,10 @@ impl Signature {
     pub fn from_bytes(raw_bytes: [u8; Self::LENGTH]) -> PyResult<Self> {
         Self::py_from_bytes(&raw_bytes)
     }
+
+    fn __getnewargs__(&self) -> ([u8; SIGNATURE_BYTES],) {
+        (self.to_bytes(),)
+    }
 }
 
 impl PyHash for Signature {}

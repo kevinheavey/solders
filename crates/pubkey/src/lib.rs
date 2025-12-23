@@ -237,6 +237,10 @@ impl Pubkey {
     pub fn from_bytes(raw: &[u8]) -> PyResult<Self> {
         Self::py_from_bytes(raw)
     }
+
+    fn __getnewargs__(&self) -> ([u8; PUBKEY_BYTES],) {
+        (self.0.to_bytes(),)
+    }
 }
 
 impl RichcmpFull for Pubkey {}

@@ -128,6 +128,10 @@ impl Hash {
     pub fn from_bytes(raw_bytes: [u8; HASH_BYTES]) -> PyResult<Self> {
         Self::py_from_bytes(&raw_bytes)
     }
+
+    fn __getnewargs__(&self) -> ([u8; HASH_BYTES],) {
+        (self.0.to_bytes(),)
+    }
 }
 
 impl PyFromBytesGeneral for Hash {

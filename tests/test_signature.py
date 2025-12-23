@@ -1,3 +1,5 @@
+import pickle
+
 from based58 import b58decode, b58encode
 from pytest import fixture, raises
 from solders.keypair import Keypair
@@ -88,3 +90,8 @@ def test_from_bytes() -> None:
 def test_json() -> None:
     obj = Signature.default()
     assert Signature.from_json(obj.to_json()) == obj
+
+
+def test_pickle() -> None:
+    obj = Signature.default()
+    assert pickle.loads(pickle.dumps(obj)) == obj
