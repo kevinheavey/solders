@@ -104,6 +104,10 @@ fn add_core_methods(ast: &mut ItemImpl) {
         ImplItem::Verbatim(quote! { pub fn __repr__(&self) -> String {
             solders_traits_core::CommonMethodsCore::pyrepr(self)
         } }),
+        ImplItem::Verbatim(quote! {
+            pub fn __deepcopy__(&self, _memo: &Bound<'_, pyo3::types::PyAny>) -> Self {
+            solders_traits_core::CommonMethodsCore::py_deepcopy(self)
+        } }),
     ];
     if !ast.items.iter().any(|item| match item {
         ImplItem::Method(m) => m.sig.ident == "from_bytes",
@@ -127,7 +131,7 @@ fn add_core_methods(ast: &mut ItemImpl) {
     ast.items.extend_from_slice(&methods);
 }
 
-/// Add `__bytes__`, `__str__`, and `__repr__` using the `CommonMethodsCore` trait.
+/// Add `__bytes__`, `__str__`, `__deepcopy__`, and `__repr__` using the `CommonMethodsCore` trait.
 ///
 /// Also add `from_bytes` if not already defined.
 #[proc_macro_attribute]
@@ -137,7 +141,7 @@ pub fn common_methods_core(_: TokenStream, item: TokenStream) -> TokenStream {
     TokenStream::from(ast.to_token_stream())
 }
 
-/// Add `__bytes__`, `__str__`, `__repr__`, `to_json` and `from_json` using the `CommonMethods` trait.
+/// Add `__bytes__`, `__str__`, `__deepcopy__`, `__repr__`, `to_json` and `from_json` using the `CommonMethods` trait.
 ///
 /// Also add `from_bytes` if not already defined.
 #[proc_macro_attribute]
@@ -160,7 +164,7 @@ pub fn common_methods(_: TokenStream, item: TokenStream) -> TokenStream {
     TokenStream::from(ast.to_token_stream())
 }
 
-/// Add `__bytes__`, `__str__`, `__repr__`, and `to_json` using the `CommonMethods` trait.
+/// Add `__bytes__`, `__str__`, `__deepcopy__`, `__repr__`, and `to_json` using the `CommonMethods` trait.
 ///
 /// Also add `from_bytes` if not already defined.
 #[proc_macro_attribute]
@@ -176,7 +180,7 @@ pub fn common_methods_ser_only(_: TokenStream, item: TokenStream) -> TokenStream
     TokenStream::from(ast.to_token_stream())
 }
 
-/// Add `__bytes__`, `__str__`, `__repr__`, `__reduce__`, `to_json`, `from_json`, `from_bytes` and `__richcmp__` using the `CommonMethodsRpcResp` trait.
+/// Add `__bytes__`, `__str__`, `__deepcopy__`, `__repr__`, `__reduce__`, `to_json`, `from_json`, `from_bytes` and `__richcmp__` using the `CommonMethodsRpcResp` trait.
 #[proc_macro_attribute]
 pub fn common_methods_rpc_resp(_: TokenStream, item: TokenStream) -> TokenStream {
     let mut ast = parse_macro_input!(item as ItemImpl);

@@ -227,6 +227,10 @@ pub trait CommonMethodsCore:
     fn py_from_bytes(raw: &[u8]) -> PyResult<Self> {
         <Self as PyFromBytesGeneral>::py_from_bytes_general(raw)
     }
+
+    fn py_deepcopy(&self) -> Self {
+        self.clone()
+    }
 }
 
 pub trait CommonMethodsSerOnly<'a>: CommonMethodsCore + Serialize {
