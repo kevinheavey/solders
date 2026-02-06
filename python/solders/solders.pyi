@@ -677,7 +677,7 @@ class TokenAccount:
         state: TokenAccountState,
         is_native: Optional[int],
         delegated_amount: int,
-        close_authority: Optional[int] = None,
+        close_authority: Optional[Pubkey] = None,
     ) -> None: ...
     @staticmethod
     def default() -> "TokenAccount": ...
