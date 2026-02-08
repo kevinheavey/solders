@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Compute Budget &mdash; solders 0.27.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Epoch Rewards" href="epoch_rewards.html" />
+    <link rel="prev" title="Commitment Config" href="commitment_config.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            solders
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Solders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="account.html">Account</a></li>
+<li class="toctree-l2"><a class="reference internal" href="account_decoder.html">Account Decoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="address_lookup_table_account.html">Address Lookup Table Account</a></li>
+<li class="toctree-l2"><a class="reference internal" href="clock.html">Clock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="commitment_config.html">Commitment Config</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Compute Budget</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#solders.compute_budget.ComputeBudget"><code class="docutils literal notranslate"><span class="pre">ComputeBudget</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.alt_bn128_addition_cost"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.alt_bn128_addition_cost</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.alt_bn128_g1_compress"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.alt_bn128_g1_compress</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.alt_bn128_g1_decompress"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.alt_bn128_g1_decompress</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.alt_bn128_g2_compress"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.alt_bn128_g2_compress</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.alt_bn128_g2_decompress"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.alt_bn128_g2_decompress</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.alt_bn128_multiplication_cost"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.alt_bn128_multiplication_cost</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.alt_bn128_pairing_one_pair_cost_first"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.alt_bn128_pairing_one_pair_cost_first</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.alt_bn128_pairing_one_pair_cost_other"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.alt_bn128_pairing_one_pair_cost_other</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.big_modular_exponentiation_base_cost"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.big_modular_exponentiation_base_cost</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.big_modular_exponentiation_cost_divisor"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.big_modular_exponentiation_cost_divisor</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.compute_unit_limit"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.compute_unit_limit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.cpi_bytes_per_unit"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.cpi_bytes_per_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.create_program_address_units"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.create_program_address_units</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.curve25519_edwards_add_cost"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.curve25519_edwards_add_cost</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.curve25519_edwards_msm_base_cost"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.curve25519_edwards_msm_base_cost</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.curve25519_edwards_msm_incremental_cost"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.curve25519_edwards_msm_incremental_cost</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.curve25519_edwards_multiply_cost"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.curve25519_edwards_multiply_cost</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.curve25519_edwards_subtract_cost"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.curve25519_edwards_subtract_cost</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.curve25519_edwards_validate_point_cost"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.curve25519_edwards_validate_point_cost</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.curve25519_ristretto_add_cost"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.curve25519_ristretto_add_cost</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.curve25519_ristretto_msm_base_cost"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.curve25519_ristretto_msm_base_cost</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.curve25519_ristretto_msm_incremental_cost"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.curve25519_ristretto_msm_incremental_cost</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.curve25519_ristretto_multiply_cost"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.curve25519_ristretto_multiply_cost</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.curve25519_ristretto_subtract_cost"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.curve25519_ristretto_subtract_cost</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.curve25519_ristretto_validate_point_cost"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.curve25519_ristretto_validate_point_cost</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.get_remaining_compute_units_cost"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.get_remaining_compute_units_cost</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.heap_cost"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.heap_cost</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.heap_size"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.heap_size</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.invoke_units"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.invoke_units</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.log_64_units"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.log_64_units</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.log_pubkey_units"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.log_pubkey_units</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.max_call_depth"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.max_call_depth</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.max_instruction_stack_depth"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.max_instruction_stack_depth</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.max_instruction_trace_length"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.max_instruction_trace_length</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.mem_op_base_cost"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.mem_op_base_cost</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.poseidon_cost_coefficient_a"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.poseidon_cost_coefficient_a</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.poseidon_cost_coefficient_c"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.poseidon_cost_coefficient_c</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.secp256k1_recover_cost"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.secp256k1_recover_cost</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.sha256_base_cost"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.sha256_base_cost</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.sha256_byte_cost"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.sha256_byte_cost</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.sha256_max_slices"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.sha256_max_slices</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.stack_frame_size"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.stack_frame_size</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.syscall_base_cost"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.syscall_base_cost</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.compute_budget.ComputeBudget.sysvar_base_cost"><code class="docutils literal notranslate"><span class="pre">ComputeBudget.sysvar_base_cost</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.compute_budget.request_heap_frame"><code class="docutils literal notranslate"><span class="pre">request_heap_frame()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.compute_budget.set_compute_unit_limit"><code class="docutils literal notranslate"><span class="pre">set_compute_unit_limit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.compute_budget.set_compute_unit_price"><code class="docutils literal notranslate"><span class="pre">set_compute_unit_price()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.compute_budget.set_loaded_accounts_data_size_limit"><code class="docutils literal notranslate"><span class="pre">set_loaded_accounts_data_size_limit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.compute_budget.ID"><code class="docutils literal notranslate"><span class="pre">ID</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="epoch_rewards.html">Epoch Rewards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="epoch_schedule.html">Epoch Schedule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="errors.html">Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hash.html">Hash</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instruction.html">Instruction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="litesvm.html">LiteSVM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="keypair.html">Keypair</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message.html">Message</a></li>
+<li class="toctree-l2"><a class="reference internal" href="null_signer.html">Null Signer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="presigner.html">Presigner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pubkey.html">Pubkey</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rpc/index.html">RPC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="signature.html">Signature</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slot_history.html">Slot History</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stake_history.html">Stake History</a></li>
+<li class="toctree-l2"><a class="reference internal" href="system_program.html">System Program</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sysvar.html">Sysvar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="token/index.html">SPL Token</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transaction_metadata.html">Transaction Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transaction_status.html">Transaction Status</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transaction.html">Transaction</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">solders</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API Reference</a></li>
+      <li class="breadcrumb-item active">Compute Budget</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/kevinheavey/solders/blob/main/docs/api_reference/compute_budget.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-solders.compute_budget">
+<span id="compute-budget"></span><h1>Compute Budget<a class="headerlink" href="#module-solders.compute_budget" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ComputeBudget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simd_0296_active</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.compute_budget.ComputeBudget" title="Permalink to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.alt_bn128_addition_cost">
+<span class="sig-name descname"><span class="pre">alt_bn128_addition_cost</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.alt_bn128_addition_cost" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.alt_bn128_g1_compress">
+<span class="sig-name descname"><span class="pre">alt_bn128_g1_compress</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.alt_bn128_g1_compress" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.alt_bn128_g1_decompress">
+<span class="sig-name descname"><span class="pre">alt_bn128_g1_decompress</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.alt_bn128_g1_decompress" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.alt_bn128_g2_compress">
+<span class="sig-name descname"><span class="pre">alt_bn128_g2_compress</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.alt_bn128_g2_compress" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.alt_bn128_g2_decompress">
+<span class="sig-name descname"><span class="pre">alt_bn128_g2_decompress</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.alt_bn128_g2_decompress" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.alt_bn128_multiplication_cost">
+<span class="sig-name descname"><span class="pre">alt_bn128_multiplication_cost</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.alt_bn128_multiplication_cost" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.alt_bn128_pairing_one_pair_cost_first">
+<span class="sig-name descname"><span class="pre">alt_bn128_pairing_one_pair_cost_first</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.alt_bn128_pairing_one_pair_cost_first" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.alt_bn128_pairing_one_pair_cost_other">
+<span class="sig-name descname"><span class="pre">alt_bn128_pairing_one_pair_cost_other</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.alt_bn128_pairing_one_pair_cost_other" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.big_modular_exponentiation_base_cost">
+<span class="sig-name descname"><span class="pre">big_modular_exponentiation_base_cost</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.big_modular_exponentiation_base_cost" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.big_modular_exponentiation_cost_divisor">
+<span class="sig-name descname"><span class="pre">big_modular_exponentiation_cost_divisor</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.big_modular_exponentiation_cost_divisor" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.compute_unit_limit">
+<span class="sig-name descname"><span class="pre">compute_unit_limit</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.compute_unit_limit" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.cpi_bytes_per_unit">
+<span class="sig-name descname"><span class="pre">cpi_bytes_per_unit</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.cpi_bytes_per_unit" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.create_program_address_units">
+<span class="sig-name descname"><span class="pre">create_program_address_units</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.create_program_address_units" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.curve25519_edwards_add_cost">
+<span class="sig-name descname"><span class="pre">curve25519_edwards_add_cost</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.curve25519_edwards_add_cost" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.curve25519_edwards_msm_base_cost">
+<span class="sig-name descname"><span class="pre">curve25519_edwards_msm_base_cost</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.curve25519_edwards_msm_base_cost" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.curve25519_edwards_msm_incremental_cost">
+<span class="sig-name descname"><span class="pre">curve25519_edwards_msm_incremental_cost</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.curve25519_edwards_msm_incremental_cost" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.curve25519_edwards_multiply_cost">
+<span class="sig-name descname"><span class="pre">curve25519_edwards_multiply_cost</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.curve25519_edwards_multiply_cost" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.curve25519_edwards_subtract_cost">
+<span class="sig-name descname"><span class="pre">curve25519_edwards_subtract_cost</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.curve25519_edwards_subtract_cost" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.curve25519_edwards_validate_point_cost">
+<span class="sig-name descname"><span class="pre">curve25519_edwards_validate_point_cost</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.curve25519_edwards_validate_point_cost" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.curve25519_ristretto_add_cost">
+<span class="sig-name descname"><span class="pre">curve25519_ristretto_add_cost</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.curve25519_ristretto_add_cost" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.curve25519_ristretto_msm_base_cost">
+<span class="sig-name descname"><span class="pre">curve25519_ristretto_msm_base_cost</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.curve25519_ristretto_msm_base_cost" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.curve25519_ristretto_msm_incremental_cost">
+<span class="sig-name descname"><span class="pre">curve25519_ristretto_msm_incremental_cost</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.curve25519_ristretto_msm_incremental_cost" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.curve25519_ristretto_multiply_cost">
+<span class="sig-name descname"><span class="pre">curve25519_ristretto_multiply_cost</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.curve25519_ristretto_multiply_cost" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.curve25519_ristretto_subtract_cost">
+<span class="sig-name descname"><span class="pre">curve25519_ristretto_subtract_cost</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.curve25519_ristretto_subtract_cost" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.curve25519_ristretto_validate_point_cost">
+<span class="sig-name descname"><span class="pre">curve25519_ristretto_validate_point_cost</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.curve25519_ristretto_validate_point_cost" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.get_remaining_compute_units_cost">
+<span class="sig-name descname"><span class="pre">get_remaining_compute_units_cost</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.get_remaining_compute_units_cost" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.heap_cost">
+<span class="sig-name descname"><span class="pre">heap_cost</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.heap_cost" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.heap_size">
+<span class="sig-name descname"><span class="pre">heap_size</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.heap_size" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.invoke_units">
+<span class="sig-name descname"><span class="pre">invoke_units</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.invoke_units" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.log_64_units">
+<span class="sig-name descname"><span class="pre">log_64_units</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.log_64_units" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.log_pubkey_units">
+<span class="sig-name descname"><span class="pre">log_pubkey_units</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.log_pubkey_units" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.max_call_depth">
+<span class="sig-name descname"><span class="pre">max_call_depth</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.max_call_depth" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.max_instruction_stack_depth">
+<span class="sig-name descname"><span class="pre">max_instruction_stack_depth</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.max_instruction_stack_depth" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.max_instruction_trace_length">
+<span class="sig-name descname"><span class="pre">max_instruction_trace_length</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.max_instruction_trace_length" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.mem_op_base_cost">
+<span class="sig-name descname"><span class="pre">mem_op_base_cost</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.mem_op_base_cost" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.poseidon_cost_coefficient_a">
+<span class="sig-name descname"><span class="pre">poseidon_cost_coefficient_a</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.poseidon_cost_coefficient_a" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.poseidon_cost_coefficient_c">
+<span class="sig-name descname"><span class="pre">poseidon_cost_coefficient_c</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.poseidon_cost_coefficient_c" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.secp256k1_recover_cost">
+<span class="sig-name descname"><span class="pre">secp256k1_recover_cost</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.secp256k1_recover_cost" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.sha256_base_cost">
+<span class="sig-name descname"><span class="pre">sha256_base_cost</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.sha256_base_cost" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.sha256_byte_cost">
+<span class="sig-name descname"><span class="pre">sha256_byte_cost</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.sha256_byte_cost" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.sha256_max_slices">
+<span class="sig-name descname"><span class="pre">sha256_max_slices</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.sha256_max_slices" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.stack_frame_size">
+<span class="sig-name descname"><span class="pre">stack_frame_size</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.stack_frame_size" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.syscall_base_cost">
+<span class="sig-name descname"><span class="pre">syscall_base_cost</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.syscall_base_cost" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="solders.compute_budget.ComputeBudget.sysvar_base_cost">
+<span class="sig-name descname"><span class="pre">sysvar_base_cost</span></span><a class="headerlink" href="#solders.compute_budget.ComputeBudget.sysvar_base_cost" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.compute_budget.request_heap_frame">
+<span class="sig-name descname"><span class="pre">request_heap_frame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bytes_</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.compute_budget.request_heap_frame" title="Permalink to this definition"></a></dt>
+<dd><p>Request a specific transaction-wide program heap region size in bytes.
+The value requested must be a multiple of 1024. This new heap region
+size applies to each program executed in the transaction, including all
+calls to CPIs.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.compute_budget.set_compute_unit_limit">
+<span class="sig-name descname"><span class="pre">set_compute_unit_limit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">units</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.compute_budget.set_compute_unit_limit" title="Permalink to this definition"></a></dt>
+<dd><p>Set a specific compute unit limit that the transaction is allowed to consume.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.compute_budget.set_compute_unit_price">
+<span class="sig-name descname"><span class="pre">set_compute_unit_price</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">micro_lamports</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.compute_budget.set_compute_unit_price" title="Permalink to this definition"></a></dt>
+<dd><p>Set a compute unit price in “micro-lamports” to pay a higher transaction
+fee for higher transaction prioritization.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="solders.compute_budget.set_loaded_accounts_data_size_limit">
+<span class="sig-name descname"><span class="pre">set_loaded_accounts_data_size_limit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bytes_</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.compute_budget.set_loaded_accounts_data_size_limit" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="solders.compute_budget.ID">
+<span class="sig-name descname"><span class="pre">ID</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Final</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey"><span class="pre">Pubkey</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Pubkey(</span>&#160;&#160;&#160;&#160; <span class="pre">ComputeBudget111111111111111111111111111111,</span> <span class="pre">)</span></em><a class="headerlink" href="#solders.compute_budget.ID" title="Permalink to this definition"></a></dt>
+<dd><p>Compute buddget program ID</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="commitment_config.html" class="btn btn-neutral float-left" title="Commitment Config" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="epoch_rewards.html" class="btn btn-neutral float-right" title="Epoch Rewards" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Kevin Heavey.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

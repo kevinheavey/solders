@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Transaction Metadata &mdash; solders 0.27.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Transaction Status" href="transaction_status.html" />
+    <link rel="prev" title="SPL Token State" href="token/state.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            solders
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Solders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="account.html">Account</a></li>
+<li class="toctree-l2"><a class="reference internal" href="account_decoder.html">Account Decoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="address_lookup_table_account.html">Address Lookup Table Account</a></li>
+<li class="toctree-l2"><a class="reference internal" href="clock.html">Clock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="commitment_config.html">Commitment Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compute_budget.html">Compute Budget</a></li>
+<li class="toctree-l2"><a class="reference internal" href="epoch_rewards.html">Epoch Rewards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="epoch_schedule.html">Epoch Schedule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="errors.html">Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hash.html">Hash</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instruction.html">Instruction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="litesvm.html">LiteSVM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="keypair.html">Keypair</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message.html">Message</a></li>
+<li class="toctree-l2"><a class="reference internal" href="null_signer.html">Null Signer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="presigner.html">Presigner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pubkey.html">Pubkey</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rpc/index.html">RPC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="signature.html">Signature</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slot_history.html">Slot History</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stake_history.html">Stake History</a></li>
+<li class="toctree-l2"><a class="reference internal" href="system_program.html">System Program</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sysvar.html">Sysvar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="token/index.html">SPL Token</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Transaction Metadata</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#solders.transaction_metadata.InnerInstruction"><code class="docutils literal notranslate"><span class="pre">InnerInstruction</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction_metadata.InnerInstruction.from_bytes"><code class="docutils literal notranslate"><span class="pre">InnerInstruction.from_bytes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction_metadata.InnerInstruction.from_json"><code class="docutils literal notranslate"><span class="pre">InnerInstruction.from_json()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction_metadata.InnerInstruction.instruction"><code class="docutils literal notranslate"><span class="pre">InnerInstruction.instruction()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction_metadata.InnerInstruction.stack_height"><code class="docutils literal notranslate"><span class="pre">InnerInstruction.stack_height()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction_metadata.InnerInstruction.to_json"><code class="docutils literal notranslate"><span class="pre">InnerInstruction.to_json()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.transaction_metadata.TransactionMetadata"><code class="docutils literal notranslate"><span class="pre">TransactionMetadata</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction_metadata.TransactionMetadata.compute_units_consumed"><code class="docutils literal notranslate"><span class="pre">TransactionMetadata.compute_units_consumed()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction_metadata.TransactionMetadata.from_bytes"><code class="docutils literal notranslate"><span class="pre">TransactionMetadata.from_bytes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction_metadata.TransactionMetadata.from_json"><code class="docutils literal notranslate"><span class="pre">TransactionMetadata.from_json()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction_metadata.TransactionMetadata.inner_instructions"><code class="docutils literal notranslate"><span class="pre">TransactionMetadata.inner_instructions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction_metadata.TransactionMetadata.logs"><code class="docutils literal notranslate"><span class="pre">TransactionMetadata.logs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction_metadata.TransactionMetadata.return_data"><code class="docutils literal notranslate"><span class="pre">TransactionMetadata.return_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction_metadata.TransactionMetadata.signature"><code class="docutils literal notranslate"><span class="pre">TransactionMetadata.signature()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction_metadata.TransactionMetadata.to_json"><code class="docutils literal notranslate"><span class="pre">TransactionMetadata.to_json()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.transaction_metadata.FailedTransactionMetadata"><code class="docutils literal notranslate"><span class="pre">FailedTransactionMetadata</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction_metadata.FailedTransactionMetadata.err"><code class="docutils literal notranslate"><span class="pre">FailedTransactionMetadata.err()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction_metadata.FailedTransactionMetadata.from_bytes"><code class="docutils literal notranslate"><span class="pre">FailedTransactionMetadata.from_bytes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction_metadata.FailedTransactionMetadata.from_json"><code class="docutils literal notranslate"><span class="pre">FailedTransactionMetadata.from_json()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction_metadata.FailedTransactionMetadata.meta"><code class="docutils literal notranslate"><span class="pre">FailedTransactionMetadata.meta()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction_metadata.FailedTransactionMetadata.to_json"><code class="docutils literal notranslate"><span class="pre">FailedTransactionMetadata.to_json()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#solders.transaction_metadata.SimulatedTransactionInfo"><code class="docutils literal notranslate"><span class="pre">SimulatedTransactionInfo</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction_metadata.SimulatedTransactionInfo.from_bytes"><code class="docutils literal notranslate"><span class="pre">SimulatedTransactionInfo.from_bytes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction_metadata.SimulatedTransactionInfo.from_json"><code class="docutils literal notranslate"><span class="pre">SimulatedTransactionInfo.from_json()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction_metadata.SimulatedTransactionInfo.meta"><code class="docutils literal notranslate"><span class="pre">SimulatedTransactionInfo.meta()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction_metadata.SimulatedTransactionInfo.post_accounts"><code class="docutils literal notranslate"><span class="pre">SimulatedTransactionInfo.post_accounts()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solders.transaction_metadata.SimulatedTransactionInfo.to_json"><code class="docutils literal notranslate"><span class="pre">SimulatedTransactionInfo.to_json()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="transaction_status.html">Transaction Status</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transaction.html">Transaction</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">solders</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API Reference</a></li>
+      <li class="breadcrumb-item active">Transaction Metadata</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/kevinheavey/solders/blob/main/docs/api_reference/transaction_metadata.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-solders.transaction_metadata">
+<span id="transaction-metadata"></span><h1>Transaction Metadata<a class="headerlink" href="#module-solders.transaction_metadata" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.transaction_metadata.InnerInstruction">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">InnerInstruction</span></span><a class="headerlink" href="#solders.transaction_metadata.InnerInstruction" title="Permalink to this definition"></a></dt>
+<dd><p>A compiled instruction that was invoked during a
+transaction instruction.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction_metadata.InnerInstruction.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction_metadata.InnerInstruction.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction_metadata.InnerInstruction.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction_metadata.InnerInstruction.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction_metadata.InnerInstruction.instruction">
+<span class="sig-name descname"><span class="pre">instruction</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction_metadata.InnerInstruction.instruction" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the compiled instruction</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="instruction.html#solders.instruction.CompiledInstruction" title="solders.instruction.CompiledInstruction">CompiledInstruction</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction_metadata.InnerInstruction.stack_height">
+<span class="sig-name descname"><span class="pre">stack_height</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction_metadata.InnerInstruction.stack_height" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Invocation stack height of this instruction. Starts at 1.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction_metadata.InnerInstruction.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction_metadata.InnerInstruction.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.transaction_metadata.TransactionMetadata">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TransactionMetadata</span></span><a class="headerlink" href="#solders.transaction_metadata.TransactionMetadata" title="Permalink to this definition"></a></dt>
+<dd><p>Information about sent transactions.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction_metadata.TransactionMetadata.compute_units_consumed">
+<span class="sig-name descname"><span class="pre">compute_units_consumed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction_metadata.TransactionMetadata.compute_units_consumed" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The compute units consumed by the transaction.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction_metadata.TransactionMetadata.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction_metadata.TransactionMetadata.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction_metadata.TransactionMetadata.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction_metadata.TransactionMetadata.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction_metadata.TransactionMetadata.inner_instructions">
+<span class="sig-name descname"><span class="pre">inner_instructions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction_metadata.TransactionMetadata.inner_instructions" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The transaction’s inner instructions.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[list[<a class="reference internal" href="#solders.transaction_metadata.InnerInstruction" title="solders.transaction_metadata.InnerInstruction">InnerInstruction</a>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction_metadata.TransactionMetadata.logs">
+<span class="sig-name descname"><span class="pre">logs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction_metadata.TransactionMetadata.logs" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The transaction logs.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction_metadata.TransactionMetadata.return_data">
+<span class="sig-name descname"><span class="pre">return_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction_metadata.TransactionMetadata.return_data" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The transaction return data.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="transaction_status.html#solders.transaction_status.TransactionReturnData" title="solders.transaction_status.TransactionReturnData">TransactionReturnData</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction_metadata.TransactionMetadata.signature">
+<span class="sig-name descname"><span class="pre">signature</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction_metadata.TransactionMetadata.signature" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The transaction signature</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="signature.html#solders.signature.Signature" title="solders.signature.Signature">Signature</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction_metadata.TransactionMetadata.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction_metadata.TransactionMetadata.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.transaction_metadata.FailedTransactionMetadata">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FailedTransactionMetadata</span></span><a class="headerlink" href="#solders.transaction_metadata.FailedTransactionMetadata" title="Permalink to this definition"></a></dt>
+<dd><p>Information about failed transactions.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction_metadata.FailedTransactionMetadata.err">
+<span class="sig-name descname"><span class="pre">err</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction_metadata.FailedTransactionMetadata.err" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The transaction error.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>TransactionErrorType</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction_metadata.FailedTransactionMetadata.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction_metadata.FailedTransactionMetadata.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction_metadata.FailedTransactionMetadata.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction_metadata.FailedTransactionMetadata.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction_metadata.FailedTransactionMetadata.meta">
+<span class="sig-name descname"><span class="pre">meta</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction_metadata.FailedTransactionMetadata.meta" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The transaction metadata.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#solders.transaction_metadata.TransactionMetadata" title="solders.transaction_metadata.TransactionMetadata">TransactionMetadata</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction_metadata.FailedTransactionMetadata.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction_metadata.FailedTransactionMetadata.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="solders.transaction_metadata.SimulatedTransactionInfo">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SimulatedTransactionInfo</span></span><a class="headerlink" href="#solders.transaction_metadata.SimulatedTransactionInfo" title="Permalink to this definition"></a></dt>
+<dd><p>Information about simulated transactions.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction_metadata.SimulatedTransactionInfo.from_bytes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction_metadata.SimulatedTransactionInfo.from_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Deserialize from bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>bytes</em>) – the serialized object.</p>
+</dd>
+</dl>
+<p>Returns: the deserialized object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction_metadata.SimulatedTransactionInfo.from_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction_metadata.SimulatedTransactionInfo.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Build from a JSON string.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction_metadata.SimulatedTransactionInfo.meta">
+<span class="sig-name descname"><span class="pre">meta</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction_metadata.SimulatedTransactionInfo.meta" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The transaction metadata.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#solders.transaction_metadata.TransactionMetadata" title="solders.transaction_metadata.TransactionMetadata">TransactionMetadata</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction_metadata.SimulatedTransactionInfo.post_accounts">
+<span class="sig-name descname"><span class="pre">post_accounts</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction_metadata.SimulatedTransactionInfo.post_accounts" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Pubkey-Account pairs, showing the state of writable accounts after transaction execution.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[tuple[<a class="reference internal" href="pubkey.html#solders.pubkey.Pubkey" title="solders.pubkey.Pubkey">Pubkey</a>, <a class="reference internal" href="account.html#solders.account.Account" title="solders.account.Account">Account</a>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="solders.transaction_metadata.SimulatedTransactionInfo.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#solders.transaction_metadata.SimulatedTransactionInfo.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Convert to a JSON string.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="token/state.html" class="btn btn-neutral float-left" title="SPL Token State" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="transaction_status.html" class="btn btn-neutral float-right" title="Transaction Status" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Kevin Heavey.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
