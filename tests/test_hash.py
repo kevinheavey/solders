@@ -1,3 +1,5 @@
+import pickle
+
 from based58 import b58encode
 from pytest import mark, raises
 from solders.hash import Hash, ParseHashError
@@ -46,3 +48,8 @@ def test_hashable() -> None:
 def test_json() -> None:
     obj = Hash.default()
     assert Hash.from_json(obj.to_json()) == obj
+
+
+def test_pickle() -> None:
+    obj = Hash.default()
+    assert pickle.loads(pickle.dumps(obj)) == obj
