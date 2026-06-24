@@ -11,7 +11,7 @@ description = "Solders LiteSVM crate."
 [dependencies]
 agave-feature-set = { workspace = true }
 agave-precompiles = { workspace = true }
-litesvm = { workspace = true, features = ["nodejs-internal", "serde"] }
+litesvm = { workspace = true, features = ["nodejs-internal", "precompiles", "serde"] }
 pyo3 = { workspace = true, features = ["macros"] }
 serde = { workspace = true }
 solana-account = { workspace = true }

@@ -2,6 +2,11 @@
 
 # Unreleased
 
+### Changed
+
+- Update litesvm to 0.13 and bump Solana deps (`agave-feature-set`/`agave-precompiles`, `solana-compute-budget`, `solana-hash`, `solana-transaction-context` to 4; `solana-system-interface` to 3)
+- `ComputeBudget` constructor now takes `simd_0268_active` and `simd_0339_active` flags (was `simd_0296_active`) to match `solana-compute-budget` 4
+
 ### Added
 
 - Restored pickle and `copy.deepcopy` support: a `__reduce__` method is now generated for all types using the `common_methods` family of macros (reconstructing via `from_bytes(bytes(self))`).

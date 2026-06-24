@@ -186,7 +186,8 @@ impl LiteSVM {
     }
 
     pub fn set_precompiles(&mut self) {
-        self.0.set_precompiles();
+        let svm = std::mem::take(&mut self.0);
+        self.0 = svm.with_precompiles();
     }
 
     pub fn minimum_balance_for_rent_exemption(&self, data_len: usize) -> u64 {
