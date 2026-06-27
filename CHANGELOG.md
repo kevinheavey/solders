@@ -4,11 +4,13 @@
 
 ### Changed
 
-- Update litesvm to 0.13 and bump Solana deps (`agave-feature-set`/`agave-precompiles`, `solana-compute-budget`, `solana-hash`, `solana-transaction-context` to 4; `solana-system-interface` to 3)
+- Update litesvm to 0.13 and bump Solana deps as far as litesvm 0.13 allows: `agave-feature-set`/`agave-precompiles`, `solana-compute-budget`, `solana-hash`, `solana-transaction-context` to 4 and `solana-system-interface` to 3 (crates litesvm still pins to the v3 line, e.g. `solana-message`/`solana-transaction`/`solana-account`, stay there)
+- Bump the (litesvm-independent) client crates to 4: `solana-rpc-client-api`, `solana-rpc-client-types`, `solana-account-decoder-client-types`, `solana-transaction-status-client-types`, and `solana-reward-info` to 5 (the version aligned with that set, not the newer 6.x)
 - `ComputeBudget` constructor now takes `simd_0268_active` and `simd_0339_active` flags (was `simd_0296_active`) to match `solana-compute-budget` 4
 
 ### Added
 
+- `commission_bps` on `Reward` and `RpcInflationReward`, `transaction_index` on `RpcConfirmedTransactionStatusWithSignature`, and `client_id` on `RpcContactInfo`, following the upstream v4 client types
 - Restored pickle and `copy.deepcopy` support: a `__reduce__` method is now generated for all types using the `common_methods` family of macros (reconstructing via `from_bytes(bytes(self))`).
 - `copy.deepcopy` support for RPC response types (via a clone-based `__deepcopy__`; these don't support pickle because their bincode round-trip is broken by `skip_serializing_if`).
 

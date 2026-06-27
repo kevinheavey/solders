@@ -142,7 +142,7 @@ impl TryFrom<UiAccount> for Account {
     type Error = &'static str;
     fn try_from(acc: UiAccount) -> Result<Self, Self::Error> {
         let decoded = acc
-            .decode::<AccountOriginal>()
+            .to_account()
             .ok_or("Cannot decode JsonParsed here.")?;
         Ok(decoded.into())
     }

@@ -889,7 +889,7 @@ response_data_boilerplate!(RpcContactInfo);
 #[common_methods]
 #[pymethods]
 impl RpcContactInfo {
-    #[pyo3(signature = (pubkey, gossip=None, tpu=None, tpu_quic=None, rpc=None, pubsub=None, version=None, feature_set=None, shred_version=None, tvu=None, tpu_forwards=None, tpu_forwards_quic=None, tpu_vote=None, serve_repair=None))]
+    #[pyo3(signature = (pubkey, gossip=None, tpu=None, tpu_quic=None, rpc=None, pubsub=None, version=None, feature_set=None, shred_version=None, tvu=None, tpu_forwards=None, tpu_forwards_quic=None, tpu_vote=None, serve_repair=None, client_id=None))]
     #[new]
     pub fn new(
         pubkey: Pubkey,
@@ -906,6 +906,7 @@ impl RpcContactInfo {
         tpu_forwards_quic: Option<String>,
         tpu_vote: Option<String>,
         serve_repair: Option<String>,
+        client_id: Option<String>,
     ) -> PyResult<Self> {
         let gossip = gossip.map(|x| x.parse().unwrap());
         let tvu = tvu.map(|x| x.parse().unwrap());
@@ -932,12 +933,17 @@ impl RpcContactInfo {
             tpu_forwards_quic,
             tpu_vote,
             serve_repair,
+            client_id,
         }))
     }
 
     #[getter]
     pub fn pubkey(&self) -> Pubkey {
         self.0.pubkey.parse().unwrap()
+    }
+    #[getter]
+    pub fn client_id(&self) -> Option<String> {
+        self.0.client_id.clone()
     }
     #[getter]
     pub fn gossip(&self) -> Option<String> {
@@ -1135,7 +1141,7 @@ response_data_boilerplate!(RpcInflationReward);
 #[common_methods]
 #[pymethods]
 impl RpcInflationReward {
-    #[pyo3(signature = (epoch, effective_slot, amount, post_balance, commission=None))]
+    #[pyo3(signature = (epoch, effective_slot, amount, post_balance, commission=None, commission_bps=None))]
     #[new]
     pub fn new(
         epoch: u64,
@@ -1143,6 +1149,7 @@ impl RpcInflationReward {
         amount: u64,
         post_balance: u64,
         commission: Option<u8>,
+        commission_bps: Option<u16>,
     ) -> Self {
         RpcInflationRewardOriginal {
             epoch,
@@ -1150,6 +1157,7 @@ impl RpcInflationReward {
             amount,
             post_balance,
             commission,
+            commission_bps,
         }
         .into()
     }
@@ -1172,6 +1180,10 @@ impl RpcInflationReward {
     #[getter]
     pub fn commission(&self) -> Option<u8> {
         self.0.commission
+    }
+    #[getter]
+    pub fn commission_bps(&self) -> Option<u16> {
+        self.0.commission_bps
     }
 }
 

@@ -23,7 +23,7 @@ response_data_boilerplate!(RpcConfirmedTransactionStatusWithSignature);
 #[common_methods]
 #[pymethods]
 impl RpcConfirmedTransactionStatusWithSignature {
-    #[pyo3(signature = (signature, slot, err=None, memo=None, block_time=None, confirmation_status=None))]
+    #[pyo3(signature = (signature, slot, err=None, memo=None, block_time=None, confirmation_status=None, transaction_index=None))]
     #[new]
     pub fn new(
         signature: Signature,
@@ -32,6 +32,7 @@ impl RpcConfirmedTransactionStatusWithSignature {
         memo: Option<String>,
         block_time: Option<i64>,
         confirmation_status: Option<TransactionConfirmationStatus>,
+        transaction_index: Option<u32>,
     ) -> Self {
         RpcConfirmedTransactionStatusWithSignatureOriginal {
             signature: signature.to_string(),
@@ -43,6 +44,7 @@ impl RpcConfirmedTransactionStatusWithSignature {
             memo,
             block_time,
             confirmation_status: confirmation_status.map(|c| c.into()),
+            transaction_index,
         }
         .into()
     }
@@ -73,5 +75,9 @@ impl RpcConfirmedTransactionStatusWithSignature {
     #[getter]
     pub fn confirmation_status(&self) -> Option<TransactionConfirmationStatus> {
         self.0.confirmation_status.clone().map(|s| s.into())
+    }
+    #[getter]
+    pub fn transaction_index(&self) -> Option<u32> {
+        self.0.transaction_index
     }
 }

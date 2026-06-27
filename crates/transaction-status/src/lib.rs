@@ -1014,7 +1014,7 @@ transaction_status_boilerplate!(Reward);
 #[common_methods]
 #[pymethods]
 impl Reward {
-    #[pyo3(signature = (pubkey, lamports, post_balance, reward_type=None, commission=None))]
+    #[pyo3(signature = (pubkey, lamports, post_balance, reward_type=None, commission=None, commission_bps=None))]
     #[new]
     pub fn new(
         pubkey: Pubkey,
@@ -1022,6 +1022,7 @@ impl Reward {
         post_balance: u64, // Account balance in lamports after `lamports` was applied
         reward_type: Option<RewardType>,
         commission: Option<u8>,
+        commission_bps: Option<u16>,
     ) -> Self {
         RewardOriginal {
             pubkey: pubkey.to_string(),
@@ -1029,6 +1030,7 @@ impl Reward {
             post_balance,
             reward_type: reward_type.map(|r| r.into()),
             commission,
+            commission_bps,
         }
         .into()
     }
@@ -1056,6 +1058,11 @@ impl Reward {
     #[getter]
     pub fn commission(&self) -> Option<u8> {
         self.0.commission
+    }
+
+    #[getter]
+    pub fn commission_bps(&self) -> Option<u16> {
+        self.0.commission_bps
     }
 }
 
