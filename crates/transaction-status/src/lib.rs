@@ -1080,6 +1080,9 @@ pub struct EncodedConfirmedTransactionWithStatusMeta {
     pub transaction: EncodedTransactionWithStatusMeta,
     #[pyo3(get)]
     pub block_time: Option<i64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[pyo3(get)]
+    pub transaction_index: Option<u32>,
 }
 
 transaction_status_boilerplate_cbor!(EncodedConfirmedTransactionWithStatusMeta);
@@ -1088,17 +1091,19 @@ transaction_status_boilerplate_cbor!(EncodedConfirmedTransactionWithStatusMeta);
 #[common_methods]
 #[pymethods]
 impl EncodedConfirmedTransactionWithStatusMeta {
-    #[pyo3(signature = (slot, transaction, block_time=None))]
+    #[pyo3(signature = (slot, transaction, block_time=None, transaction_index=None))]
     #[new]
     pub fn new(
         slot: u64,
         transaction: EncodedTransactionWithStatusMeta,
         block_time: Option<i64>,
+        transaction_index: Option<u32>,
     ) -> Self {
         Self {
             slot,
             transaction,
             block_time,
+            transaction_index,
         }
     }
 }

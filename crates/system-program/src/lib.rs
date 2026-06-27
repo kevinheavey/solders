@@ -18,6 +18,7 @@ use {
         assign_with_seed as assign_with_seed_original,
         authorize_nonce_account as authorize_nonce_account_original,
         create_account as create_account_original,
+        create_account_allow_prefund as create_account_allow_prefund_original,
         create_account_with_seed as create_account_with_seed_original,
         create_nonce_account as create_nonce_account_original,
         create_nonce_account_with_seed as create_nonce_account_with_seed_original,
@@ -41,6 +42,8 @@ pub fn include_system_program(m: &Bound<'_, PyModule>) -> PyResult<()> {
     let funcs = [
         wrap_pyfunction!(create_account, m)?,
         wrap_pyfunction!(decode_create_account, m)?,
+        wrap_pyfunction!(create_account_allow_prefund, m)?,
+        wrap_pyfunction!(decode_create_account_allow_prefund, m)?,
         wrap_pyfunction!(create_account_with_seed, m)?,
         wrap_pyfunction!(decode_create_account_with_seed, m)?,
         wrap_pyfunction!(assign, m)?,
@@ -116,6 +119,56 @@ pub fn create_account(params: CreateAccountParams) -> Instruction {
         params.from_pubkey.as_ref(),
         params.to_pubkey.as_ref(),
         params.lamports,
+        params.space,
+        params.owner.as_ref(),
+    )
+    .into()
+}
+
+#[derive(FromPyObject, IntoPyObject)]
+pub struct CreateAccountAllowPrefundParams {
+    new_account: Pubkey,
+    payer: Option<Pubkey>,
+    lamports: u64,
+    space: u64,
+    owner: Pubkey,
+}
+
+#[pyfunction]
+pub fn decode_create_account_allow_prefund(
+    instruction: Instruction,
+) -> PyResult<CreateAccountAllowPrefundParams> {
+    let keys = instruction.0.accounts;
+    let parsed_data = handle_py_err(bincode::deserialize::<SystemInstructionOriginal>(
+        instruction.0.data.as_slice(),
+    ))?;
+    match parsed_data {
+        SystemInstructionOriginal::CreateAccountAllowPrefund {
+            lamports,
+            space,
+            owner,
+        } => Ok(CreateAccountAllowPrefundParams {
+            new_account: keys[0].pubkey.into(),
+            payer: keys.get(1).map(|meta| meta.pubkey.into()),
+            lamports,
+            space,
+            owner: owner.into(),
+        }),
+        _ => Err(PyValueError::new_err(
+            "Not a CreateAccountAllowPrefund instruction",
+        )),
+    }
+}
+
+#[pyfunction]
+pub fn create_account_allow_prefund(params: CreateAccountAllowPrefundParams) -> Instruction {
+    let payer_and_lamports = params
+        .payer
+        .as_ref()
+        .map(|payer| (payer.as_ref(), params.lamports));
+    create_account_allow_prefund_original(
+        params.new_account.as_ref(),
+        payer_and_lamports,
         params.space,
         params.owner.as_ref(),
     )

@@ -190,6 +190,11 @@ impl LiteSVM {
         self.0 = svm.with_precompiles();
     }
 
+    pub fn set_feature_set(&mut self, feature_set: &FeatureSet) {
+        let svm = std::mem::take(&mut self.0);
+        self.0 = svm.with_feature_set(feature_set.0.clone());
+    }
+
     pub fn minimum_balance_for_rent_exemption(&self, data_len: usize) -> u64 {
         self.0.minimum_balance_for_rent_exemption(data_len)
     }

@@ -53,6 +53,18 @@ class LiteSVM:
         self._inner.set_compute_budget(budget)
         return self
 
+    def with_feature_set(self, feature_set: FeatureSet) -> "LiteSVM":
+        """Set the active feature set.
+
+        Args:
+            feature_set: The feature set to activate.
+
+        Returns:
+            The modified LiteSVM instance
+        """
+        self._inner.set_feature_set(feature_set)
+        return self
+
     def with_sigverify(self, sigverify: bool) -> "LiteSVM":
         """Enable or disable sigverify.
 

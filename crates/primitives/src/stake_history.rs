@@ -45,7 +45,7 @@ impl StakeHistoryEntry {
 
     #[setter]
     pub fn set_activating(&mut self, val: u64) {
-        self.0.effective = val;
+        self.0.activating = val;
     }
 
     /// requested to be cooled down, not fully deactivated yet
@@ -56,7 +56,7 @@ impl StakeHistoryEntry {
 
     #[setter]
     pub fn set_deactivating(&mut self, val: u64) {
-        self.0.effective = val;
+        self.0.deactivating = val;
     }
 }
 

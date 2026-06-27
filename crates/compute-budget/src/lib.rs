@@ -414,6 +414,118 @@ impl ComputeBudget {
     pub fn alt_bn128_g2_decompress(&self) -> u64 {
         self.0.alt_bn128_g2_decompress
     }
+    #[setter]
+    pub fn set_alt_bn128_g2_addition_cost(&mut self, val: u64) {
+        self.0.alt_bn128_g2_addition_cost = val;
+    }
+    #[getter]
+    pub fn alt_bn128_g2_addition_cost(&self) -> u64 {
+        self.0.alt_bn128_g2_addition_cost
+    }
+    #[setter]
+    pub fn set_alt_bn128_g2_multiplication_cost(&mut self, val: u64) {
+        self.0.alt_bn128_g2_multiplication_cost = val;
+    }
+    #[getter]
+    pub fn alt_bn128_g2_multiplication_cost(&self) -> u64 {
+        self.0.alt_bn128_g2_multiplication_cost
+    }
+    #[setter]
+    pub fn set_bls12_381_g1_add_cost(&mut self, val: u64) {
+        self.0.bls12_381_g1_add_cost = val;
+    }
+    #[getter]
+    pub fn bls12_381_g1_add_cost(&self) -> u64 {
+        self.0.bls12_381_g1_add_cost
+    }
+    #[setter]
+    pub fn set_bls12_381_g2_add_cost(&mut self, val: u64) {
+        self.0.bls12_381_g2_add_cost = val;
+    }
+    #[getter]
+    pub fn bls12_381_g2_add_cost(&self) -> u64 {
+        self.0.bls12_381_g2_add_cost
+    }
+    #[setter]
+    pub fn set_bls12_381_g1_subtract_cost(&mut self, val: u64) {
+        self.0.bls12_381_g1_subtract_cost = val;
+    }
+    #[getter]
+    pub fn bls12_381_g1_subtract_cost(&self) -> u64 {
+        self.0.bls12_381_g1_subtract_cost
+    }
+    #[setter]
+    pub fn set_bls12_381_g2_subtract_cost(&mut self, val: u64) {
+        self.0.bls12_381_g2_subtract_cost = val;
+    }
+    #[getter]
+    pub fn bls12_381_g2_subtract_cost(&self) -> u64 {
+        self.0.bls12_381_g2_subtract_cost
+    }
+    #[setter]
+    pub fn set_bls12_381_g1_multiply_cost(&mut self, val: u64) {
+        self.0.bls12_381_g1_multiply_cost = val;
+    }
+    #[getter]
+    pub fn bls12_381_g1_multiply_cost(&self) -> u64 {
+        self.0.bls12_381_g1_multiply_cost
+    }
+    #[setter]
+    pub fn set_bls12_381_g2_multiply_cost(&mut self, val: u64) {
+        self.0.bls12_381_g2_multiply_cost = val;
+    }
+    #[getter]
+    pub fn bls12_381_g2_multiply_cost(&self) -> u64 {
+        self.0.bls12_381_g2_multiply_cost
+    }
+    #[setter]
+    pub fn set_bls12_381_g1_decompress_cost(&mut self, val: u64) {
+        self.0.bls12_381_g1_decompress_cost = val;
+    }
+    #[getter]
+    pub fn bls12_381_g1_decompress_cost(&self) -> u64 {
+        self.0.bls12_381_g1_decompress_cost
+    }
+    #[setter]
+    pub fn set_bls12_381_g2_decompress_cost(&mut self, val: u64) {
+        self.0.bls12_381_g2_decompress_cost = val;
+    }
+    #[getter]
+    pub fn bls12_381_g2_decompress_cost(&self) -> u64 {
+        self.0.bls12_381_g2_decompress_cost
+    }
+    #[setter]
+    pub fn set_bls12_381_g1_validate_cost(&mut self, val: u64) {
+        self.0.bls12_381_g1_validate_cost = val;
+    }
+    #[getter]
+    pub fn bls12_381_g1_validate_cost(&self) -> u64 {
+        self.0.bls12_381_g1_validate_cost
+    }
+    #[setter]
+    pub fn set_bls12_381_g2_validate_cost(&mut self, val: u64) {
+        self.0.bls12_381_g2_validate_cost = val;
+    }
+    #[getter]
+    pub fn bls12_381_g2_validate_cost(&self) -> u64 {
+        self.0.bls12_381_g2_validate_cost
+    }
+    #[setter]
+    pub fn set_bls12_381_one_pair_cost(&mut self, val: u64) {
+        self.0.bls12_381_one_pair_cost = val;
+    }
+    #[getter]
+    pub fn bls12_381_one_pair_cost(&self) -> u64 {
+        self.0.bls12_381_one_pair_cost
+    }
+    #[setter]
+    pub fn set_bls12_381_additional_pair_cost(&mut self, val: u64) {
+        self.0.bls12_381_additional_pair_cost = val;
+    }
+    #[getter]
+    pub fn bls12_381_additional_pair_cost(&self) -> u64 {
+        self.0.bls12_381_additional_pair_cost
+    }
 }
 
 pub fn include_compute_budget(m: &Bound<'_, PyModule>) -> PyResult<()> {
