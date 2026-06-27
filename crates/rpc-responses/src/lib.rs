@@ -1385,6 +1385,8 @@ contextless_resp_eq!(
     "Vec<DisplayFromStr>"
 );
 
+contextful_resp_eq!(GetStakeMinimumDelegationResp, u64);
+
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
 #[pyclass(module = "solders.rpc.responses", subclass)]
 pub struct RpcSupply(RpcSupplyOriginal);
@@ -2000,6 +2002,7 @@ pyunion_resp!(
     GetSlotResp,
     GetSlotLeaderResp,
     GetSlotLeadersResp,
+    GetStakeMinimumDelegationResp,
     GetSupplyResp,
     GetTokenAccountBalanceResp,
     GetTokenAccountsByDelegateResp,
@@ -2205,6 +2208,7 @@ pub fn include_responses(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<GetSlotResp>()?;
     m.add_class::<GetSlotLeaderResp>()?;
     m.add_class::<GetSlotLeadersResp>()?;
+    m.add_class::<GetStakeMinimumDelegationResp>()?;
     m.add_class::<RpcSupply>()?;
     m.add_class::<GetSupplyResp>()?;
     m.add_class::<GetTokenAccountBalanceResp>()?;

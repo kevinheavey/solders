@@ -70,6 +70,7 @@ from solders.rpc.responses import (
     GetSlotLeaderResp,
     GetSlotLeadersResp,
     GetSlotResp,
+    GetStakeMinimumDelegationResp,
     GetSupplyResp,
     GetTokenAccountBalanceResp,
     GetTokenAccountsByDelegateJsonParsedResp,
@@ -282,6 +283,19 @@ def test_get_balance() -> None:
     parsed = GetBalanceResp.from_json(raw)
     assert isinstance(parsed, GetBalanceResp)
     assert parsed == GetBalanceResp(value=0, context=RpcResponseContext(slot=1))
+
+
+def test_get_stake_minimum_delegation() -> None:
+    raw = """{
+"jsonrpc": "2.0",
+"result": { "context": { "slot": 501 }, "value": 1000000000 },
+"id": 1
+}"""
+    parsed = GetStakeMinimumDelegationResp.from_json(raw)
+    assert isinstance(parsed, GetStakeMinimumDelegationResp)
+    assert parsed == GetStakeMinimumDelegationResp(
+        value=1000000000, context=RpcResponseContext(slot=501)
+    )
 
 
 def test_get_block_production() -> None:

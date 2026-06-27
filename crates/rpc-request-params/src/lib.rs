@@ -101,14 +101,6 @@ pub struct GetSignatureStatusesParams(
 #[serde_as]
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
-pub struct GetStakeActivationParams(
-    #[serde_as(as = "DisplayFromStr")] pub Pubkey,
-    #[serde(default)] pub Option<RpcEpochConfig>,
-);
-
-#[serde_as]
-#[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct GetTokenAccountsByDelegateParams(
     #[serde_as(as = "DisplayFromStr")] pub Pubkey,
     #[serde_as(as = "FromInto<RpcTokenAccountsFilter>")] pub RpcTokenAccountsFilterWrapper,

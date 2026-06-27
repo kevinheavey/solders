@@ -11,8 +11,13 @@
 ### Added
 
 - `commission_bps` on `Reward` and `RpcInflationReward`, `transaction_index` on `RpcConfirmedTransactionStatusWithSignature`, and `client_id` on `RpcContactInfo`, following the upstream v4 client types
+- Support for the `getStakeMinimumDelegation` RPC method (`GetStakeMinimumDelegation` request and `GetStakeMinimumDelegationResp` response)
 - Restored pickle and `copy.deepcopy` support: a `__reduce__` method is now generated for all types using the `common_methods` family of macros (reconstructing via `from_bytes(bytes(self))`).
 - `copy.deepcopy` support for RPC response types (via a clone-based `__deepcopy__`; these don't support pickle because their bincode round-trip is broken by `skip_serializing_if`).
+
+### Removed
+
+- `GetStakeActivation` request: the `getStakeActivation` RPC method has been removed from Agave and is no longer served by validators
 
 ### Fixed
 
