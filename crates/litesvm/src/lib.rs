@@ -226,6 +226,12 @@ impl LiteSVM {
         self.0 = svm.with_mainnet_features();
     }
 
+    /// Add on-chain feature gate accounts for the currently active feature set.
+    pub fn set_feature_accounts(&mut self) {
+        let svm = std::mem::take(&mut self.0);
+        self.0 = svm.with_feature_accounts();
+    }
+
     /// bool: Whether signature verification is enabled.
     pub fn get_sigverify(&self) -> bool {
         self.0.get_sigverify()
@@ -263,6 +269,12 @@ impl LiteSVM {
         self.0.airdrop(&pubkey.0, lamports).into()
     }
 
+    /// Pubkey: The pubkey of the internal airdrop account.
+    #[getter]
+    pub fn airdrop_pubkey(&self) -> Pubkey {
+        Pubkey(self.0.airdrop_pubkey())
+    }
+
     pub fn add_program_from_file(&mut self, program_id: Pubkey, path: PathBuf) -> PyResult<()> {
         let res = self
             .0
@@ -274,6 +286,18 @@ impl LiteSVM {
     pub fn add_program(&mut self, program_id: Pubkey, program_bytes: &[u8]) -> PyResult<()> {
         self.0
             .add_program(program_id.0, program_bytes)
+            .map_err(to_py_err)
+    }
+
+    /// Adds an SBF program to the test environment, specifying the loader.
+    pub fn add_program_with_loader(
+        &mut self,
+        program_id: Pubkey,
+        program_bytes: &[u8],
+        loader_id: Pubkey,
+    ) -> PyResult<()> {
+        self.0
+            .add_program_with_loader(program_id.0, program_bytes, loader_id.0)
             .map_err(to_py_err)
     }
 

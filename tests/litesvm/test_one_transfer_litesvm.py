@@ -10,6 +10,7 @@ from solders.transaction_metadata import TransactionMetadata
 def test_transfer() -> None:
     receiver = Pubkey.new_unique()
     client = LiteSVM()
+    assert isinstance(client.airdrop_pubkey(), Pubkey)
     payer = Keypair()
     client.airdrop(payer.pubkey(), 1_000_000_000)
     blockhash = client.latest_blockhash()

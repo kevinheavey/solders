@@ -182,6 +182,11 @@ def test_advance_nonce_account() -> None:
     assert sp.decode_advance_nonce_account(sp.advance_nonce_account(params)) == params
 
 
+def test_upgrade_nonce_account() -> None:
+    params = sp.UpgradeNonceAccountParams(nonce_pubkey=Keypair().pubkey())
+    assert sp.decode_upgrade_nonce_account(sp.upgrade_nonce_account(params)) == params
+
+
 def test_withdraw_nonce_account() -> None:
     params = sp.WithdrawNonceAccountParams(
         nonce_pubkey=Keypair().pubkey(),

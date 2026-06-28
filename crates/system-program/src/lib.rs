@@ -24,6 +24,7 @@ use {
         create_nonce_account_with_seed as create_nonce_account_with_seed_original,
         transfer as transfer_original, transfer_many as transfer_many_original,
         transfer_with_seed as transfer_with_seed_original,
+        upgrade_nonce_account as upgrade_nonce_account_original,
         withdraw_nonce_account as withdraw_nonce_account_original,
         SystemInstruction as SystemInstructionOriginal,
     },
@@ -65,6 +66,8 @@ pub fn include_system_program(m: &Bound<'_, PyModule>) -> PyResult<()> {
         wrap_pyfunction!(create_nonce_account_with_seed, m)?,
         wrap_pyfunction!(advance_nonce_account, m)?,
         wrap_pyfunction!(decode_advance_nonce_account, m)?,
+        wrap_pyfunction!(upgrade_nonce_account, m)?,
+        wrap_pyfunction!(decode_upgrade_nonce_account, m)?,
         wrap_pyfunction!(withdraw_nonce_account, m)?,
         wrap_pyfunction!(decode_withdraw_nonce_account, m)?,
         wrap_pyfunction!(authorize_nonce_account, m)?,
@@ -611,6 +614,34 @@ pub fn decode_advance_nonce_account(
         }),
         _ => Err(PyValueError::new_err(
             "Not an AdvanceNonceAccount instruction",
+        )),
+    }
+}
+
+#[derive(FromPyObject, IntoPyObject)]
+pub struct UpgradeNonceAccountParams {
+    nonce_pubkey: Pubkey,
+}
+
+#[pyfunction]
+pub fn upgrade_nonce_account(params: UpgradeNonceAccountParams) -> Instruction {
+    upgrade_nonce_account_original(params.nonce_pubkey.0).into()
+}
+
+#[pyfunction]
+pub fn decode_upgrade_nonce_account(
+    instruction: Instruction,
+) -> PyResult<UpgradeNonceAccountParams> {
+    let keys = instruction.0.accounts;
+    let parsed_data = handle_py_err(bincode::deserialize::<SystemInstructionOriginal>(
+        instruction.0.data.as_slice(),
+    ))?;
+    match parsed_data {
+        SystemInstructionOriginal::UpgradeNonceAccount => Ok(UpgradeNonceAccountParams {
+            nonce_pubkey: keys[0].pubkey.into(),
+        }),
+        _ => Err(PyValueError::new_err(
+            "Not an UpgradeNonceAccount instruction",
         )),
     }
 }

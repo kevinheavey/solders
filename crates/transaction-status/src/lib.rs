@@ -1189,6 +1189,10 @@ impl UiConfirmedBlock {
     pub fn block_height(&self) -> Option<u64> {
         self.0.block_height
     }
+    #[getter]
+    pub fn num_reward_partitions(&self) -> Option<u64> {
+        self.0.num_reward_partitions
+    }
 }
 
 pub fn include_transaction_status(m: &Bound<'_, PyModule>) -> PyResult<()> {

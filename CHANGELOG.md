@@ -22,6 +22,9 @@
 - `Rent.with_lamports_per_byte` and the `DEFAULT_LAMPORTS_PER_BYTE` constant (the deprecated rent accessors are kept)
 - `EpochRewards.distribute`
 - `StakeHistoryEntry.with_effective` / `with_effective_and_activating` / `with_deactivating`
+- `LiteSVM.airdrop_pubkey`, `LiteSVM.with_feature_accounts`, and `LiteSVM.add_program_with_loader`
+- A getter for `UiConfirmedBlock.num_reward_partitions` (the constructor already accepted it but it could not be read back)
+- `solders.system_program.upgrade_nonce_account` (and `decode_upgrade_nonce_account` / `UpgradeNonceAccountParams`)
 - Restored pickle and `copy.deepcopy` support: a `__reduce__` method is now generated for all types using the `common_methods` family of macros (reconstructing via `from_bytes(bytes(self))`).
 - `copy.deepcopy` support for RPC response types (via a clone-based `__deepcopy__`; these don't support pickle because their bincode round-trip is broken by `skip_serializing_if`).
 

@@ -3,6 +3,10 @@ from typing_extensions import Final, TypedDict
 
 from .solders import SYSTEM_PROGRAM_ID as _ID
 from .solders import advance_nonce_account as _advance_nonce_account
+from .solders import upgrade_nonce_account as _upgrade_nonce_account
+from .solders import (
+    decode_upgrade_nonce_account as _decode_upgrade_nonce_account,
+)
 from .solders import allocate as _allocate
 from .solders import allocate_with_seed as _allocate_with_seed
 from .solders import assign as _assign
@@ -563,6 +567,37 @@ def decode_advance_nonce_account(instruction: Instruction) -> AdvanceNonceAccoun
     return cast(AdvanceNonceAccountParams, _decode_advance_nonce_account(instruction))
 
 
+class UpgradeNonceAccountParams(TypedDict):
+    """Upgrade nonce account system instruction params."""
+
+    nonce_pubkey: Pubkey
+    """Nonce account."""
+
+
+def upgrade_nonce_account(params: UpgradeNonceAccountParams) -> Instruction:
+    """Generate an instruction to upgrade a legacy nonce account.
+
+    Args:
+        params (UpgradeNonceAccountParams): The UpgradeNonceAccount params.
+
+    Returns:
+        Instruction: The UpgradeNonceAccount instruction.
+    """
+    return _upgrade_nonce_account(dict(params))
+
+
+def decode_upgrade_nonce_account(instruction: Instruction) -> UpgradeNonceAccountParams:
+    """Decode an upgrade nonce account instruction and retrieve the instruction params.
+
+    Args:
+        instruction (Instruction): The UpgradeNonceAccount instruction.
+
+    Returns:
+        UpgradeNonceAccountParams: The params used to create the instruction.
+    """
+    return cast(UpgradeNonceAccountParams, _decode_upgrade_nonce_account(instruction))
+
+
 class WithdrawNonceAccountParams(TypedDict):
     """Withdraw nonce account system transaction params."""
 
@@ -799,6 +834,9 @@ __all__ = [
     "AdvanceNonceAccountParams",
     "advance_nonce_account",
     "decode_advance_nonce_account",
+    "UpgradeNonceAccountParams",
+    "upgrade_nonce_account",
+    "decode_upgrade_nonce_account",
     "WithdrawNonceAccountParams",
     "withdraw_nonce_account",
     "decode_withdraw_nonce_account",

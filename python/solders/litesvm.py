@@ -83,6 +83,15 @@ class LiteSVM:
         self._inner.set_mainnet_features()
         return self
 
+    def with_feature_accounts(self) -> "LiteSVM":
+        """Add on-chain feature gate accounts for the active feature set.
+
+        Returns:
+            The modified LiteSVM instance
+        """
+        self._inner.set_feature_accounts()
+        return self
+
     def with_sigverify(self, sigverify: bool) -> "LiteSVM":
         """Enable or disable sigverify.
 
@@ -284,6 +293,29 @@ class LiteSVM:
             program_bytes: The raw bytes of the compiled program.
         """
         return self._inner.add_program(program_id, program_bytes)
+
+    def add_program_with_loader(
+        self, program_id: Pubkey, program_bytes: bytes, loader_id: Pubkey
+    ) -> None:
+        """Adds an SBF program to the test environment, specifying the loader.
+
+        Args:
+            program_id: The program ID.
+            program_bytes: The raw bytes of the compiled program.
+            loader_id: The loader to use (e.g. ``bpf_loader`` or the upgradeable
+                loader).
+        """
+        return self._inner.add_program_with_loader(
+            program_id, program_bytes, loader_id
+        )
+
+    def airdrop_pubkey(self) -> Pubkey:
+        """The pubkey of the internal airdrop account.
+
+        Returns:
+            The airdrop account pubkey.
+        """
+        return self._inner.airdrop_pubkey
 
     def send_transaction(
         self, tx: Union[Transaction, VersionedTransaction]
