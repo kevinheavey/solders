@@ -11,6 +11,7 @@ from solders.message import Message
 from solders.pubkey import Pubkey
 from solders.rent import Rent
 from solders.rpc.requests import GetBalance
+from solders.rpc.responses import GetBalanceResp, GetBlockHeightResp, RpcResponseContext
 from solders.signature import Signature
 
 # A spread across the macro families: byte wrappers and complex types
@@ -35,6 +36,21 @@ def test_pickle(original: Any) -> None:
 
 @pytest.mark.parametrize("original", objects)
 def test_deepcopy(original: Any) -> None:
+    copied = copy.deepcopy(original)
+    assert copied == original
+    assert copied is not original
+
+
+# RPC response types support deepcopy (via clone) but not pickle, since their
+# bincode round-trip is broken by skip_serializing_if.
+response_objects: List[Any] = [
+    GetBlockHeightResp(1234),
+    GetBalanceResp(5, RpcResponseContext(slot=1)),
+]
+
+
+@pytest.mark.parametrize("original", response_objects)
+def test_deepcopy_responses(original: Any) -> None:
     copied = copy.deepcopy(original)
     assert copied == original
     assert copied is not original

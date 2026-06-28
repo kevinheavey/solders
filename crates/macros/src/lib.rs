@@ -197,7 +197,7 @@ pub fn common_methods_ser_only(_: TokenStream, item: TokenStream) -> TokenStream
     TokenStream::from(ast.to_token_stream())
 }
 
-/// Add `__bytes__`, `__str__`, `__repr__`, `to_json`, `from_json`, `from_bytes` and `__richcmp__` using the `CommonMethodsRpcResp` trait.
+/// Add `__bytes__`, `__str__`, `__repr__`, `__deepcopy__`, `to_json`, `from_json`, `from_bytes` and `__richcmp__` using the `CommonMethodsRpcResp` trait.
 #[proc_macro_attribute]
 pub fn common_methods_rpc_resp(_: TokenStream, item: TokenStream) -> TokenStream {
     let mut ast = parse_macro_input!(item as ItemImpl);
@@ -247,6 +247,14 @@ pub fn common_methods_rpc_resp(_: TokenStream, item: TokenStream) -> TokenStream
                 solders_traits_core::RichcmpEqualityOnly::richcmp(self, other, op)
             }},
         ),
+        // Response types can't use the `from_bytes`-based `__reduce__` (their
+        // bincode round-trip is broken by `skip_serializing_if`), so support
+        // `copy.deepcopy` directly via clone.
+        ImplItem::Verbatim(quote! {
+            pub fn __deepcopy__(&self, _memo: &pyo3::Bound<'_, pyo3::types::PyAny>) -> Self {
+                self.clone()
+            }
+        }),
     ];
     ast.items.extend_from_slice(&methods);
     TokenStream::from(ast.to_token_stream())
