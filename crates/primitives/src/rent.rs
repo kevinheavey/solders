@@ -1,3 +1,6 @@
+// The Rent accessors below are deprecated upstream (solana-rent 3.1) but kept
+// for backwards compatibility, so silence the deprecation warnings.
+#![allow(deprecated)]
 use derive_more::{From, Into};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};

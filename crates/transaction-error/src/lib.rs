@@ -1,3 +1,6 @@
+// The deprecated InstructionError variants are kept for backwards
+// compatibility, so silence the deprecation warnings.
+#![allow(deprecated)]
 use derive_more::{From, Into};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
