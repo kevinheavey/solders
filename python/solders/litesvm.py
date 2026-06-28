@@ -65,6 +65,24 @@ class LiteSVM:
         self._inner.set_feature_set(feature_set)
         return self
 
+    @staticmethod
+    def mainnet_feature_set() -> FeatureSet:
+        """Return the mainnet feature set.
+
+        Returns:
+            The mainnet feature set.
+        """
+        return _LiteSVM.mainnet_feature_set()
+
+    def with_mainnet_features(self) -> "LiteSVM":
+        """Activate the mainnet feature set.
+
+        Returns:
+            The modified LiteSVM instance
+        """
+        self._inner.set_mainnet_features()
+        return self
+
     def with_sigverify(self, sigverify: bool) -> "LiteSVM":
         """Enable or disable sigverify.
 
@@ -206,6 +224,14 @@ class LiteSVM:
             The account's balance in lamports.
         """
         return self._inner.get_balance(address)
+
+    def get_sigverify(self) -> bool:
+        """Whether signature verification is enabled.
+
+        Returns:
+            True if signature verification is enabled.
+        """
+        return self._inner.get_sigverify()
 
     def latest_blockhash(self) -> Hash:
         """Gets the latest blockhash.

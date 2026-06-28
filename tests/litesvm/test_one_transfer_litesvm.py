@@ -4,6 +4,7 @@ from solders.message import Message
 from solders.pubkey import Pubkey
 from solders.system_program import transfer
 from solders.transaction import VersionedTransaction
+from solders.transaction_metadata import TransactionMetadata
 
 
 def test_transfer() -> None:
@@ -24,6 +25,10 @@ def test_transfer() -> None:
     ]
     msg = Message.new_with_blockhash(ixs, payer.pubkey(), blockhash)
     tx = VersionedTransaction(msg, [payer])
-    client.send_transaction(tx)
+    meta = client.send_transaction(tx)
     balance_after = client.get_balance(receiver)
     assert balance_after == transfer_lamports
+    # TransactionMetadata.fee / pretty_logs (added for litesvm 0.13)
+    assert isinstance(meta, TransactionMetadata)
+    assert isinstance(meta.fee(), int)
+    assert isinstance(meta.pretty_logs(), str)

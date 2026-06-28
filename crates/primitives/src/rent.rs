@@ -3,7 +3,7 @@ use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use solana_rent::{
     Rent as RentOriginal, RentDue, ACCOUNT_STORAGE_OVERHEAD, DEFAULT_BURN_PERCENT,
-    DEFAULT_EXEMPTION_THRESHOLD, DEFAULT_LAMPORTS_PER_BYTE_YEAR,
+    DEFAULT_EXEMPTION_THRESHOLD, DEFAULT_LAMPORTS_PER_BYTE, DEFAULT_LAMPORTS_PER_BYTE_YEAR,
 };
 use solders_traits_core::transaction_status_boilerplate;
 
@@ -131,6 +131,18 @@ impl Rent {
     pub fn with_slots_per_epoch(slots_per_epoch: u64) -> Self {
         RentOriginal::with_slots_per_epoch(slots_per_epoch).into()
     }
+
+    /// Creates a ``Rent`` with the given lamports per byte.
+    ///
+    /// Args:
+    ///     lamports_per_byte (int): The lamports per byte.
+    ///
+    /// Returns:
+    ///     Rent: The new Rent object.
+    #[staticmethod]
+    pub fn with_lamports_per_byte(lamports_per_byte: u64) -> Self {
+        RentOriginal::with_lamports_per_byte(lamports_per_byte).into()
+    }
 }
 
 pub fn include_rent(m: &Bound<'_, PyModule>) -> PyResult<()> {
@@ -139,6 +151,7 @@ pub fn include_rent(m: &Bound<'_, PyModule>) -> PyResult<()> {
         "DEFAULT_LAMPORTS_PER_BYTE_YEAR",
         DEFAULT_LAMPORTS_PER_BYTE_YEAR,
     )?;
+    m.add("DEFAULT_LAMPORTS_PER_BYTE", DEFAULT_LAMPORTS_PER_BYTE)?;
     m.add("DEFAULT_EXEMPTION_THRESHOLD", DEFAULT_EXEMPTION_THRESHOLD)?;
     m.add("DEFAULT_BURN_PERCENT", DEFAULT_BURN_PERCENT)?;
     m.add("ACCOUNT_STORAGE_OVERHEAD", ACCOUNT_STORAGE_OVERHEAD)?;

@@ -95,6 +95,21 @@ impl TransactionMetadata {
     pub fn return_data(&self) -> TransactionReturnData {
         TransactionReturnData(self.0.return_data.clone())
     }
+
+    ///
+    /// Returns:
+    ///     int: The transaction fee.
+    pub fn fee(&self) -> u64 {
+        self.0.fee
+    }
+
+    /// Get a pretty-formatted string of the transaction logs.
+    ///
+    /// Returns:
+    ///     str: The formatted logs.
+    pub fn pretty_logs(&self) -> String {
+        self.0.pretty_logs()
+    }
 }
 
 /// Information about failed transactions.

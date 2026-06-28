@@ -16,6 +16,12 @@
 - `transaction_index` on `EncodedConfirmedTransactionWithStatusMeta`, following `solana-transaction-status-client-types` 4
 - `solders.system_program.create_account_allow_prefund` (and `decode_create_account_allow_prefund` / `CreateAccountAllowPrefundParams`), wrapping the new `solana-system-interface` instruction
 - `LiteSVM.with_feature_set` to apply a `FeatureSet` to the VM (the `FeatureSet` type was exposed but could not previously be applied)
+- `LiteSVM.with_mainnet_features` / `LiteSVM.mainnet_feature_set` / `LiteSVM.get_sigverify`
+- `TransactionMetadata.fee` and `TransactionMetadata.pretty_logs`
+- `FeatureSet.activate` / `FeatureSet.deactivate`
+- `Rent.with_lamports_per_byte` and the `DEFAULT_LAMPORTS_PER_BYTE` constant (the deprecated rent accessors are kept)
+- `EpochRewards.distribute`
+- `StakeHistoryEntry.with_effective` / `with_effective_and_activating` / `with_deactivating`
 - Restored pickle and `copy.deepcopy` support: a `__reduce__` method is now generated for all types using the `common_methods` family of macros (reconstructing via `from_bytes(bytes(self))`).
 - `copy.deepcopy` support for RPC response types (via a clone-based `__deepcopy__`; these don't support pickle because their bincode round-trip is broken by `skip_serializing_if`).
 

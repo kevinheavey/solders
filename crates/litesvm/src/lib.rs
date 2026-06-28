@@ -127,6 +127,25 @@ impl FeatureSet {
         let to_set = self.0.inactive_mut();
         *to_set = inner;
     }
+
+    /// Activate a feature at the given slot.
+    ///
+    /// Args:
+    ///     feature_id (Pubkey): The feature ID.
+    ///     slot (int): The slot at which to activate the feature.
+    ///
+    pub fn activate(&mut self, feature_id: Pubkey, slot: u64) {
+        self.0.activate(&feature_id.0, slot);
+    }
+
+    /// Deactivate a feature.
+    ///
+    /// Args:
+    ///     feature_id (Pubkey): The feature ID.
+    ///
+    pub fn deactivate(&mut self, feature_id: Pubkey) {
+        self.0.deactivate(&feature_id.0);
+    }
 }
 
 #[pyclass(module = "solders.litesvm", subclass)]
@@ -193,6 +212,23 @@ impl LiteSVM {
     pub fn set_feature_set(&mut self, feature_set: &FeatureSet) {
         let svm = std::mem::take(&mut self.0);
         self.0 = svm.with_feature_set(feature_set.0.clone());
+    }
+
+    /// FeatureSet: The mainnet feature set.
+    #[staticmethod]
+    pub fn mainnet_feature_set() -> FeatureSet {
+        FeatureSet(LiteSVMOriginal::mainnet_feature_set())
+    }
+
+    /// Activate the mainnet feature set.
+    pub fn set_mainnet_features(&mut self) {
+        let svm = std::mem::take(&mut self.0);
+        self.0 = svm.with_mainnet_features();
+    }
+
+    /// bool: Whether signature verification is enabled.
+    pub fn get_sigverify(&self) -> bool {
+        self.0.get_sigverify()
     }
 
     pub fn minimum_balance_for_rent_exemption(&self, data_len: usize) -> u64 {
