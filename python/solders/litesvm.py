@@ -128,10 +128,6 @@ class LiteSVM:
     def with_builtins(self) -> "LiteSVM":
         """Adds the standard builtin programs.
 
-        Args:
-            feature_set: if provided, decides what builtins to add based on what
-                features are active
-
         Returns:
             The modified LiteSVM instance
         """
