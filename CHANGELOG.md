@@ -1,5 +1,15 @@
 # Changelog
 
+# Unreleased
+
+### Added
+
+- Restored pickle and `copy.deepcopy` support: a `__reduce__` method is now generated for all types using the `common_methods` family of macros (reconstructing via `from_bytes(bytes(self))`).
+
+### Fixed
+
+- `Rent` declared `module = "solders.account"` but is exported from `solders.rent`, which broke pickling.
+
 # [0.27.1] 2025-11-15
 
 ### Fixed

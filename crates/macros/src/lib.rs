@@ -93,6 +93,26 @@ pub fn richcmp_signer(_: TokenStream, item: TokenStream) -> TokenStream {
     TokenStream::from(ast.to_token_stream())
 }
 
+/// Build a ``__reduce__`` method enabling pickle (and, by extension, ``copy.deepcopy``).
+///
+/// It reconstructs the object via ``from_bytes(bytes(self))``, relying only on the
+/// Python-level ``__bytes__`` and ``from_bytes`` methods, so it works for any type
+/// that has both regardless of which trait provides them.
+fn reduce_method() -> ImplItem {
+    ImplItem::Verbatim(quote! {
+        pub fn __reduce__<'py>(
+            slf: &pyo3::Bound<'py, Self>,
+        ) -> pyo3::PyResult<(
+            pyo3::Bound<'py, pyo3::types::PyAny>,
+            (pyo3::Bound<'py, pyo3::types::PyBytes>,),
+        )> {
+            let constructor = slf.get_type().getattr("from_bytes")?;
+            let data: Vec<u8> = slf.call_method0("__bytes__")?.extract()?;
+            Ok((constructor, (pyo3::types::PyBytes::new(slf.py(), &data),)))
+        }
+    })
+}
+
 fn add_core_methods(ast: &mut ItemImpl) {
     let mut methods = vec![
         ImplItem::Verbatim(quote! {pub fn __bytes__<'a>(&self) -> Vec<u8>  {
@@ -104,6 +124,7 @@ fn add_core_methods(ast: &mut ItemImpl) {
         ImplItem::Verbatim(quote! { pub fn __repr__(&self) -> String {
             solders_traits_core::CommonMethodsCore::pyrepr(self)
         } }),
+        reduce_method(),
     ];
     if !ast.items.iter().any(|item| match item {
         ImplItem::Method(m) => m.sig.ident == "from_bytes",
@@ -127,7 +148,7 @@ fn add_core_methods(ast: &mut ItemImpl) {
     ast.items.extend_from_slice(&methods);
 }
 
-/// Add `__bytes__`, `__str__`, and `__repr__` using the `CommonMethodsCore` trait.
+/// Add `__bytes__`, `__str__`, `__repr__`, and `__reduce__` using the `CommonMethodsCore` trait.
 ///
 /// Also add `from_bytes` if not already defined.
 #[proc_macro_attribute]
@@ -137,7 +158,7 @@ pub fn common_methods_core(_: TokenStream, item: TokenStream) -> TokenStream {
     TokenStream::from(ast.to_token_stream())
 }
 
-/// Add `__bytes__`, `__str__`, `__repr__`, `to_json` and `from_json` using the `CommonMethods` trait.
+/// Add `__bytes__`, `__str__`, `__repr__`, `__reduce__`, `to_json` and `from_json` using the `CommonMethods` trait.
 ///
 /// Also add `from_bytes` if not already defined.
 #[proc_macro_attribute]
@@ -160,7 +181,7 @@ pub fn common_methods(_: TokenStream, item: TokenStream) -> TokenStream {
     TokenStream::from(ast.to_token_stream())
 }
 
-/// Add `__bytes__`, `__str__`, `__repr__`, and `to_json` using the `CommonMethods` trait.
+/// Add `__bytes__`, `__str__`, `__repr__`, `__reduce__`, and `to_json` using the `CommonMethods` trait.
 ///
 /// Also add `from_bytes` if not already defined.
 #[proc_macro_attribute]
@@ -176,7 +197,7 @@ pub fn common_methods_ser_only(_: TokenStream, item: TokenStream) -> TokenStream
     TokenStream::from(ast.to_token_stream())
 }
 
-/// Add `__bytes__`, `__str__`, `__repr__`, `__reduce__`, `to_json`, `from_json`, `from_bytes` and `__richcmp__` using the `CommonMethodsRpcResp` trait.
+/// Add `__bytes__`, `__str__`, `__repr__`, `to_json`, `from_json`, `from_bytes` and `__richcmp__` using the `CommonMethodsRpcResp` trait.
 #[proc_macro_attribute]
 pub fn common_methods_rpc_resp(_: TokenStream, item: TokenStream) -> TokenStream {
     let mut ast = parse_macro_input!(item as ItemImpl);
