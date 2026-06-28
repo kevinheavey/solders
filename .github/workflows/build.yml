@@ -247,6 +247,64 @@ jobs:
           name: wheels-musllinux-i686
           path: dist
 
+  musllinux-aarch64:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ env.python_version }}
+          architecture: x64
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          profile: minimal
+          default: true
+      - name: Build wheels
+        uses: messense/maturin-action@v1
+        with:
+          target: aarch64-unknown-linux-musl
+          manylinux: musllinux_1_2
+          args: --release --no-default-features -F ring --out dist
+          maturin-version: ${{ env.maturin_version }}
+      - name: Upload wheels
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheels-musllinux-aarch64
+          path: dist
+
+  musllinux-armv7:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ env.python_version }}
+          architecture: x64
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          profile: minimal
+          default: true
+      - name: Build wheels
+        uses: messense/maturin-action@v1
+        with:
+          target: armv7-unknown-linux-musleabihf
+          manylinux: musllinux_1_2
+          args: --release --no-default-features -F ring --out dist
+          maturin-version: ${{ env.maturin_version }}
+      - name: Upload wheels
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheels-musllinux-armv7
+          path: dist
+
   linux-aarch64:
     runs-on: ubuntu-latest
     steps:
