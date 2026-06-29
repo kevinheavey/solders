@@ -267,3 +267,23 @@ macro_rules! transaction_status_boilerplate {
         $crate::common_methods_default!($name);
     };
 }
+
+/// Like [`transaction_status_boilerplate`] but serializes bytes via CBOR.
+///
+/// Use this for types that can't round-trip through bincode (e.g. those with
+/// `#[serde(flatten)]` or `#[serde(skip_serializing_if)]` fields, which bincode
+/// can't represent positionally).
+#[macro_export]
+macro_rules! transaction_status_boilerplate_cbor {
+    ($name:ident) => {
+        impl $crate::RichcmpEqualityOnly for $name {}
+        impl std::fmt::Display for $name {
+            fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+                write!(f, "{:?}", self)
+            }
+        }
+        $crate::pybytes_general_via_cbor!($name);
+        $crate::py_from_bytes_general_via_cbor!($name);
+        $crate::common_methods_default!($name);
+    };
+}

@@ -8,7 +8,7 @@ use solana_rent::{
 use solders_traits_core::transaction_status_boilerplate;
 
 /// Configuration of network rent.
-#[pyclass(module = "solders.account", subclass)]
+#[pyclass(module = "solders.rent", subclass)]
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Default, From, Into)]
 pub struct Rent(pub RentOriginal);
 

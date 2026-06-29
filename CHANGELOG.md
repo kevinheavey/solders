@@ -1,5 +1,17 @@
 # Changelog
 
+# Unreleased
+
+### Added
+
+- Restored pickle and `copy.deepcopy` support: a `__reduce__` method is now generated for all types using the `common_methods` family of macros (reconstructing via `from_bytes(bytes(self))`).
+- `copy.deepcopy` support for RPC response types (via a clone-based `__deepcopy__`; these don't support pickle because their bincode round-trip is broken by `skip_serializing_if`).
+
+### Fixed
+
+- `Rent` declared `module = "solders.account"` but is exported from `solders.rent`, which broke pickling.
+- `EncodedConfirmedTransactionWithStatusMeta` now serializes its bytes via CBOR instead of bincode. Its `bytes()`/`from_bytes` were broken (bincode can't represent the `#[serde(flatten)]` field), which also broke pickle and deepcopy for it.
+
 # [0.27.1] 2025-11-15
 
 ### Fixed
