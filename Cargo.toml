@@ -37,7 +37,7 @@ solders-rpc-config = { workspace = true }
 solders-rpc-errors = { workspace = true }
 solders-rpc-filter = { workspace = true }
 solders-rpc-requests = { workspace = true }
-solders-rpc-responses = { workspace = true, optional = true }
+solders-rpc-responses = { workspace = true }
 solders-signature = { workspace = true }
 solders-system-program = { workspace = true }
 solders-token = { workspace = true }
@@ -46,9 +46,8 @@ solders-transaction = { workspace = true }
 solders-transaction-status = { workspace = true }
 
 [features]
-default = ["litesvm", "ring"]
+default = ["litesvm"]
 litesvm = ["dep:solders-litesvm"]
-ring = ["dep:solders-rpc-responses"]
 
 [workspace]
 members = [".", "crates/*"]
