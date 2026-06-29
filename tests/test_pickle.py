@@ -11,11 +11,30 @@ from solders.message import Message
 from solders.pubkey import Pubkey
 from solders.rent import Rent
 from solders.rpc.requests import GetBalance
-from solders.rpc.responses import GetBalanceResp, GetBlockHeightResp, RpcResponseContext
+from solders.rpc.responses import (
+    GetBalanceResp,
+    GetBlockHeightResp,
+    GetTransactionResp,
+    RpcResponseContext,
+)
 from solders.signature import Signature
+from solders.transaction_status import EncodedConfirmedTransactionWithStatusMeta
+
+_TX_RESP = GetTransactionResp.from_json(
+    '{"jsonrpc":"2.0","result":{"slot":430,"transaction":{"message":{"accountKeys":'
+    '["3UVYmECPPMZSCqWKfENfuoTv51fTDTWicX9xmBD2euKe"],"header":'
+    '{"numReadonlySignedAccounts":0,"numReadonlyUnsignedAccounts":0,'
+    '"numRequiredSignatures":1},"instructions":[],"recentBlockhash":'
+    '"11111111111111111111111111111111"},"signatures":["5Ve"]},"meta":null,'
+    '"blockTime":null},"id":1}'
+)
+assert isinstance(_TX_RESP, GetTransactionResp)
+_ENCODED_TX_RESP = _TX_RESP.value
+assert isinstance(_ENCODED_TX_RESP, EncodedConfirmedTransactionWithStatusMeta)
 
 # A spread across the macro families: byte wrappers and complex types
-# (common_methods), a primitive, and a request (common_methods_ser_only).
+# (common_methods), a primitive, a request (common_methods_ser_only), and a
+# type with a #[serde(flatten)] field (serialized via CBOR, not bincode).
 objects: List[Any] = [
     Pubkey.new_unique(),
     Hash.default(),
@@ -26,6 +45,7 @@ objects: List[Any] = [
     Instruction(Pubkey.default(), b"data", []),
     Rent.default(),
     GetBalance(Pubkey.default()),
+    _ENCODED_TX_RESP,
 ]
 
 

@@ -10,7 +10,7 @@ use solders_signature::Signature;
 use solders_traits_core::{
     common_methods_default, handle_py_value_err, py_from_bytes_general_via_bincode,
     pybytes_general_via_bincode, richcmp_type_error, transaction_status_boilerplate,
-    RichcmpEqualityOnly,
+    transaction_status_boilerplate_cbor, RichcmpEqualityOnly,
 };
 use solders_transaction_confirmation_status::TransactionConfirmationStatus;
 use solders_transaction_error::{
@@ -1075,7 +1075,7 @@ pub struct EncodedConfirmedTransactionWithStatusMeta {
     pub block_time: Option<i64>,
 }
 
-transaction_status_boilerplate!(EncodedConfirmedTransactionWithStatusMeta);
+transaction_status_boilerplate_cbor!(EncodedConfirmedTransactionWithStatusMeta);
 
 #[richcmp_eq_only]
 #[common_methods]
