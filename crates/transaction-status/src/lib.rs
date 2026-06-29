@@ -1014,7 +1014,7 @@ transaction_status_boilerplate!(Reward);
 #[common_methods]
 #[pymethods]
 impl Reward {
-    #[pyo3(signature = (pubkey, lamports, post_balance, reward_type=None, commission=None))]
+    #[pyo3(signature = (pubkey, lamports, post_balance, reward_type=None, commission=None, commission_bps=None))]
     #[new]
     pub fn new(
         pubkey: Pubkey,
@@ -1022,6 +1022,7 @@ impl Reward {
         post_balance: u64, // Account balance in lamports after `lamports` was applied
         reward_type: Option<RewardType>,
         commission: Option<u8>,
+        commission_bps: Option<u16>,
     ) -> Self {
         RewardOriginal {
             pubkey: pubkey.to_string(),
@@ -1029,6 +1030,7 @@ impl Reward {
             post_balance,
             reward_type: reward_type.map(|r| r.into()),
             commission,
+            commission_bps,
         }
         .into()
     }
@@ -1057,6 +1059,11 @@ impl Reward {
     pub fn commission(&self) -> Option<u8> {
         self.0.commission
     }
+
+    #[getter]
+    pub fn commission_bps(&self) -> Option<u16> {
+        self.0.commission_bps
+    }
 }
 
 pub type Rewards = Vec<Reward>;
@@ -1073,6 +1080,9 @@ pub struct EncodedConfirmedTransactionWithStatusMeta {
     pub transaction: EncodedTransactionWithStatusMeta,
     #[pyo3(get)]
     pub block_time: Option<i64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[pyo3(get)]
+    pub transaction_index: Option<u32>,
 }
 
 transaction_status_boilerplate_cbor!(EncodedConfirmedTransactionWithStatusMeta);
@@ -1081,17 +1091,19 @@ transaction_status_boilerplate_cbor!(EncodedConfirmedTransactionWithStatusMeta);
 #[common_methods]
 #[pymethods]
 impl EncodedConfirmedTransactionWithStatusMeta {
-    #[pyo3(signature = (slot, transaction, block_time=None))]
+    #[pyo3(signature = (slot, transaction, block_time=None, transaction_index=None))]
     #[new]
     pub fn new(
         slot: u64,
         transaction: EncodedTransactionWithStatusMeta,
         block_time: Option<i64>,
+        transaction_index: Option<u32>,
     ) -> Self {
         Self {
             slot,
             transaction,
             block_time,
+            transaction_index,
         }
     }
 }
@@ -1176,6 +1188,10 @@ impl UiConfirmedBlock {
     #[getter]
     pub fn block_height(&self) -> Option<u64> {
         self.0.block_height
+    }
+    #[getter]
+    pub fn num_reward_partitions(&self) -> Option<u64> {
+        self.0.num_reward_partitions
     }
 }
 

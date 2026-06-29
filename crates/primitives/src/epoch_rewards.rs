@@ -122,6 +122,14 @@ impl EpochRewards {
     pub fn set_active(&mut self, val: bool) {
         self.0.active = val;
     }
+
+    /// Distribute rewards, increasing ``distributed_rewards`` by ``amount``.
+    ///
+    /// Args:
+    ///     amount (int): The amount of rewards to distribute.
+    pub fn distribute(&mut self, amount: u64) {
+        self.0.distribute(amount);
+    }
 }
 
 pub fn include_epoch_rewards(m: &Bound<'_, PyModule>) -> PyResult<()> {

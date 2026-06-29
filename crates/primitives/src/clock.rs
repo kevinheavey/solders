@@ -1,3 +1,6 @@
+// NUM_CONSECUTIVE_LEADER_SLOTS is deprecated upstream but kept for
+// backwards compatibility, so silence the deprecation warnings.
+#![allow(deprecated)]
 use derive_more::{From, Into};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};

@@ -26,6 +26,26 @@ impl StakeHistoryEntry {
         })
     }
 
+    /// Create a ``StakeHistoryEntry`` with the given effective stake.
+    #[staticmethod]
+    pub fn with_effective(effective: u64) -> Self {
+        Self(StakeHistoryEntryOriginal::with_effective(effective))
+    }
+
+    /// Create a ``StakeHistoryEntry`` with the given effective and activating stake.
+    #[staticmethod]
+    pub fn with_effective_and_activating(effective: u64, activating: u64) -> Self {
+        Self(StakeHistoryEntryOriginal::with_effective_and_activating(
+            effective, activating,
+        ))
+    }
+
+    /// Create a ``StakeHistoryEntry`` with the given deactivating stake.
+    #[staticmethod]
+    pub fn with_deactivating(deactivating: u64) -> Self {
+        Self(StakeHistoryEntryOriginal::with_deactivating(deactivating))
+    }
+
     /// effective stake at this epoch
     #[getter]
     pub fn effective(&self) -> u64 {
@@ -45,7 +65,7 @@ impl StakeHistoryEntry {
 
     #[setter]
     pub fn set_activating(&mut self, val: u64) {
-        self.0.effective = val;
+        self.0.activating = val;
     }
 
     /// requested to be cooled down, not fully deactivated yet
@@ -56,7 +76,7 @@ impl StakeHistoryEntry {
 
     #[setter]
     pub fn set_deactivating(&mut self, val: u64) {
-        self.0.effective = val;
+        self.0.deactivating = val;
     }
 }
 

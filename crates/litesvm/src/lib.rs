@@ -127,6 +127,25 @@ impl FeatureSet {
         let to_set = self.0.inactive_mut();
         *to_set = inner;
     }
+
+    /// Activate a feature at the given slot.
+    ///
+    /// Args:
+    ///     feature_id (Pubkey): The feature ID.
+    ///     slot (int): The slot at which to activate the feature.
+    ///
+    pub fn activate(&mut self, feature_id: Pubkey, slot: u64) {
+        self.0.activate(&feature_id.0, slot);
+    }
+
+    /// Deactivate a feature.
+    ///
+    /// Args:
+    ///     feature_id (Pubkey): The feature ID.
+    ///
+    pub fn deactivate(&mut self, feature_id: Pubkey) {
+        self.0.deactivate(&feature_id.0);
+    }
 }
 
 #[pyclass(module = "solders.litesvm", subclass)]
@@ -186,7 +205,36 @@ impl LiteSVM {
     }
 
     pub fn set_precompiles(&mut self) {
-        self.0.set_precompiles();
+        let svm = std::mem::take(&mut self.0);
+        self.0 = svm.with_precompiles();
+    }
+
+    pub fn set_feature_set(&mut self, feature_set: &FeatureSet) {
+        let svm = std::mem::take(&mut self.0);
+        self.0 = svm.with_feature_set(feature_set.0.clone());
+    }
+
+    /// FeatureSet: The mainnet feature set.
+    #[staticmethod]
+    pub fn mainnet_feature_set() -> FeatureSet {
+        FeatureSet(LiteSVMOriginal::mainnet_feature_set())
+    }
+
+    /// Activate the mainnet feature set.
+    pub fn set_mainnet_features(&mut self) {
+        let svm = std::mem::take(&mut self.0);
+        self.0 = svm.with_mainnet_features();
+    }
+
+    /// Add on-chain feature gate accounts for the currently active feature set.
+    pub fn set_feature_accounts(&mut self) {
+        let svm = std::mem::take(&mut self.0);
+        self.0 = svm.with_feature_accounts();
+    }
+
+    /// bool: Whether signature verification is enabled.
+    pub fn get_sigverify(&self) -> bool {
+        self.0.get_sigverify()
     }
 
     pub fn minimum_balance_for_rent_exemption(&self, data_len: usize) -> u64 {
@@ -221,6 +269,12 @@ impl LiteSVM {
         self.0.airdrop(&pubkey.0, lamports).into()
     }
 
+    /// Pubkey: The pubkey of the internal airdrop account.
+    #[getter]
+    pub fn airdrop_pubkey(&self) -> Pubkey {
+        Pubkey(self.0.airdrop_pubkey())
+    }
+
     pub fn add_program_from_file(&mut self, program_id: Pubkey, path: PathBuf) -> PyResult<()> {
         let res = self
             .0
@@ -232,6 +286,18 @@ impl LiteSVM {
     pub fn add_program(&mut self, program_id: Pubkey, program_bytes: &[u8]) -> PyResult<()> {
         self.0
             .add_program(program_id.0, program_bytes)
+            .map_err(to_py_err)
+    }
+
+    /// Adds an SBF program to the test environment, specifying the loader.
+    pub fn add_program_with_loader(
+        &mut self,
+        program_id: Pubkey,
+        program_bytes: &[u8],
+        loader_id: Pubkey,
+    ) -> PyResult<()> {
+        self.0
+            .add_program_with_loader(program_id.0, program_bytes, loader_id.0)
             .map_err(to_py_err)
     }
 

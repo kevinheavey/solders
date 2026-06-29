@@ -1,14 +1,42 @@
 # Changelog
 
-# Unreleased
+# [0.28.0] - 2026-06-28
+
+### Changed
+
+- Update litesvm to 0.13 and bump Solana deps as far as litesvm 0.13 allows: `agave-feature-set`/`agave-precompiles`, `solana-compute-budget`, `solana-hash`, `solana-transaction-context` to 4 and `solana-system-interface` to 3 (crates litesvm still pins to the v3 line, e.g. `solana-message`/`solana-transaction`/`solana-account`, stay there)
+- Bump the (litesvm-independent) client crates to 4: `solana-rpc-client-api`, `solana-rpc-client-types`, `solana-account-decoder-client-types`, `solana-transaction-status-client-types`, and `solana-reward-info` to 5 (the version aligned with that set, not the newer 6.x)
+- `ComputeBudget` constructor now takes `simd_0268_active` and `simd_0339_active` flags (was `simd_0296_active`) to match `solana-compute-budget` 4
 
 ### Added
 
+- `commission_bps` on `Reward` and `RpcInflationReward`, `transaction_index` on `RpcConfirmedTransactionStatusWithSignature`, and `client_id` on `RpcContactInfo`, following the upstream v4 client types
+- Support for the `getStakeMinimumDelegation` RPC method (`GetStakeMinimumDelegation` request and `GetStakeMinimumDelegationResp` response)
+- `ComputeBudget`: getters/setters for the new `solana-compute-budget` 4 cost fields (`alt_bn128_g2_addition_cost`, `alt_bn128_g2_multiplication_cost`, and the `bls12_381_*` set)
+- `transaction_index` on `EncodedConfirmedTransactionWithStatusMeta`, following `solana-transaction-status-client-types` 4
+- `solders.system_program.create_account_allow_prefund` (and `decode_create_account_allow_prefund` / `CreateAccountAllowPrefundParams`), wrapping the new `solana-system-interface` instruction
+- `LiteSVM.with_feature_set` to apply a `FeatureSet` to the VM (the `FeatureSet` type was exposed but could not previously be applied)
+- `LiteSVM.with_mainnet_features` / `LiteSVM.mainnet_feature_set` / `LiteSVM.get_sigverify`
+- `TransactionMetadata.fee` and `TransactionMetadata.pretty_logs`
+- `FeatureSet.activate` / `FeatureSet.deactivate`
+- `Rent.with_lamports_per_byte` and the `DEFAULT_LAMPORTS_PER_BYTE` constant (the deprecated rent accessors are kept)
+- `EpochRewards.distribute`
+- `StakeHistoryEntry.with_effective` / `with_effective_and_activating` / `with_deactivating`
+- `LiteSVM.airdrop_pubkey`, `LiteSVM.with_feature_accounts`, and `LiteSVM.add_program_with_loader`
+- A getter for `UiConfirmedBlock.num_reward_partitions` (the constructor already accepted it but it could not be read back)
+- `solders.system_program.upgrade_nonce_account` (and `decode_upgrade_nonce_account` / `UpgradeNonceAccountParams`)
+- musllinux wheels for `aarch64`
 - Restored pickle and `copy.deepcopy` support: a `__reduce__` method is now generated for all types using the `common_methods` family of macros (reconstructing via `from_bytes(bytes(self))`).
 - `copy.deepcopy` support for RPC response types (via a clone-based `__deepcopy__`; these don't support pickle because their bincode round-trip is broken by `skip_serializing_if`).
 
+### Removed
+
+- `GetStakeActivation` request: the `getStakeActivation` RPC method has been removed from Agave and is no longer served by validators
+- 32-bit wheels (`i686` and `armv7`): the Solana v4 `solana-program-runtime` no longer compiles on 32-bit targets
+
 ### Fixed
 
+- `StakeHistoryEntry`: the `activating` and `deactivating` setters wrote to the `effective` field instead of their own
 - `Rent` declared `module = "solders.account"` but is exported from `solders.rent`, which broke pickling.
 - `EncodedConfirmedTransactionWithStatusMeta` now serializes its bytes via CBOR instead of bincode. Its `bytes()`/`from_bytes` were broken (bincode can't represent the `#[serde(flatten)]` field), which also broke pickle and deepcopy for it.
 

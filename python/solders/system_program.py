@@ -3,12 +3,22 @@ from typing_extensions import Final, TypedDict
 
 from .solders import SYSTEM_PROGRAM_ID as _ID
 from .solders import advance_nonce_account as _advance_nonce_account
+from .solders import upgrade_nonce_account as _upgrade_nonce_account
+from .solders import (
+    decode_upgrade_nonce_account as _decode_upgrade_nonce_account,
+)
 from .solders import allocate as _allocate
 from .solders import allocate_with_seed as _allocate_with_seed
 from .solders import assign as _assign
 from .solders import assign_with_seed as _assign_with_seed
 from .solders import authorize_nonce_account as _authorize_nonce_account
 from .solders import create_account as _create_account
+from .solders import (
+    create_account_allow_prefund as _create_account_allow_prefund,
+)
+from .solders import (
+    decode_create_account_allow_prefund as _decode_create_account_allow_prefund,
+)
 from .solders import (
     create_account_with_seed as _create_account_with_seed,
 )
@@ -121,6 +131,71 @@ def decode_create_account(instruction: Instruction) -> CreateAccountParams:
         CreateAccountParams: The params used to create the instruction.
     """
     return cast(CreateAccountParams, _decode_create_account(instruction))
+
+
+class CreateAccountAllowPrefundParams(TypedDict):
+    """Create account (allow prefund) system transaction params."""
+
+    new_account: Pubkey
+    """Pubkey of the created account."""
+    payer: Optional[Pubkey]
+    """The account that will transfer lamports to the created account.
+    Use ``None`` to create the account without a payer (the destination must
+    already hold the required lamports)."""
+    lamports: int
+    """Amount of lamports to transfer to the created account.
+    Ignored when ``payer`` is ``None``."""
+    space: int
+    """Amount of space in bytes to allocate to the created account."""
+    owner: Pubkey
+    """Pubkey of the program to assign as the owner of the created account."""
+
+
+def create_account_allow_prefund(
+    params: CreateAccountAllowPrefundParams,
+) -> Instruction:
+    """Generate an instruction that creates a new account, allowing it to be prefunded.
+
+    Unlike :func:`create_account`, the destination account is allowed to already
+    hold lamports, and the funding payer is optional.
+
+    Args:
+        params: The CreateAccountAllowPrefund params.
+
+    Example:
+        >>> from solders.pubkey import Pubkey
+        >>> from solders.system_program import create_account_allow_prefund, CreateAccountAllowPrefundParams
+        >>> payer = Pubkey.new_unique()
+        >>> new_account = Pubkey.new_unique()
+        >>> program_id = Pubkey.new_unique()
+        >>> instruction = create_account_allow_prefund(
+        ...     CreateAccountAllowPrefundParams(
+        ...         new_account=new_account, payer=payer,
+        ...         lamports=1, space=1, owner=program_id)
+        ... )
+        >>> type(instruction)
+        <class 'solders.instruction.Instruction'>
+    Returns:
+        Instruction: The instruction to create the account.
+    """  # noqa: E501
+    return _create_account_allow_prefund(dict(params))
+
+
+def decode_create_account_allow_prefund(
+    instruction: Instruction,
+) -> CreateAccountAllowPrefundParams:
+    """Decode a create-account-allow-prefund instruction and retrieve the params.
+
+    Args:
+        instruction (Instruction): The CreateAccountAllowPrefund instruction.
+
+    Returns:
+        CreateAccountAllowPrefundParams: The params used to create the instruction.
+    """
+    return cast(
+        CreateAccountAllowPrefundParams,
+        _decode_create_account_allow_prefund(instruction),
+    )
 
 
 class CreateAccountWithSeedParams(TypedDict):
@@ -492,6 +567,37 @@ def decode_advance_nonce_account(instruction: Instruction) -> AdvanceNonceAccoun
     return cast(AdvanceNonceAccountParams, _decode_advance_nonce_account(instruction))
 
 
+class UpgradeNonceAccountParams(TypedDict):
+    """Upgrade nonce account system instruction params."""
+
+    nonce_pubkey: Pubkey
+    """Nonce account."""
+
+
+def upgrade_nonce_account(params: UpgradeNonceAccountParams) -> Instruction:
+    """Generate an instruction to upgrade a legacy nonce account.
+
+    Args:
+        params (UpgradeNonceAccountParams): The UpgradeNonceAccount params.
+
+    Returns:
+        Instruction: The UpgradeNonceAccount instruction.
+    """
+    return _upgrade_nonce_account(dict(params))
+
+
+def decode_upgrade_nonce_account(instruction: Instruction) -> UpgradeNonceAccountParams:
+    """Decode an upgrade nonce account instruction and retrieve the instruction params.
+
+    Args:
+        instruction (Instruction): The UpgradeNonceAccount instruction.
+
+    Returns:
+        UpgradeNonceAccountParams: The params used to create the instruction.
+    """
+    return cast(UpgradeNonceAccountParams, _decode_upgrade_nonce_account(instruction))
+
+
 class WithdrawNonceAccountParams(TypedDict):
     """Withdraw nonce account system transaction params."""
 
@@ -698,6 +804,9 @@ __all__ = [
     "CreateAccountParams",
     "create_account",
     "decode_create_account",
+    "CreateAccountAllowPrefundParams",
+    "create_account_allow_prefund",
+    "decode_create_account_allow_prefund",
     "CreateAccountWithSeedParams",
     "create_account_with_seed",
     "decode_create_account_with_seed",
@@ -725,6 +834,9 @@ __all__ = [
     "AdvanceNonceAccountParams",
     "advance_nonce_account",
     "decode_advance_nonce_account",
+    "UpgradeNonceAccountParams",
+    "upgrade_nonce_account",
+    "decode_upgrade_nonce_account",
     "WithdrawNonceAccountParams",
     "withdraw_nonce_account",
     "decode_withdraw_nonce_account",

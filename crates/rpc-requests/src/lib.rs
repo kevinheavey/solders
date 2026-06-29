@@ -28,7 +28,7 @@ use solders_rpc_request_params::{
     BlockSubscribeParams, GetAccountInfoParams, GetBalanceParams, GetBlockParams,
     GetInflationRewardParams, GetLargestAccountsParams, GetLeaderScheduleParams,
     GetMultipleAccountsParams, GetProgramAccountsParams, GetSignatureStatusesParams,
-    GetSignaturesForAddressParams, GetStakeActivationParams, GetTokenAccountsByDelegateParams,
+    GetSignaturesForAddressParams, GetTokenAccountsByDelegateParams,
     GetTransactionParams, IsBlockhashValidParams, LogsSubscribeParams, RequestAirdropParams,
     SendTransactionParams, SignatureSubscribeParams, SimulateTransactionParams,
 };
@@ -1504,56 +1504,50 @@ impl GetSlotLeaders {
 
 request_boilerplate!(GetSlotLeaders);
 
-/// A ``getStakeActivation`` request.
+/// A ``getStakeMinimumDelegation`` request.
 ///
 /// Args:
-///     account (Pubkey): The stake account to query.
-///     config (Optional[RpcEpochConfig]): Extra configuration.
+///     config (Optional[RpcContextConfig]): Extra configuration.
 ///     id (Optional[int]): Request ID.
 ///
 /// Example:
-///     >>> from solders.rpc.requests import GetStakeActivation
-///     >>> from solders.rpc.config import RpcEpochConfig
-///     >>> from solders.pubkey import Pubkey
-///     >>> config = RpcEpochConfig(epoch=1234)
-///     >>> GetStakeActivation(Pubkey.default(), config).to_json()
-///     '{"method":"getStakeActivation","jsonrpc":"2.0","id":0,"params":["11111111111111111111111111111111",{"epoch":1234,"minContextSlot":null}]}'
+///     >>> from solders.rpc.requests import GetStakeMinimumDelegation
+///     >>> from solders.rpc.config import RpcContextConfig
+///     >>> config = RpcContextConfig(min_context_slot=123)
+///     >>> GetStakeMinimumDelegation(config).to_json()
+///     '{"method":"getStakeMinimumDelegation","jsonrpc":"2.0","id":0,"params":[{"minContextSlot":123}]}'
 ///
 #[pyclass(module = "solders.rpc.requests")]
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
-pub struct GetStakeActivation {
+pub struct GetStakeMinimumDelegation {
     #[serde(flatten)]
     base: RequestBase,
-    params: GetStakeActivationParams,
+    #[serde(default)]
+    params: Option<(RpcContextConfig,)>,
 }
 
 #[richcmp_eq_only]
 #[common_methods_ser_only]
 #[rpc_id_getter]
 #[pymethods]
-impl GetStakeActivation {
+impl GetStakeMinimumDelegation {
     #[new]
-    #[pyo3(signature = (account, config=None, id=None))]
-    fn new(account: Pubkey, config: Option<RpcEpochConfig>, id: Option<u64>) -> Self {
-        let params = GetStakeActivationParams(account, config);
+    #[pyo3(signature = (config=None, id=None))]
+    fn new(config: Option<RpcContextConfig>, id: Option<u64>) -> Self {
+        let params = config.map(|c| (c,));
         let base = RequestBase::new(id);
         Self { base, params }
     }
 
-    /// Pubkey: The stake account to query.
+    /// Optional[RpcContextConfig]: Extra configuration.
     #[getter]
-    pub fn account(&self) -> Pubkey {
-        self.params.0
-    }
-
-    /// Optional[RpcEpochConfig]: Extra configuration.
-    #[getter]
-    pub fn config(&self) -> Option<RpcEpochConfig> {
-        self.params.1.clone()
+    pub fn config(&self) -> Option<RpcContextConfig> {
+        self.params.clone().map(|p| p.0)
     }
 }
 
-request_boilerplate!(GetStakeActivation);
+request_boilerplate!(GetStakeMinimumDelegation);
 
 /// A ``getSupply`` request.
 ///
@@ -2853,7 +2847,7 @@ pyunion!(
     GetSlot,
     GetSlotLeader,
     GetSlotLeaders,
-    GetStakeActivation,
+    GetStakeMinimumDelegation,
     GetSupply,
     GetTokenAccountBalance,
     GetTokenAccountsByDelegate,
@@ -2930,7 +2924,7 @@ pub fn include_requests(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<GetSlot>()?;
     m.add_class::<GetSlotLeader>()?;
     m.add_class::<GetSlotLeaders>()?;
-    m.add_class::<GetStakeActivation>()?;
+    m.add_class::<GetStakeMinimumDelegation>()?;
     m.add_class::<GetSupply>()?;
     m.add_class::<GetTokenAccountBalance>()?;
     m.add_class::<GetTokenAccountsByDelegate>()?;

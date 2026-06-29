@@ -56,6 +56,36 @@ def test_create_account() -> None:
     assert sp.decode_create_account(sp.create_account(params)) == params
 
 
+def test_create_account_allow_prefund() -> None:
+    """Test create account allow prefund, with and without a payer."""
+    params = sp.CreateAccountAllowPrefundParams(
+        new_account=Keypair().pubkey(),
+        payer=Keypair().pubkey(),
+        lamports=123,
+        space=1,
+        owner=Pubkey.default(),
+    )
+    assert (
+        sp.decode_create_account_allow_prefund(
+            sp.create_account_allow_prefund(params)
+        )
+        == params
+    )
+    no_payer = sp.CreateAccountAllowPrefundParams(
+        new_account=Keypair().pubkey(),
+        payer=None,
+        lamports=0,
+        space=1,
+        owner=Pubkey.default(),
+    )
+    assert (
+        sp.decode_create_account_allow_prefund(
+            sp.create_account_allow_prefund(no_payer)
+        )
+        == no_payer
+    )
+
+
 def test_transfer() -> None:
     """Test creating a transaction for transfer."""
     params = sp.TransferParams(
@@ -150,6 +180,11 @@ def test_advance_nonce_account() -> None:
         nonce_pubkey=Keypair().pubkey(), authorized_pubkey=Keypair().pubkey()
     )
     assert sp.decode_advance_nonce_account(sp.advance_nonce_account(params)) == params
+
+
+def test_upgrade_nonce_account() -> None:
+    params = sp.UpgradeNonceAccountParams(nonce_pubkey=Keypair().pubkey())
+    assert sp.decode_upgrade_nonce_account(sp.upgrade_nonce_account(params)) == params
 
 
 def test_withdraw_nonce_account() -> None:

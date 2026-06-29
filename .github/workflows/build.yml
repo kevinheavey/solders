@@ -106,7 +106,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [x86_64, i686]
+        target: [x86_64]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -141,44 +141,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: wheels-linux-matrix-${{ matrix.target }}
-          path: dist
-
-  linux-i686:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: ${{ env.python_version }}
-          architecture: x64
-      - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          profile: minimal
-          default: true
-      - name: Build Wheels
-        uses: messense/maturin-action@v1
-        with:
-          target: i686
-          manylinux: auto
-          args: --release --no-default-features -F ring --out dist
-          maturin-version: ${{ env.maturin_version }}
-          before-script-linux: |
-            # If we're running on rhel centos, install needed packages.
-            if command -v yum &> /dev/null; then
-                yum update -y && yum install -y perl-core libatomic
-
-                # If we're running on i686 we need to symlink libatomic
-                # in order to build openssl with -latomic flag.
-                if [[ ! -d "/usr/lib64" ]]; then
-                    ln -s /usr/lib/libatomic.so.1 /usr/lib/libatomic.so
-                fi
-            fi
-      - name: Upload wheels
-        uses: actions/upload-artifact@v4
-        with:
-          name: wheels-linux-i686
           path: dist
 
   musllinux-x86_64:
@@ -218,7 +180,7 @@ jobs:
           name: wheels-musllinux-x86_64
           path: dist
 
-  musllinux-i686:
+  musllinux-aarch64:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -237,14 +199,14 @@ jobs:
       - name: Build wheels
         uses: messense/maturin-action@v1
         with:
-          target: i686-unknown-linux-musl
+          target: aarch64-unknown-linux-musl
           manylinux: musllinux_1_2
           args: --release --no-default-features -F ring --out dist
           maturin-version: ${{ env.maturin_version }}
       - name: Upload wheels
         uses: actions/upload-artifact@v4
         with:
-          name: wheels-musllinux-i686
+          name: wheels-musllinux-aarch64
           path: dist
 
   linux-aarch64:
@@ -271,32 +233,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: wheels-linux-aarch64
-          path: dist
-
-  linux-armv7:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: ${{ env.python_version }}
-      - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          profile: minimal
-          default: true
-      - name: Build Wheels
-        uses: messense/maturin-action@v1
-        with:
-          target: armv7
-          manylinux: auto
-          args: --release --no-default-features -F ring --out dist
-          maturin-version: ${{ env.maturin_version }}
-      - name: Upload wheels
-        uses: actions/upload-artifact@v4
-        with:
-          name: wheels-linux-armv7
           path: dist
 
   sdist:

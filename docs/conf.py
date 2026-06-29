@@ -22,7 +22,7 @@ copyright = "2022, Kevin Heavey"
 author = "Kevin Heavey"
 
 # The full version, including alpha/beta/rc tags
-release = "0.27.1"
+release = "0.28.0"
 
 
 # -- General configuration ---------------------------------------------------
