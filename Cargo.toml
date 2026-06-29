@@ -100,7 +100,6 @@ solana-program-pack = "3"
 solana-pubkey = { version = "3", features = ["curve25519"] }
 solana-rent = "3"
 solana-reward-info = "5"
-solana-rpc-client-api = "4"
 solana-rpc-client-types = "4"
 solana-sanitize = "3"
 solana-sdk-ids = "3"

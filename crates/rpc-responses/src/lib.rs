@@ -12,41 +12,42 @@ use serde::{de::Error, Deserialize, Serialize, Serializer};
 use serde_json::Value;
 use serde_with::{serde_as, DisplayFromStr, FromInto, OneOrMany, TryFromInto};
 use solana_account_decoder_client_types::UiAccount;
-use solana_rpc_client_api::{
-    custom_error::{
-        JSON_RPC_SCAN_ERROR, JSON_RPC_SERVER_ERROR_BLOCK_CLEANED_UP,
-        JSON_RPC_SERVER_ERROR_BLOCK_NOT_AVAILABLE,
-        JSON_RPC_SERVER_ERROR_BLOCK_STATUS_NOT_AVAILABLE_YET,
-        JSON_RPC_SERVER_ERROR_KEY_EXCLUDED_FROM_SECONDARY_INDEX,
-        JSON_RPC_SERVER_ERROR_LONG_TERM_STORAGE_SLOT_SKIPPED,
-        JSON_RPC_SERVER_ERROR_MIN_CONTEXT_SLOT_NOT_REACHED, JSON_RPC_SERVER_ERROR_NODE_UNHEALTHY,
-        JSON_RPC_SERVER_ERROR_NO_SNAPSHOT,
-        JSON_RPC_SERVER_ERROR_SEND_TRANSACTION_PREFLIGHT_FAILURE,
-        JSON_RPC_SERVER_ERROR_SLOT_SKIPPED,
-        JSON_RPC_SERVER_ERROR_TRANSACTION_HISTORY_NOT_AVAILABLE,
-        JSON_RPC_SERVER_ERROR_TRANSACTION_PRECOMPILE_VERIFICATION_FAILURE,
-        JSON_RPC_SERVER_ERROR_TRANSACTION_SIGNATURE_LEN_MISMATCH,
-        JSON_RPC_SERVER_ERROR_TRANSACTION_SIGNATURE_VERIFICATION_FAILURE,
-        JSON_RPC_SERVER_ERROR_UNSUPPORTED_TRANSACTION_VERSION,
-    },
-    response::{
-        RpcAccountBalance as RpcAccountBalanceOriginal,
-        RpcBlockCommitment as RpcBlockCommitmentOriginal,
-        RpcBlockProduction as RpcBlockProductionOriginal,
-        RpcBlockProductionRange as RpcBlockProductionRangeOriginal,
-        RpcBlockUpdate as RpcBlockUpdateOriginal,
-        RpcBlockUpdateError as RpcBlockUpdateErrorOriginal,
-        RpcContactInfo as RpcContactInfoOriginal,
-        RpcInflationGovernor as RpcInflationGovernorOriginal,
-        RpcInflationRate as RpcInflationRateOriginal,
-        RpcInflationReward as RpcInflationRewardOriginal,
-        RpcLogsResponse as RpcLogsResponseOriginal, RpcPerfSample as RpcPerfSampleOriginal,
-        RpcPrioritizationFee as RpcPrioritizationFeeOriginal,
-        RpcSnapshotSlotInfo as RpcSnapshotSlotInfoOriginal, RpcSupply as RpcSupplyOriginal,
-        RpcVote as RpcVoteOriginal, SlotInfo as SlotInfoOriginal,
-        SlotTransactionStats as SlotTransactionStatsOriginal, SlotUpdate as SlotUpdateOriginal,
-    },
+use solana_rpc_client_types::response::{
+    RpcAccountBalance as RpcAccountBalanceOriginal,
+    RpcBlockCommitment as RpcBlockCommitmentOriginal,
+    RpcBlockProduction as RpcBlockProductionOriginal,
+    RpcBlockProductionRange as RpcBlockProductionRangeOriginal,
+    RpcBlockUpdate as RpcBlockUpdateOriginal, RpcBlockUpdateError as RpcBlockUpdateErrorOriginal,
+    RpcContactInfo as RpcContactInfoOriginal, RpcInflationGovernor as RpcInflationGovernorOriginal,
+    RpcInflationRate as RpcInflationRateOriginal, RpcInflationReward as RpcInflationRewardOriginal,
+    RpcLogsResponse as RpcLogsResponseOriginal, RpcPerfSample as RpcPerfSampleOriginal,
+    RpcPrioritizationFee as RpcPrioritizationFeeOriginal,
+    RpcSnapshotSlotInfo as RpcSnapshotSlotInfoOriginal, RpcSupply as RpcSupplyOriginal,
+    RpcVote as RpcVoteOriginal, SlotInfo as SlotInfoOriginal,
+    SlotTransactionStats as SlotTransactionStatsOriginal, SlotUpdate as SlotUpdateOriginal,
 };
+
+// JSON-RPC server error codes. These previously came from
+// `solana_rpc_client_api::custom_error`, but that crate pulls in reqwest /
+// rustls / ring (the full HTTP client) purely for type definitions. We define
+// the (stable) error codes here instead and depend only on the lightweight,
+// ring-free `solana-rpc-client-types`.
+const JSON_RPC_SERVER_ERROR_BLOCK_CLEANED_UP: i64 = -32001;
+const JSON_RPC_SERVER_ERROR_SEND_TRANSACTION_PREFLIGHT_FAILURE: i64 = -32002;
+const JSON_RPC_SERVER_ERROR_TRANSACTION_SIGNATURE_VERIFICATION_FAILURE: i64 = -32003;
+const JSON_RPC_SERVER_ERROR_BLOCK_NOT_AVAILABLE: i64 = -32004;
+const JSON_RPC_SERVER_ERROR_NODE_UNHEALTHY: i64 = -32005;
+const JSON_RPC_SERVER_ERROR_TRANSACTION_PRECOMPILE_VERIFICATION_FAILURE: i64 = -32006;
+const JSON_RPC_SERVER_ERROR_SLOT_SKIPPED: i64 = -32007;
+const JSON_RPC_SERVER_ERROR_NO_SNAPSHOT: i64 = -32008;
+const JSON_RPC_SERVER_ERROR_LONG_TERM_STORAGE_SLOT_SKIPPED: i64 = -32009;
+const JSON_RPC_SERVER_ERROR_KEY_EXCLUDED_FROM_SECONDARY_INDEX: i64 = -32010;
+const JSON_RPC_SERVER_ERROR_TRANSACTION_HISTORY_NOT_AVAILABLE: i64 = -32011;
+const JSON_RPC_SCAN_ERROR: i64 = -32012;
+const JSON_RPC_SERVER_ERROR_TRANSACTION_SIGNATURE_LEN_MISMATCH: i64 = -32013;
+const JSON_RPC_SERVER_ERROR_BLOCK_STATUS_NOT_AVAILABLE_YET: i64 = -32014;
+const JSON_RPC_SERVER_ERROR_UNSUPPORTED_TRANSACTION_VERSION: i64 = -32015;
+const JSON_RPC_SERVER_ERROR_MIN_CONTEXT_SLOT_NOT_REACHED: i64 = -32016;
 use solana_transaction_error::TransactionError as TransactionErrorOriginal;
 use solana_transaction_status_client_types::TransactionStatus as TransactionStatusOriginal;
 use solders_account::{Account, AccountJSON};
