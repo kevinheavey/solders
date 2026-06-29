@@ -25,13 +25,14 @@
 - `LiteSVM.airdrop_pubkey`, `LiteSVM.with_feature_accounts`, and `LiteSVM.add_program_with_loader`
 - A getter for `UiConfirmedBlock.num_reward_partitions` (the constructor already accepted it but it could not be read back)
 - `solders.system_program.upgrade_nonce_account` (and `decode_upgrade_nonce_account` / `UpgradeNonceAccountParams`)
-- musllinux wheels for `aarch64` and `armv7`
+- musllinux wheels for `aarch64`
 - Restored pickle and `copy.deepcopy` support: a `__reduce__` method is now generated for all types using the `common_methods` family of macros (reconstructing via `from_bytes(bytes(self))`).
 - `copy.deepcopy` support for RPC response types (via a clone-based `__deepcopy__`; these don't support pickle because their bincode round-trip is broken by `skip_serializing_if`).
 
 ### Removed
 
 - `GetStakeActivation` request: the `getStakeActivation` RPC method has been removed from Agave and is no longer served by validators
+- 32-bit wheels (`i686` and `armv7`): the Solana v4 `solana-program-runtime` no longer compiles on 32-bit targets
 
 ### Fixed
 
