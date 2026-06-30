@@ -37,7 +37,7 @@ solders-rpc-config = { workspace = true }
 solders-rpc-errors = { workspace = true }
 solders-rpc-filter = { workspace = true }
 solders-rpc-requests = { workspace = true }
-solders-rpc-responses = { workspace = true, optional = true }
+solders-rpc-responses = { workspace = true }
 solders-signature = { workspace = true }
 solders-system-program = { workspace = true }
 solders-token = { workspace = true }
@@ -46,9 +46,8 @@ solders-transaction = { workspace = true }
 solders-transaction-status = { workspace = true }
 
 [features]
-default = ["litesvm", "ring"]
+default = ["litesvm"]
 litesvm = ["dep:solders-litesvm"]
-ring = ["dep:solders-rpc-responses"]
 
 [workspace]
 members = [".", "crates/*"]
@@ -100,7 +99,6 @@ solana-program-pack = "3"
 solana-pubkey = { version = "3", features = ["curve25519"] }
 solana-rent = "3"
 solana-reward-info = "5"
-solana-rpc-client-api = "4"
 solana-rpc-client-types = "4"
 solana-sanitize = "3"
 solana-sdk-ids = "3"

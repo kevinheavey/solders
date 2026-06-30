@@ -8,7 +8,6 @@ pub(crate) fn include_rpc(m: &Bound<'_, PyModule>) -> PyResult<()> {
     include_config(m)?;
     include_requests(m)?;
     include_filter(m)?;
-    #[cfg(feature = "ring")]
     solders_rpc_responses::include_responses(m)?;
     include_errors(m)?;
     Ok(())
