@@ -1,5 +1,5 @@
 [build-system]
-requires = ["maturin>=1.8.1,<1.9"]
+requires = ["maturin>=1.14.1,<1.15"]
 build-backend = "maturin"
 
 
@@ -31,7 +31,7 @@ dev = [
     "based58==0.1.1",
     "bumpversion==0.6.0",
     "jsonalias==0.1.1",
-    "maturin>=1.8.1,<1.9",
+    "maturin>=1.14.1,<1.15",
     "mnemonic==0.20",
     "mypy==0.991",
     "myst-parser>=1.0.0,<2.0.0",
