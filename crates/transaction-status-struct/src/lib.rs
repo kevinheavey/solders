@@ -11,7 +11,7 @@ use solana_transaction_status_client_types::TransactionStatus as TransactionStat
 use solders_macros::{common_methods, richcmp_eq_only};
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
-#[pyclass(module = "solders.transaction_status", subclass)]
+#[pyclass(from_py_object, module = "solders.transaction_status", subclass)]
 pub struct TransactionStatus(pub TransactionStatusOriginal);
 
 transaction_status_boilerplate!(TransactionStatus);

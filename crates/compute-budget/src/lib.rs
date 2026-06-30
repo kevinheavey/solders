@@ -33,7 +33,7 @@ pub fn set_compute_unit_price(micro_lamports: u64) -> Instruction {
     ComputeBudgetInstruction::set_compute_unit_price(micro_lamports).into()
 }
 
-#[pyclass(module = "solders.compute_budget", subclass)]
+#[pyclass(from_py_object, module = "solders.compute_budget", subclass)]
 #[derive(Debug, Clone, PartialEq)]
 pub struct ComputeBudget(pub ComputeBudgetOriginal);
 

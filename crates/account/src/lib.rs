@@ -28,7 +28,7 @@ use solders_account_decoder::ParsedAccount;
 #[serde_as]
 #[derive(Serialize, Deserialize, PartialEq, Eq, Clone, Default, Debug)]
 #[serde(rename_all = "camelCase")]
-#[pyclass(module = "solders.account", subclass)]
+#[pyclass(from_py_object, module = "solders.account", subclass)]
 pub struct Account {
     /// lamports in the account
     #[pyo3(get)]
@@ -173,7 +173,7 @@ impl From<Account> for UiAccount {
 #[serde_as]
 #[derive(Deserialize, Serialize, PartialEq, Eq, Clone, Debug)]
 #[serde(rename_all = "camelCase")]
-#[pyclass(module = "solders.account", subclass)]
+#[pyclass(from_py_object, module = "solders.account", subclass)]
 pub struct AccountJSON {
     /// int: Lamports in the account.
     #[pyo3(get)]

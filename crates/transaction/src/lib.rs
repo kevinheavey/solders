@@ -38,7 +38,7 @@ use solders_signature::{originals_into_solders, solders_into_originals, Signatur
 ///     message (Message | MessageV0): The message to sign.
 ///     keypairs (Sequence[Keypair | Presigner]): The keypairs that are to sign the transaction.
 #[derive(Debug, PartialEq, Default, Eq, Clone, Serialize, Deserialize, From, Into)]
-#[pyclass(module = "solders.transaction", subclass)]
+#[pyclass(from_py_object, module = "solders.transaction", subclass)]
 pub struct VersionedTransaction(pub VersionedTransactionOriginal);
 
 impl From<Transaction> for VersionedTransaction {
@@ -175,7 +175,7 @@ impl VersionedTransaction {
     }
 }
 
-#[pyclass(module = "solders.transaction", subclass)]
+#[pyclass(from_py_object, module = "solders.transaction", subclass)]
 #[derive(Debug, PartialEq, Default, Eq, Clone, Serialize, Deserialize, From, Into)]
 /// An atomically-commited sequence of instructions.
 ///
@@ -705,7 +705,7 @@ impl AsRef<TransactionOriginal> for Transaction {
 /// Transaction version type that serializes to the string "legacy"
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-#[pyclass(module = "solders.transaction")]
+#[pyclass(from_py_object, module = "solders.transaction")]
 pub enum Legacy {
     Legacy,
 }

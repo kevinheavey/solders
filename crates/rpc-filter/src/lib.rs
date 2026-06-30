@@ -46,7 +46,7 @@ impl From<MemcmpEncodedBytesOriginal> for MemcmpEncodedBytes {
 ///     bytes_ (str | Sequnce[int]): Bytes, encoded with specified encoding, or default Binary
 ///
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, From, Into)]
-#[pyclass(module = "solders.rpc.filter", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.filter", subclass)]
 pub struct Memcmp(MemcmpOriginal);
 
 pybytes_general_via_bincode!(Memcmp);
@@ -73,7 +73,7 @@ impl RichcmpEqualityOnly for Memcmp {}
 solders_traits_core::common_methods_default!(Memcmp);
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone, Hash)]
-#[pyclass(module = "solders.transaction_status", eq, eq_int)]
+#[pyclass(from_py_object, module = "solders.transaction_status", eq, eq_int)]
 pub enum RpcFilterTypeFieldless {
     TokenAccountState,
 }

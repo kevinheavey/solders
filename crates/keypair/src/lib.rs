@@ -43,7 +43,7 @@ mod keypair_serde {
     }
 }
 
-#[pyclass(module = "solders.keypair", subclass)]
+#[pyclass(from_py_object, module = "solders.keypair", subclass)]
 #[derive(PartialEq, Debug, Serialize, Deserialize, From, Into)]
 /// A vanilla Ed25519 key pair.
 ///

@@ -21,7 +21,7 @@ use solders_macros::{common_methods, enum_original_mapping, richcmp_eq_only};
 ///     offset (int): Skip this many bytes at the beginning of the data.
 ///     length (int): Return only this many bytes.
 ///
-#[pyclass(module = "solders.account_decoder")]
+#[pyclass(from_py_object, module = "solders.account_decoder")]
 #[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq, Hash, From, Into)]
 pub struct UiDataSliceConfig(UiDataSliceConfigOriginal);
 
@@ -51,7 +51,7 @@ impl UiDataSliceConfig {
 impl RichcmpEqualityOnly for UiDataSliceConfig {}
 
 /// Encoding options for account data.
-#[pyclass(module = "solders.account_decoder", eq, eq_int)]
+#[pyclass(from_py_object, module = "solders.account_decoder", eq, eq_int)]
 #[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq, Hash)]
 #[serde(rename_all = "camelCase")]
 #[enum_original_mapping(UiAccountEncodingOriginal)]
@@ -65,7 +65,7 @@ pub enum UiAccountEncoding {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, From, Into)]
-#[pyclass(module = "solders.account_decoder")]
+#[pyclass(from_py_object, module = "solders.account_decoder")]
 pub struct ParsedAccount(pub ParsedAccountOriginal);
 
 impl RichcmpEqualityOnly for ParsedAccount {}
@@ -110,7 +110,7 @@ impl ParsedAccount {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, From, Into)]
-#[pyclass(module = "solders.account_decoder")]
+#[pyclass(from_py_object, module = "solders.account_decoder")]
 pub struct UiTokenAmount(UiTokenAmountOriginal);
 
 impl RichcmpEqualityOnly for UiTokenAmount {}

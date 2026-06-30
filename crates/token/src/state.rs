@@ -48,7 +48,7 @@ macro_rules! token_boilerplate {
 ///     is_initialized (bool): Is ``True`` if this structure has been initialized.
 ///     freeze_authority (Optional[Pubkey]): Optional authority to freeze token accounts.
 ///
-#[pyclass(module = "solders.token.state", subclass)]
+#[pyclass(from_py_object, module = "solders.token.state", subclass)]
 #[derive(Clone, Copy, Debug, PartialEq, Default, From, Into)]
 pub struct Mint(pub MintOriginal);
 
@@ -120,7 +120,7 @@ impl Mint {
 token_boilerplate!(Mint, MintOriginal);
 
 /// Token account state.
-#[pyclass(module = "solders.token.state", eq, eq_int)]
+#[pyclass(from_py_object, module = "solders.token.state", eq, eq_int)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 #[enum_original_mapping(AccountState)]
 pub enum TokenAccountState {
@@ -151,7 +151,7 @@ pub enum TokenAccountState {
 ///     delegated_amount (int): The amount delegated.
 ///     close_authority (Optional[Pubkey]): Optional authority to close the account.
 ///
-#[pyclass(module = "solders.token.state", subclass)]
+#[pyclass(from_py_object, module = "solders.token.state", subclass)]
 #[derive(Clone, Copy, Debug, PartialEq, Default, From, Into)]
 pub struct TokenAccount(pub TokenAccountOriginal);
 
@@ -255,7 +255,7 @@ token_boilerplate!(TokenAccount, TokenAccountOriginal);
 ///     is_initialized (bool): Is ``True`` if this structure has been initialized.
 ///     signers (Sequence[Pubkey]): Signer public keys.
 ///
-#[pyclass(module = "solders.token.state", subclass)]
+#[pyclass(from_py_object, module = "solders.token.state", subclass)]
 #[derive(Clone, Copy, Debug, PartialEq, Default, From, Into)]
 pub struct Multisig(pub MultisigOriginal);
 

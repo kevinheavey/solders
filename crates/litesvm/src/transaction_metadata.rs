@@ -20,7 +20,7 @@ use {
 
 /// A compiled instruction that was invoked during a
 /// transaction instruction.
-#[pyclass(module = "solders.transaction_metadata", subclass)]
+#[pyclass(from_py_object, module = "solders.transaction_metadata", subclass)]
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
 pub struct InnerInstruction(InnerInstructionOriginal);
 
@@ -46,7 +46,7 @@ impl InnerInstruction {
 }
 
 /// Information about sent transactions.
-#[pyclass(module = "solders.transaction_metadata", subclass)]
+#[pyclass(from_py_object, module = "solders.transaction_metadata", subclass)]
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
 pub struct TransactionMetadata(pub(crate) TransactionMetadataOriginal);
 
@@ -113,7 +113,7 @@ impl TransactionMetadata {
 }
 
 /// Information about failed transactions.
-#[pyclass(module = "solders.transaction_metadata", subclass)]
+#[pyclass(from_py_object, module = "solders.transaction_metadata", subclass)]
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
 pub struct FailedTransactionMetadata(pub(crate) FailedTransactionMetadataOriginal);
 
@@ -139,7 +139,7 @@ impl FailedTransactionMetadata {
 }
 
 /// Information about simulated transactions.
-#[pyclass(module = "solders.transaction_metadata", subclass)]
+#[pyclass(from_py_object, module = "solders.transaction_metadata", subclass)]
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
 pub struct SimulatedTransactionInfo(pub(crate) SimulatedTransactionInfoOriginal);
 

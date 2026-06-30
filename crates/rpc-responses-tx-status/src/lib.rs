@@ -12,7 +12,7 @@ use solders_transaction_confirmation_status::TransactionConfirmationStatus;
 use solders_transaction_error::TransactionErrorType;
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
 pub struct RpcConfirmedTransactionStatusWithSignature(
     RpcConfirmedTransactionStatusWithSignatureOriginal,
 );

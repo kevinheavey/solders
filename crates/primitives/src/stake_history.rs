@@ -8,7 +8,7 @@ use {
 };
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
-#[pyclass(module = "solders.stake_history", subclass)]
+#[pyclass(from_py_object, module = "solders.stake_history", subclass)]
 pub struct StakeHistoryEntry(pub(crate) StakeHistoryEntryOriginal);
 
 transaction_status_boilerplate!(StakeHistoryEntry);
@@ -82,7 +82,7 @@ impl StakeHistoryEntry {
 
 /// A type to hold data for the StakeHistory sysvar.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
-#[pyclass(module = "solders.stake_history", subclass)]
+#[pyclass(from_py_object, module = "solders.stake_history", subclass)]
 pub struct StakeHistory(pub StakeHistoryOriginal);
 
 transaction_status_boilerplate!(StakeHistory);

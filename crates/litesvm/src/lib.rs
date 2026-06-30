@@ -31,7 +31,7 @@ use {
 pub mod transaction_metadata;
 
 #[derive(Debug, Clone, PartialEq)]
-#[pyclass(module = "solders.litesvm", subclass)]
+#[pyclass(from_py_object, module = "solders.litesvm", subclass)]
 pub struct FeatureSet(pub(crate) FeatureSetOriginal);
 
 impl RichcmpEqualityOnly for FeatureSet {}
