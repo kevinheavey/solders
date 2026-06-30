@@ -11,7 +11,7 @@ env:
   python_version: "3.8"
   CARGO_INCREMENTAL: 0
   RUSTFLAGS: "-D warnings"
-  maturin_version: "0.14.10"
+  maturin_version: "1.14.1"
 
 jobs:
   macos_x86_64:
