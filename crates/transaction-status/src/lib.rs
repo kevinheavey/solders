@@ -53,14 +53,14 @@ use solders_transaction::{TransactionVersion, VersionedTransaction};
 #[derive(Serialize, Deserialize, Clone, Copy, Debug, Eq, Hash, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[enum_original_mapping(TransactionBinaryEncodingOriginal)]
-#[pyclass(module = "solders.transaction_status", eq, eq_int)]
+#[pyclass(from_py_object, module = "solders.transaction_status", eq, eq_int)]
 pub enum TransactionBinaryEncoding {
     Base58,
     Base64,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
-#[pyclass(module = "solders.transaction_status", subclass)]
+#[pyclass(from_py_object, module = "solders.transaction_status", subclass)]
 pub struct UiCompiledInstruction(UiCompiledInstructionOriginal);
 
 transaction_status_boilerplate!(UiCompiledInstruction);
@@ -108,7 +108,7 @@ impl UiCompiledInstruction {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
-#[pyclass(module = "solders.transaction_status", subclass)]
+#[pyclass(from_py_object, module = "solders.transaction_status", subclass)]
 pub struct UiAddressTableLookup(UiAddressTableLookupOriginal);
 
 transaction_status_boilerplate!(UiAddressTableLookup);
@@ -145,7 +145,7 @@ impl UiAddressTableLookup {
 
 /// A duplicate representation of a Message, in raw format, for pretty JSON serialization
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
-#[pyclass(module = "solders.transaction_status", subclass)]
+#[pyclass(from_py_object, module = "solders.transaction_status", subclass)]
 pub struct UiRawMessage(UiRawMessageOriginal);
 
 transaction_status_boilerplate!(UiRawMessage);
@@ -212,7 +212,7 @@ impl UiRawMessage {
     }
 }
 
-#[pyclass(module = "solders.transaction_status", eq, eq_int)]
+#[pyclass(from_py_object, module = "solders.transaction_status", eq, eq_int)]
 #[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq, Hash)]
 #[serde(rename_all = "camelCase")]
 #[enum_original_mapping(ParsedAccountSourceOriginal)]
@@ -222,7 +222,7 @@ pub enum ParsedAccountSource {
 }
 /// A duplicate representation of a Message, in raw format, for pretty JSON serialization
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
-#[pyclass(module = "solders.transaction_status", subclass)]
+#[pyclass(from_py_object, module = "solders.transaction_status", subclass)]
 pub struct ParsedAccountTxStatus(ParsedAccountOriginal);
 
 transaction_status_boilerplate!(ParsedAccountTxStatus);
@@ -270,7 +270,7 @@ impl ParsedAccountTxStatus {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
-#[pyclass(module = "solders.transaction_status", subclass)]
+#[pyclass(from_py_object, module = "solders.transaction_status", subclass)]
 pub struct ParsedInstruction(ParsedInstructionOriginal);
 
 transaction_status_boilerplate!(ParsedInstruction);
@@ -319,7 +319,7 @@ impl ParsedInstruction {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
-#[pyclass(module = "solders.transaction_status", subclass)]
+#[pyclass(from_py_object, module = "solders.transaction_status", subclass)]
 pub struct UiPartiallyDecodedInstruction(UiPartiallyDecodedInstructionOriginal);
 
 transaction_status_boilerplate!(UiPartiallyDecodedInstruction);
@@ -424,7 +424,7 @@ impl From<UiInstructionOriginal> for UiInstruction {
 
 /// A duplicate representation of a Message, in raw format, for pretty JSON serialization
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
-#[pyclass(module = "solders.transaction_status", subclass)]
+#[pyclass(from_py_object, module = "solders.transaction_status", subclass)]
 pub struct UiParsedMessage(UiParsedMessageOriginal);
 
 transaction_status_boilerplate!(UiParsedMessage);
@@ -511,7 +511,7 @@ impl From<UiMessage> for UiMessageOriginal {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
-#[pyclass(module = "solders.transaction_status", subclass)]
+#[pyclass(from_py_object, module = "solders.transaction_status", subclass)]
 pub struct UiTransaction(UiTransactionOriginal);
 
 transaction_status_boilerplate!(UiTransaction);
@@ -590,7 +590,7 @@ impl From<EncodedTransactionOriginal> for EncodedVersionedTransaction {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
-#[pyclass(module = "solders.transaction_status", subclass)]
+#[pyclass(from_py_object, module = "solders.transaction_status", subclass)]
 pub struct UiAccountsList(UiAccountsListOriginal);
 
 transaction_status_boilerplate!(UiAccountsList);
@@ -661,7 +661,7 @@ impl From<EncodedTransaction> for EncodedTransactionOriginal {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
-#[pyclass(module = "solders.transaction_status", subclass)]
+#[pyclass(from_py_object, module = "solders.transaction_status", subclass)]
 pub struct UiInnerInstructions(UiInnerInstructionsOriginal);
 
 transaction_status_boilerplate!(UiInnerInstructions);
@@ -696,7 +696,7 @@ impl UiInnerInstructions {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
-#[pyclass(module = "solders.transaction_status", subclass)]
+#[pyclass(from_py_object, module = "solders.transaction_status", subclass)]
 pub struct UiLoadedAddresses(UiLoadedAddressesOriginal);
 
 transaction_status_boilerplate!(UiLoadedAddresses);
@@ -734,7 +734,7 @@ impl UiLoadedAddresses {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
-#[pyclass(module = "solders.transaction_status", subclass)]
+#[pyclass(from_py_object, module = "solders.transaction_status", subclass)]
 pub struct UiTransactionTokenBalance(UiTransactionTokenBalanceOriginal);
 
 transaction_status_boilerplate!(UiTransactionTokenBalance);
@@ -790,7 +790,7 @@ impl UiTransactionTokenBalance {
     }
 }
 
-#[pyclass(module = "solders.transaction_status", eq, eq_int)]
+#[pyclass(from_py_object, module = "solders.transaction_status", eq, eq_int)]
 #[enum_original_mapping(RewardTypeOriginal)]
 #[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq, Hash)]
 #[serde(rename_all = "camelCase")]
@@ -802,7 +802,7 @@ pub enum RewardType {
 }
 /// A duplicate representation of TransactionStatusMeta with `err` field
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
-#[pyclass(module = "solders.transaction_status", subclass)]
+#[pyclass(from_py_object, module = "solders.transaction_status", subclass)]
 pub struct UiTransactionStatusMeta(UiTransactionStatusMetaOriginal);
 impl RichcmpEqualityOnly for UiTransactionStatusMeta {
     fn richcmp(&self, other: &Self, op: pyo3::pyclass::CompareOp) -> PyResult<bool> {
@@ -964,7 +964,7 @@ impl UiTransactionStatusMeta {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
-#[pyclass(module = "solders.transaction_status", subclass)]
+#[pyclass(from_py_object, module = "solders.transaction_status", subclass)]
 pub struct EncodedTransactionWithStatusMeta(EncodedTransactionWithStatusMetaOriginal);
 
 transaction_status_boilerplate!(EncodedTransactionWithStatusMeta);
@@ -1005,7 +1005,7 @@ impl EncodedTransactionWithStatusMeta {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
-#[pyclass(module = "solders.transaction_status", subclass)]
+#[pyclass(from_py_object, module = "solders.transaction_status", subclass)]
 pub struct Reward(RewardOriginal);
 
 transaction_status_boilerplate!(Reward);
@@ -1071,7 +1071,7 @@ pub type Rewards = Vec<Reward>;
 // the one in transaction_status is missing Clone
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
-#[pyclass(module = "solders.transaction_status", subclass)]
+#[pyclass(from_py_object, module = "solders.transaction_status", subclass)]
 pub struct EncodedConfirmedTransactionWithStatusMeta {
     #[pyo3(get)]
     pub slot: u64,
@@ -1109,7 +1109,7 @@ impl EncodedConfirmedTransactionWithStatusMeta {
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone, From, Into)]
-#[pyclass(module = "solders.transaction_status", subclass)]
+#[pyclass(from_py_object, module = "solders.transaction_status", subclass)]
 pub struct UiConfirmedBlock(UiConfirmedBlockOriginal);
 
 transaction_status_boilerplate!(UiConfirmedBlock);

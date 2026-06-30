@@ -19,7 +19,7 @@ use solders_traits_core::{
 ///     block_height (int): The current block height.
 ///     transaction_count (Optional[int]): Total number of transactions processed without error since genesis
 ///
-#[pyclass(module = "solders.epoch_info", subclass)]
+#[pyclass(from_py_object, module = "solders.epoch_info", subclass)]
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, From, Into)]
 pub struct EpochInfo(EpochInfoOriginal);
 

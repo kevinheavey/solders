@@ -19,7 +19,7 @@ use solders_transaction_status::{
 #[serde_as]
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 #[serde(rename_all = "camelCase")]
-#[pyclass(module = "solders.rpc.responses", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
 pub struct RpcSimulateTransactionResult(RpcSimulateTransactionResultOriginal);
 
 response_data_boilerplate!(RpcSimulateTransactionResult);

@@ -12,7 +12,7 @@ use solders_traits_core::{
     PyFromBytesGeneral, PyHash, RichcmpFull,
 };
 
-#[pyclass(module = "solders.signature", subclass)]
+#[pyclass(from_py_object, module = "solders.signature", subclass)]
 #[derive(
     Clone,
     Copy,

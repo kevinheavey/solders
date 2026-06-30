@@ -11,7 +11,7 @@ use solders_traits::{
 use solders_traits_core::{impl_display, PyHash};
 
 #[derive(Clone, Debug, Default, PartialEq)]
-#[pyclass(module = "solders.presigner", subclass)]
+#[pyclass(from_py_object, module = "solders.presigner", subclass)]
 /// A signer that represents a :class:`~solders.signature.Signature` that has been
 /// constructed externally. Performs a signature verification against the
 /// expected message upon ``sign()`` requests to affirm its relationship to

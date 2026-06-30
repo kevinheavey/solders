@@ -28,7 +28,7 @@ use solders_hash::Hash as SolderHash;
 use solders_instruction::{convert_instructions, CompiledInstruction, Instruction};
 use solders_pubkey::{convert_optional_pubkey, Pubkey};
 
-#[pyclass(module = "solders.message", subclass)]
+#[pyclass(from_py_object, module = "solders.message", subclass)]
 #[derive(PartialEq, Eq, Debug, Default, Serialize, Deserialize, Clone, From, Into)]
 /// Describes the organization of a :class:`Message`'s account keys.
 ///
@@ -135,7 +135,7 @@ impl_display!(MessageHeader);
 py_from_bytes_general_via_bincode!(MessageHeader);
 solders_traits_core::common_methods_default!(MessageHeader);
 
-#[pyclass(module = "solders.message", subclass)]
+#[pyclass(from_py_object, module = "solders.message", subclass)]
 #[derive(PartialEq, Eq, Debug, Clone, Default, Serialize, Deserialize, From, Into)]
 /// A Solana transaction message.
 ///
@@ -517,7 +517,7 @@ impl From<&Message> for MessageOriginal {
     }
 }
 
-#[pyclass(module = "solders.message", subclass)]
+#[pyclass(from_py_object, module = "solders.message", subclass)]
 #[derive(PartialEq, Eq, Debug, Clone, Default, Serialize, Deserialize, From, Into)]
 /// Address table lookups describe an on-chain address lookup table to use
 /// for loading more readonly and writable accounts in a single tx.
@@ -575,7 +575,7 @@ create_exception!(
     "Raised when an error is encountered in compiling a message."
 );
 
-#[pyclass(module = "solders.message", subclass)]
+#[pyclass(from_py_object, module = "solders.message", subclass)]
 #[derive(PartialEq, Eq, Debug, Clone, Default, Serialize, Deserialize, From, Into)]
 /// A Solana transaction message (v0).
 ///

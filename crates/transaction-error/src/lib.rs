@@ -12,7 +12,7 @@ use {
 };
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
-#[pyclass(module = "solders.transaction_status", subclass)]
+#[pyclass(from_py_object, module = "solders.transaction_status", subclass)]
 pub struct InstructionErrorCustom(pub u32);
 
 transaction_status_boilerplate!(InstructionErrorCustom);
@@ -33,7 +33,7 @@ impl InstructionErrorCustom {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
-#[pyclass(module = "solders.transaction_status", subclass)]
+#[pyclass(from_py_object, module = "solders.transaction_status", subclass)]
 pub struct InstructionErrorBorshIO(pub String);
 transaction_status_boilerplate!(InstructionErrorBorshIO);
 
@@ -53,7 +53,7 @@ impl InstructionErrorBorshIO {
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone)]
-#[pyclass(module = "solders.transaction_status", eq, eq_int)]
+#[pyclass(from_py_object, module = "solders.transaction_status", eq, eq_int)]
 pub enum InstructionErrorFieldless {
     GenericError,
     InvalidArgument,
@@ -378,7 +378,7 @@ impl From<InstructionErrorOriginal> for InstructionErrorType {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
-#[pyclass(module = "solders.transaction_status", subclass)]
+#[pyclass(from_py_object, module = "solders.transaction_status", subclass)]
 pub struct TransactionErrorInstructionError(pub (u8, InstructionErrorType));
 transaction_status_boilerplate!(TransactionErrorInstructionError);
 
@@ -403,7 +403,7 @@ impl TransactionErrorInstructionError {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
-#[pyclass(module = "solders.transaction_status", subclass)]
+#[pyclass(from_py_object, module = "solders.transaction_status", subclass)]
 pub struct TransactionErrorDuplicateInstruction(pub u8);
 transaction_status_boilerplate!(TransactionErrorDuplicateInstruction);
 
@@ -423,7 +423,7 @@ impl TransactionErrorDuplicateInstruction {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
-#[pyclass(module = "solders.transaction_status", subclass)]
+#[pyclass(from_py_object, module = "solders.transaction_status", subclass)]
 pub struct TransactionErrorInsufficientFundsForRent {
     #[pyo3(get)]
     account_index: u8,
@@ -441,7 +441,7 @@ impl TransactionErrorInsufficientFundsForRent {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
-#[pyclass(module = "solders.transaction_status", subclass)]
+#[pyclass(from_py_object, module = "solders.transaction_status", subclass)]
 pub struct TransactionErrorProgramExecutionTemporarilyRestricted {
     #[pyo3(get)]
     account_index: u8,
@@ -458,7 +458,7 @@ impl TransactionErrorProgramExecutionTemporarilyRestricted {
     }
 }
 
-#[pyclass(module = "solders.transaction_status", eq, eq_int)]
+#[pyclass(from_py_object, module = "solders.transaction_status", eq, eq_int)]
 #[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum TransactionErrorFieldless {
     AccountInUse,

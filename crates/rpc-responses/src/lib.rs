@@ -151,7 +151,7 @@ macro_rules! resp_traits {
 macro_rules! contextless_struct_def_no_eq {
     ($name:ident, $inner:ty) => {
         #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
-        #[pyclass(module = "solders.rpc.responses", subclass)]
+        #[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
         pub struct $name($inner);
         resp_traits!($name);
     };
@@ -160,14 +160,14 @@ macro_rules! contextless_struct_def_no_eq {
 macro_rules! contextless_struct_def_eq {
     ($name:ident, $inner:ty) => {
         #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-        #[pyclass(module = "solders.rpc.responses", subclass)]
+        #[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
         pub struct $name($inner);
         resp_traits!($name);
     };
     ($name:ident, $inner:ty, $serde_as:expr) => {
         #[serde_as]
         #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-        #[pyclass(module = "solders.rpc.responses", subclass)]
+        #[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
         pub struct $name(#[serde_as(as = $serde_as)] $inner);
         resp_traits!($name);
     };
@@ -764,7 +764,7 @@ contextful_resp_eq!(
 contextful_resp_eq!(GetBalanceResp, u64);
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, From, Into)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
 pub struct RpcBlockCommitment(RpcBlockCommitmentOriginal<[u64; 32]>);
 
 response_data_boilerplate!(RpcBlockCommitment);
@@ -798,7 +798,7 @@ contextless_resp_eq!(GetBlockCommitmentResp, RpcBlockCommitment, clone);
 contextless_resp_eq!(GetBlockHeightResp, u64);
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
 pub struct RpcBlockProductionRange(RpcBlockProductionRangeOriginal);
 
 response_data_boilerplate!(RpcBlockProductionRange);
@@ -828,7 +828,7 @@ impl RpcBlockProductionRange {
 }
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
 pub struct RpcBlockProduction(RpcBlockProductionOriginal);
 
 response_data_boilerplate!(RpcBlockProduction);
@@ -881,7 +881,7 @@ contextless_resp_methods_no_clone_nullable!(GetBlockTimeResp, Option<u64>);
 #[serde_as]
 #[derive(Serialize, Deserialize, Eq, PartialEq, Clone, Debug, From, Into)]
 #[serde(rename_all = "camelCase")]
-#[pyclass(module = "solders.rpc.responses", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
 pub struct RpcContactInfo(pub RpcContactInfoOriginal);
 
 response_data_boilerplate!(RpcContactInfo);
@@ -1010,7 +1010,7 @@ contextless_resp_eq!(GetGenesisHashResp, SolderHash, "DisplayFromStr");
 contextless_resp_eq!(GetHealthResp, String, clone);
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
 pub struct RpcSnapshotSlotInfo(RpcSnapshotSlotInfoOriginal);
 
 response_data_boilerplate!(RpcSnapshotSlotInfo);
@@ -1040,7 +1040,7 @@ contextless_resp_eq!(GetHighestSnapshotSlotResp, RpcSnapshotSlotInfo, clone);
 contextless_resp_eq!(GetIdentityResp, RpcIdentity, clone);
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, From, Into)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
 pub struct RpcInflationGovernor(RpcInflationGovernorOriginal);
 
 response_data_boilerplate!(RpcInflationGovernor);
@@ -1092,7 +1092,7 @@ impl RpcInflationGovernor {
 contextless_resp_no_eq!(GetInflationGovernorResp, RpcInflationGovernor, clone);
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, From, Into)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
 pub struct RpcInflationRate(RpcInflationRateOriginal);
 
 response_data_boilerplate!(RpcInflationRate);
@@ -1133,7 +1133,7 @@ impl RpcInflationRate {
 contextless_resp_no_eq!(GetInflationRateResp, RpcInflationRate, clone);
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, From, Into)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
 pub struct RpcInflationReward(RpcInflationRewardOriginal);
 
 response_data_boilerplate!(RpcInflationReward);
@@ -1195,7 +1195,7 @@ contextless_resp_eq!(
 );
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, From, Into)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
 pub struct RpcAccountBalance(RpcAccountBalanceOriginal);
 
 response_data_boilerplate!(RpcAccountBalance);
@@ -1276,7 +1276,7 @@ contextless_resp_eq!(
 );
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
 pub struct RpcPerfSample(RpcPerfSampleOriginal);
 
 response_data_boilerplate!(RpcPerfSample);
@@ -1329,7 +1329,7 @@ impl RpcPerfSample {
 contextless_resp_eq!(GetRecentPerformanceSamplesResp, Vec<RpcPerfSample>, clone);
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
 pub struct RpcPrioritizationFee(RpcPrioritizationFeeOriginal);
 
 response_data_boilerplate!(RpcPrioritizationFee);
@@ -1389,7 +1389,7 @@ contextless_resp_eq!(
 contextful_resp_eq!(GetStakeMinimumDelegationResp, u64);
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
 pub struct RpcSupply(RpcSupplyOriginal);
 
 response_data_boilerplate!(RpcSupply);
@@ -1466,7 +1466,7 @@ contextless_resp_eq!(GetTransactionCountResp, u64);
 contextless_resp_eq!(GetVersionResp, RpcVersionInfo, clone);
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
 pub struct RpcLogsResponse(RpcLogsResponseOriginal);
 
 response_data_boilerplate!(RpcLogsResponse);
@@ -1509,7 +1509,7 @@ impl RpcLogsResponse {
 }
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
 pub struct SlotTransactionStats(SlotTransactionStatsOriginal);
 
 response_data_boilerplate!(SlotTransactionStats);
@@ -1554,7 +1554,7 @@ impl SlotTransactionStats {
 }
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
 pub struct SlotInfo(SlotInfoOriginal);
 
 response_data_boilerplate!(SlotInfo);
@@ -1586,7 +1586,7 @@ macro_rules! slot_update_core {
     ($name:ident) => {
         paste! {
             #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-            #[pyclass(module = "solders.rpc.responses", subclass)]
+            #[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
             pub struct [<SlotUpdate $name>] {
                 #[pyo3(get)]
                 slot: Slot,
@@ -1616,7 +1616,7 @@ macro_rules! slot_update_core {
     ($name:ident, $param:ident : $type:ty) => {
         paste! {
             #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-            #[pyclass(module = "solders.rpc.responses", subclass)]
+            #[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
             pub struct [<SlotUpdate $name>] {
                 #[pyo3(get)]
                 slot: Slot,
@@ -1751,7 +1751,7 @@ impl From<SlotUpdateOriginal> for SlotUpdate {
 }
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
 pub struct RpcVote(RpcVoteOriginal);
 
 response_data_boilerplate!(RpcVote);
@@ -1834,7 +1834,7 @@ impl From<RpcBlockUpdateErrorOriginal> for RpcBlockUpdateError {
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone, From, Into)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
 pub struct RpcBlockUpdate(RpcBlockUpdateOriginal);
 
 response_data_boilerplate!(RpcBlockUpdate);
@@ -1872,7 +1872,7 @@ impl RpcBlockUpdate {
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
 pub struct SubscriptionError {
     #[serde(skip_deserializing)]
     jsonrpc: solders_rpc_version::V2,

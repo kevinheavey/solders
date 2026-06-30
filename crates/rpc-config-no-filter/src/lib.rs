@@ -96,7 +96,7 @@ impl RpcBlockProductionConfigRange {
 ///     commitment (Optional[CommitmentLevel]): Bank state to query.
 ///
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
-#[pyclass(module = "solders.rpc.config", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.config", subclass)]
 pub struct RpcBlockProductionConfig(rpc_config::RpcBlockProductionConfig);
 
 impl PartialEq for RpcBlockProductionConfig {
@@ -225,7 +225,7 @@ impl RpcGetVoteAccountsConfig {
 }
 
 /// Filter for ``getLargestAccounts``.
-#[pyclass(module = "solders.rpc.config", eq, eq_int)]
+#[pyclass(from_py_object, module = "solders.rpc.config", eq, eq_int)]
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub enum RpcLargestAccountsFilter {

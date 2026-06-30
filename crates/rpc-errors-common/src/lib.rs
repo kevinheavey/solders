@@ -2,7 +2,7 @@
 macro_rules! error_message {
     ($name:ident) => {
         #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
-        #[pyclass(module = "solders.rpc.errors", subclass)]
+        #[pyclass(from_py_object, module = "solders.rpc.errors", subclass)]
         #[serde(rename_all = "camelCase")]
         pub struct $name {
             #[pyo3(get)]
@@ -23,7 +23,7 @@ macro_rules! error_message {
     };
     ($name:ident, $data_type:ty) => {
         #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
-        #[pyclass(module = "solders.rpc.errors", subclass)]
+        #[pyclass(from_py_object, module = "solders.rpc.errors", subclass)]
         #[serde(rename_all = "camelCase")]
         pub struct $name {
             #[pyo3(get)]

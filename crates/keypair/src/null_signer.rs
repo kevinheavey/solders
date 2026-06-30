@@ -36,7 +36,7 @@ mod null_signer_serde {
 }
 
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize, From, Into)]
-#[pyclass(module = "solders.null_signer", subclass)]
+#[pyclass(from_py_object, module = "solders.null_signer", subclass)]
 /// A signer implementation that always produces :meth:`solders.signature.Signature.default()`.
 /// Used as a placeholder for absentee signers whose 'Pubkey` is required to construct
 /// the transaction.

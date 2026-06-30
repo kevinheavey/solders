@@ -24,7 +24,7 @@ macro_rules! pyclass_boilerplate {
     ($(#[$attr:meta])* => $name:ident) => {
         $(#[$attr])*
         #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-        #[pyclass(module = "solders.rpc.config", subclass)]
+        #[pyclass(from_py_object, module = "solders.rpc.config", subclass)]
         pub struct $name(rpc_config::$name);
         rpc_config_impls!($name);
     };
@@ -35,7 +35,7 @@ macro_rules! pyclass_boilerplate_with_default {
     ($(#[$attr:meta])* => $name:ident) => {
         $(#[$attr])*
         #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
-        #[pyclass(module = "solders.rpc.config", subclass)]
+        #[pyclass(from_py_object, module = "solders.rpc.config", subclass)]
         pub struct $name(rpc_config::$name);
         $crate::rpc_config_impls!($name);
     };

@@ -25,7 +25,7 @@ use solders_rpc_response_data_boilerplate::response_data_boilerplate;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-#[pyclass(module = "solders.rpc.responses", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
 pub struct RpcResponseContext {
     #[pyo3(get)]
     pub slot: u64,
@@ -51,7 +51,7 @@ response_data_boilerplate!(RpcResponseContext);
 macro_rules! contextful_struct_def_eq {
     ($name:ident, $inner:ty) => {
         #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
-        #[pyclass(module = "solders.rpc.responses", subclass)]
+        #[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
         pub struct $name {
             #[pyo3(get)]
             context: RpcResponseContext,
@@ -62,7 +62,7 @@ macro_rules! contextful_struct_def_eq {
     ($name:ident, $inner:ty, $serde_as:expr) => {
         #[serde_as]
         #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-        #[pyclass(module = "solders.rpc.responses", subclass)]
+        #[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
         pub struct $name {
             #[pyo3(get)]
             context: RpcResponseContext,
@@ -77,7 +77,7 @@ macro_rules! contextful_struct_def_eq {
 macro_rules! contextful_struct_def_no_eq {
     ($name:ident, $inner:ty) => {
         #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
-        #[pyclass(module = "solders.rpc.responses", subclass)]
+        #[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
         pub struct $name {
             #[pyo3(get)]
             context: RpcResponseContext,
@@ -88,7 +88,7 @@ macro_rules! contextful_struct_def_no_eq {
     ($name:ident, $inner:ty, $serde_as:expr) => {
         #[serde_as]
         #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
-        #[pyclass(module = "solders.rpc.responses", subclass)]
+        #[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
         pub struct $name {
             #[pyo3(get)]
             context: RpcResponseContext,
@@ -104,7 +104,7 @@ macro_rules! notification_struct_def_outer {
     ($name:ident) => {
         paste! {
             #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-            #[pyclass(module = "solders.rpc.responses", subclass)]
+            #[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
             pub struct $name {
                 #[pyo3(get)]
                 result: [<$name Result>],
@@ -120,7 +120,7 @@ macro_rules! notification_struct_def_outer_no_eq {
     ($name:ident) => {
         paste! {
             #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
-            #[pyclass(module = "solders.rpc.responses", subclass)]
+            #[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
             pub struct $name {
                 #[pyo3(get)]
                 result: [<$name Result>],
@@ -137,7 +137,7 @@ macro_rules! notification_struct_def {
         notification_struct_def_outer!($name);
         paste! {
             #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-            #[pyclass(module = "solders.rpc.responses", subclass)]
+            #[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
             pub struct [<$name Result>] {
                 #[pyo3(get)]
                 context: RpcResponseContext,
@@ -151,7 +151,7 @@ macro_rules! notification_struct_def {
         paste! {
             #[serde_as]
             #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-            #[pyclass(module = "solders.rpc.responses", subclass)]
+            #[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
             pub struct [<$name Result>] {
                 #[pyo3(get)]
                 context: RpcResponseContext,
@@ -167,7 +167,7 @@ macro_rules! notification_struct_def {
 macro_rules! notification_struct_def_contextless {
     ($name:ident, $inner:ty) => {
         #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-        #[pyclass(module = "solders.rpc.responses", subclass)]
+        #[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
         pub struct $name {
             #[pyo3(get)]
             result: $inner,
@@ -183,7 +183,7 @@ macro_rules! notification_struct_def_no_eq {
         notification_struct_def_outer_no_eq!($name);
         paste! {
             #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
-            #[pyclass(module = "solders.rpc.responses", subclass)]
+            #[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
             pub struct [<$name Result>] {
                 #[pyo3(get)]
                 context: RpcResponseContext,
@@ -267,7 +267,7 @@ macro_rules! notification_contextless {
 }
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
 pub struct RpcIdentity(RpcIdentityOriginal);
 
 response_data_boilerplate!(RpcIdentity);
@@ -292,7 +292,7 @@ impl RpcIdentity {
 }
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
 pub struct RpcBlockhash(RpcBlockhashOriginal);
 //     #[serde_as(as = "DisplayFromStr")]
 //     #[pyo3(get)]
@@ -391,7 +391,7 @@ impl From<AccountMaybeJSON> for UiAccount {
 // TODO: make the one in solana-rpc-client-api work here.
 #[serde_as]
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
 #[serde(rename_all = "camelCase")]
 pub struct RpcKeyedAccount {
     #[serde_as(as = "DisplayFromStr")]
@@ -416,7 +416,7 @@ impl RpcKeyedAccount {
 
 #[serde_as]
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
 #[serde(rename_all = "camelCase")]
 pub struct RpcKeyedAccountJsonParsed {
     #[serde_as(as = "DisplayFromStr")]
@@ -447,7 +447,7 @@ pub enum RpcKeyedAccountMaybeJSON {
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone, From, Into)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
 pub struct RpcTokenAccountBalance(RpcTokenAccountBalanceOriginal);
 
 response_data_boilerplate!(RpcTokenAccountBalance);
@@ -476,7 +476,7 @@ impl RpcTokenAccountBalance {
     }
 }
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
 pub struct RpcVersionInfo(RpcVersionInfoOriginal);
 
 response_data_boilerplate!(RpcVersionInfo);
@@ -506,7 +506,7 @@ impl RpcVersionInfo {
     }
 }
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
 pub struct RpcVoteAccountInfo(RpcVoteAccountInfoOriginal);
 
 response_data_boilerplate!(RpcVoteAccountInfo);
@@ -573,7 +573,7 @@ impl RpcVoteAccountInfo {
 }
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, From, Into)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
 pub struct RpcVoteAccountStatus(RpcVoteAccountStatusOriginal);
 
 response_data_boilerplate!(RpcVoteAccountStatus);
@@ -612,7 +612,7 @@ impl RpcVoteAccountStatus {
 }
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
 pub struct RpcSignatureResponse {
     #[pyo3(get)]
     err: Option<TransactionErrorType>,
@@ -632,13 +632,13 @@ impl RpcSignatureResponse {
 }
 
 #[derive(Clone, Deserialize, Serialize, Debug, Eq, PartialEq)]
-#[pyclass(module = "solders.rpc.responses", eq, eq_int)]
+#[pyclass(from_py_object, module = "solders.rpc.responses", eq, eq_int)]
 pub enum BlockStoreError {
     BlockStoreError,
 }
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
 pub struct SubscriptionResult {
     #[serde(skip_deserializing)]
     jsonrpc: solders_rpc_version::V2,
@@ -665,7 +665,7 @@ impl SubscriptionResult {
 }
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[pyclass(module = "solders.rpc.responses", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
 pub struct UnsubscribeResult {
     #[serde(skip_deserializing)]
     jsonrpc: solders_rpc_version::V2,

@@ -24,7 +24,7 @@ use solders_traits_core::{
 ///     >>> bytes(pubkey).hex()
 ///     '0101010101010101010101010101010101010101010101010101010101010101'
 ///
-#[pyclass(module = "solders.pubkey", subclass)]
+#[pyclass(from_py_object, module = "solders.pubkey", subclass)]
 #[derive(
     Eq,
     PartialEq,

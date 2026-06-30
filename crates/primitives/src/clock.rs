@@ -18,7 +18,7 @@ use solders_traits_core::transaction_status_boilerplate;
 /// A representation of network time.
 ///
 /// All members of ``Clock`` start from 0 upon network boot.
-#[pyclass(module = "solders.clock", subclass)]
+#[pyclass(from_py_object, module = "solders.clock", subclass)]
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Default, From, Into)]
 pub struct Clock(pub ClockOriginal);
 

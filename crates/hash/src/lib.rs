@@ -13,7 +13,7 @@ use solders_traits_core::{
     RichcmpFull,
 };
 
-#[pyclass(module = "solders.hash", subclass)]
+#[pyclass(from_py_object, module = "solders.hash", subclass)]
 /// A SHA-256 hash, most commonly used for blockhashes.
 ///
 /// Args:

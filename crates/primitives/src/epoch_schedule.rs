@@ -17,7 +17,7 @@ use solders_traits_core::{
 /// Args:
 ///     slots_per_epoch (int): The maximum number of slots in each epoch.
 ///
-#[pyclass(module = "solders.epoch_schedule", subclass)]
+#[pyclass(from_py_object, module = "solders.epoch_schedule", subclass)]
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Default, From, Into)]
 pub struct EpochSchedule(pub EpochScheduleOriginal);
 

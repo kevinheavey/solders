@@ -8,7 +8,7 @@ use solders_transaction_error::TransactionErrorType;
 type Slot = u64;
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
-#[pyclass(module = "solders.rpc.errors", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.errors", subclass)]
 #[serde(rename_all = "camelCase")]
 pub struct BlockCleanedUp {
     #[pyo3(get)]
@@ -32,7 +32,7 @@ impl BlockCleanedUp {
 error_message!(BlockCleanedUpMessage);
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone)]
-#[pyclass(module = "solders.transaction_status", eq, eq_int)]
+#[pyclass(from_py_object, module = "solders.transaction_status", eq, eq_int)]
 pub enum RpcCustomErrorFieldless {
     TransactionSignatureVerificationFailure,
     NoSnapshot,
@@ -41,7 +41,7 @@ pub enum RpcCustomErrorFieldless {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
-#[pyclass(module = "solders.rpc.errors", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.errors", subclass)]
 pub struct BlockNotAvailable {
     #[pyo3(get)]
     slot: Slot,
@@ -62,7 +62,7 @@ impl BlockNotAvailable {
 error_message!(BlockNotAvailableMessage);
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
-#[pyclass(module = "solders.rpc.errors", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.errors", subclass)]
 #[serde(rename_all = "camelCase")]
 pub struct NodeUnhealthy {
     #[pyo3(get)]
@@ -85,7 +85,7 @@ impl NodeUnhealthy {
 error_message!(NodeUnhealthyMessage, NodeUnhealthy);
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
-#[pyclass(module = "solders.rpc.errors", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.errors", subclass)]
 pub struct TransactionPrecompileVerificationFailure(TransactionErrorType);
 
 transaction_status_boilerplate!(TransactionPrecompileVerificationFailure);
@@ -108,7 +108,7 @@ impl TransactionPrecompileVerificationFailure {
 error_message!(TransactionPrecompileVerificationFailureMessage);
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
-#[pyclass(module = "solders.rpc.errors", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.errors", subclass)]
 pub struct SlotSkipped {
     #[pyo3(get)]
     slot: Slot,
@@ -129,7 +129,7 @@ impl SlotSkipped {
 error_message!(SlotSkippedMessage);
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
-#[pyclass(module = "solders.rpc.errors", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.errors", subclass)]
 pub struct LongTermStorageSlotSkipped {
     #[pyo3(get)]
     slot: Slot,
@@ -150,7 +150,7 @@ impl LongTermStorageSlotSkipped {
 error_message!(LongTermStorageSlotSkippedMessage);
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
-#[pyclass(module = "solders.rpc.errors", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.errors", subclass)]
 #[serde(rename_all = "camelCase")]
 pub struct KeyExcludedFromSecondaryIndex {
     #[pyo3(get)]
@@ -172,7 +172,7 @@ impl KeyExcludedFromSecondaryIndex {
 error_message!(KeyExcludedFromSecondaryIndexMessage);
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
-#[pyclass(module = "solders.rpc.errors", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.errors", subclass)]
 pub struct ScanError {
     #[pyo3(get)]
     message: String,
@@ -193,7 +193,7 @@ impl ScanError {
 error_message!(ScanErrorMessage);
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
-#[pyclass(module = "solders.rpc.errors", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.errors", subclass)]
 pub struct BlockStatusNotAvailableYet {
     #[pyo3(get)]
     slot: Slot,
@@ -214,7 +214,7 @@ impl BlockStatusNotAvailableYet {
 error_message!(BlockStatusNotAvailableYetMessage);
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
-#[pyclass(module = "solders.rpc.errors", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.errors", subclass)]
 #[serde(rename_all = "camelCase")]
 pub struct MinContextSlotNotReached {
     #[pyo3(get)]
@@ -236,7 +236,7 @@ impl MinContextSlotNotReached {
 error_message!(MinContextSlotNotReachedMessage, MinContextSlotNotReached);
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
-#[pyclass(module = "solders.rpc.errors", subclass)]
+#[pyclass(from_py_object, module = "solders.rpc.errors", subclass)]
 pub struct UnsupportedTransactionVersion(pub u8);
 
 transaction_status_boilerplate!(UnsupportedTransactionVersion);
