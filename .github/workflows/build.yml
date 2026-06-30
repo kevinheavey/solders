@@ -57,7 +57,8 @@ jobs:
       - name: Build wheels
         uses: messense/maturin-action@v1
         with:
-          args: --release --universal2 --out dist
+          target: universal2-apple-darwin
+          args: --release --out dist
           maturin-version: ${{ env.maturin_version }}
       - name: Install built wheel
         run: |
