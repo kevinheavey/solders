@@ -238,6 +238,11 @@ jobs:
           manylinux: '2_28'
           args: --release --out dist
           maturin-version: ${{ env.maturin_version }}
+          before-script-linux: |
+            # If we're running on rhel centos, install needed packages.
+            if command -v yum &> /dev/null; then
+                yum update -y && yum install -y perl-core
+            fi
       - name: Install built wheel
         run: |
           pip install pytest based58 pybip39 mnemonic typing-extensions jsonalias
