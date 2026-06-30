@@ -2,6 +2,10 @@
 
 # [Unreleased]
 
+### Changed
+
+- Raise the minimum supported Python version to 3.10 (was 3.8). Python 3.8 and 3.9 are end-of-life.
+
 ### Added
 
 - `Message.is_instruction_account` and `Message.demote_program_id`, wrapping the corresponding `solana-message` methods
