@@ -491,7 +491,7 @@ def test_get_block(path: str) -> None:
             expected_parsed_accounts = [
                 ParsedAccountTxStatus(pubkey, writable, signer)
                 for pubkey, writable, signer in zip(
-                    expected_account_keys, writable_vals, signer_vals
+                    expected_account_keys, writable_vals, signer_vals, strict=True
                 )
             ]
             assert msg.account_keys == expected_parsed_accounts
@@ -2013,7 +2013,7 @@ def test_get_transaction(path: str) -> None:
             expected_parsed_accounts = [
                 ParsedAccountTxStatus(pubkey, writable, signer)
                 for pubkey, writable, signer in zip(
-                    expected_account_keys, writable_vals, signer_vals
+                    expected_account_keys, writable_vals, signer_vals, strict=True
                 )
             ]
             assert msg.account_keys == expected_parsed_accounts
