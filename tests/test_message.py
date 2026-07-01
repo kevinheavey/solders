@@ -78,6 +78,23 @@ def test_program_position() -> None:
     assert message.program_position(2) == 1
 
 
+def test_message_account_introspection() -> None:
+    program_id = Pubkey.new_unique()
+    account = Pubkey.new_unique()
+    payer = Pubkey.new_unique()
+    message = Message(
+        [Instruction(program_id, ZERO_BYTES, [AccountMeta(account, False, True)])],
+        payer,
+    )
+    keys = message.account_keys
+    prog_idx = keys.index(program_id)
+    acc_idx = keys.index(account)
+    assert message.is_instruction_account(acc_idx)
+    assert not message.is_instruction_account(prog_idx)
+    assert message.demote_program_id(prog_idx)
+    assert not message.demote_program_id(acc_idx)
+
+
 def test_program_ids() -> None:
     key0 = Pubkey.new_unique()
     key1 = Pubkey.new_unique()
