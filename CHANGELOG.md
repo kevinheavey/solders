@@ -1,21 +1,13 @@
 # Changelog
 
-# [Unreleased]
+# [0.28.0] - 2026-07-01
 
 ### Changed
 
+- Update litesvm to 0.13.1 and bump Solana deps as far as litesvm 0.13 allows: `agave-feature-set`/`agave-precompiles`, `solana-compute-budget`, `solana-hash`, `solana-transaction-context` to 4 and `solana-system-interface` to 3 (crates litesvm still pins to the v3 line, e.g. `solana-message`/`solana-transaction`/`solana-account`, stay there). 0.13.1 refreshes the simulated mainnet feature set to match the cluster as of 2026-06-30.
+- Update to pyo3 0.29 and pythonize 0.29
+- Update maturin to 1.14.1
 - Raise the minimum supported Python version to 3.10 (was 3.8). Python 3.8 and 3.9 are end-of-life.
-- Update litesvm to 0.13.1, which refreshes the simulated mainnet feature set to match the cluster as of 2026-06-30
-
-### Added
-
-- `Message.is_instruction_account` and `Message.demote_program_id`, wrapping the corresponding `solana-message` methods
-
-# [0.28.0] - 2026-06-28
-
-### Changed
-
-- Update litesvm to 0.13 and bump Solana deps as far as litesvm 0.13 allows: `agave-feature-set`/`agave-precompiles`, `solana-compute-budget`, `solana-hash`, `solana-transaction-context` to 4 and `solana-system-interface` to 3 (crates litesvm still pins to the v3 line, e.g. `solana-message`/`solana-transaction`/`solana-account`, stay there)
 - Bump the (litesvm-independent) client crates to 4: `solana-rpc-client-api`, `solana-rpc-client-types`, `solana-account-decoder-client-types`, `solana-transaction-status-client-types`, and `solana-reward-info` to 5 (the version aligned with that set, not the newer 6.x)
 - `ComputeBudget` constructor now takes `simd_0268_active` and `simd_0339_active` flags (was `simd_0296_active`) to match `solana-compute-budget` 4
 
@@ -36,7 +28,9 @@
 - `LiteSVM.airdrop_pubkey`, `LiteSVM.with_feature_accounts`, and `LiteSVM.add_program_with_loader`
 - A getter for `UiConfirmedBlock.num_reward_partitions` (the constructor already accepted it but it could not be read back)
 - `solders.system_program.upgrade_nonce_account` (and `decode_upgrade_nonce_account` / `UpgradeNonceAccountParams`)
+- `Message.is_instruction_account` and `Message.demote_program_id`, wrapping the corresponding `solana-message` methods
 - musllinux wheels for `aarch64`
+- litesvm is now bundled in every wheel; previously the Windows, musllinux, and linux-aarch64 wheels were built without it
 - Restored pickle and `copy.deepcopy` support: a `__reduce__` method is now generated for all types using the `common_methods` family of macros (reconstructing via `from_bytes(bytes(self))`).
 - `copy.deepcopy` support for RPC response types (via a clone-based `__deepcopy__`; these don't support pickle because their bincode round-trip is broken by `skip_serializing_if`).
 
