@@ -334,3 +334,4 @@ def test_try_compile() -> None:
             )
         ],
     )
+

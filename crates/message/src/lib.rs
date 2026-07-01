@@ -463,6 +463,16 @@ impl Message {
         self.0.is_upgradeable_loader_present()
     }
 
+    /// See https://docs.rs/solana-sdk/latest/solana_sdk/message/legacy/struct.Message.html#method.is_instruction_account
+    pub fn is_instruction_account(&self, key_index: usize) -> bool {
+        self.0.is_instruction_account(key_index)
+    }
+
+    /// See https://docs.rs/solana-sdk/latest/solana_sdk/message/legacy/struct.Message.html#method.demote_program_id
+    pub fn demote_program_id(&self, i: usize) -> bool {
+        self.0.demote_program_id(i)
+    }
+
     #[staticmethod]
     #[pyo3(name = "default")]
     /// Create a new default ``Message``.

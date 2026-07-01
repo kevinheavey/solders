@@ -1,5 +1,11 @@
 # Changelog
 
+# [Unreleased]
+
+### Added
+
+- `Message.is_instruction_account` and `Message.demote_program_id`, wrapping the corresponding `solana-message` methods
+
 # [0.28.0] - 2026-06-28
 
 ### Changed
