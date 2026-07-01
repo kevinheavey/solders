@@ -5,6 +5,7 @@
 ### Changed
 
 - Raise the minimum supported Python version to 3.10 (was 3.8). Python 3.8 and 3.9 are end-of-life.
+- Update litesvm to 0.13.1, which refreshes the simulated mainnet feature set to match the cluster as of 2026-06-30
 
 ### Added
 

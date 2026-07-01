@@ -16,6 +16,10 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 bincode = { workspace = true }
 derive_more = { workspace = true }
+# Force five8_core 1.0 (impls Error for DecodeError unconditionally). Otherwise
+# five8 1.0's over-wide range can resolve five8_core to the no_std 0.1.2, whose
+# Error impl is feature-gated off, which breaks solana-keypair.
+five8_core = "1"
 pyo3 = { workspace = true, features = ["macros", "extension-module", "abi3-py310"] }
 serde = { workspace = true }
 solana-address-lookup-table-interface = { workspace = true }
