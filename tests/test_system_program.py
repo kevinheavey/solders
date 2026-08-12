@@ -66,9 +66,7 @@ def test_create_account_allow_prefund() -> None:
         owner=Pubkey.default(),
     )
     assert (
-        sp.decode_create_account_allow_prefund(
-            sp.create_account_allow_prefund(params)
-        )
+        sp.decode_create_account_allow_prefund(sp.create_account_allow_prefund(params))
         == params
     )
     no_payer = sp.CreateAccountAllowPrefundParams(

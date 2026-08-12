@@ -301,9 +301,7 @@ class LiteSVM:
             loader_id: The loader to use (e.g. ``bpf_loader`` or the upgradeable
                 loader).
         """
-        return self._inner.add_program_with_loader(
-            program_id, program_bytes, loader_id
-        )
+        return self._inner.add_program_with_loader(program_id, program_bytes, loader_id)
 
     def airdrop_pubkey(self) -> Pubkey:
         """The pubkey of the internal airdrop account.
