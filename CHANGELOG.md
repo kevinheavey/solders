@@ -1,5 +1,28 @@
 # Changelog
 
+# Unreleased
+
+### Added
+
+- `solders.message.MessageV1`: the SIMD-0385 v1 transaction message, supporting 4KB transactions with the compute budget carried inline instead of via separate instructions (no address lookup table support). Includes `try_compile`, `validate`, `size`, `fee_payer`, and the format's limit constants (`PREFIX`, `MAX_TRANSACTION_SIZE`, `MAX_ADDRESSES`, `MAX_INSTRUCTIONS`, `MAX_SIGNATURES`, `MIN_HEAP_SIZE`/`MAX_HEAP_SIZE`/`DEFAULT_HEAP_SIZE`). Note that v1 transactions are gated behind the `enable_tx_v1` feature, which is not yet active on mainnet.
+- `solders.message.TransactionConfig`: the inline transaction config carried by a `MessageV1` (`priority_fee`, `compute_unit_limit`, `loaded_accounts_data_size_limit`, `heap_size`).
+- `solders.transaction_status.UiTransactionConfig`, plus `transaction_config` on `UiRawMessage` and `UiParsedMessage`, following the upstream v4.1 client types.
+- `inflation_rewards_commission_bps` on `RpcVoteAccountInfo`.
+- `Rent.minimum_balance_unchecked` and `Rent.try_minimum_balance`.
+
+### Changed
+
+- `VersionedMessage` now includes `MessageV1`, and `VersionedTransaction` accepts it.
+- `VersionedMessage` and `VersionedTransaction` are now serialized and deserialized with wincode rather than bincode. This is byte-identical for legacy and v0, and is the only encoding that supports v1. Affects `bytes()`/`from_bytes` on `VersionedTransaction`, `to_bytes_versioned`/`from_bytes_versioned`, and the base64 encoding used in RPC requests.
+- Bumped the Solana dependency set to the versions that ship `solana_message::v1`: `solana-message` and `solana-transaction` to 4, `solana-pubkey`/`solana-account`/`solana-rent`/`solana-sysvar` to 4, `solana-stake-interface` to 4, `solana-reward-info` to 6, `spl-token-interface` to 3, the client-types crates to 4.1, and litesvm to 0.15.2.
+- The Rust toolchain is now 1.95.0 (was 1.90.0); the new Solana crates do not build on 1.90.
+- `LiteSVM` now starts with a mainnet-like clock slot rather than 0, following litesvm 0.15.
+
+### Removed
+
+- `Rent` no longer exposes the rent-collection API removed upstream in `solana-rent` 4: `calculate_burn`, `due`, `due_amount`, and `with_slots_per_epoch`, along with the `DEFAULT_LAMPORTS_PER_BYTE_YEAR`, `DEFAULT_EXEMPTION_THRESHOLD` and `DEFAULT_BURN_PERCENT` constants. The `lamports_per_byte_year` field is replaced by `lamports_per_byte`, and it is now the first constructor argument.
+- `ComputeBudget`'s `simd_0339_active` constructor argument, which no longer exists in `solana-compute-budget` 4.1.
+
 # [0.28.0] - 2026-07-01
 
 ### Changed

@@ -8,7 +8,7 @@ from solders.compute_budget import ComputeBudget
 from solders.instruction import AccountMeta, Instruction
 from solders.keypair import Keypair
 from solders.litesvm import LiteSVM
-from solders.message import Message
+from solders.message import Message, MessageV1, TransactionConfig
 from solders.pubkey import Pubkey
 from solders.rent import Rent
 from solders.system_program import transfer
@@ -137,7 +137,7 @@ def test_sysvar() -> None:
     new_rent = Rent(
         burn_percent=0,
         exemption_threshold=rent_before.exemption_threshold,
-        lamports_per_byte_year=rent_before.lamports_per_byte_year,
+        lamports_per_byte=rent_before.lamports_per_byte,
     )
     client.set_rent(new_rent)
     rent_after = client.get_rent()
@@ -164,9 +164,9 @@ def test_nonexistent_account() -> None:
 
 def test_warp() -> None:
     client = LiteSVM()
+    # litesvm seeds the clock with a mainnet-like slot rather than 0.
     slot0 = client.get_clock().slot
-    assert slot0 == 0
-    new_slot = 1000
+    new_slot = slot0 + 1000
     client.warp_to_slot(new_slot)
     slot1 = client.get_clock().slot
     assert slot1 == new_slot
@@ -195,6 +195,35 @@ def test_many_instructions() -> None:
     greeted_account_after = client.get_account(greeted_pubkey)
     assert greeted_account_after is not None
     assert greeted_account_after.data == (num_ixs).to_bytes(4, "little")
+
+
+def test_transfer_v1_message() -> None:
+    # `enable_tx_v1` is not active on mainnet yet; this relies on LiteSVM
+    # enabling all features by default.
+    client = LiteSVM()
+    receiver = Pubkey.new_unique()
+    payer = Keypair()
+    client.airdrop(payer.pubkey(), 1_000_000_000)
+    transfer_lamports = 1_000_000
+    msg = MessageV1.try_compile(
+        payer.pubkey(),
+        [
+            transfer(
+                {
+                    "from_pubkey": payer.pubkey(),
+                    "to_pubkey": receiver,
+                    "lamports": transfer_lamports,
+                }
+            )
+        ],
+        client.latest_blockhash(),
+        TransactionConfig(compute_unit_limit=200_000),
+    )
+    tx = VersionedTransaction(msg, [payer])
+    assert tx.version() == 1
+    res = client.send_transaction(tx)
+    assert isinstance(res, TransactionMetadata)
+    assert client.get_balance(receiver) == transfer_lamports
 
 
 def test_transfer() -> None:

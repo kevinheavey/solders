@@ -12,7 +12,8 @@ description = "Solders base64 string crate."
 base64 = { workspace = true }
 bincode = { workspace = true }
 serde = { workspace = true }
-solana-message = { workspace = true }
-solana-transaction = { workspace = true }
+solana-message = { workspace = true, features = ["wincode"] }
+solana-transaction = { workspace = true, features = ["wincode"] }
 solders-message = { workspace = true }
 solders-transaction = { workspace = true }
+wincode = { workspace = true }

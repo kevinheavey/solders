@@ -14,7 +14,7 @@ derive_more = { workspace = true }
 pyo3 = { workspace = true, features = ["macros"] }
 serde = { workspace = true }
 solana-instruction = { workspace = true }
-solana-message = { workspace = true, features = ["bincode", "blake3"] }
+solana-message = { workspace = true, features = ["serde", "blake3", "wincode"] }
 solana-pubkey = { workspace = true }
 solders-address-lookup-table-account = { workspace = true }
 solders-hash = { workspace = true }
@@ -23,3 +23,4 @@ solders-macros = { workspace = true }
 solders-pubkey = { workspace = true }
 solders-traits = { workspace = true }
 solders-traits-core = { workspace = true }
+wincode = { workspace = true }
