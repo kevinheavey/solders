@@ -12,7 +12,7 @@ description = "Solders signature crate."
 derive_more = { workspace = true }
 pyo3 = { workspace = true, features = ["macros"] }
 serde = { workspace = true }
-solana-signature = { workspace = true, features = ["rand"] }
+solana-signature = { workspace = true, features = ["rand", "verify"] }
 solders-macros = { workspace = true }
 solders-pubkey = { workspace = true }
 solders-traits-core = { workspace = true }

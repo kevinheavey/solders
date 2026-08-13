@@ -1,6 +1,6 @@
 """The Solana LiteSVM library."""
 from pathlib import Path
-from typing import List, Optional, Sequence, Tuple, Union
+from typing import Dict, List, Optional, Sequence, Tuple, Union
 
 from .solders import (
     Account,
@@ -218,6 +218,56 @@ class LiteSVM:
             account: The account object to write.
         """
         self._inner.set_account(address, account)
+
+    def get_program_accounts(self, program_id: Pubkey) -> List[Tuple[Pubkey, Account]]:
+        """Return every account owned by the given program.
+
+        Args:
+            program_id: The program that owns the accounts.
+
+        Returns:
+            The (address, account) pairs owned by the program.
+        """
+        return self._inner.get_program_accounts(program_id)
+
+    def set_epoch_stake(self, vote_account: Pubkey, stake: int) -> None:
+        """Set the active stake delegated to a vote account for the current epoch.
+
+        This is what programs read via the ``sol_get_epoch_stake`` syscall.
+        Setting a stake of 0 removes the vote account.
+
+        Args:
+            vote_account: The vote account address.
+            stake: The stake in lamports.
+        """
+        self._inner.set_epoch_stake(vote_account, stake)
+
+    def set_epoch_stakes(self, stakes: Dict[Pubkey, int]) -> None:
+        """Replace the epoch stakes with the given mapping.
+
+        Args:
+            stakes: Mapping of vote account address to stake in lamports.
+        """
+        self._inner.set_epoch_stakes(stakes)
+
+    def epoch_stake(self, vote_account: Pubkey) -> int:
+        """Get the active stake delegated to a vote account for the current epoch.
+
+        Args:
+            vote_account: The vote account address.
+
+        Returns:
+            The stake in lamports, or 0 if the vote account has none.
+        """
+        return self._inner.epoch_stake(vote_account)
+
+    def epoch_total_stake(self) -> int:
+        """Get the total active stake across all vote accounts for the current epoch.
+
+        Returns:
+            The total stake in lamports.
+        """
+        return self._inner.epoch_total_stake()
 
     def get_balance(self, address: Pubkey) -> Optional[int]:
         """Gets the balance of the provided account address.
