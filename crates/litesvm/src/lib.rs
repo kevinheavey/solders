@@ -111,8 +111,7 @@ impl FeatureSet {
     #[setter]
     pub fn set_active(&mut self, val: HashMap<Pubkey, u64>) {
         let inner = val.into_iter().map(|x| (x.0 .0, x.1)).collect();
-        let to_set = self.0.active_mut();
-        *to_set = inner;
+        self.0 = FeatureSetOriginal::new(inner, self.0.inactive().clone());
     }
 
     /// Set[Pubkey]: The inactive feature IDs.
@@ -124,8 +123,7 @@ impl FeatureSet {
     #[setter]
     pub fn set_inactive(&mut self, val: HashSet<Pubkey>) {
         let inner = val.into_iter().map(|x| x.0).collect();
-        let to_set = self.0.inactive_mut();
-        *to_set = inner;
+        self.0 = FeatureSetOriginal::new(self.0.active().clone(), inner);
     }
 
     /// Activate a feature at the given slot.

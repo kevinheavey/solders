@@ -44,7 +44,8 @@ use solana_transaction_status_client_types::{
     UiParsedInstruction as UiParsedInstructionOriginal, UiParsedMessage as UiParsedMessageOriginal,
     UiPartiallyDecodedInstruction as UiPartiallyDecodedInstructionOriginal,
     UiRawMessage as UiRawMessageOriginal, UiTransaction as UiTransactionOriginal,
-    UiTransactionReturnData, UiTransactionStatusMeta as UiTransactionStatusMetaOriginal,
+    UiTransactionConfig as UiTransactionConfigOriginal, UiTransactionReturnData,
+    UiTransactionStatusMeta as UiTransactionStatusMetaOriginal,
     UiTransactionTokenBalance as UiTransactionTokenBalanceOriginal,
 };
 use solders_macros::{common_methods, enum_original_mapping, richcmp_eq_only};
@@ -143,6 +144,55 @@ impl UiAddressTableLookup {
     }
 }
 
+/// The inline transaction configuration of a v1 message, for pretty JSON serialization.
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
+#[pyclass(from_py_object, module = "solders.transaction_status", subclass)]
+pub struct UiTransactionConfig(UiTransactionConfigOriginal);
+
+transaction_status_boilerplate!(UiTransactionConfig);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl UiTransactionConfig {
+    #[pyo3(signature = (priority_fee=None, compute_unit_limit=None, loaded_accounts_data_size_limit=None, heap_size=None))]
+    #[new]
+    fn new(
+        priority_fee: Option<u64>,
+        compute_unit_limit: Option<u32>,
+        loaded_accounts_data_size_limit: Option<u32>,
+        heap_size: Option<u32>,
+    ) -> Self {
+        UiTransactionConfigOriginal {
+            priority_fee,
+            compute_unit_limit,
+            loaded_accounts_data_size_limit,
+            heap_size,
+        }
+        .into()
+    }
+
+    #[getter]
+    pub fn priority_fee(&self) -> Option<u64> {
+        self.0.priority_fee
+    }
+
+    #[getter]
+    pub fn compute_unit_limit(&self) -> Option<u32> {
+        self.0.compute_unit_limit
+    }
+
+    #[getter]
+    pub fn loaded_accounts_data_size_limit(&self) -> Option<u32> {
+        self.0.loaded_accounts_data_size_limit
+    }
+
+    #[getter]
+    pub fn heap_size(&self) -> Option<u32> {
+        self.0.heap_size
+    }
+}
+
 /// A duplicate representation of a Message, in raw format, for pretty JSON serialization
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
 #[pyclass(from_py_object, module = "solders.transaction_status", subclass)]
@@ -154,7 +204,7 @@ transaction_status_boilerplate!(UiRawMessage);
 #[common_methods]
 #[pymethods]
 impl UiRawMessage {
-    #[pyo3(signature = (header, account_keys, recent_blockhash, instructions, address_table_lookups=None))]
+    #[pyo3(signature = (header, account_keys, recent_blockhash, instructions, address_table_lookups=None, transaction_config=None))]
     #[new]
     fn new(
         header: MessageHeader,
@@ -162,6 +212,7 @@ impl UiRawMessage {
         recent_blockhash: SolderHash,
         instructions: Vec<UiCompiledInstruction>,
         address_table_lookups: Option<Vec<UiAddressTableLookup>>,
+        transaction_config: Option<UiTransactionConfig>,
     ) -> Self {
         UiRawMessageOriginal {
             header: header.into(),
@@ -170,8 +221,14 @@ impl UiRawMessage {
             instructions: instructions.into_iter().map(|ix| ix.into()).collect(),
             address_table_lookups: address_table_lookups
                 .map(|v| v.into_iter().map(|a| a.into()).collect()),
+            transaction_config: transaction_config.map(|c| c.into()),
         }
         .into()
+    }
+
+    #[getter]
+    pub fn transaction_config(&self) -> Option<UiTransactionConfig> {
+        self.0.transaction_config.clone().map(|c| c.into())
     }
 
     #[getter]
@@ -433,13 +490,14 @@ transaction_status_boilerplate!(UiParsedMessage);
 #[common_methods]
 #[pymethods]
 impl UiParsedMessage {
-    #[pyo3(signature = (account_keys, recent_blockhash, instructions, address_table_lookups=None))]
+    #[pyo3(signature = (account_keys, recent_blockhash, instructions, address_table_lookups=None, transaction_config=None))]
     #[new]
     fn new(
         account_keys: Vec<ParsedAccountTxStatus>,
         recent_blockhash: SolderHash,
         instructions: Vec<UiInstruction>,
         address_table_lookups: Option<Vec<UiAddressTableLookup>>,
+        transaction_config: Option<UiTransactionConfig>,
     ) -> Self {
         UiParsedMessageOriginal {
             account_keys: account_keys.into_iter().map(|p| p.into()).collect(),
@@ -447,8 +505,14 @@ impl UiParsedMessage {
             instructions: instructions.into_iter().map(|ix| ix.into()).collect(),
             address_table_lookups: address_table_lookups
                 .map(|v| v.into_iter().map(|a| a.into()).collect()),
+            transaction_config: transaction_config.map(|c| c.into()),
         }
         .into()
+    }
+
+    #[getter]
+    pub fn transaction_config(&self) -> Option<UiTransactionConfig> {
+        self.0.transaction_config.clone().map(|c| c.into())
     }
 
     #[getter]
@@ -1201,6 +1265,7 @@ pub fn include_transaction_status(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<TransactionBinaryEncoding>()?;
     m.add_class::<UiCompiledInstruction>()?;
     m.add_class::<UiAddressTableLookup>()?;
+    m.add_class::<UiTransactionConfig>()?;
     m.add_class::<UiRawMessage>()?;
     m.add_class::<ParsedAccountSource>()?;
     m.add_class::<ParsedAccountTxStatus>()?;

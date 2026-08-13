@@ -51,12 +51,8 @@ impl ComputeBudget {
 
     #[allow(clippy::new_without_default)]
     #[new]
-    #[pyo3(signature = (simd_0268_active, simd_0339_active=false))]
-    pub fn new(simd_0268_active: bool, simd_0339_active: bool) -> Self {
-        Self(ComputeBudgetOriginal::new_with_defaults(
-            simd_0268_active,
-            simd_0339_active,
-        ))
+    pub fn new(simd_0268_active: bool) -> Self {
+        Self(ComputeBudgetOriginal::new_with_defaults(simd_0268_active))
     }
 
     #[getter]

@@ -41,7 +41,11 @@ struct AddressLookupTableAccountOriginalDef {
 
 /// The definition of address lookup table accounts as used by ``MessageV0``.
 #[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize, From, Into)]
-#[pyclass(from_py_object, module = "solders.address_lookup_table_account", subclass)]
+#[pyclass(
+    from_py_object,
+    module = "solders.address_lookup_table_account",
+    subclass
+)]
 pub struct AddressLookupTableAccount(
     #[serde(with = "AddressLookupTableAccountOriginalDef")] AddressLookupTableAccountOriginal,
 );
@@ -78,7 +82,11 @@ impl AddressLookupTableAccount {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, From, Into)]
-#[pyclass(from_py_object, module = "solders.address_lookup_table_account", subclass)]
+#[pyclass(
+    from_py_object,
+    module = "solders.address_lookup_table_account",
+    subclass
+)]
 pub struct LookupTableStatusDeactivating(pub usize);
 impl_defaults!(LookupTableStatusDeactivating);
 
@@ -103,7 +111,12 @@ pub enum LookupTableStatusTagged {
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone)]
-#[pyclass(from_py_object, module = "solders.address_lookup_table_account", eq, eq_int)]
+#[pyclass(
+    from_py_object,
+    module = "solders.address_lookup_table_account",
+    eq,
+    eq_int
+)]
 pub enum LookupTableStatusFieldless {
     Activated,
     Deactivated,
@@ -152,7 +165,11 @@ impl From<LookupTableStatusType> for LookupTableStatusOriginal {
     }
 }
 
-#[pyclass(from_py_object, module = "solders.address_lookup_table_account", subclass)]
+#[pyclass(
+    from_py_object,
+    module = "solders.address_lookup_table_account",
+    subclass
+)]
 #[derive(Debug, PartialEq, Eq, From, Into, Serialize, Deserialize)]
 pub struct SlotHashes(SlotHashesOriginal);
 
@@ -187,7 +204,11 @@ impl SlotHashes {
     }
 }
 
-#[pyclass(from_py_object, module = "solders.address_lookup_table_account", subclass)]
+#[pyclass(
+    from_py_object,
+    module = "solders.address_lookup_table_account",
+    subclass
+)]
 #[derive(Clone, Debug, PartialEq, Eq, From, Into, Serialize, Deserialize)]
 pub struct LookupTableMeta(LookupTableMetaOriginal);
 
@@ -257,7 +278,11 @@ pub struct AddressLookupTableOriginalDef<'a> {
     addresses: Cow<'a, [PubkeyOriginal]>,
 }
 
-#[pyclass(from_py_object, module = "solders.address_lookup_table_account", subclass)]
+#[pyclass(
+    from_py_object,
+    module = "solders.address_lookup_table_account",
+    subclass
+)]
 #[derive(Clone, Debug, PartialEq, From, Into, Serialize, Deserialize)]
 pub struct AddressLookupTable(
     #[serde(with = "AddressLookupTableOriginalDef")] AddressLookupTableOriginal<'static>,

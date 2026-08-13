@@ -1,5 +1,36 @@
 # Changelog
 
+# Unreleased
+
+### Added
+
+- `solders.message.v0` and `solders.message.v1` submodules, mirroring `solana_message`'s own layout: legacy `Message` stays at `solders.message`, while the versioned types live under their version. `v0` holds `Message` and `MessageAddressTableLookup`; `v1` holds `Message`, `TransactionConfig`, `MessageError` and the format's constants (`V1_PREFIX`, `MAX_TRANSACTION_SIZE`, `MAX_ADDRESSES`, `MAX_INSTRUCTIONS`, `MAX_SIGNATURES`, `MIN_HEAP_SIZE`, `MAX_HEAP_SIZE`, `DEFAULT_HEAP_SIZE`, `FIXED_HEADER_SIZE`, `SIGNATURE_SIZE`). The flat names remain as aliases, so `solders.message.MessageV0` and `MessageAddressTableLookup` are unchanged.
+- `solders.message.MessageV1` (alias of `solders.message.v1.Message`): the SIMD-0385 v1 transaction message, supporting 4KB transactions with the compute budget carried inline instead of via separate instructions (no address lookup table support). Includes `try_compile`, `validate`, `size` and `fee_payer`. Note that v1 transactions are gated behind the `enable_tx_v1` feature, which is not yet active on mainnet.
+- `solders.message.TransactionConfig` (alias of `solders.message.v1.TransactionConfig`): the inline transaction config carried by a `MessageV1` (`priority_fee`, `compute_unit_limit`, `loaded_accounts_data_size_limit`, `heap_size`).
+- `solders.transaction_status.UiTransactionConfig`, plus `transaction_config` on `UiRawMessage` and `UiParsedMessage`, following the upstream v4.1 client types.
+- `inflation_rewards_commission_bps` on `RpcVoteAccountInfo`.
+- `Rent.minimum_balance_unchecked` and `Rent.try_minimum_balance`.
+- `solders.message.v1.MessageError`, raised by `v1.Message.validate`.
+- `solders.message.CompileError` is now registered on the module. It was already raised by `MessageV0.try_compile` but was not importable, so it could only be caught as a bare `Exception`.
+
+### Fixed
+
+- `RpcPerfSample.num_non_vote_transactions`: the getter was misspelled `num_non_votetransactions` in the bindings, so the documented (and type-stubbed) name did not exist at runtime.
+- Brought `solders.pyi` back in sync with the bindings. It had drifted in both directions: 46 `from_bytes` declarations named their parameter `raw`/`raw_bytes` where the binding takes `data` (a keyword call would type-check and then fail); `ComputeBudget.max_cpi_instruction_size`, `RpcInflationRate.foundation_term`, `RpcFilterTypeFieldless.from_string`/`default`, `RpcLeaderScheduleConfig.default`, `GetBlockProductionResp.height`, `InstructionErrorFieldless.ActiveVoteAccountClose` and `RpcCustomErrorFieldless.Base64Zstd` were declared but absent; `ComputeBudget.remaining_compute_units_cost`, `TransactionStatus.get_confirmation_status` and `TransactionErrorFieldless.WouldExceedMaxVotefCostLimit` used names the bindings do not export; and 39 members present at runtime were undeclared, including `from_bytes` on 23 RPC config types.
+
+### Changed
+
+- `VersionedMessage` now includes `MessageV1`, and `VersionedTransaction` accepts it.
+- `VersionedMessage` and `VersionedTransaction` are now serialized and deserialized with wincode rather than bincode. This is byte-identical for legacy and v0, and is the only encoding that supports v1. Affects `bytes()`/`from_bytes` on `VersionedTransaction`, `to_bytes_versioned`/`from_bytes_versioned`, and the base64 encoding used in RPC requests.
+- Bumped the Solana dependency set to the versions that ship `solana_message::v1`: `solana-message` and `solana-transaction` to 4, `solana-pubkey`/`solana-account`/`solana-rent`/`solana-sysvar` to 4, `solana-stake-interface` to 4, `solana-reward-info` to 6, `spl-token-interface` to 3, the client-types crates to 4.1, and litesvm to 0.15.2.
+- The Rust toolchain is now 1.95.0 (was 1.90.0); the new Solana crates do not build on 1.90.
+- `LiteSVM` now starts with a mainnet-like clock slot rather than 0, following litesvm 0.15.
+
+### Removed
+
+- `Rent` no longer exposes the rent-collection API removed upstream in `solana-rent` 4: `calculate_burn`, `due`, `due_amount`, and `with_slots_per_epoch`, along with the `DEFAULT_LAMPORTS_PER_BYTE_YEAR`, `DEFAULT_EXEMPTION_THRESHOLD` and `DEFAULT_BURN_PERCENT` constants. The `lamports_per_byte_year` field is replaced by `lamports_per_byte`, and it is now the first constructor argument.
+- `ComputeBudget`'s `simd_0339_active` constructor argument, which no longer exists in `solana-compute-budget` 4.1.
+
 # [0.28.0] - 2026-07-01
 
 ### Changed

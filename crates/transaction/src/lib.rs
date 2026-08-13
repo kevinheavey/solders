@@ -6,8 +6,9 @@ use solders_macros::{common_methods, richcmp_eq_only};
 use solders_pubkey::{convert_optional_pubkey, Pubkey};
 use solders_traits::handle_py_err;
 use solders_traits_core::{
-    impl_display, py_from_bytes_general_via_bincode, pybytes_general_via_bincode,
-    CommonMethodsCore, RichcmpEqualityOnly,
+    handle_py_value_err, impl_display, py_from_bytes_general_via_bincode,
+    pybytes_general_via_bincode, CommonMethodsCore, PyBytesGeneral, PyFromBytesGeneral,
+    RichcmpEqualityOnly,
 };
 use {
     solana_pubkey::Pubkey as PubkeyOriginal,
@@ -48,8 +49,20 @@ impl From<Transaction> for VersionedTransaction {
 }
 
 impl RichcmpEqualityOnly for VersionedTransaction {}
-pybytes_general_via_bincode!(VersionedTransaction);
-py_from_bytes_general_via_bincode!(VersionedTransaction);
+
+// wincode: bincode cannot encode v1, and the two agree byte-for-byte on legacy/v0.
+impl PyBytesGeneral for VersionedTransaction {
+    fn pybytes_general(&self) -> Vec<u8> {
+        wincode::serialize(&self.0).unwrap()
+    }
+}
+
+impl PyFromBytesGeneral for VersionedTransaction {
+    fn py_from_bytes_general(raw: &[u8]) -> PyResult<Self> {
+        handle_py_value_err(wincode::deserialize::<VersionedTransactionOriginal>(raw))
+    }
+}
+
 impl_display!(VersionedTransaction);
 solders_traits_core::common_methods_default!(VersionedTransaction);
 

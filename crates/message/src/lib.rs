@@ -5,7 +5,8 @@ use solders_macros::{common_methods, richcmp_eq_only};
 use solders_traits::{handle_py_err, PyErrWrapper};
 use solders_traits_core::{
     handle_py_value_err, impl_display, py_from_bytes_general_via_bincode,
-    pybytes_general_via_bincode, CommonMethodsCore, PyBytesGeneral, RichcmpEqualityOnly,
+    pybytes_general_via_bincode, CommonMethodsCore, PyBytesGeneral, PyFromBytesGeneral,
+    RichcmpEqualityOnly,
 };
 use {
     solana_instruction::Instruction as InstructionOriginal,
@@ -16,12 +17,20 @@ use {
             Message as MessageV0Original,
             MessageAddressTableLookup as MessageAddressTableLookupOriginal,
         },
+        v1::{
+            Message as MessageV1Original, TransactionConfig as TransactionConfigOriginal,
+            DEFAULT_HEAP_SIZE, FIXED_HEADER_SIZE, MAX_ADDRESSES, MAX_HEAP_SIZE, MAX_INSTRUCTIONS,
+            MAX_SIGNATURES, MAX_TRANSACTION_SIZE, MIN_HEAP_SIZE, SIGNATURE_SIZE, V1_PREFIX,
+        },
         AddressLookupTableAccount as AddressLookupTableAccountOriginal,
         MessageHeader as MessageHeaderOriginal, VersionedMessage as VersionedMessageOriginal,
         MESSAGE_HEADER_LENGTH,
     },
     solana_pubkey::Pubkey as PubkeyOriginal,
 };
+
+/// Concrete type for the `None` case of the generic reserved-addresses argument.
+type NoReservedAddresses = std::collections::HashSet<PubkeyOriginal>;
 
 use solders_address_lookup_table_account::AddressLookupTableAccount;
 use solders_hash::Hash as SolderHash;
@@ -585,6 +594,13 @@ create_exception!(
     "Raised when an error is encountered in compiling a message."
 );
 
+create_exception!(
+    solders,
+    MessageError,
+    PyException,
+    "Umbrella error for ``solders.message.v1.Message`` validation."
+);
+
 #[pyclass(from_py_object, module = "solders.message", subclass)]
 #[derive(PartialEq, Eq, Debug, Clone, Default, Serialize, Deserialize, From, Into)]
 /// A Solana transaction message (v0).
@@ -760,7 +776,8 @@ impl MessageV0 {
     /// Before loading addresses, we can't demote write locks for dynamically loaded
     /// addresses so this should not be used by the runtime.
     pub fn is_maybe_writable(&self, key_index: usize) -> bool {
-        self.0.is_maybe_writable(key_index, None)
+        self.0
+            .is_maybe_writable_with_reserved_addresses(key_index, None::<&NoReservedAddresses>)
     }
 
     /// Returns true if the account at the specified index signed this
@@ -803,11 +820,393 @@ impl MessageV0 {
     }
 }
 
+#[pyclass(from_py_object, module = "solders.message", subclass)]
+#[derive(PartialEq, Eq, Debug, Clone, Copy, Default, Serialize, Deserialize, From, Into)]
+/// Inline transaction configuration carried by a :class:`MessageV1`.
+///
+/// V1 messages carry the compute budget settings that legacy and v0 messages
+/// have to express as separate ``ComputeBudget`` instructions. Every field is
+/// optional; an unset field is simply omitted from the serialized message.
+///
+/// Args:
+///     priority_fee (Optional[int]): The priority fee in micro-lamports. Defaults to ``None``.
+///     compute_unit_limit (Optional[int]): The compute unit limit. Defaults to ``None``.
+///     loaded_accounts_data_size_limit (Optional[int]): The loaded accounts data size limit
+///         in bytes. Defaults to ``None``.
+///     heap_size (Optional[int]): The requested heap size in bytes. Defaults to ``None``.
+///
+/// Example:
+///     >>> from solders.message import TransactionConfig
+///     >>> config = TransactionConfig(priority_fee=1000, compute_unit_limit=200_000)
+///     >>> config.priority_fee
+///     1000
+///
+pub struct TransactionConfig(pub TransactionConfigOriginal);
+
+impl RichcmpEqualityOnly for TransactionConfig {}
+pybytes_general_via_bincode!(TransactionConfig);
+impl_display!(TransactionConfig);
+py_from_bytes_general_via_bincode!(TransactionConfig);
+solders_traits_core::common_methods_default!(TransactionConfig);
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl TransactionConfig {
+    #[new]
+    #[pyo3(signature = (priority_fee=None, compute_unit_limit=None, loaded_accounts_data_size_limit=None, heap_size=None))]
+    pub fn new(
+        priority_fee: Option<u64>,
+        compute_unit_limit: Option<u32>,
+        loaded_accounts_data_size_limit: Option<u32>,
+        heap_size: Option<u32>,
+    ) -> Self {
+        TransactionConfigOriginal {
+            priority_fee,
+            compute_unit_limit,
+            loaded_accounts_data_size_limit,
+            heap_size,
+        }
+        .into()
+    }
+
+    #[staticmethod]
+    #[pyo3(name = "default")]
+    /// Create a new default ``TransactionConfig``, with every field unset.
+    ///
+    /// Returns:
+    ///     TransactionConfig: default ``TransactionConfig``.
+    pub fn new_default() -> Self {
+        Self::default()
+    }
+
+    #[getter]
+    /// Optional[int]: The priority fee in micro-lamports.
+    pub fn priority_fee(&self) -> Option<u64> {
+        self.0.priority_fee
+    }
+
+    #[getter]
+    /// Optional[int]: The compute unit limit.
+    pub fn compute_unit_limit(&self) -> Option<u32> {
+        self.0.compute_unit_limit
+    }
+
+    #[getter]
+    /// Optional[int]: The loaded accounts data size limit, in bytes.
+    pub fn loaded_accounts_data_size_limit(&self) -> Option<u32> {
+        self.0.loaded_accounts_data_size_limit
+    }
+
+    #[getter]
+    /// Optional[int]: The requested heap size, in bytes.
+    pub fn heap_size(&self) -> Option<u32> {
+        self.0.heap_size
+    }
+
+    /// The number of bytes this config occupies in a serialized ``MessageV1``.
+    ///
+    /// Returns:
+    ///     int: The serialized size.
+    pub fn size(&self) -> usize {
+        self.0.size()
+    }
+
+    #[staticmethod]
+    /// Deserialize a serialized ``TransactionConfig`` object.
+    ///
+    /// Args:
+    ///     data (bytes): The serialized ``TransactionConfig``.
+    ///
+    /// Returns:
+    ///     TransactionConfig: The deserialized ``TransactionConfig``.
+    pub fn from_bytes(data: &[u8]) -> PyResult<Self> {
+        Self::py_from_bytes(data)
+    }
+}
+
+#[pyclass(from_py_object, module = "solders.message", subclass)]
+#[derive(PartialEq, Eq, Debug, Clone, Default, Serialize, Deserialize, From, Into)]
+/// A Solana transaction message (v1), as specified by SIMD-0385.
+///
+/// This message format supports transactions up to
+/// :attr:`MessageV1.MAX_TRANSACTION_SIZE` bytes and carries its compute budget
+/// settings inline via :class:`TransactionConfig`, instead of requiring
+/// separate compute budget instructions. Unlike :class:`MessageV0` it does not
+/// support address lookup tables.
+///
+/// Args:
+///     header (MessageHeader): The message header, identifying signed and read-only `account_keys`.
+///     config (TransactionConfig): The inline transaction configuration.
+///     lifetime_specifier (Hash): Hash of a recent block, determining when this transaction expires.
+///     account_keys (Sequence[Pubkey]): All account addresses referenced by this message.
+///     instructions (Sequence[CompiledInstruction]): The instructions to include in the message.
+///
+/// Example:
+///     >>> from solders.message import MessageV1, MessageHeader, TransactionConfig
+///     >>> from solders.instruction import CompiledInstruction
+///     >>> from solders.hash import Hash
+///     >>> from solders.pubkey import Pubkey
+///     >>> instructions = [CompiledInstruction(program_id_index=1, accounts=bytes([0]), data=bytes([]))]
+///     >>> account_keys = [Pubkey.new_unique(), Pubkey.new_unique()]
+///     >>> header = MessageHeader(1, 0, 1)
+///     >>> config = TransactionConfig(compute_unit_limit=200_000)
+///     >>> blockhash = Hash.default()  # replace with a real blockhash
+///     >>> message = MessageV1(header, config, blockhash, account_keys, instructions)
+///
+pub struct MessageV1(pub MessageV1Original);
+
+impl RichcmpEqualityOnly for MessageV1 {}
+impl_display!(MessageV1);
+solders_traits_core::common_methods_default!(MessageV1);
+
+impl PyBytesGeneral for MessageV1 {
+    fn pybytes_general(&self) -> Vec<u8> {
+        // wincode: v1 is not bincode-serializable. Omits the version prefix,
+        // matching the other message types; `to_bytes_versioned` includes it.
+        wincode::serialize(&self.0).unwrap()
+    }
+}
+
+impl PyFromBytesGeneral for MessageV1 {
+    fn py_from_bytes_general(raw: &[u8]) -> PyResult<Self> {
+        handle_py_value_err(wincode::deserialize::<MessageV1Original>(raw))
+    }
+}
+
+#[richcmp_eq_only]
+#[common_methods]
+#[pymethods]
+impl MessageV1 {
+    #[new]
+    pub fn new(
+        header: MessageHeader,
+        config: TransactionConfig,
+        lifetime_specifier: SolderHash,
+        account_keys: Vec<Pubkey>,
+        instructions: Vec<CompiledInstruction>,
+    ) -> Self {
+        MessageV1Original {
+            header: header.into(),
+            config: config.into(),
+            lifetime_specifier: lifetime_specifier.into(),
+            account_keys: account_keys.into_iter().map(|p| p.into()).collect(),
+            instructions: instructions.into_iter().map(|ix| ix.into()).collect(),
+        }
+        .into()
+    }
+
+    #[getter]
+    /// MessageHeader: The message header, identifying signed and read-only ``account_keys``.
+    pub fn header(&self) -> MessageHeader {
+        self.0.header.into()
+    }
+
+    #[getter]
+    /// TransactionConfig: The inline transaction configuration.
+    pub fn config(&self) -> TransactionConfig {
+        self.0.config.into()
+    }
+
+    #[getter]
+    /// Hash: The lifetime specifier (blockhash) that determines when this transaction expires.
+    pub fn lifetime_specifier(&self) -> SolderHash {
+        self.0.lifetime_specifier.into()
+    }
+
+    #[getter]
+    /// Hash: Alias of :attr:`lifetime_specifier`, for parity with the other message types.
+    pub fn recent_blockhash(&self) -> SolderHash {
+        self.0.lifetime_specifier.into()
+    }
+
+    #[getter]
+    /// list[Pubkey]: All account addresses referenced by this message.
+    pub fn account_keys(&self) -> Vec<Pubkey> {
+        self.0
+            .account_keys
+            .clone()
+            .into_iter()
+            .map(|p| p.into())
+            .collect()
+    }
+
+    #[getter]
+    /// list[CompiledInstruction]: The instructions to execute.
+    pub fn instructions(&self) -> Vec<CompiledInstruction> {
+        self.0
+            .instructions
+            .clone()
+            .into_iter()
+            .map(|p| p.into())
+            .collect()
+    }
+
+    #[staticmethod]
+    #[pyo3(signature = (payer, instructions, recent_blockhash, config=None))]
+    /// Create a signable transaction message from a ``payer`` public key, a list
+    /// of ``instructions``, a ``recent_blockhash`` and an optional ``config``.
+    ///
+    /// Args:
+    ///     payer (Pubkey): The fee payer.
+    ///     instructions (Sequence[Instruction]): The instructions to include in the message.
+    ///     recent_blockhash (Hash): Hash of a recent block.
+    ///     config (Optional[TransactionConfig]): The inline transaction configuration.
+    ///         Defaults to an empty config.
+    ///
+    /// Returns:
+    ///     MessageV1: The message object.
+    ///
+    /// Example:
+    ///     >>> from solders.pubkey import Pubkey
+    ///     >>> from solders.instruction import Instruction, AccountMeta
+    ///     >>> from solders.message import MessageV1, TransactionConfig
+    ///     >>> from solders.hash import Hash
+    ///     >>> keys = [Pubkey.new_unique() for i in range(3)]
+    ///     >>> payer = keys[0]
+    ///     >>> program_id = keys[2]
+    ///     >>> ix_accounts = [AccountMeta(keys[1], True, True)]
+    ///     >>> instructions = [Instruction(program_id, bytes([]), ix_accounts)]
+    ///     >>> recent_blockhash = Hash.new_unique()
+    ///     >>> config = TransactionConfig(compute_unit_limit=200_000)
+    ///     >>> msg = MessageV1.try_compile(payer, instructions, recent_blockhash, config)
+    ///
+    pub fn try_compile(
+        payer: &Pubkey,
+        instructions: Vec<Instruction>,
+        recent_blockhash: SolderHash,
+        config: Option<TransactionConfig>,
+    ) -> PyResult<Self> {
+        MessageV1Original::try_compile_with_config(
+            payer.as_ref(),
+            &instructions
+                .into_iter()
+                .map(|ix| ix.into())
+                .collect::<Vec<InstructionOriginal>>(),
+            recent_blockhash.into(),
+            config.unwrap_or_default().into(),
+        )
+        .map_or_else(
+            |e| {
+                Err(PyErr::from(PyErrWrapper(CompileError::new_err(
+                    e.to_string(),
+                ))))
+            },
+            |v| Ok(v.into()),
+        )
+    }
+
+    /// Pubkey: The fee payer, or ``None`` if the message has no account keys.
+    pub fn fee_payer(&self) -> Option<Pubkey> {
+        self.0.fee_payer().map(|p| (*p).into())
+    }
+
+    /// The serialized size of this message in bytes, excluding the version prefix.
+    ///
+    /// Returns:
+    ///     int: The serialized size.
+    pub fn size(&self) -> usize {
+        self.0.size()
+    }
+
+    /// Sanitize message fields and compiled instruction indexes.
+    pub fn sanitize(&self) -> PyResult<()> {
+        handle_py_err(VersionedMessageOriginal::from(self.clone()).sanitize())
+    }
+
+    /// Check that this message satisfies the v1 format limits.
+    ///
+    /// Raises:
+    ///     MessageError: if the message is invalid.
+    pub fn validate(&self) -> PyResult<()> {
+        self.0
+            .validate()
+            .map_err(|e| PyErr::from(PyErrWrapper(MessageError::new_err(e.to_string()))))
+    }
+
+    /// Returns true if the account at the specified index is called as a program by an instruction.
+    pub fn is_key_called_as_program(&self, key_index: usize) -> bool {
+        self.0.is_key_called_as_program(key_index)
+    }
+
+    /// Returns true if the account at the specified index was requested as writable.
+    pub fn is_maybe_writable(&self, key_index: usize) -> bool {
+        self.0
+            .is_maybe_writable_with_reserved_addresses(key_index, None::<&NoReservedAddresses>)
+    }
+
+    /// Returns true if the account at the specified index signed this message.
+    pub fn is_signer(&self, index: usize) -> bool {
+        self.0.is_signer(index)
+    }
+
+    /// Returns true if the account at the specified index is a writable signer.
+    pub fn is_signer_writable(&self, index: usize) -> bool {
+        self.0.is_signer_writable(index)
+    }
+
+    /// Returns true if the account at the specified index is not invoked as a
+    /// program or, if invoked, is passed to a program.
+    pub fn is_non_loader_key(&self, key_index: usize) -> bool {
+        VersionedMessageOriginal::from(self.clone()).is_non_loader_key(key_index)
+    }
+
+    /// See https://docs.rs/solana-message/latest/solana_message/v1/struct.Message.html#method.is_upgradeable_loader_present
+    pub fn is_upgradeable_loader_present(&self) -> bool {
+        self.0.is_upgradeable_loader_present()
+    }
+
+    /// See https://docs.rs/solana-message/latest/solana_message/v1/struct.Message.html#method.demote_program_id
+    pub fn demote_program_id(&self, i: usize) -> bool {
+        self.0.demote_program_id(i)
+    }
+
+    /// Compute the blake3 hash of this transaction's message.
+    ///
+    /// Returns:
+    ///     Hash: The blake3 hash.
+    pub fn hash(&self) -> SolderHash {
+        VersionedMessageOriginal::from(self.clone()).hash().into()
+    }
+
+    #[staticmethod]
+    /// Compute the blake3 hash of a raw transaction message.
+    ///
+    /// Returns:
+    ///     Hash: The blake3 hash.
+    pub fn hash_raw_message(message_bytes: &[u8]) -> SolderHash {
+        VersionedMessageOriginal::hash_raw_message(message_bytes).into()
+    }
+
+    #[staticmethod]
+    #[pyo3(name = "default")]
+    /// Create a new default ``MessageV1``.
+    ///
+    /// Returns:
+    ///     MessageV1: default ``MessageV1``.
+    pub fn new_default() -> Self {
+        Self::default()
+    }
+
+    #[staticmethod]
+    /// Deserialize a serialized ``MessageV1`` object.
+    ///
+    /// Args:
+    ///     data (bytes): The serialized ``MessageV1``, without the version prefix byte.
+    ///
+    /// Returns:
+    ///     MessageV1: The deserialized ``MessageV1``.
+    pub fn from_bytes(data: &[u8]) -> PyResult<Self> {
+        Self::py_from_bytes(data)
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize, FromPyObject, IntoPyObject)]
 #[serde(from = "VersionedMessageOriginal", into = "VersionedMessageOriginal")]
 pub enum VersionedMessage {
     Legacy(Message),
     V0(MessageV0),
+    V1(MessageV1),
 }
 
 impl From<VersionedMessageOriginal> for VersionedMessage {
@@ -815,6 +1214,7 @@ impl From<VersionedMessageOriginal> for VersionedMessage {
         match v {
             VersionedMessageOriginal::Legacy(m) => Self::Legacy(m.into()),
             VersionedMessageOriginal::V0(m) => Self::V0(m.into()),
+            VersionedMessageOriginal::V1(m) => Self::V1(m.into()),
         }
     }
 }
@@ -824,6 +1224,7 @@ impl From<VersionedMessage> for VersionedMessageOriginal {
         match v {
             VersionedMessage::Legacy(m) => Self::Legacy(m.into()),
             VersionedMessage::V0(m) => Self::V0(m.into()),
+            VersionedMessage::V1(m) => Self::V1(m.into()),
         }
     }
 }
@@ -873,6 +1274,51 @@ impl From<VersionedMessage> for MessageV0Original {
     }
 }
 
+impl From<MessageV1> for VersionedMessage {
+    fn from(m: MessageV1) -> Self {
+        Self::V1(m)
+    }
+}
+
+impl From<VersionedMessage> for MessageV1 {
+    fn from(v: VersionedMessage) -> Self {
+        match v {
+            VersionedMessage::V1(m) => m,
+            _ => unreachable!(),
+        }
+    }
+}
+
+impl From<MessageV1> for VersionedMessageOriginal {
+    fn from(m: MessageV1) -> Self {
+        Self::V1(m.into())
+    }
+}
+
+impl From<VersionedMessageOriginal> for MessageV1 {
+    fn from(v: VersionedMessageOriginal) -> Self {
+        match v {
+            VersionedMessageOriginal::V1(m) => m.into(),
+            _ => unreachable!(),
+        }
+    }
+}
+
+impl From<MessageV1Original> for VersionedMessage {
+    fn from(m: MessageV1Original) -> Self {
+        Self::V1(m.into())
+    }
+}
+
+impl From<VersionedMessage> for MessageV1Original {
+    fn from(v: VersionedMessage) -> Self {
+        match v {
+            VersionedMessage::V1(m) => m.into(),
+            _ => unreachable!(),
+        }
+    }
+}
+
 /// Serialize a versioned message, with a leading byte indicating whether or not it's a legacy message.
 ///
 /// If you want to serialize without the leading byte, use `bytes(msg)`.
@@ -896,6 +1342,24 @@ pub fn to_bytes_versioned(msg: VersionedMessage) -> Vec<u8> {
 ///     VersionedMessage: the deserialized message.
 #[pyfunction]
 pub fn from_bytes_versioned(raw: &[u8]) -> PyResult<VersionedMessage> {
-    let deser = bincode::deserialize::<VersionedMessageOriginal>(raw);
+    let deser = wincode::deserialize::<VersionedMessageOriginal>(raw);
     handle_py_value_err(deser)
+}
+
+/// Register the ``solana_message::v1`` module-scope constants.
+///
+/// They are added to the flat extension module under ``V1_``-prefixed names and
+/// re-exported without the prefix by ``solders.message.v1``.
+pub fn include_v1_constants(m: &Bound<'_, PyModule>) -> PyResult<()> {
+    m.add("V1_PREFIX", V1_PREFIX)?;
+    m.add("V1_MAX_TRANSACTION_SIZE", MAX_TRANSACTION_SIZE)?;
+    m.add("V1_MAX_ADDRESSES", MAX_ADDRESSES)?;
+    m.add("V1_MAX_INSTRUCTIONS", MAX_INSTRUCTIONS)?;
+    m.add("V1_MAX_SIGNATURES", MAX_SIGNATURES)?;
+    m.add("V1_DEFAULT_HEAP_SIZE", DEFAULT_HEAP_SIZE)?;
+    m.add("V1_MIN_HEAP_SIZE", MIN_HEAP_SIZE)?;
+    m.add("V1_MAX_HEAP_SIZE", MAX_HEAP_SIZE)?;
+    m.add("V1_FIXED_HEADER_SIZE", FIXED_HEADER_SIZE)?;
+    m.add("V1_SIGNATURE_SIZE", SIGNATURE_SIZE)?;
+    Ok(())
 }

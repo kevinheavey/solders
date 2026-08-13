@@ -28,16 +28,19 @@ impl From<Base64String> for Transaction {
     }
 }
 
+// wincode: bincode cannot encode v1, and the two agree byte-for-byte on legacy/v0.
 impl From<VersionedTransaction> for Base64String {
     fn from(tx: VersionedTransaction) -> Self {
-        Self(base64::encode(bincode::serialize(&tx).unwrap()))
+        Self(base64::encode(
+            wincode::serialize(&VersionedTransactionOriginal::from(tx)).unwrap(),
+        ))
     }
 }
 
 impl From<Base64String> for VersionedTransaction {
     fn from(tx: Base64String) -> Self {
         let bytes = base64::decode(tx.0).unwrap();
-        bincode::deserialize::<VersionedTransactionOriginal>(&bytes)
+        wincode::deserialize::<VersionedTransactionOriginal>(&bytes)
             .unwrap()
             .into()
     }
@@ -65,7 +68,7 @@ impl From<VersionedMessage> for Base64String {
 impl From<Base64String> for VersionedMessage {
     fn from(m: Base64String) -> Self {
         let bytes = base64::decode(m.0).unwrap();
-        bincode::deserialize::<VersionedMessageOriginal>(&bytes)
+        wincode::deserialize::<VersionedMessageOriginal>(&bytes)
             .unwrap()
             .into()
     }

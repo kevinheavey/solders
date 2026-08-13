@@ -516,6 +516,8 @@ response_data_boilerplate!(RpcVoteAccountInfo);
 #[pymethods]
 impl RpcVoteAccountInfo {
     #[new]
+    #[pyo3(signature = (vote_pubkey, node_pubkey, activated_stake, commission, epoch_vote_account, epoch_credits, last_vote, root_slot, inflation_rewards_commission_bps=None))]
+    #[allow(clippy::too_many_arguments)]
     pub fn new(
         vote_pubkey: Pubkey,
         node_pubkey: Pubkey,
@@ -525,18 +527,26 @@ impl RpcVoteAccountInfo {
         epoch_credits: Vec<(u64, u64, u64)>,
         last_vote: u64,
         root_slot: u64,
+        inflation_rewards_commission_bps: Option<u16>,
     ) -> Self {
         RpcVoteAccountInfoOriginal {
             vote_pubkey: vote_pubkey.to_string(),
             node_pubkey: node_pubkey.to_string(),
             activated_stake,
             commission,
+            inflation_rewards_commission_bps,
             epoch_vote_account,
             epoch_credits,
             last_vote,
             root_slot,
         }
         .into()
+    }
+
+    /// Optional[int]: The raw basis points used for rewards payout.
+    #[getter]
+    pub fn inflation_rewards_commission_bps(&self) -> Option<u16> {
+        self.0.inflation_rewards_commission_bps
     }
     #[getter]
     pub fn vote_pubkey(&self) -> Pubkey {

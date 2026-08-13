@@ -16,7 +16,7 @@ solana-message = { workspace = true }
 solana-pubkey = { workspace = true }
 solana-sanitize = { workspace = true }
 solana-signature = { workspace = true }
-solana-transaction = { workspace = true, features = ["bincode", "verify"] }
+solana-transaction = { workspace = true, features = ["serde", "verify", "wincode"] }
 solders-hash = { workspace = true }
 solders-instruction = { workspace = true }
 solders-keypair = { workspace = true }
@@ -26,3 +26,4 @@ solders-pubkey = { workspace = true }
 solders-signature = { workspace = true }
 solders-traits = { workspace = true }
 solders-traits-core = { workspace = true }
+wincode = { workspace = true }
