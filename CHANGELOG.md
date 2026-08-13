@@ -10,6 +10,8 @@
 - `solders.transaction_status.UiTransactionConfig`, plus `transaction_config` on `UiRawMessage` and `UiParsedMessage`, following the upstream v4.1 client types.
 - `inflation_rewards_commission_bps` on `RpcVoteAccountInfo`.
 - `Rent.minimum_balance_unchecked` and `Rent.try_minimum_balance`.
+- `LiteSVM.get_program_accounts`, returning every `(address, account)` pair owned by a program.
+- `LiteSVM.set_epoch_stake`, `LiteSVM.set_epoch_stakes`, `LiteSVM.epoch_stake` and `LiteSVM.epoch_total_stake`, wrapping the epoch stake support added in litesvm 0.14. This is what programs read via the `sol_get_epoch_stake` syscall, so it could not previously be exercised from Python.
 - `solders.message.v1.MessageError`, raised by `v1.Message.validate`.
 - `solders.message.CompileError` is now registered on the module. It was already raised by `MessageV0.try_compile` but was not importable, so it could only be caught as a bare `Exception`.
 

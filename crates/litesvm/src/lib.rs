@@ -249,6 +249,39 @@ impl LiteSVM {
             .map_err(to_py_err)
     }
 
+    /// list[tuple[Pubkey, Account]]: All accounts owned by the given program.
+    pub fn get_program_accounts(&self, program_id: Pubkey) -> Vec<(Pubkey, Account)> {
+        self.0
+            .get_program_accounts(&program_id.0)
+            .into_iter()
+            .map(|(k, a)| (Pubkey(k), Account::from(a)))
+            .collect()
+    }
+
+    /// Set the stake of a vote account for the current epoch.
+    pub fn set_epoch_stake(&mut self, vote_account: Pubkey, stake: u64) -> PyResult<()> {
+        self.0
+            .set_epoch_stake(vote_account.0, stake)
+            .map_err(to_py_err)
+    }
+
+    /// Replace the epoch stakes with the given mapping.
+    pub fn set_epoch_stakes(&mut self, stakes: HashMap<Pubkey, u64>) -> PyResult<()> {
+        self.0
+            .set_epoch_stakes(stakes.into_iter().map(|(k, v)| (k.0, v)))
+            .map_err(to_py_err)
+    }
+
+    /// int: The stake of the given vote account for the current epoch.
+    pub fn epoch_stake(&self, vote_account: Pubkey) -> u64 {
+        self.0.epoch_stake(&vote_account.0)
+    }
+
+    /// int: The total epoch stake across all vote accounts.
+    pub fn epoch_total_stake(&self) -> u64 {
+        self.0.epoch_total_stake()
+    }
+
     pub fn get_balance(&self, pubkey: Pubkey) -> Option<u64> {
         self.0.get_balance(&pubkey.0)
     }

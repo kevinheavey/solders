@@ -226,6 +226,48 @@ def test_transfer_v1_message() -> None:
     assert client.get_balance(receiver) == transfer_lamports
 
 
+def test_get_program_accounts() -> None:
+    client = LiteSVM()
+    program_id = Pubkey.new_unique()
+    other_program = Pubkey.new_unique()
+    owned = [Pubkey.new_unique() for _ in range(3)]
+    for pk in owned:
+        client.set_account(pk, Account(lamports=5, data=bytes([1]), owner=program_id))
+    client.set_account(
+        Pubkey.new_unique(), Account(lamports=5, data=bytes([1]), owner=other_program)
+    )
+    found = client.get_program_accounts(program_id)
+    assert {addr for addr, _ in found} == set(owned)
+    assert all(acc.owner == program_id for _, acc in found)
+    assert client.get_program_accounts(Pubkey.new_unique()) == []
+
+
+def test_epoch_stake() -> None:
+    client = LiteSVM()
+    vote_a = Pubkey.new_unique()
+    vote_b = Pubkey.new_unique()
+    assert client.epoch_total_stake() == 0
+    assert client.epoch_stake(vote_a) == 0
+
+    client.set_epoch_stake(vote_a, 100)
+    client.set_epoch_stake(vote_b, 50)
+    assert client.epoch_stake(vote_a) == 100
+    assert client.epoch_total_stake() == 150
+
+    # overwriting adjusts the total rather than accumulating
+    client.set_epoch_stake(vote_a, 25)
+    assert client.epoch_total_stake() == 75
+
+    # zero removes the vote account
+    client.set_epoch_stake(vote_a, 0)
+    assert client.epoch_stake(vote_a) == 0
+    assert client.epoch_total_stake() == 50
+
+    client.set_epoch_stakes({vote_a: 7, vote_b: 3})
+    assert client.epoch_stake(vote_a) == 7
+    assert client.epoch_total_stake() == 10
+
+
 def test_transfer() -> None:
     client = LiteSVM()
     receiver = Pubkey.new_unique()
