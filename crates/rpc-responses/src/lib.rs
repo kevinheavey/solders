@@ -1321,7 +1321,7 @@ impl RpcPerfSample {
         self.0.sample_period_secs
     }
     #[getter]
-    pub fn num_non_votetransactions(&self) -> Option<u64> {
+    pub fn num_non_vote_transactions(&self) -> Option<u64> {
         self.0.num_non_vote_transactions
     }
 }

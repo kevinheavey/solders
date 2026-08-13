@@ -12,6 +12,11 @@
 - `solders.message.MessageV1Error`, raised by `MessageV1.validate`.
 - `solders.message.CompileError` is now registered on the module. It was already raised by `MessageV0.try_compile` but was not importable, so it could only be caught as a bare `Exception`.
 
+### Fixed
+
+- `RpcPerfSample.num_non_vote_transactions`: the getter was misspelled `num_non_votetransactions` in the bindings, so the documented (and type-stubbed) name did not exist at runtime.
+- Brought `solders.pyi` back in sync with the bindings. It had drifted in both directions: 46 `from_bytes` declarations named their parameter `raw`/`raw_bytes` where the binding takes `data` (a keyword call would type-check and then fail); `ComputeBudget.max_cpi_instruction_size`, `RpcInflationRate.foundation_term`, `RpcFilterTypeFieldless.from_string`/`default`, `RpcLeaderScheduleConfig.default`, `GetBlockProductionResp.height`, `InstructionErrorFieldless.ActiveVoteAccountClose` and `RpcCustomErrorFieldless.Base64Zstd` were declared but absent; `ComputeBudget.remaining_compute_units_cost`, `TransactionStatus.get_confirmation_status` and `TransactionErrorFieldless.WouldExceedMaxVotefCostLimit` used names the bindings do not export; and 39 members present at runtime were undeclared, including `from_bytes` on 23 RPC config types.
+
 ### Changed
 
 - `VersionedMessage` now includes `MessageV1`, and `VersionedTransaction` accepts it.
