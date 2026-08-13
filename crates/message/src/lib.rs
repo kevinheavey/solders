@@ -596,9 +596,9 @@ create_exception!(
 
 create_exception!(
     solders,
-    MessageV1Error,
+    MessageError,
     PyException,
-    "Umbrella error for ``MessageV1`` validation."
+    "Umbrella error for ``solders.message.v1.Message`` validation."
 );
 
 #[pyclass(from_py_object, module = "solders.message", subclass)]
@@ -1121,7 +1121,7 @@ impl MessageV1 {
     pub fn validate(&self) -> PyResult<()> {
         self.0
             .validate()
-            .map_err(|e| PyErr::from(PyErrWrapper(MessageV1Error::new_err(e.to_string()))))
+            .map_err(|e| PyErr::from(PyErrWrapper(MessageError::new_err(e.to_string()))))
     }
 
     /// Returns true if the account at the specified index is called as a program by an instruction.

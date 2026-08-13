@@ -26,6 +26,7 @@ from ..solders import (
 )
 from ..solders import (
     V1_PREFIX,
+    MessageError,
     TransactionConfig,
 )
 from ..solders import (
@@ -33,9 +34,6 @@ from ..solders import (
 )
 from ..solders import (
     MessageV1 as Message,
-)
-from ..solders import (
-    MessageV1Error as MessageError,
 )
 
 __all__ = [
