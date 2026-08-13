@@ -1,7 +1,8 @@
 use pyo3::prelude::*;
 use solders_message::{
-    from_bytes_versioned, to_bytes_versioned, CompileError, Message, MessageAddressTableLookup,
-    MessageHeader, MessageV0, MessageV1, MessageV1Error, TransactionConfig,
+    from_bytes_versioned, include_v1_constants, to_bytes_versioned, CompileError, Message,
+    MessageAddressTableLookup, MessageHeader, MessageV0, MessageV1, MessageV1Error,
+    TransactionConfig,
 };
 
 pub(crate) fn include_message(m: &Bound<'_, PyModule>) -> PyResult<()> {
@@ -14,6 +15,7 @@ pub(crate) fn include_message(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<TransactionConfig>()?;
     m.add("CompileError", py.get_type::<CompileError>())?;
     m.add("MessageV1Error", py.get_type::<MessageV1Error>())?;
+    include_v1_constants(m)?;
     m.add_function(wrap_pyfunction!(to_bytes_versioned, m)?)?;
     m.add_function(wrap_pyfunction!(from_bytes_versioned, m)?)?;
     Ok(())

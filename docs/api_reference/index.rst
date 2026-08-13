@@ -21,7 +21,7 @@ Modules:
    instruction
    litesvm
    keypair
-   message
+   message/index
    null_signer
    presigner
    pubkey

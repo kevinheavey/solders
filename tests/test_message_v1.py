@@ -4,13 +4,15 @@ from solders.instruction import AccountMeta, CompiledInstruction, Instruction
 from solders.keypair import Keypair
 from solders.message import (
     Message,
+    MessageAddressTableLookup,
     MessageHeader,
     MessageV0,
     MessageV1,
-    MessageV1Error,
     TransactionConfig,
     from_bytes_versioned,
     to_bytes_versioned,
+    v0,
+    v1,
 )
 from solders.pubkey import Pubkey
 from solders.transaction import SanitizeError, Transaction, VersionedTransaction
@@ -53,15 +55,22 @@ def test_transaction_config_fields() -> None:
     assert TransactionConfig.from_json(config.to_json()) == config
 
 
+def test_flat_names_alias_the_submodules() -> None:
+    assert v1.Message is MessageV1
+    assert v0.Message is MessageV0
+    assert v1.TransactionConfig is TransactionConfig
+    assert v0.MessageAddressTableLookup is MessageAddressTableLookup
+
+
 def test_constants() -> None:
-    assert MessageV1.PREFIX == 0x81
-    assert MessageV1.MAX_TRANSACTION_SIZE == 4096
-    assert MessageV1.MAX_ADDRESSES == 64
-    assert MessageV1.MAX_INSTRUCTIONS == 64
-    assert MessageV1.MAX_SIGNATURES == 12
-    assert MessageV1.MIN_HEAP_SIZE == 32768
-    assert MessageV1.MAX_HEAP_SIZE == 262144
-    assert MessageV1.DEFAULT_HEAP_SIZE == MessageV1.MIN_HEAP_SIZE
+    assert v1.V1_PREFIX == 0x81
+    assert v1.MAX_TRANSACTION_SIZE == 4096
+    assert v1.MAX_ADDRESSES == 64
+    assert v1.MAX_INSTRUCTIONS == 64
+    assert v1.MAX_SIGNATURES == 12
+    assert v1.MIN_HEAP_SIZE == 32768
+    assert v1.MAX_HEAP_SIZE == 262144
+    assert v1.DEFAULT_HEAP_SIZE == v1.MIN_HEAP_SIZE
 
 
 def test_getters(default_header_with_one_req_signature: MessageHeader) -> None:
@@ -174,7 +183,7 @@ def test_versioned_roundtrip() -> None:
         TransactionConfig(compute_unit_limit=1234),
     )
     serialized = to_bytes_versioned(msg)
-    assert serialized[0] == MessageV1.PREFIX
+    assert serialized[0] == v1.V1_PREFIX
     assert serialized[1:] == bytes(msg)
     deserialized = from_bytes_versioned(serialized)
     assert isinstance(deserialized, MessageV1)
@@ -247,7 +256,7 @@ def test_sanitize_with_invalid_ix_program_id(
 def test_validate_too_many_signatures(
     default_header_with_one_req_signature: MessageHeader,
 ) -> None:
-    too_many = MessageV1.MAX_SIGNATURES + 1
+    too_many = v1.MAX_SIGNATURES + 1
     msg = MessageV1(
         header=MessageHeader(
             num_required_signatures=too_many,
@@ -259,7 +268,7 @@ def test_validate_too_many_signatures(
         account_keys=[Pubkey.new_unique() for _ in range(too_many)],
         instructions=[],
     )
-    with raises(MessageV1Error):
+    with raises(v1.MessageError):
         msg.validate()
 
 

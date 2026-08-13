@@ -19,8 +19,8 @@ use {
         },
         v1::{
             Message as MessageV1Original, TransactionConfig as TransactionConfigOriginal,
-            DEFAULT_HEAP_SIZE, MAX_ADDRESSES, MAX_HEAP_SIZE, MAX_INSTRUCTIONS, MAX_SIGNATURES,
-            MAX_TRANSACTION_SIZE, MIN_HEAP_SIZE, V1_PREFIX,
+            DEFAULT_HEAP_SIZE, FIXED_HEADER_SIZE, MAX_ADDRESSES, MAX_HEAP_SIZE, MAX_INSTRUCTIONS,
+            MAX_SIGNATURES, MAX_TRANSACTION_SIZE, MIN_HEAP_SIZE, SIGNATURE_SIZE, V1_PREFIX,
         },
         AddressLookupTableAccount as AddressLookupTableAccountOriginal,
         MessageHeader as MessageHeaderOriginal, VersionedMessage as VersionedMessageOriginal,
@@ -978,30 +978,6 @@ impl PyFromBytesGeneral for MessageV1 {
 #[common_methods]
 #[pymethods]
 impl MessageV1 {
-    #[classattr]
-    const PREFIX: u8 = V1_PREFIX;
-
-    #[classattr]
-    const MAX_TRANSACTION_SIZE: usize = MAX_TRANSACTION_SIZE;
-
-    #[classattr]
-    const MAX_ADDRESSES: u8 = MAX_ADDRESSES;
-
-    #[classattr]
-    const MAX_INSTRUCTIONS: u8 = MAX_INSTRUCTIONS;
-
-    #[classattr]
-    const MAX_SIGNATURES: u8 = MAX_SIGNATURES;
-
-    #[classattr]
-    const DEFAULT_HEAP_SIZE: u32 = DEFAULT_HEAP_SIZE;
-
-    #[classattr]
-    const MIN_HEAP_SIZE: u32 = MIN_HEAP_SIZE;
-
-    #[classattr]
-    const MAX_HEAP_SIZE: u32 = MAX_HEAP_SIZE;
-
     #[new]
     pub fn new(
         header: MessageHeader,
@@ -1368,4 +1344,22 @@ pub fn to_bytes_versioned(msg: VersionedMessage) -> Vec<u8> {
 pub fn from_bytes_versioned(raw: &[u8]) -> PyResult<VersionedMessage> {
     let deser = wincode::deserialize::<VersionedMessageOriginal>(raw);
     handle_py_value_err(deser)
+}
+
+/// Register the ``solana_message::v1`` module-scope constants.
+///
+/// They are added to the flat extension module under ``V1_``-prefixed names and
+/// re-exported without the prefix by ``solders.message.v1``.
+pub fn include_v1_constants(m: &Bound<'_, PyModule>) -> PyResult<()> {
+    m.add("V1_PREFIX", V1_PREFIX)?;
+    m.add("V1_MAX_TRANSACTION_SIZE", MAX_TRANSACTION_SIZE)?;
+    m.add("V1_MAX_ADDRESSES", MAX_ADDRESSES)?;
+    m.add("V1_MAX_INSTRUCTIONS", MAX_INSTRUCTIONS)?;
+    m.add("V1_MAX_SIGNATURES", MAX_SIGNATURES)?;
+    m.add("V1_DEFAULT_HEAP_SIZE", DEFAULT_HEAP_SIZE)?;
+    m.add("V1_MIN_HEAP_SIZE", MIN_HEAP_SIZE)?;
+    m.add("V1_MAX_HEAP_SIZE", MAX_HEAP_SIZE)?;
+    m.add("V1_FIXED_HEADER_SIZE", FIXED_HEADER_SIZE)?;
+    m.add("V1_SIGNATURE_SIZE", SIGNATURE_SIZE)?;
+    Ok(())
 }

@@ -474,6 +474,17 @@ class MessageV0:
 class CompileError(Exception): ...
 class MessageV1Error(Exception): ...
 
+V1_PREFIX: Final[int]
+V1_MAX_TRANSACTION_SIZE: Final[int]
+V1_MAX_ADDRESSES: Final[int]
+V1_MAX_INSTRUCTIONS: Final[int]
+V1_MAX_SIGNATURES: Final[int]
+V1_DEFAULT_HEAP_SIZE: Final[int]
+V1_MIN_HEAP_SIZE: Final[int]
+V1_MAX_HEAP_SIZE: Final[int]
+V1_FIXED_HEADER_SIZE: Final[int]
+V1_SIGNATURE_SIZE: Final[int]
+
 class TransactionConfig:
     def __init__(
         self,
@@ -504,14 +515,6 @@ class TransactionConfig:
     def from_json(raw: str) -> "TransactionConfig": ...
 
 class MessageV1:
-    PREFIX: ClassVar[int]
-    MAX_TRANSACTION_SIZE: ClassVar[int]
-    MAX_ADDRESSES: ClassVar[int]
-    MAX_INSTRUCTIONS: ClassVar[int]
-    MAX_SIGNATURES: ClassVar[int]
-    DEFAULT_HEAP_SIZE: ClassVar[int]
-    MIN_HEAP_SIZE: ClassVar[int]
-    MAX_HEAP_SIZE: ClassVar[int]
     def __init__(
         self,
         header: MessageHeader,

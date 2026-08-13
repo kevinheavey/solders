@@ -4,8 +4,9 @@
 
 ### Added
 
-- `solders.message.MessageV1`: the SIMD-0385 v1 transaction message, supporting 4KB transactions with the compute budget carried inline instead of via separate instructions (no address lookup table support). Includes `try_compile`, `validate`, `size`, `fee_payer`, and the format's limit constants (`PREFIX`, `MAX_TRANSACTION_SIZE`, `MAX_ADDRESSES`, `MAX_INSTRUCTIONS`, `MAX_SIGNATURES`, `MIN_HEAP_SIZE`/`MAX_HEAP_SIZE`/`DEFAULT_HEAP_SIZE`). Note that v1 transactions are gated behind the `enable_tx_v1` feature, which is not yet active on mainnet.
-- `solders.message.TransactionConfig`: the inline transaction config carried by a `MessageV1` (`priority_fee`, `compute_unit_limit`, `loaded_accounts_data_size_limit`, `heap_size`).
+- `solders.message.v0` and `solders.message.v1` submodules, mirroring `solana_message`'s own layout: legacy `Message` stays at `solders.message`, while the versioned types live under their version. `v0` holds `Message` and `MessageAddressTableLookup`; `v1` holds `Message`, `TransactionConfig`, `MessageError` and the format's constants (`V1_PREFIX`, `MAX_TRANSACTION_SIZE`, `MAX_ADDRESSES`, `MAX_INSTRUCTIONS`, `MAX_SIGNATURES`, `MIN_HEAP_SIZE`, `MAX_HEAP_SIZE`, `DEFAULT_HEAP_SIZE`, `FIXED_HEADER_SIZE`, `SIGNATURE_SIZE`). The flat names remain as aliases, so `solders.message.MessageV0` and `MessageAddressTableLookup` are unchanged.
+- `solders.message.MessageV1` (alias of `solders.message.v1.Message`): the SIMD-0385 v1 transaction message, supporting 4KB transactions with the compute budget carried inline instead of via separate instructions (no address lookup table support). Includes `try_compile`, `validate`, `size` and `fee_payer`. Note that v1 transactions are gated behind the `enable_tx_v1` feature, which is not yet active on mainnet.
+- `solders.message.TransactionConfig` (alias of `solders.message.v1.TransactionConfig`): the inline transaction config carried by a `MessageV1` (`priority_fee`, `compute_unit_limit`, `loaded_accounts_data_size_limit`, `heap_size`).
 - `solders.transaction_status.UiTransactionConfig`, plus `transaction_config` on `UiRawMessage` and `UiParsedMessage`, following the upstream v4.1 client types.
 - `inflation_rewards_commission_bps` on `RpcVoteAccountInfo`.
 - `Rent.minimum_balance_unchecked` and `Rent.try_minimum_balance`.
