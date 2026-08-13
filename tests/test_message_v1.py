@@ -7,6 +7,7 @@ from solders.message import (
     MessageHeader,
     MessageV0,
     MessageV1,
+    MessageV1Error,
     TransactionConfig,
     from_bytes_versioned,
     to_bytes_versioned,
@@ -258,7 +259,7 @@ def test_validate_too_many_signatures(
         account_keys=[Pubkey.new_unique() for _ in range(too_many)],
         instructions=[],
     )
-    with raises(ValueError):
+    with raises(MessageV1Error):
         msg.validate()
 
 

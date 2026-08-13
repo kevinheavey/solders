@@ -1,11 +1,13 @@
 from typing import Union
 
 from .solders import (
+    CompileError,
     Message,
     MessageAddressTableLookup,
     MessageHeader,
     MessageV0,
     MessageV1,
+    MessageV1Error,
     TransactionConfig,
     from_bytes_versioned,
     to_bytes_versioned,
@@ -14,11 +16,13 @@ from .solders import (
 VersionedMessage = Union[Message, MessageV0, MessageV1]
 
 __all__ = [
+    "CompileError",
     "Message",
     "MessageAddressTableLookup",
     "MessageHeader",
     "MessageV0",
     "MessageV1",
+    "MessageV1Error",
     "TransactionConfig",
     "to_bytes_versioned",
     "from_bytes_versioned",

@@ -5,8 +5,8 @@ use solders_macros::{common_methods, richcmp_eq_only};
 use solders_traits::{handle_py_err, PyErrWrapper};
 use solders_traits_core::{
     handle_py_value_err, impl_display, py_from_bytes_general_via_bincode,
-    pybytes_general_via_bincode, to_py_value_err, CommonMethodsCore, PyBytesGeneral,
-    PyFromBytesGeneral, RichcmpEqualityOnly,
+    pybytes_general_via_bincode, CommonMethodsCore, PyBytesGeneral, PyFromBytesGeneral,
+    RichcmpEqualityOnly,
 };
 use {
     solana_instruction::Instruction as InstructionOriginal,
@@ -594,6 +594,13 @@ create_exception!(
     "Raised when an error is encountered in compiling a message."
 );
 
+create_exception!(
+    solders,
+    MessageV1Error,
+    PyException,
+    "Umbrella error for ``MessageV1`` validation."
+);
+
 #[pyclass(from_py_object, module = "solders.message", subclass)]
 #[derive(PartialEq, Eq, Debug, Clone, Default, Serialize, Deserialize, From, Into)]
 /// A Solana transaction message (v0).
@@ -1134,9 +1141,11 @@ impl MessageV1 {
     /// Check that this message satisfies the v1 format limits.
     ///
     /// Raises:
-    ///     ValueError: if the message is invalid.
+    ///     MessageV1Error: if the message is invalid.
     pub fn validate(&self) -> PyResult<()> {
-        self.0.validate().map_err(|e| to_py_value_err(&e))
+        self.0
+            .validate()
+            .map_err(|e| PyErr::from(PyErrWrapper(MessageV1Error::new_err(e.to_string()))))
     }
 
     /// Returns true if the account at the specified index is called as a program by an instruction.

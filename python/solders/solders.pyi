@@ -470,6 +470,9 @@ class MessageV0:
     @staticmethod
     def from_json(raw: str) -> "MessageV0": ...
 
+class CompileError(Exception): ...
+class MessageV1Error(Exception): ...
+
 class TransactionConfig:
     def __init__(
         self,

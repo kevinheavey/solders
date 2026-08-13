@@ -9,6 +9,8 @@
 - `solders.transaction_status.UiTransactionConfig`, plus `transaction_config` on `UiRawMessage` and `UiParsedMessage`, following the upstream v4.1 client types.
 - `inflation_rewards_commission_bps` on `RpcVoteAccountInfo`.
 - `Rent.minimum_balance_unchecked` and `Rent.try_minimum_balance`.
+- `solders.message.MessageV1Error`, raised by `MessageV1.validate`.
+- `solders.message.CompileError` is now registered on the module. It was already raised by `MessageV0.try_compile` but was not importable, so it could only be caught as a bare `Exception`.
 
 ### Changed
 
