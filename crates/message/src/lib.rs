@@ -1117,7 +1117,7 @@ impl MessageV1 {
     /// Check that this message satisfies the v1 format limits.
     ///
     /// Raises:
-    ///     MessageV1Error: if the message is invalid.
+    ///     MessageError: if the message is invalid.
     pub fn validate(&self) -> PyResult<()> {
         self.0
             .validate()
