@@ -7,7 +7,7 @@ from solders.account import Account
 from solders.hash import Hash
 from solders.instruction import Instruction
 from solders.keypair import Keypair
-from solders.message import Message
+from solders.message import Message, v1
 from solders.pubkey import Pubkey
 from solders.rent import Rent
 from solders.rpc.requests import GetBalance
@@ -18,6 +18,7 @@ from solders.rpc.responses import (
     RpcResponseContext,
 )
 from solders.signature import Signature
+from solders.transaction import VersionedTransaction
 from solders.transaction_status import EncodedConfirmedTransactionWithStatusMeta
 
 _TX_RESP = GetTransactionResp.from_json(
@@ -33,8 +34,9 @@ _ENCODED_TX_RESP = _TX_RESP.value
 assert isinstance(_ENCODED_TX_RESP, EncodedConfirmedTransactionWithStatusMeta)
 
 # A spread across the macro families: byte wrappers and complex types
-# (common_methods), a primitive, a request (common_methods_ser_only), and a
-# type with a #[serde(flatten)] field (serialized via CBOR, not bincode).
+# (common_methods), a primitive, a request (common_methods_ser_only), a
+# type with a #[serde(flatten)] field (serialized via CBOR, not bincode), and
+# the two types whose bytes go through wincode rather than the bincode macros.
 objects: List[Any] = [
     Pubkey.new_unique(),
     Hash.default(),
@@ -44,6 +46,8 @@ objects: List[Any] = [
     Message.default(),
     Instruction(Pubkey.default(), b"data", []),
     Rent.default(),
+    v1.Message.default(),
+    VersionedTransaction.default(),
     GetBalance(Pubkey.default()),
     _ENCODED_TX_RESP,
 ]
