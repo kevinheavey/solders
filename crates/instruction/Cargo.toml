@@ -12,7 +12,7 @@ description = "Solders instruction crate."
 derive_more = { workspace = true }
 pyo3 = { workspace = true, features = ["macros"] }
 serde = { workspace = true }
-solana-instruction = { workspace = true, features = ["serde", "bincode"] }
+solana-instruction = { workspace = true, features = ["serde"] }
 solana-message = { workspace = true }
 solana-pubkey = { workspace = true }
 solders-macros = { workspace = true }
