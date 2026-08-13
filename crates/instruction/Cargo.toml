@@ -13,7 +13,7 @@ derive_more = { workspace = true }
 pyo3 = { workspace = true, features = ["macros"] }
 serde = { workspace = true }
 solana-instruction = { workspace = true, features = ["serde"] }
-solana-message = { workspace = true }
+solana-message = { workspace = true, features = ["serde"] }
 solana-pubkey = { workspace = true }
 solders-macros = { workspace = true }
 solders-pubkey = { workspace = true }
