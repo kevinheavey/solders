@@ -84,11 +84,12 @@ use solders_rpc_responses_common::{
     AccountNotification, AccountNotificationJsonParsed, AccountNotificationJsonParsedResult,
     AccountNotificationResult, AccountNotificationType, BlockStoreError, ProgramNotification,
     ProgramNotificationJsonParsed, ProgramNotificationJsonParsedResult, ProgramNotificationResult,
-    ProgramNotificationType, RootNotification, RpcBlockhash, RpcIdentity, RpcKeyedAccount,
-    RpcKeyedAccountJsonParsed, RpcKeyedAccountMaybeJSON, RpcLeaderSchedule, RpcResponseContext,
-    RpcSignatureResponse, RpcTokenAccountBalance, RpcVersionInfo, RpcVoteAccountInfo,
-    RpcVoteAccountStatus, SignatureNotification, SignatureNotificationResult, SubscriptionResult,
-    UnsubscribeResult,
+    ProgramNotificationType, ReceivedSignature, RootNotification, RpcBlockhash, RpcIdentity,
+    RpcKeyedAccount, RpcKeyedAccountJsonParsed, RpcKeyedAccountMaybeJSON, RpcLeaderSchedule,
+    RpcResponseContext, RpcSignatureResponse, RpcTokenAccountBalance, RpcVersionInfo,
+    RpcVoteAccountInfo, RpcVoteAccountStatus, SignatureNotification, SignatureNotificationResult,
+    SignatureNotificationType, SignatureReceivedNotification, SignatureReceivedNotificationResult,
+    SubscriptionResult, UnsubscribeResult,
 };
 use solders_rpc_responses_tx_status::RpcConfirmedTransactionStatusWithSignature;
 type Slot = u64;
@@ -635,7 +636,7 @@ pub enum Notification {
     SignatureNotification {
         #[serde(skip_deserializing)]
         jsonrpc: solders_rpc_version::V2,
-        params: SignatureNotification,
+        params: SignatureNotificationType,
     },
     SlotNotification {
         #[serde(skip_deserializing)]
@@ -673,7 +674,10 @@ impl<'py> IntoPyObject<'py> for Notification {
             Self::BlockNotification { params: p, .. } => p.into_bound_py_any(py),
             Self::LogsNotification { params: p, .. } => p.into_bound_py_any(py),
             Self::ProgramNotification { params: p, .. } => p.into_bound_py_any(py),
-            Self::SignatureNotification { params: p, .. } => p.into_bound_py_any(py),
+            Self::SignatureNotification { params: p, .. } => match p {
+                SignatureNotificationType::Processed(x) => x.into_bound_py_any(py),
+                SignatureNotificationType::Received(x) => x.into_bound_py_any(py),
+            },
             Self::SlotNotification { params: p, .. } => p.into_bound_py_any(py),
             Self::SlotsUpdatesNotification { params: p, .. } => p.into_bound_py_any(py),
             Self::RootNotification { params: p, .. } => p.into_bound_py_any(py),
@@ -2261,6 +2265,9 @@ pub fn include_responses(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<ProgramNotificationJsonParsedResult>()?;
     m.add_class::<SignatureNotification>()?;
     m.add_class::<SignatureNotificationResult>()?;
+    m.add_class::<SignatureReceivedNotification>()?;
+    m.add_class::<SignatureReceivedNotificationResult>()?;
+    m.add_class::<ReceivedSignature>()?;
     m.add_class::<SlotNotification>()?;
     m.add_class::<SlotUpdateNotification>()?;
     m.add_class::<RootNotification>()?;

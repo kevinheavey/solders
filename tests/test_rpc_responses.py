@@ -89,6 +89,7 @@ from solders.rpc.responses import (
     MinimumLedgerSlotResp,
     ProgramNotification,
     ProgramNotificationResult,
+    ReceivedSignature,
     RequestAirdropResp,
     RootNotification,
     RpcAccountBalance,
@@ -121,6 +122,8 @@ from solders.rpc.responses import (
     SendTransactionResp,
     SignatureNotification,
     SignatureNotificationResult,
+    SignatureReceivedNotification,
+    SignatureReceivedNotificationResult,
     SimulateTransactionResp,
     SlotInfo,
     SlotNotification,
@@ -2588,6 +2591,36 @@ def test_signature_notification() -> None:
     result = parsed.result
     assert isinstance(result, SignatureNotificationResult)
     assert isinstance(result.value, RpcSignatureResponse)
+
+
+def test_signature_received_notification() -> None:
+    raw = """{
+  "jsonrpc": "2.0",
+  "method": "signatureNotification",
+  "params": {
+    "result": {
+      "context": {
+        "slot": 505544335
+      },
+      "value": "receivedSignature"
+    },
+    "subscription": 13566433
+  }
+}"""
+    parsed = parse_notification(raw)
+    assert isinstance(parsed, SignatureReceivedNotification)
+    assert not isinstance(parsed, SignatureNotification)
+    result = parsed.result
+    assert isinstance(result, SignatureReceivedNotificationResult)
+    assert result.value == ReceivedSignature.ReceivedSignature
+    assert result.context.slot == 505544335
+    assert parsed.subscription == 13566433
+    assert SignatureReceivedNotification.from_json(parsed.to_json()).to_json() == (
+        parsed.to_json()
+    )
+    [ws_parsed] = parse_websocket_message(raw)
+    assert isinstance(ws_parsed, SignatureReceivedNotification)
+    assert ws_parsed.to_json() == parsed.to_json()
 
 
 def test_slot_notification() -> None:
