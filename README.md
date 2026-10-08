@@ -34,7 +34,11 @@ Since `solana-py` uses `solders` under the hood and they don't duplicate each ot
 pip install solders
 ```
 
-Note: Requires Python >= 3.7.
+Note: Requires Python >= 3.10.
+
+Free-threaded CPython 3.14 is supported. Operations on distinct `solders` objects
+can run concurrently, but callers should synchronize concurrent mutation of the
+same object; conflicting mutable access may raise `RuntimeError: Already borrowed`.
 
 ## Example Usage
 

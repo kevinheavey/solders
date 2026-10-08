@@ -5,7 +5,7 @@ build-backend = "maturin"
 
 [project]
 name = "solders"
-version = "0.29.0"
+version = "0.30.0"
 description = "Python bindings for Solana Rust tools"
 authors = [ {name = "kevinheavey", email = "kevinheavey123@gmail.com"} ]
 license = {file = "LICENSE"} # relative to the package/ directory
@@ -14,6 +14,7 @@ classifiers = [
     "Programming Language :: Rust",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
+    "Programming Language :: Python :: Free Threading :: 2 - Beta",
 ]
 dependencies = ["typing-extensions >=4.2.0", "jsonalias ==0.1.1"]
 

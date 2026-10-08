@@ -870,7 +870,46 @@ impl RpcBlockProduction {
 
 contextful_resp_eq!(GetBlockProductionResp, RpcBlockProduction);
 
-contextless_struct_def_no_eq!(GetBlockResp, Option<UiConfirmedBlock>);
+fn default_missing_compiled_instruction_data(value: &mut Value) {
+    match value {
+        Value::Object(object) => {
+            let is_compiled_instruction =
+                object.get("programIdIndex").is_some_and(Value::is_number)
+                    && object.get("accounts").is_some_and(Value::is_array);
+            if is_compiled_instruction && !object.contains_key("data") {
+                object.insert("data".to_owned(), Value::String(String::new()));
+            }
+            object
+                .values_mut()
+                .for_each(default_missing_compiled_instruction_data);
+        }
+        Value::Array(values) => values
+            .iter_mut()
+            .for_each(default_missing_compiled_instruction_data),
+        _ => {}
+    }
+}
+
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
+#[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
+pub struct GetBlockResp(Option<UiConfirmedBlock>);
+
+impl PyBytesBincode for GetBlockResp {}
+impl PyFromBytesBincode<'_> for GetBlockResp {}
+impl RichcmpEqualityOnly for GetBlockResp {}
+impl Display for GetBlockResp {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+impl<'a> CommonMethodsRpcResp<'a> for GetBlockResp {
+    fn py_from_json(raw: &'a str) -> PyResult<Resp<Self>> {
+        let mut value: Value = serde_json::from_str(raw).map_err(to_py_err)?;
+        default_missing_compiled_instruction_data(&mut value);
+        serde_json::from_value(value).map_err(to_py_err)
+    }
+}
+
 contextless_resp_methods_clone_nullable!(GetBlockResp, Option<UiConfirmedBlock>);
 
 contextless_resp_eq!(GetBlocksResp, Vec<u64>, clone);

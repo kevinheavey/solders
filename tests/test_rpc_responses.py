@@ -1,4 +1,5 @@
 from base64 import b64decode
+from json import dumps, loads
 from pathlib import Path
 from typing import Dict, List, Union
 
@@ -548,6 +549,34 @@ def test_get_block(path: str) -> None:
     assert val.block_time == 1657486664
     assert isinstance(val.blockhash, Hash)
     assert val.parent_slot == 147078734
+
+
+def test_get_block_defaults_missing_compiled_instruction_data() -> None:
+    path = Path(__file__).parent / "data" / "get_block_json_encoding.json"
+    response = loads(path.read_text())
+    instruction = response["result"]["transactions"][1]["meta"]["innerInstructions"][0][
+        "instructions"
+    ][0]
+    del instruction["data"]
+
+    parsed = GetBlockResp.from_json(dumps(response))
+
+    assert isinstance(parsed, GetBlockResp)
+    block = parsed.value
+    assert block is not None
+
+    transactions = block.transactions
+    assert transactions is not None
+
+    meta = transactions[1].meta
+    assert meta is not None
+
+    inner_instructions = meta.inner_instructions
+    assert inner_instructions is not None
+
+    parsed_instruction = inner_instructions[0].instructions[0]
+    assert isinstance(parsed_instruction, UiCompiledInstruction)
+    assert parsed_instruction.data == ""
 
 
 def test_get_blocks() -> None:
