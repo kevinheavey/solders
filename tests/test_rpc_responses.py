@@ -562,8 +562,19 @@ def test_get_block_defaults_missing_compiled_instruction_data() -> None:
     parsed = GetBlockResp.from_json(dumps(response))
 
     assert isinstance(parsed, GetBlockResp)
-    parsed_instruction = parsed.value.transactions[1].meta.inner_instructions[0]
-    parsed_instruction = parsed_instruction.instructions[0]
+    block = parsed.value
+    assert block is not None
+
+    transactions = block.transactions
+    assert transactions is not None
+
+    meta = transactions[1].meta
+    assert meta is not None
+
+    inner_instructions = meta.inner_instructions
+    assert inner_instructions is not None
+
+    parsed_instruction = inner_instructions[0].instructions[0]
     assert isinstance(parsed_instruction, UiCompiledInstruction)
     assert parsed_instruction.data == ""
 
