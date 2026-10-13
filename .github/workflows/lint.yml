@@ -28,3 +28,6 @@ jobs:
 
       - name: lint
         run: uv run make lint
+
+      - name: Test RPC JSON normalization
+        run: uv run cargo test -p solders-rpc-responses --lib

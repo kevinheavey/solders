@@ -1,4 +1,5 @@
 from base64 import b64decode
+from json import dumps, loads
 from pathlib import Path
 from typing import Dict, List, Union
 
@@ -548,6 +549,130 @@ def test_get_block(path: str) -> None:
     assert val.block_time == 1657486664
     assert isinstance(val.blockhash, Hash)
     assert val.parent_slot == 147078734
+
+
+@mark.parametrize("location", ["top_level", "inner"])
+@mark.parametrize("data", [None, "", "3px3hhrW2tYw"])
+def test_get_block_compiled_instruction_data(location: str, data: Union[str, None]) -> None:
+    response = loads(
+        (Path(__file__).parent / "data" / "get_block_json_encoding.json").read_text()
+    )
+    transaction = response["result"]["transactions"][1]
+    if location == "top_level":
+        instruction = transaction["transaction"]["message"]["instructions"][0]
+    else:
+        instruction = transaction["meta"]["innerInstructions"][0]["instructions"][0]
+    if data is None:
+        del instruction["data"]
+    else:
+        instruction["data"] = data
+
+    parsed = GetBlockResp.from_json(dumps(response))
+    assert isinstance(parsed, GetBlockResp)
+    block = parsed.value
+    assert block is not None
+    transactions = block.transactions
+    assert transactions is not None
+
+    if location == "top_level":
+        encoded_transaction = transactions[1].transaction
+        assert isinstance(encoded_transaction, UiTransaction)
+        message = encoded_transaction.message
+        assert isinstance(message, UiRawMessage)
+        parsed_instruction = message.instructions[0]
+    else:
+        meta = transactions[1].meta
+        assert meta is not None
+        inner_instructions = meta.inner_instructions
+        assert inner_instructions is not None
+        inner_instruction = inner_instructions[0].instructions[0]
+        assert isinstance(inner_instruction, UiCompiledInstruction)
+        parsed_instruction = inner_instruction
+    assert isinstance(parsed_instruction, UiCompiledInstruction)
+    assert parsed_instruction.data == (data or "")
+    assert parsed_instruction.program_id_index == instruction["programIdIndex"]
+    assert parsed_instruction.accounts == bytes(instruction["accounts"])
+
+    # Compare the whole typed response so unrelated instructions and metadata
+    # must remain unchanged, allowing for the serializer's existing defaults.
+    instruction["data"] = data or ""
+    expected = GetBlockResp.from_json(dumps(response))
+    assert isinstance(expected, GetBlockResp)
+    assert parsed.to_json() == expected.to_json()
+
+
+@mark.parametrize("location", ["top_level", "inner"])
+def test_get_block_preserves_parsed_instruction_payload(location: str) -> None:
+    response = loads(
+        (Path(__file__).parent / "data" / "get_block_json_parsed_encoding.json").read_text()
+    )
+    transaction = response["result"]["transactions"][1]
+    instructions = (
+        transaction["transaction"]["message"]["instructions"]
+        if location == "top_level"
+        else transaction["meta"]["innerInstructions"][0]["instructions"]
+    )
+    payload = {
+        "programIdIndex": 0,
+        "accounts": [],
+        "nested": [
+            {"programIdIndex": 1, "accounts": [2]},
+            {"programIdIndex": 2, "accounts": [], "data": ""},
+            {"programIdIndex": 3, "accounts": [], "data": "existing"},
+        ],
+    }
+    instructions[0] = {
+        "program": "custom",
+        "programId": "11111111111111111111111111111111",
+        "parsed": payload,
+    }
+
+    parsed = GetBlockResp.from_json(dumps(response))
+    assert isinstance(parsed, GetBlockResp)
+    block = parsed.value
+    assert block is not None
+    transactions = block.transactions
+    assert transactions is not None
+    if location == "top_level":
+        encoded_transaction = transactions[1].transaction
+        assert isinstance(encoded_transaction, UiTransaction)
+        message = encoded_transaction.message
+        assert isinstance(message, UiParsedMessage)
+        parsed_instruction = message.instructions[0]
+    else:
+        meta = transactions[1].meta
+        assert meta is not None
+        inner_instructions = meta.inner_instructions
+        assert inner_instructions is not None
+        parsed_instruction = inner_instructions[0].instructions[0]
+    assert isinstance(parsed_instruction, ParsedInstruction)
+    assert parsed_instruction.parsed == payload
+
+
+@mark.parametrize("data", [None, 1, [], {}])
+def test_get_block_rejects_invalid_compiled_instruction_data(data: Json) -> None:
+    response = loads(
+        (Path(__file__).parent / "data" / "get_block_json_encoding.json").read_text()
+    )
+    response["result"]["transactions"][0]["transaction"]["message"]["instructions"][0][
+        "data"
+    ] = data
+    with raises(SerdeJSONError):
+        GetBlockResp.from_json(dumps(response))
+
+
+def test_get_block_preserves_rpc_error_data() -> None:
+    payload = {"programIdIndex": 0, "accounts": [], "nested": [{"accounts": []}]}
+    raw = dumps(
+        {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "error": {"code": -32602, "message": "Invalid params", "data": payload},
+        }
+    )
+    parsed = GetBlockResp.from_json(raw)
+    assert isinstance(parsed, InvalidParamsMessage)
+    assert parsed == InvalidParamsMessage("Invalid params")
 
 
 def test_get_blocks() -> None:

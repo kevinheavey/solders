@@ -34,7 +34,7 @@ use solders_primitives::{
 use solders_pubkey::Pubkey;
 use solders_signature::Signature;
 
-#[pymodule]
+#[pymodule(gil_used = false)]
 fn solders(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<SolderHash>()?;
     m.add("ParseHashError", py.get_type::<ParseHashError>())?;

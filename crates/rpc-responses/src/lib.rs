@@ -870,7 +870,72 @@ impl RpcBlockProduction {
 
 contextful_resp_eq!(GetBlockProductionResp, RpcBlockProduction);
 
-contextless_struct_def_no_eq!(GetBlockResp, Option<UiConfirmedBlock>);
+// Only normalize RPC instruction lists. Parsed instruction payloads and RPC
+// error data may contain arbitrary JSON with the same field names.
+fn default_missing_compiled_instruction_data(value: &mut Value) {
+    let Some(transactions) = value
+        .pointer_mut("/result/transactions")
+        .and_then(Value::as_array_mut)
+    else {
+        return;
+    };
+    for transaction in transactions {
+        if let Some(instructions) = transaction
+            .pointer_mut("/transaction/message/instructions")
+            .and_then(Value::as_array_mut)
+        {
+            default_missing_instruction_data(instructions);
+        }
+        if let Some(inner_instructions) = transaction
+            .pointer_mut("/meta/innerInstructions")
+            .and_then(Value::as_array_mut)
+        {
+            for inner in inner_instructions {
+                if let Some(instructions) =
+                    inner.get_mut("instructions").and_then(Value::as_array_mut)
+                {
+                    default_missing_instruction_data(instructions);
+                }
+            }
+        }
+    }
+}
+
+fn default_missing_instruction_data(instructions: &mut [Value]) {
+    for instruction in instructions {
+        if let Some(object) = instruction.as_object_mut() {
+            let is_compiled_instruction =
+                object.get("programIdIndex").is_some_and(Value::is_u64)
+                && object.get("accounts").is_some_and(Value::is_array)
+                && !object.contains_key("programId")
+                && !object.contains_key("parsed");
+            if is_compiled_instruction && !object.contains_key("data") {
+                object.insert("data".to_owned(), Value::String(String::new()));
+            }
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
+#[pyclass(from_py_object, module = "solders.rpc.responses", subclass)]
+pub struct GetBlockResp(Option<UiConfirmedBlock>);
+
+impl PyBytesBincode for GetBlockResp {}
+impl PyFromBytesBincode<'_> for GetBlockResp {}
+impl RichcmpEqualityOnly for GetBlockResp {}
+impl Display for GetBlockResp {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+impl<'a> CommonMethodsRpcResp<'a> for GetBlockResp {
+    fn py_from_json(raw: &'a str) -> PyResult<Resp<Self>> {
+        let mut value: Value = serde_json::from_str(raw).map_err(to_py_err)?;
+        default_missing_compiled_instruction_data(&mut value);
+        serde_json::from_value(value).map_err(to_py_err)
+    }
+}
+
 contextless_resp_methods_clone_nullable!(GetBlockResp, Option<UiConfirmedBlock>);
 
 contextless_resp_eq!(GetBlocksResp, Vec<u64>, clone);
@@ -2278,4 +2343,88 @@ pub fn include_responses(m: &Bound<'_, PyModule>) -> PyResult<()> {
         m.add_function(func)?;
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod compiled_instruction_data_tests {
+    use super::default_missing_compiled_instruction_data;
+    use serde_json::{json, Value};
+
+    #[test]
+    fn defaults_only_missing_data_in_rpc_instruction_lists() {
+        let instructions = json!([
+            {"programIdIndex": 0, "accounts": []},
+            {"programIdIndex": 1, "accounts": [0], "data": ""},
+            {"programIdIndex": 2, "accounts": [0, 1], "data": "3px3hhrW2tYw"},
+            {"programIdIndex": 3, "accounts": [], "data": null},
+            {"programIdIndex": 4, "accounts": [], "data": [1, 2]}
+        ]);
+        let mut value = json!({"result": {"transactions": [
+            {"transaction": {"message": {"instructions": instructions}},
+             "meta": {"innerInstructions": [{"index": 0, "instructions": instructions}]}},
+            {"transaction": ["encoded transaction", "base64"], "meta": null}
+        ]}});
+        let mut expected = value.clone();
+        expected["result"]["transactions"][0]["transaction"]["message"]["instructions"][0]
+            ["data"] = json!("");
+        expected["result"]["transactions"][0]["meta"]["innerInstructions"][0]["instructions"]
+            [0]["data"] = json!("");
+
+        default_missing_compiled_instruction_data(&mut value);
+        assert_eq!(value, expected);
+        default_missing_compiled_instruction_data(&mut value);
+        assert_eq!(value, expected);
+    }
+
+    #[test]
+    fn preserves_opaque_payloads_and_non_compiled_instructions() {
+        let lookalike = json!({"programIdIndex": 0, "accounts": []});
+        let instructions = json!([
+            {"program": "custom", "programId": "11111111111111111111111111111111",
+             "parsed": {"info": lookalike, "nested": [lookalike]},
+             "programIdIndex": 0, "accounts": []},
+            {"programId": "11111111111111111111111111111111",
+             "accounts": [], "data": "abc", "programIdIndex": 0},
+            {"programIdIndex": "0", "accounts": []},
+            {"programIdIndex": 0, "accounts": null},
+            {"programIdIndex": 0},
+            {"accounts": []},
+            null, true, 1, "text", [lookalike]
+        ]);
+        let mut value = json!({
+            "error": {"code": -32602, "data": lookalike},
+            "extension": lookalike,
+            "result": {"extension": [lookalike], "transactions": [{
+                "transaction": {"message": {"instructions": instructions,
+                                            "extension": lookalike}},
+                "meta": {"innerInstructions": [{"index": 0, "instructions": instructions,
+                                               "extension": lookalike}],
+                         "extension": lookalike}
+            }]}
+        });
+        let expected = value.clone();
+
+        default_missing_compiled_instruction_data(&mut value);
+        assert_eq!(value, expected);
+    }
+
+    #[test]
+    fn preserves_absent_null_and_wrong_shape_containers() {
+        for mut value in [
+            Value::Null,
+            json!(true),
+            json!([{"programIdIndex": 0, "accounts": []}]),
+            json!({"result": null}),
+            json!({"result": {"transactions": null}}),
+            json!({"result": {"transactions": {"programIdIndex": 0, "accounts": []}}}),
+            json!({"result": {"transactions": [null, {}, {
+                "transaction": {"message": {"instructions": null}},
+                "meta": {"innerInstructions": [null, {"instructions": null}]}
+            }]}}),
+        ] {
+            let expected = value.clone();
+            default_missing_compiled_instruction_data(&mut value);
+            assert_eq!(value, expected);
+        }
+    }
 }
