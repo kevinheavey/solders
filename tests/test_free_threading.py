@@ -121,7 +121,9 @@ class TestFreeThreading(TestCase):
             },
         }
         raw = dumps(response)
-        expected = GetBlockResp.from_json(raw).to_json()
+        expected_response = GetBlockResp.from_json(raw)
+        assert isinstance(expected_response, GetBlockResp)
+        expected = expected_response.to_json()
         instructions = loads(expected)["result"]["transactions"][0]["transaction"][
             "message"
         ]["instructions"]
@@ -134,6 +136,7 @@ class TestFreeThreading(TestCase):
             barrier.wait()
             for _ in range(64):
                 parsed = GetBlockResp.from_json(raw)
+                assert isinstance(parsed, GetBlockResp)
                 self.assertEqual(parsed.to_json(), expected)
 
         with ThreadPoolExecutor(max_workers=workers) as pool:

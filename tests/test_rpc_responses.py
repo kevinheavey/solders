@@ -585,7 +585,9 @@ def test_get_block_compiled_instruction_data(location: str, data: Union[str, Non
         assert meta is not None
         inner_instructions = meta.inner_instructions
         assert inner_instructions is not None
-        parsed_instruction = inner_instructions[0].instructions[0]
+        inner_instruction = inner_instructions[0].instructions[0]
+        assert isinstance(inner_instruction, UiCompiledInstruction)
+        parsed_instruction = inner_instruction
     assert isinstance(parsed_instruction, UiCompiledInstruction)
     assert parsed_instruction.data == (data or "")
     assert parsed_instruction.program_id_index == instruction["programIdIndex"]
@@ -595,6 +597,7 @@ def test_get_block_compiled_instruction_data(location: str, data: Union[str, Non
     # must remain unchanged, allowing for the serializer's existing defaults.
     instruction["data"] = data or ""
     expected = GetBlockResp.from_json(dumps(response))
+    assert isinstance(expected, GetBlockResp)
     assert parsed.to_json() == expected.to_json()
 
 
