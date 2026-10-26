@@ -827,6 +827,8 @@ impl MessageV0 {
 /// V1 messages carry the compute budget settings that legacy and v0 messages
 /// have to express as separate ``ComputeBudget`` instructions. Every field is
 /// optional; an unset field is simply omitted from the serialized message.
+/// Unset compute unit and loaded accounts data size limits are treated as zero
+/// during execution, so set both limits explicitly when executing a V1 transaction.
 ///
 /// Args:
 ///     priority_fee (Optional[int]): The priority fee in micro-lamports. Defaults to ``None``.

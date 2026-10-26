@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional, Tuple
 
+import pytest
 from solders.account import Account
 from solders.clock import Clock
 from solders.compute_budget import ComputeBudget
@@ -14,6 +15,10 @@ from solders.rent import Rent
 from solders.system_program import transfer
 from solders.transaction import Transaction, VersionedTransaction
 from solders.transaction_metadata import FailedTransactionMetadata, TransactionMetadata
+from solders.transaction_status import (
+    InstructionErrorFieldless,
+    TransactionErrorInstructionError,
+)
 
 
 def helloworld_program(
@@ -133,7 +138,8 @@ def test_sysvar() -> None:
     client = LiteSVM()
     rent_before = client.get_rent()
     assert rent_before.burn_percent == 50
-    assert rent_before.minimum_balance(123) == 1746960
+    assert rent_before.lamports_per_byte == 5080
+    assert rent_before.minimum_balance(123) == 1_275_080
     new_rent = Rent(
         burn_percent=0,
         exemption_threshold=rent_before.exemption_threshold,
@@ -197,7 +203,8 @@ def test_many_instructions() -> None:
     assert greeted_account_after.data == (num_ixs).to_bytes(4, "little")
 
 
-def test_transfer_v1_message() -> None:
+@pytest.mark.parametrize("compute_unit_limit", [1, 200_000])
+def test_transfer_v1_message(compute_unit_limit: int) -> None:
     # `enable_tx_v1` is not active on mainnet yet; this relies on LiteSVM
     # enabling all features by default.
     client = LiteSVM()
@@ -217,13 +224,23 @@ def test_transfer_v1_message() -> None:
             )
         ],
         client.latest_blockhash(),
-        TransactionConfig(compute_unit_limit=200_000),
+        TransactionConfig(
+            compute_unit_limit=compute_unit_limit,
+            loaded_accounts_data_size_limit=64 * 1024 * 1024,
+        ),
     )
     tx = VersionedTransaction(msg, [payer])
     assert tx.version() == 1
     res = client.send_transaction(tx)
-    assert isinstance(res, TransactionMetadata)
-    assert client.get_balance(receiver) == transfer_lamports
+    if compute_unit_limit == 1:
+        assert isinstance(res, FailedTransactionMetadata)
+        assert res.err() == TransactionErrorInstructionError(
+            0, InstructionErrorFieldless.ComputationalBudgetExceeded
+        )
+        assert client.get_balance(receiver) is None
+    else:
+        assert isinstance(res, TransactionMetadata)
+        assert client.get_balance(receiver) == transfer_lamports
 
 
 def test_get_program_accounts() -> None:

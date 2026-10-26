@@ -4,6 +4,8 @@
 
 ### Added
 
+- `TransactionMetadata.loaded_accounts_data_size()`, returning the loaded accounts data size metered for a LiteSVM transaction.
+
 - Free-threaded CPython 3.14 wheels.
 
 - `SignatureReceivedNotification`, `SignatureReceivedNotificationResult` and `ReceivedSignature`: `parse_notification` / `parse_websocket_message` now accept the extra `"receivedSignature"` notification sent by `signatureSubscribe` when `enableReceivedNotification` is set. Previously it raised `SerdeJSONError`. Processed notifications still parse to `SignatureNotification`.
@@ -14,6 +16,9 @@
 - `sendTransaction` / `simulateTransaction` request builders always advertise `encoding: "base64"` on the wire. The payload is serialized as base64 even when `config` is omitted, but JSON-RPC then defaults to base58 and the node rejects the request (`invalid base58 encoding`).
 
 ### Changed
+
+- Update LiteSVM to 0.18.1 and the Agave dependency set to 4.3; raise the Rust toolchain to 1.97.1 and update wincode to 0.6. LiteSVM now supports V1 transaction execution and uses the refreshed mainnet feature set. Set both `compute_unit_limit` and `loaded_accounts_data_size_limit` explicitly in V1 transaction configs; omitted limits are treated as zero.
+- LiteSVM's default rent is now 5,080 lamports per byte (previously 6,960), following the upstream rent feature gates.
 
 - Omitting `config` on those builders now stores `Rpc*Config()` (so `req.config` is no longer `None`). `RpcSendTransactionConfig.default()` / `RpcSimulateTransactionConfig.default()` now match `Rpc*Config()` instead of leaving `encoding` unset.
 
