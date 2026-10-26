@@ -5,6 +5,7 @@
 ### Added
 
 - `TransactionMetadata.loaded_accounts_data_size()`, returning the loaded accounts data size metered for a LiteSVM transaction.
+- `RewardType.DeactivatedStake` and `RewardType.VATDebit`, so accessing these reward types in RPC responses no longer panics.
 
 - Free-threaded CPython 3.14 wheels.
 
