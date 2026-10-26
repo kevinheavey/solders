@@ -4,7 +4,7 @@
 
 ### Added
 
-- Free-threaded CPython 3.14 wheels for all existing release platforms.
+- Free-threaded CPython 3.14 wheels.
 
 - `SignatureReceivedNotification`, `SignatureReceivedNotificationResult` and `ReceivedSignature`: `parse_notification` / `parse_websocket_message` now accept the extra `"receivedSignature"` notification sent by `signatureSubscribe` when `enableReceivedNotification` is set. Previously it raised `SerdeJSONError`. Processed notifications still parse to `SignatureNotification`.
   When received notifications are enabled, check `isinstance(notification, SignatureNotification)` before accessing `notification.result.value.err`; a `SignatureReceivedNotification` only acknowledges receipt and has no transaction result yet.
