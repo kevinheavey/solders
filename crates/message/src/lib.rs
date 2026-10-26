@@ -828,8 +828,11 @@ impl MessageV0 {
 /// have to express as separate ``ComputeBudget`` instructions. Every field is
 /// optional; an unset field is simply omitted from the serialized message.
 ///
+/// The priority fee is a total in lamports. Legacy and v0 messages instead use
+/// ``set_compute_unit_price`` to specify micro-lamports per compute unit.
+///
 /// Args:
-///     priority_fee (Optional[int]): The priority fee in micro-lamports. Defaults to ``None``.
+///     priority_fee (Optional[int]): The total priority fee in lamports. Defaults to ``None``.
 ///     compute_unit_limit (Optional[int]): The compute unit limit. Defaults to ``None``.
 ///     loaded_accounts_data_size_limit (Optional[int]): The loaded accounts data size limit
 ///         in bytes. Defaults to ``None``.
@@ -881,7 +884,7 @@ impl TransactionConfig {
     }
 
     #[getter]
-    /// Optional[int]: The priority fee in micro-lamports.
+    /// Optional[int]: The total priority fee in lamports.
     pub fn priority_fee(&self) -> Option<u64> {
         self.0.priority_fee
     }
