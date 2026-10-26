@@ -1,4 +1,5 @@
 from base64 import b64decode
+from json import dumps
 from pathlib import Path
 from typing import Dict, List, Union
 
@@ -143,6 +144,7 @@ from solders.signature import Signature
 from solders.transaction import VersionedTransaction
 from solders.transaction_status import (
     InstructionErrorCustom,
+    InstructionErrorFieldless,
     ParsedInstruction,
     Reward,
     RewardType,
@@ -2621,6 +2623,40 @@ def test_signature_received_notification() -> None:
     [ws_parsed] = parse_websocket_message(raw)
     assert isinstance(ws_parsed, SignatureReceivedNotification)
     assert ws_parsed.to_json() == parsed.to_json()
+
+
+@mark.parametrize("failed", [False, True])
+def test_signature_received_then_processed_notification(failed: bool) -> None:
+    err = {"InstructionError": [0, "InvalidArgument"]} if failed else None
+    notifications = [
+        {
+            "jsonrpc": "2.0",
+            "method": "signatureNotification",
+            "params": {
+                "result": {"context": {"slot": slot}, "value": value},
+                "subscription": 13566433,
+            },
+        }
+        for slot, value in [(100, "receivedSignature"), (101, {"err": err})]
+    ]
+    # Exercise both separate frames and a frame containing multiple messages.
+    separate = [parse_websocket_message(dumps(raw))[0] for raw in notifications]
+    batched = parse_websocket_message(dumps(notifications))
+    assert len(batched) == len(separate) == 2
+    for messages in [separate, batched]:
+        received, processed = messages
+        assert isinstance(received, SignatureReceivedNotification)
+        assert isinstance(processed, SignatureNotification)
+        assert received.subscription == processed.subscription == 13566433
+        assert received.result.context.slot == 100
+        assert processed.result.context.slot == 101
+        assert received.result.value == ReceivedSignature.ReceivedSignature
+        if failed:
+            assert processed.result.value.err == TransactionErrorInstructionError(
+                0, InstructionErrorFieldless.InvalidArgument
+            )
+        else:
+            assert processed.result.value.err is None
 
 
 def test_slot_notification() -> None:
