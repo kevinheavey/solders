@@ -7,21 +7,16 @@ use solana_transaction_status_client_types::{
 use solders_macros::enum_original_mapping;
 
 /// Levels of transaction detail to return in RPC requests.
-#[derive(Debug, Clone, Copy, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, Copy, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 #[pyclass(from_py_object, module = "solders.transaction_status", eq, eq_int)]
 pub enum TransactionDetails {
+    #[default]
     Full,
     Signatures,
     #[serde(rename = "none")]
     None_,
     Accounts,
-}
-
-impl Default for TransactionDetails {
-    fn default() -> Self {
-        Self::Full
-    }
 }
 
 impl From<TransactionDetails> for TransactionDetailsOriginal {
@@ -48,19 +43,14 @@ impl From<TransactionDetailsOriginal> for TransactionDetails {
 
 /// Encoding options for transaction data.
 #[pyclass(from_py_object, module = "solders.transaction_status", eq, eq_int)]
-#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 #[enum_original_mapping(UiTransactionEncodingOriginal)]
 pub enum UiTransactionEncoding {
     Binary, // Legacy. Retained for RPC backwards compatibility
+    #[default]
     Base64,
     Base58,
     Json,
     JsonParsed,
-}
-
-impl Default for UiTransactionEncoding {
-    fn default() -> Self {
-        Self::Base64
-    }
 }

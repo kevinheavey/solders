@@ -710,7 +710,23 @@ notification!(
 notification!(ProgramNotification, RpcKeyedAccount);
 notification!(ProgramNotificationJsonParsed, RpcKeyedAccountJsonParsed);
 notification!(SignatureNotification, RpcSignatureResponse);
+notification!(SignatureReceivedNotification, ReceivedSignature);
 notification_contextless!(RootNotification, u64);
+
+/// The `value` of the extra notification sent when `enableReceivedNotification` is set.
+#[derive(Clone, Deserialize, Serialize, Debug, Eq, PartialEq)]
+#[pyclass(from_py_object, module = "solders.rpc.responses", eq, eq_int)]
+pub enum ReceivedSignature {
+    #[serde(rename = "receivedSignature")]
+    ReceivedSignature,
+}
+
+#[derive(FromPyObject, Serialize, Deserialize, Clone, Debug, PartialEq, Eq, IntoPyObject)]
+#[serde(untagged)]
+pub enum SignatureNotificationType {
+    Processed(SignatureNotification),
+    Received(SignatureReceivedNotification),
+}
 
 #[derive(FromPyObject, Serialize, Deserialize, Clone, Debug, PartialEq, Eq, IntoPyObject)]
 #[serde(untagged)]

@@ -2,6 +2,11 @@
 
 # Unreleased
 
+### Added
+
+- `SignatureReceivedNotification`, `SignatureReceivedNotificationResult` and `ReceivedSignature`: `parse_notification` / `parse_websocket_message` now accept the extra `"receivedSignature"` notification sent by `signatureSubscribe` when `enableReceivedNotification` is set. Previously it raised `SerdeJSONError`. Processed notifications still parse to `SignatureNotification`.
+  When received notifications are enabled, check `isinstance(notification, SignatureNotification)` before accessing `notification.result.value.err`; a `SignatureReceivedNotification` only acknowledges receipt and has no transaction result yet.
+
 ### Fixed
 
 - `sendTransaction` / `simulateTransaction` request builders always advertise `encoding: "base64"` on the wire. The payload is serialized as base64 even when `config` is omitted, but JSON-RPC then defaults to base58 and the node rejects the request (`invalid base58 encoding`).
