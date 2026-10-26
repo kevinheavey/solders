@@ -7,6 +7,7 @@ build-backend = "maturin"
 name = "solders"
 version = "0.29.0"
 description = "Python bindings for Solana Rust tools"
+readme = "README.md"
 authors = [ {name = "kevinheavey", email = "kevinheavey123@gmail.com"} ]
 license = {file = "LICENSE"} # relative to the package/ directory
 requires-python = ">=3.10,<4.0"
