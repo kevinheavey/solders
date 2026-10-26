@@ -91,6 +91,13 @@ impl TransactionMetadata {
 
     ///
     /// Returns:
+    ///     int: The loaded accounts data size metered for the transaction.
+    pub fn loaded_accounts_data_size(&self) -> u32 {
+        self.0.loaded_accounts_data_size
+    }
+
+    ///
+    /// Returns:
     ///     TransactionReturnData: The transaction return data.
     pub fn return_data(&self) -> TransactionReturnData {
         TransactionReturnData(self.0.return_data.clone())

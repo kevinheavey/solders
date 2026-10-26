@@ -400,6 +400,25 @@ def test_get_block_commitment() -> None:
     assert parsed == expected
 
 
+@mark.parametrize("variant", ["DeactivatedStake", "VATDebit"])
+def test_reward_type_variants(variant: str) -> None:
+    raw = dumps(
+        {
+            "pubkey": str(Pubkey.default()),
+            "lamports": -1,
+            "postBalance": 1,
+            "rewardType": variant,
+            "commission": None,
+            "commissionBps": None,
+        }
+    )
+    reward = Reward.from_json(raw)
+    expected_type = getattr(RewardType, variant)
+    assert reward.reward_type == expected_type
+    assert Reward(Pubkey.default(), -1, 1, reward_type=expected_type) == reward
+    assert Reward.from_json(reward.to_json()).reward_type == expected_type
+
+
 @mark.parametrize(
     "path",
     [

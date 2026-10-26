@@ -863,6 +863,8 @@ pub enum RewardType {
     Rent,
     Staking,
     Voting,
+    DeactivatedStake,
+    VATDebit,
 }
 /// A duplicate representation of TransactionStatusMeta with `err` field
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From, Into)]
