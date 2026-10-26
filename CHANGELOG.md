@@ -11,6 +11,7 @@
 
 ### Fixed
 
+- Include the README in the PyPI package description.
 - Corrected `TransactionConfig.priority_fee` documentation to specify total lamports.
 - `sendTransaction` / `simulateTransaction` request builders always advertise `encoding: "base64"` on the wire. The payload is serialized as base64 even when `config` is omitted, but JSON-RPC then defaults to base58 and the node rejects the request (`invalid base58 encoding`).
 
